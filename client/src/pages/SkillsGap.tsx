@@ -121,7 +121,7 @@ export default function SkillsGap() {
                 <CardContent>
                   {gapAnalysis?.provenSkills && gapAnalysis.provenSkills.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
-                      {gapAnalysis.provenSkills.map((skill, idx) => (
+                      {gapAnalysis.provenSkills.map((skill: string, idx: number) => (
                         <div
                           key={idx}
                           className="px-3 py-1 bg-green-50 border border-green-200 rounded-full text-sm text-green-700"
@@ -147,7 +147,7 @@ export default function SkillsGap() {
                 <CardContent>
                   {gapAnalysis?.missingEvidence && gapAnalysis.missingEvidence.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
-                      {gapAnalysis.missingEvidence.map((skill, idx) => (
+                      {gapAnalysis.missingEvidence.map((skill: string, idx: number) => (
                         <div
                           key={idx}
                           className="px-3 py-1 bg-orange-50 border border-orange-200 rounded-full text-sm text-orange-700"
@@ -170,7 +170,7 @@ export default function SkillsGap() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {pastJobs?.map((job) => (
+                  {pastJobs?.map((job: any) => (
                     <div key={job.id} className="p-4 border rounded-lg">
                       <div className="font-semibold">{job.jobTitle}</div>
                       {job.companyName && (
@@ -178,7 +178,7 @@ export default function SkillsGap() {
                       )}
                       {job.extractedSkills && job.extractedSkills.length > 0 && (
                         <div className="mt-2 flex flex-wrap gap-1">
-                          {job.extractedSkills.map((skill, idx) => (
+                          {job.extractedSkills.map((skill: string, idx: number) => (
                             <span
                               key={idx}
                               className="px-2 py-0.5 bg-muted rounded text-xs"

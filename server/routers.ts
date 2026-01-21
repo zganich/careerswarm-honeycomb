@@ -9,9 +9,116 @@ import { invokeLLM } from "./_core/llm";
 import { markdownToPDF } from "./pdf-export.mjs";
 import { readFileSync, unlinkSync } from "fs";
 import { getAllTemplates, getTemplatesByRole } from "./achievement-templates";
+import { intelligenceRouter } from "./intelligence-router";
+import { emailRouter } from "./email-router";
+import { b2bRouter } from "./b2b-router";
+import { scrapeJobDescription } from "./jd-scraper";
 
 export const appRouter = router({
   system: systemRouter,
+  intelligence: intelligenceRouter,
+  email: emailRouter,
+  b2b: b2bRouter,
+  
+  pastEmployerJobs: router({
+    list: protectedProcedure.query(({ ctx }) => db.getUserPastJobs(ctx.user.id)),
+    
+    create: protectedProcedure
+      .input(z.object({
+        jobTitle: z.string(),
+        companyName: z.string().optional(),
+        startDate: z.string().optional(),
+        endDate: z.string().optional(),
+        jobDescriptionText: z.string(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const prompt = `Analyze this past job description and extract skills and responsibilities.
+
+Job Description:
+${input.jobDescriptionText}
+
+Extract:
+1. Technical and soft skills mentioned
+2. Key responsibilities`;
+
+        const response = await invokeLLM({
+          messages: [
+            { role: "system", content: "You are an expert at analyzing job descriptions." },
+            { role: "user", content: prompt }
+          ],
+          response_format: {
+            type: "json_schema",
+            json_schema: {
+              name: "past_jd_analysis",
+              strict: true,
+              schema: {
+                type: "object",
+                properties: {
+                  skills: { type: "array", items: { type: "string" } },
+                  responsibilities: { type: "array", items: { type: "string" } },
+                },
+                required: ["skills", "responsibilities"],
+                additionalProperties: false,
+              },
+            },
+          },
+        });
+
+        const content = String(response.choices[0]?.message?.content || "{}");
+        const parsed = JSON.parse(content);
+
+        const result = await db.createPastEmployerJob({
+          userId: ctx.user.id,
+          jobTitle: input.jobTitle,
+          companyName: input.companyName || null,
+          startDate: input.startDate ? new Date(input.startDate) : null,
+          endDate: input.endDate ? new Date(input.endDate) : null,
+          jobDescriptionText: input.jobDescriptionText,
+          extractedSkills: parsed.skills || [],
+          extractedResponsibilities: parsed.responsibilities || [],
+        });
+
+        return result;
+      }),
+    
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.deletePastJob(input.id, ctx.user.id);
+        return { success: true };
+      }),
+
+    getGapAnalysis: protectedProcedure.query(async ({ ctx }) => {
+      const pastJobs = await db.getUserPastJobs(ctx.user.id);
+      const achievements = await db.getUserAchievements(ctx.user.id);
+
+      const allExpectedSkills = new Set<string>();
+      pastJobs.forEach(job => {
+        (job.extractedSkills || []).forEach(skill => allExpectedSkills.add(skill));
+      });
+
+      const provenSkills = new Set<string>();
+      achievements.forEach(achievement => {
+        const text = `${achievement.situation} ${achievement.task} ${achievement.action} ${achievement.result}`.toLowerCase();
+        allExpectedSkills.forEach(skill => {
+          if (text.includes(skill.toLowerCase())) {
+            provenSkills.add(skill);
+          }
+        });
+      });
+
+      const missingEvidence = Array.from(allExpectedSkills).filter(skill => !provenSkills.has(skill));
+
+      return {
+        totalExpectedSkills: allExpectedSkills.size,
+        provenSkills: Array.from(provenSkills),
+        missingEvidence,
+        coveragePercent: allExpectedSkills.size > 0 
+          ? Math.round((provenSkills.size / allExpectedSkills.size) * 100)
+          : 100,
+      };
+    }),
+  }),
   
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
@@ -297,8 +404,73 @@ Return ONLY the transformed XYZ bullet point, nothing else.`;
       .query(({ input }) => getTemplatesByRole(input.role)),
   }),
 
-  pastEmployerJobs: router({
-    list: protectedProcedure.query(({ ctx }) => db.getUserPastJobs(ctx.user.id)),
+  jobDescriptions: router({
+    list: protectedProcedure.query(({ ctx }) => db.getUserJobDescriptions(ctx.user.id)),
+
+    importFromUrl: protectedProcedure
+      .input(z.object({ url: z.string().url() }))
+      .mutation(async ({ ctx, input }) => {
+        const scraped = await scrapeJobDescription(input.url);
+        
+        // Use AI to analyze the scraped content
+        const prompt = `Analyze this job description and extract key information.
+
+Job Title: ${scraped.title || "Unknown"}
+Company: ${scraped.company || "Unknown"}
+Description:
+${scraped.description}
+
+Extract:
+1. Required skills
+2. Preferred skills
+3. Experience level
+4. Key responsibilities`;
+
+        const response = await invokeLLM({
+          messages: [
+            { role: "system", content: "You are an expert at analyzing job descriptions." },
+            { role: "user", content: prompt }
+          ],
+          response_format: {
+            type: "json_schema",
+            json_schema: {
+              name: "jd_analysis",
+              strict: true,
+              schema: {
+                type: "object",
+                properties: {
+                  requiredSkills: { type: "array", items: { type: "string" } },
+                  preferredSkills: { type: "array", items: { type: "string" } },
+                  experienceLevel: { type: "string" },
+                  responsibilities: { type: "array", items: { type: "string" } },
+                },
+                required: ["requiredSkills", "preferredSkills", "experienceLevel", "responsibilities"],
+                additionalProperties: false,
+              },
+            },
+          },
+        });
+
+        const content = String(response.choices[0]?.message?.content || "{}");
+        const parsed = JSON.parse(content);
+
+        const result = await db.createJobDescription({
+          userId: ctx.user.id,
+          jobTitle: scraped.title || "Imported Job",
+          companyName: scraped.company || null,
+          jobDescriptionText: scraped.description,
+          jobUrl: input.url,
+          requiredSkills: parsed.requiredSkills || [],
+          preferredSkills: parsed.preferredSkills || [],
+          keyResponsibilities: parsed.responsibilities || [],
+          successMetrics: null,
+          applicationStatus: null,
+          appliedDate: null,
+          notes: null,
+        });
+
+        return result;
+      }),
     
     create: protectedProcedure
       .input(z.object({
@@ -402,9 +574,7 @@ Return structured JSON.`;
           : 100,
       };
     }),
-  }),
 
-  jobDescriptions: router({
     matchAchievements: protectedProcedure
       .input(z.object({ jobDescriptionId: z.number() }))
       .mutation(async ({ ctx, input }) => {
@@ -479,37 +649,6 @@ Return a JSON array with match data for ALL achievements, ordered by match score
         }));
 
         return { matches: enrichedMatches };
-      }),
-    
-    list: protectedProcedure.query(({ ctx }) => db.getUserJobDescriptions(ctx.user.id)),
-    
-    get: protectedProcedure
-      .input(z.object({ id: z.number() }))
-      .query(({ ctx, input }) => db.getJobDescriptionById(input.id, ctx.user.id)),
-    
-    create: protectedProcedure
-      .input(z.object({
-        jobTitle: z.string(),
-        companyName: z.string().optional(),
-        jobDescriptionText: z.string(),
-        jobUrl: z.string().optional(),
-      }))
-      .mutation(async ({ ctx, input }) => {
-        const id = await db.createJobDescription({ 
-          userId: ctx.user.id,
-          jobTitle: input.jobTitle,
-          jobDescriptionText: input.jobDescriptionText,
-          companyName: input.companyName || null,
-          jobUrl: input.jobUrl || null,
-          requiredSkills: null,
-          preferredSkills: null,
-          keyResponsibilities: null,
-          successMetrics: null,
-          applicationStatus: "draft",
-          appliedDate: null,
-          notes: null,
-        });
-        return { id };
       }),
     
     analyze: protectedProcedure

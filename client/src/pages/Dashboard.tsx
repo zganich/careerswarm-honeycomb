@@ -2,7 +2,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
-import { Award, FileText, Target, TrendingUp, Plus, Loader2 } from "lucide-react";
+import { Award, FileText, Target, TrendingUp, Plus, Loader2, Lightbulb, Briefcase } from "lucide-react";
 import { Link, Redirect } from "wouter";
 
 export default function Dashboard() {
@@ -10,6 +10,7 @@ export default function Dashboard() {
   const { data: achievements, isLoading: achievementsLoading } = trpc.achievements.list.useQuery();
   const { data: jobs, isLoading: jobsLoading } = trpc.jobDescriptions.list.useQuery();
   const { data: resumes, isLoading: resumesLoading } = trpc.resumes.list.useQuery();
+  const { data: suggestions } = trpc.achievements.getSuggestions.useQuery();
 
   if (authLoading) {
     return (
@@ -76,6 +77,12 @@ export default function Dashboard() {
               <Link href="/resumes">
                 <Button variant="ghost">Resumes</Button>
               </Link>
+              <Link href="/past-jobs">
+                <Button variant="ghost">Past Jobs</Button>
+              </Link>
+              <Link href="/skills-gap">
+                <Button variant="ghost">Skills Gap</Button>
+              </Link>
             </nav>
           </div>
           <div className="flex items-center gap-4">
@@ -130,6 +137,35 @@ export default function Dashboard() {
                   {avgImpact >= 70 ? "🎉 Excellent!" : avgImpact >= 50 ? "👍 Good progress" : "💪 Keep improving"}
                 </div>
               </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* AI Suggestions */}
+        {suggestions && suggestions.length > 0 && (
+          <Card className="mb-6 border-primary/50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Lightbulb className="h-5 w-5 text-yellow-500" />
+                AI Suggestions
+              </CardTitle>
+              <CardDescription>
+                Achievements you might have forgotten to document
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {suggestions.slice(0, 3).map((suggestion: any, idx: number) => (
+                  <div key={idx} className="p-4 bg-muted/50 rounded-lg">
+                    <h4 className="font-semibold mb-1">{suggestion.title}</h4>
+                    <p className="text-sm text-muted-foreground mb-2">{suggestion.prompt}</p>
+                    <p className="text-xs text-primary">{suggestion.why}</p>
+                  </div>
+                ))}
+              </div>
+              <Link href="/achievements/new">
+                <Button className="w-full mt-4">Add Achievement</Button>
+              </Link>
             </CardContent>
           </Card>
         )}

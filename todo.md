@@ -68,3 +68,42 @@
 - [x] Achievement Templates by role
 - [x] Skills Gap Dashboard with visual comparison
 - [x] AI-powered Achievement Suggestions
+
+## Ecosystem Features (Phase 10-11)
+
+### Core Intelligence APIs
+- [x] Career Trajectory Prediction Engine
+- [x] Interview Prep Intelligence system
+- [x] Achievement Verification system (invite colleagues)
+- [ ] Company Talent Intelligence Dashboard (B2B)
+
+### Web Platform Enhancements
+- [x] Past Jobs UI page
+- [ ] Templates integrated into Achievement Wizard
+- [x] AI Suggestions on Dashboard
+- [x] URL-based JD import (scrape any job posting URL)
+
+### Browser Extension
+- [ ] Chrome extension manifest and core
+- [ ] Firefox extension port
+- [ ] Inject match % on LinkedIn/Indeed/job sites
+- [ ] One-click "Analyze with Careerswarm"
+- [ ] Generate resume without leaving page
+
+### Email Integration
+- [ ] Dedicated email ingestion endpoint
+- [ ] Email parsing and JD extraction
+- [ ] Auto-reply with match report
+- [ ] Email-to-resume generation
+
+### Partner API
+- [ ] Public REST API for job boards
+- [ ] API authentication and rate limiting
+- [ ] Webhook integrations
+- [ ] "Powered by Careerswarm" embeds
+- [ ] API documentation
+
+### Mobile & Distribution
+- [ ] Mobile-responsive improvements
+- [ ] Chrome Web Store submission
+- [ ] Firefox Add-ons submission

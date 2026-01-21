@@ -144,3 +144,20 @@ export const pastEmployerJobs = mysqlTable("pastEmployerJobs", {
 
 export type PastEmployerJob = typeof pastEmployerJobs.$inferSelect;
 export type InsertPastEmployerJob = typeof pastEmployerJobs.$inferInsert;
+
+export const achievementVerifications = mysqlTable("achievementVerifications", {
+  id: int("id").autoincrement().primaryKey(),
+  achievementId: int("achievementId").notNull(),
+  userId: int("userId").notNull(),
+  verifierEmail: varchar("verifierEmail", { length: 320 }),
+  verifierName: varchar("verifierName", { length: 255 }),
+  verificationStatus: mysqlEnum("verificationStatus", ["pending", "verified", "declined"]).default("pending"),
+  verificationToken: varchar("verificationToken", { length: 64 }).unique(),
+  verifiedAt: timestamp("verifiedAt"),
+  verifierComments: text("verifierComments"),
+  relationship: varchar("relationship", { length: 100 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type AchievementVerification = typeof achievementVerifications.$inferSelect;
+export type InsertAchievementVerification = typeof achievementVerifications.$inferInsert;

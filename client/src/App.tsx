@@ -12,6 +12,7 @@ import AchievementsList from "./pages/achievements/AchievementsList";
 import JobsList from "./pages/jobs/JobsList";
 import ResumesList from "./pages/resumes/ResumesList";
 import SkillsGap from "./pages/SkillsGap";
+import PastJobs from "./pages/PastJobs";
 
 function Router() {
   return (
@@ -25,6 +26,7 @@ function Router() {
       <Route path="/jobs/new" component={JobsList} />
       <Route path="/resumes" component={ResumesList} />
       <Route path="/skills-gap" component={SkillsGap} />
+      <Route path="/past-jobs" component={PastJobs} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
