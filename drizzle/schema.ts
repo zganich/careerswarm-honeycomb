@@ -1,28 +1,130 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, decimal, date, boolean, json } from "drizzle-orm/mysql-core";
 
-/**
- * Core user table backing auth flow.
- * Extend this file with additional tables as your product grows.
- * Columns use camelCase to match both database fields and generated types.
- */
 export const users = mysqlTable("users", {
-  /**
-   * Surrogate primary key. Auto-incremented numeric value managed by the database.
-   * Use this for relations between tables.
-   */
   id: int("id").autoincrement().primaryKey(),
-  /** Manus OAuth identifier (openId) returned from the OAuth callback. Unique per user. */
   openId: varchar("openId", { length: 64 }).notNull().unique(),
   name: text("name"),
   email: varchar("email", { length: 320 }),
   loginMethod: varchar("loginMethod", { length: 64 }),
   role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
+  
+  // Extended profile fields
+  currentRole: text("currentRole"),
+  currentCompany: text("currentCompany"),
+  yearsOfExperience: int("yearsOfExperience"),
+  targetRoles: json("targetRoles").$type<string[]>(),
+  
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
 });
 
+export const achievements = mysqlTable("achievements", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  
+  // STAR input
+  situation: text("situation"),
+  task: text("task"),
+  action: text("action"),
+  result: text("result"),
+  
+  // XYZ output
+  xyzAccomplishment: text("xyzAccomplishment"),
+  xyzMetricValue: decimal("xyzMetricValue", { precision: 15, scale: 2 }),
+  xyzMetricUnit: varchar("xyzMetricUnit", { length: 50 }),
+  xyzMetricPrecision: mysqlEnum("xyzMetricPrecision", ["exact", "range", "relative"]),
+  xyzMechanism: json("xyzMechanism").$type<string[]>(),
+  
+  // Context metadata
+  company: text("company"),
+  roleTitle: text("roleTitle"),
+  startDate: date("startDate"),
+  endDate: date("endDate"),
+  teamSize: int("teamSize"),
+  budgetAmount: decimal("budgetAmount", { precision: 15, scale: 2 }),
+  budgetCurrency: varchar("budgetCurrency", { length: 3 }).default("USD"),
+  
+  // Quality scoring
+  impactMeterScore: int("impactMeterScore").default(0),
+  hasStrongVerb: boolean("hasStrongVerb").default(false),
+  hasMetric: boolean("hasMetric").default(false),
+  hasMethodology: boolean("hasMethodology").default(false),
+  evidenceTier: int("evidenceTier").default(4),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export const skills = mysqlTable("skills", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  skillName: varchar("skillName", { length: 255 }).notNull(),
+  skillCategory: varchar("skillCategory", { length: 100 }),
+  isProven: boolean("isProven").default(false),
+  firstMentionedDate: date("firstMentionedDate"),
+  lastUsedDate: date("lastUsedDate"),
+  proficiencyLevel: mysqlEnum("proficiencyLevel", ["beginner", "intermediate", "advanced", "expert"]),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export const achievementSkills = mysqlTable("achievementSkills", {
+  achievementId: int("achievementId").notNull(),
+  skillId: int("skillId").notNull(),
+});
+
+export const jobDescriptions = mysqlTable("jobDescriptions", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  
+  jobTitle: text("jobTitle").notNull(),
+  companyName: text("companyName"),
+  jobDescriptionText: text("jobDescriptionText").notNull(),
+  jobUrl: text("jobUrl"),
+  
+  // AI-parsed data
+  requiredSkills: json("requiredSkills").$type<string[]>(),
+  preferredSkills: json("preferredSkills").$type<string[]>(),
+  keyResponsibilities: json("keyResponsibilities").$type<string[]>(),
+  successMetrics: json("successMetrics").$type<string[]>(),
+  
+  applicationStatus: mysqlEnum("applicationStatus", ["draft", "applied", "interviewing", "rejected", "accepted"]).default("draft"),
+  appliedDate: date("appliedDate"),
+  notes: text("notes"),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export const generatedResumes = mysqlTable("generatedResumes", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  jobDescriptionId: int("jobDescriptionId"),
+  
+  resumeFormat: varchar("resumeFormat", { length: 20 }).default("markdown"),
+  resumeContent: text("resumeContent").notNull(),
+  selectedAchievementIds: json("selectedAchievementIds").$type<number[]>(),
+  
+  version: int("version").default(1),
+  isFavorite: boolean("isFavorite").default(false),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export const powerVerbs = mysqlTable("powerVerbs", {
+  id: int("id").autoincrement().primaryKey(),
+  verb: varchar("verb", { length: 100 }).notNull().unique(),
+  category: varchar("category", { length: 50 }),
+  strengthScore: int("strengthScore").default(5),
+});
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
-
-// TODO: Add your tables here
+export type Achievement = typeof achievements.$inferSelect;
+export type InsertAchievement = typeof achievements.$inferInsert;
+export type Skill = typeof skills.$inferSelect;
+export type JobDescription = typeof jobDescriptions.$inferSelect;
+export type GeneratedResume = typeof generatedResumes.$inferSelect;
+export type PowerVerb = typeof powerVerbs.$inferSelect;
