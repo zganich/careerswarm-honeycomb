@@ -1,7 +1,7 @@
-import { eq, and, desc, like, sql } from "drizzle-orm";
+import { eq, and, desc, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { 
-  InsertUser, users, achievements, skills, achievementSkills, 
+  InsertUser, users, pastEmployerJobs, achievements, skills, achievementSkills,
   jobDescriptions, generatedResumes, powerVerbs,
   type Achievement, type Skill, type JobDescription, type GeneratedResume
 } from "../drizzle/schema";
@@ -232,4 +232,35 @@ export async function seedPowerVerbs() {
       // Ignore duplicates
     }
   }
+}
+
+// Past Employer Jobs
+export async function createPastEmployerJob(data: any) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result: any = await db.insert(pastEmployerJobs).values(data);
+  return { id: Number(result.insertId) };
+}
+
+export async function getUserPastJobs(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(pastEmployerJobs).where(eq(pastEmployerJobs.userId, userId)).orderBy(desc(pastEmployerJobs.startDate));
+}
+
+export async function getPastJobById(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(pastEmployerJobs)
+    .where(and(eq(pastEmployerJobs.id, id), eq(pastEmployerJobs.userId, userId)))
+    .limit(1);
+  return result[0];
+}
+
+export async function deletePastJob(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(pastEmployerJobs).where(
+    and(eq(pastEmployerJobs.id, id), eq(pastEmployerJobs.userId, userId))
+  );
 }

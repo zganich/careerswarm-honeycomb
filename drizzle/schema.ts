@@ -127,4 +127,20 @@ export type InsertAchievement = typeof achievements.$inferInsert;
 export type Skill = typeof skills.$inferSelect;
 export type JobDescription = typeof jobDescriptions.$inferSelect;
 export type GeneratedResume = typeof generatedResumes.$inferSelect;
-export type PowerVerb = typeof powerVerbs.$inferSelect;
+export type InsertGeneratedResume = typeof generatedResumes.$inferInsert;
+
+export const pastEmployerJobs = mysqlTable("pastEmployerJobs", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  jobTitle: varchar("jobTitle", { length: 255 }).notNull(),
+  companyName: varchar("companyName", { length: 255 }),
+  startDate: timestamp("startDate"),
+  endDate: timestamp("endDate"),
+  jobDescriptionText: text("jobDescriptionText"),
+  extractedSkills: json("extractedSkills").$type<string[]>(),
+  extractedResponsibilities: json("extractedResponsibilities").$type<string[]>(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type PastEmployerJob = typeof pastEmployerJobs.$inferSelect;
+export type InsertPastEmployerJob = typeof pastEmployerJobs.$inferInsert;

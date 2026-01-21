@@ -59,3 +59,12 @@
 - [x] Achievement editing functionality
 - [x] Smart AI-powered achievement matching for jobs
 - [x] PDF export for resumes
+
+## Advanced Features (Phase 9)
+- [x] Past Employer JD Import and storage
+- [x] Skills gap analysis from past JDs
+- [x] Bulk Achievement Import (paste multiple)
+- [x] Resume parsing for bulk import
+- [x] Achievement Templates by role
+- [x] Skills Gap Dashboard with visual comparison
+- [x] AI-powered Achievement Suggestions

@@ -8,6 +8,7 @@ import { invokeLLM } from "./_core/llm";
 // @ts-ignore
 import { markdownToPDF } from "./pdf-export.mjs";
 import { readFileSync, unlinkSync } from "fs";
+import { getAllTemplates, getTemplatesByRole } from "./achievement-templates";
 
 export const appRouter = router({
   system: systemRouter,
@@ -115,10 +116,138 @@ export const appRouter = router({
         await db.deleteAchievement(input.id, ctx.user.id);
         return { success: true };
       }),
-    
+
+    bulkCreate: protectedProcedure
+      .input(z.object({
+        text: z.string(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // AI parse multiple achievements from text
+        const prompt = `Parse this text into individual achievements. Each achievement should be a bullet point or paragraph describing a work accomplishment.
+
+Text:
+${input.text}
+
+Extract each achievement and structure it into STAR format (Situation, Task, Action, Result). If the text doesn't clearly separate into STAR, do your best to infer the components.`;
+
+        const response = await invokeLLM({
+          messages: [
+            { role: "system", content: "You are an expert at parsing resumes and extracting achievements." },
+            { role: "user", content: prompt }
+          ],
+          response_format: {
+            type: "json_schema",
+            json_schema: {
+              name: "bulk_achievements",
+              strict: true,
+              schema: {
+                type: "object",
+                properties: {
+                  achievements: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        situation: { type: "string" },
+                        task: { type: "string" },
+                        action: { type: "string" },
+                        result: { type: "string" },
+                        company: { type: "string" },
+                        roleTitle: { type: "string" },
+                      },
+                      required: ["situation", "task", "action", "result"],
+                      additionalProperties: false,
+                    },
+                  },
+                },
+                required: ["achievements"],
+                additionalProperties: false,
+              },
+            },
+          },
+        });
+
+        const content = String(response.choices[0]?.message?.content || "{}");
+        const parsed = JSON.parse(content);
+
+        const created = [];
+        for (const ach of parsed.achievements) {
+          const result = await db.createAchievement({
+            userId: ctx.user.id,
+            ...ach,
+            impactMeterScore: 0,
+            hasStrongVerb: false,
+            hasMetric: false,
+            hasMethodology: false,
+          });
+          created.push(result);
+        }
+
+        return { count: created.length, achievements: created };
+      }),
+
     search: protectedProcedure
       .input(z.object({ query: z.string() }))
       .query(({ ctx, input }) => db.searchAchievements(ctx.user.id, input.query)),
+
+    getSuggestions: protectedProcedure.query(async ({ ctx }) => {
+      const profile = ctx.user; // Use authenticated user data
+      const achievements = await db.getUserAchievements(ctx.user.id);
+      const pastJobs = await db.getUserPastJobs(ctx.user.id);
+
+      const profileSummary = profile ? `${profile.currentRole || ""} at ${profile.currentCompany || ""}` : "Professional";
+      const jobHistory = pastJobs.map(j => `${j.jobTitle} at ${j.companyName || "unknown"}`).join(", ");
+      const existingAchievements = achievements.map(a => a.result || a.action).join("; ");
+
+      const prompt = `You are a career coach helping someone build their Master Profile.
+
+Profile: ${profileSummary}
+Past Roles: ${jobHistory}
+Existing Achievements: ${existingAchievements}
+
+Suggest 5 common achievements they might have forgotten to document. Be specific to their roles and industry. For each suggestion, provide:
+1. A title
+2. A brief prompt/question to jog their memory
+3. Why it matters`;
+
+      const response = await invokeLLM({
+        messages: [
+          { role: "system", content: "You are an expert career coach." },
+          { role: "user", content: prompt }
+        ],
+        response_format: {
+          type: "json_schema",
+          json_schema: {
+            name: "achievement_suggestions",
+            strict: true,
+            schema: {
+              type: "object",
+              properties: {
+                suggestions: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: {
+                      title: { type: "string" },
+                      prompt: { type: "string" },
+                      why: { type: "string" },
+                    },
+                    required: ["title", "prompt", "why"],
+                    additionalProperties: false,
+                  },
+                },
+              },
+              required: ["suggestions"],
+              additionalProperties: false,
+            },
+          },
+        },
+      });
+
+      const content = String(response.choices[0]?.message?.content || "{}");
+      const parsed = JSON.parse(content);
+      return parsed.suggestions || [];
+    }),
     
     transformToXYZ: protectedProcedure
       .input(z.object({
@@ -159,6 +288,120 @@ Return ONLY the transformed XYZ bullet point, nothing else.`;
 
   skills: router({
     list: protectedProcedure.query(({ ctx }) => db.getUserSkills(ctx.user.id)),
+  }),
+
+  templates: router({
+    getAll: publicProcedure.query(() => getAllTemplates()),
+    getByRole: publicProcedure
+      .input(z.object({ role: z.string() }))
+      .query(({ input }) => getTemplatesByRole(input.role)),
+  }),
+
+  pastEmployerJobs: router({
+    list: protectedProcedure.query(({ ctx }) => db.getUserPastJobs(ctx.user.id)),
+    
+    create: protectedProcedure
+      .input(z.object({
+        jobTitle: z.string(),
+        companyName: z.string().optional(),
+        startDate: z.string().optional(),
+        endDate: z.string().optional(),
+        jobDescriptionText: z.string(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // AI extract skills and responsibilities
+        const prompt = `Analyze this job description and extract:
+1. Key skills (technical and soft skills)
+2. Main responsibilities
+
+Job Description:
+${input.jobDescriptionText}
+
+Return structured JSON.`;
+
+        const response = await invokeLLM({
+          messages: [
+            { role: "system", content: "You are an expert at analyzing job descriptions." },
+            { role: "user", content: prompt }
+          ],
+          response_format: {
+            type: "json_schema",
+            json_schema: {
+              name: "jd_analysis",
+              strict: true,
+              schema: {
+                type: "object",
+                properties: {
+                  skills: {
+                    type: "array",
+                    items: { type: "string" },
+                  },
+                  responsibilities: {
+                    type: "array",
+                    items: { type: "string" },
+                  },
+                },
+                required: ["skills", "responsibilities"],
+                additionalProperties: false,
+              },
+            },
+          },
+        });
+
+        const content = String(response.choices[0]?.message?.content || "{}");
+        const parsed = JSON.parse(content);
+
+        const result = await db.createPastEmployerJob({
+          userId: ctx.user.id,
+          jobTitle: input.jobTitle,
+          companyName: input.companyName || null,
+          startDate: input.startDate ? new Date(input.startDate) : null,
+          endDate: input.endDate ? new Date(input.endDate) : null,
+          jobDescriptionText: input.jobDescriptionText,
+          extractedSkills: parsed.skills || [],
+          extractedResponsibilities: parsed.responsibilities || [],
+        });
+
+        return result;
+      }),
+    
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.deletePastJob(input.id, ctx.user.id);
+        return { success: true };
+      }),
+
+    getGapAnalysis: protectedProcedure.query(async ({ ctx }) => {
+      const pastJobs = await db.getUserPastJobs(ctx.user.id);
+      const achievements = await db.getUserAchievements(ctx.user.id);
+
+      const allExpectedSkills = new Set<string>();
+      pastJobs.forEach(job => {
+        (job.extractedSkills || []).forEach(skill => allExpectedSkills.add(skill));
+      });
+
+      const provenSkills = new Set<string>();
+      achievements.forEach(achievement => {
+        const text = `${achievement.situation} ${achievement.task} ${achievement.action} ${achievement.result}`.toLowerCase();
+        allExpectedSkills.forEach(skill => {
+          if (text.includes(skill.toLowerCase())) {
+            provenSkills.add(skill);
+          }
+        });
+      });
+
+      const missingEvidence = Array.from(allExpectedSkills).filter(skill => !provenSkills.has(skill));
+
+      return {
+        totalExpectedSkills: allExpectedSkills.size,
+        provenSkills: Array.from(provenSkills),
+        missingEvidence,
+        coveragePercent: allExpectedSkills.size > 0 
+          ? Math.round((provenSkills.size / allExpectedSkills.size) * 100)
+          : 100,
+      };
+    }),
   }),
 
   jobDescriptions: router({
