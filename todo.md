@@ -54,3 +54,8 @@
 - [ ] End-to-end testing
 - [ ] Performance optimization
 - [ ] Final bug fixes
+
+## Enhancements (Phase 8)
+- [x] Achievement editing functionality
+- [x] Smart AI-powered achievement matching for jobs
+- [x] PDF export for resumes

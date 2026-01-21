@@ -5,6 +5,9 @@ import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import * as db from "./db";
 import { invokeLLM } from "./_core/llm";
+// @ts-ignore
+import { markdownToPDF } from "./pdf-export.mjs";
+import { readFileSync, unlinkSync } from "fs";
 
 export const appRouter = router({
   system: systemRouter,
@@ -159,6 +162,82 @@ Return ONLY the transformed XYZ bullet point, nothing else.`;
   }),
 
   jobDescriptions: router({
+    matchAchievements: protectedProcedure
+      .input(z.object({ jobDescriptionId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const jd = await db.getJobDescriptionById(input.jobDescriptionId, ctx.user.id);
+        const achievements = await db.getUserAchievements(ctx.user.id);
+
+        if (!jd || achievements.length === 0) {
+          return { matches: [] };
+        }
+
+        const prompt = `You are a career advisor analyzing job-achievement matches.
+
+Job Description:
+Title: ${jd.jobTitle}
+Company: ${jd.companyName || "N/A"}
+Required Skills: ${jd.requiredSkills?.join(", ") || "N/A"}
+Description: ${jd.jobDescriptionText}
+
+Achievements:
+${achievements.map((a, idx) => `${idx + 1}. ${a.result || a.action} (Company: ${a.company}, Impact Score: ${a.impactMeterScore})`).join("\n")}
+
+For each achievement, analyze:
+1. Skill relevance (0-100)
+2. Impact alignment (0-100)
+3. Overall match score (0-100)
+4. Brief reason for the match
+
+Return a JSON array with match data for ALL achievements, ordered by match score (highest first).`;
+
+        const response = await invokeLLM({
+          messages: [
+            { role: "system", content: "You are an expert at matching career achievements to job requirements." },
+            { role: "user", content: prompt }
+          ],
+          response_format: {
+            type: "json_schema",
+            json_schema: {
+              name: "achievement_matches",
+              strict: true,
+              schema: {
+                type: "object",
+                properties: {
+                  matches: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        achievementIndex: { type: "integer" },
+                        matchScore: { type: "integer" },
+                        skillRelevance: { type: "integer" },
+                        impactAlignment: { type: "integer" },
+                        reason: { type: "string" },
+                      },
+                      required: ["achievementIndex", "matchScore", "skillRelevance", "impactAlignment", "reason"],
+                      additionalProperties: false,
+                    },
+                  },
+                },
+                required: ["matches"],
+                additionalProperties: false,
+              },
+            },
+          },
+        });
+
+        const content = String(response.choices[0]?.message?.content || "{}");
+        const parsed = JSON.parse(content);
+        
+        const enrichedMatches = parsed.matches.map((match: any) => ({
+          ...match,
+          achievement: achievements[match.achievementIndex - 1],
+        }));
+
+        return { matches: enrichedMatches };
+      }),
+    
     list: protectedProcedure.query(({ ctx }) => db.getUserJobDescriptions(ctx.user.id)),
     
     get: protectedProcedure
@@ -240,6 +319,31 @@ Focus on technical skills, soft skills, tools, and measurable outcomes.`;
   }),
 
   resumes: router({
+    exportPDF: protectedProcedure
+      .input(z.object({ resumeId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const resume = await db.getResumeById(input.resumeId, ctx.user.id);
+        if (!resume) {
+          throw new Error("Resume not found");
+        }
+
+        try {
+          const pdfPath = await markdownToPDF(resume.resumeContent);
+          const pdfBuffer = readFileSync(pdfPath);
+          const base64Pdf = pdfBuffer.toString('base64');
+          
+          try {
+            unlinkSync(pdfPath);
+          } catch (e) {
+            // Ignore cleanup errors
+          }
+
+          return { pdfData: base64Pdf };
+        } catch (error) {
+          throw new Error("Failed to generate PDF");
+        }
+      }),
+    
     list: protectedProcedure.query(({ ctx }) => db.getUserResumes(ctx.user.id)),
     
     get: protectedProcedure

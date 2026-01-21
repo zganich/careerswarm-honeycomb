@@ -130,13 +130,14 @@ export default function AchievementsList() {
                           <span className="text-sm font-medium">{achievement.impactMeterScore || 0}</span>
                         </div>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => toast.info("Edit feature coming soon")}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
+                      <Link href={`/achievements/${achievement.id}/edit`}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      </Link>
                       <Button
                         variant="ghost"
                         size="icon"

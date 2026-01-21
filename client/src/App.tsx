@@ -7,6 +7,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import NewAchievement from "./pages/achievements/NewAchievement";
+import EditAchievement from "./pages/achievements/EditAchievement";
 import AchievementsList from "./pages/achievements/AchievementsList";
 import JobsList from "./pages/jobs/JobsList";
 import ResumesList from "./pages/resumes/ResumesList";
@@ -18,6 +19,7 @@ function Router() {
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/achievements" component={AchievementsList} />
       <Route path="/achievements/new" component={NewAchievement} />
+      <Route path="/achievements/:id/edit" component={EditAchievement} />
       <Route path="/jobs" component={JobsList} />
       <Route path="/jobs/new" component={JobsList} />
       <Route path="/resumes" component={ResumesList} />

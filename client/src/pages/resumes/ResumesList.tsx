@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { trpc } from "@/lib/trpc";
-import { FileText, Plus, Loader2, Download, Copy, Award } from "lucide-react";
+import { FileText, Plus, Loader2, Download, Copy, Award, FileDown } from "lucide-react";
 import { Link, Redirect } from "wouter";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -18,11 +18,15 @@ export default function ResumesList() {
   const [selectedJobId, setSelectedJobId] = useState<string>("");
   const [selectedAchievements, setSelectedAchievements] = useState<number[]>([]);
   const [previewContent, setPreviewContent] = useState<string>("");
+  const [matchedAchievements, setMatchedAchievements] = useState<any[]>([]);
+  const [isMatching, setIsMatching] = useState(false);
 
   const { data: resumes, isLoading: resumesLoading } = trpc.resumes.list.useQuery();
   const { data: jobs } = trpc.jobDescriptions.list.useQuery();
   const { data: achievements } = trpc.achievements.list.useQuery();
   const generateMutation = trpc.resumes.generate.useMutation();
+  const matchMutation = trpc.jobDescriptions.matchAchievements.useMutation();
+  const exportPDFMutation = trpc.resumes.exportPDF.useMutation();
   const utils = trpc.useUtils();
 
   if (!user) {
@@ -68,10 +72,52 @@ export default function ResumesList() {
     }
   };
 
+  const handleExportPDF = async (resumeId: number) => {
+    try {
+      const result = await exportPDFMutation.mutateAsync({ resumeId });
+      const blob = new Blob(
+        [Uint8Array.from(atob(result.pdfData), c => c.charCodeAt(0))],
+        { type: "application/pdf" }
+      );
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `resume-${resumeId}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success("PDF downloaded!");
+    } catch (error) {
+      toast.error("Failed to export PDF");
+    }
+  };
+
+  const handleJobSelect = async (jobId: string) => {
+    setSelectedJobId(jobId);
+    setIsMatching(true);
+    try {
+      const result = await matchMutation.mutateAsync({ jobDescriptionId: parseInt(jobId) });
+      setMatchedAchievements(result.matches);
+      const topMatches = result.matches
+        .filter((m: any) => m.matchScore >= 70)
+        .map((m: any) => m.achievement.id);
+      setSelectedAchievements(topMatches);
+      toast.success(`Found ${topMatches.length} strong matches!`);
+    } catch (error) {
+      toast.error("Failed to match achievements");
+      setMatchedAchievements([]);
+    } finally {
+      setIsMatching(false);
+    }
+  };
+
   const toggleAchievement = (id: number) => {
     setSelectedAchievements(prev =>
       prev.includes(id) ? prev.filter(a => a !== id) : [...prev, id]
     );
+  };
+
+  const getMatchData = (achievementId: number) => {
+    return matchedAchievements.find((m: any) => m.achievement?.id === achievementId);
   };
 
   return (
@@ -115,7 +161,7 @@ export default function ResumesList() {
                 <div className="space-y-4">
                   <div>
                     <Label>Target Job</Label>
-                    <Select value={selectedJobId} onValueChange={setSelectedJobId}>
+                    <Select value={selectedJobId} onValueChange={handleJobSelect}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select a job target" />
                       </SelectTrigger>
@@ -130,28 +176,73 @@ export default function ResumesList() {
                   </div>
 
                   <div>
-                    <Label className="mb-3 block">Select Achievements</Label>
+                    <div className="flex items-center justify-between mb-3">
+                      <Label>Select Achievements</Label>
+                      {isMatching && (
+                        <span className="text-xs text-muted-foreground flex items-center gap-1">
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                          Analyzing matches...
+                        </span>
+                      )}
+                    </div>
                     <div className="space-y-2 max-h-96 overflow-y-auto">
-                      {achievements?.map((achievement) => (
-                        <div
-                          key={achievement.id}
-                          className="flex items-start gap-3 p-3 rounded-lg border hover:bg-muted/50 cursor-pointer"
-                          onClick={() => toggleAchievement(achievement.id!)}
-                        >
-                          <Checkbox
-                            checked={selectedAchievements.includes(achievement.id!)}
-                            onCheckedChange={() => toggleAchievement(achievement.id!)}
-                          />
-                          <div className="flex-1 text-sm">
-                            <div className="font-medium mb-1">
-                              {achievement.result || achievement.action || "Untitled"}
+                      {matchedAchievements.length > 0 ? (
+                        matchedAchievements.map((match: any) => {
+                          const achievement = match.achievement;
+                          return (
+                            <div
+                              key={achievement.id}
+                              className="flex items-start gap-3 p-3 rounded-lg border hover:bg-muted/50 cursor-pointer"
+                              onClick={() => toggleAchievement(achievement.id!)}
+                            >
+                              <Checkbox
+                                checked={selectedAchievements.includes(achievement.id!)}
+                                onCheckedChange={() => toggleAchievement(achievement.id!)}
+                              />
+                              <div className="flex-1 text-sm">
+                                <div className="font-medium mb-1">
+                                  {achievement.result || achievement.action || "Untitled"}
+                                </div>
+                                <div className="text-xs text-muted-foreground mb-2">
+                                  {achievement.company} • Impact: {achievement.impactMeterScore || 0}
+                                </div>
+                                <div className="flex items-center gap-2 text-xs">
+                                  <div className="flex items-center gap-1">
+                                    <div className={`w-2 h-2 rounded-full ${
+                                      match.matchScore >= 80 ? "bg-green-500" :
+                                      match.matchScore >= 60 ? "bg-yellow-500" : "bg-red-500"
+                                    }`} />
+                                    <span className="font-medium">Match: {match.matchScore}%</span>
+                                  </div>
+                                  <span className="text-muted-foreground">•</span>
+                                  <span className="text-muted-foreground">{match.reason}</span>
+                                </div>
+                              </div>
                             </div>
-                            <div className="text-xs text-muted-foreground">
-                              {achievement.company} • Score: {achievement.impactMeterScore || 0}
+                          );
+                        })
+                      ) : (
+                        achievements?.map((achievement) => (
+                          <div
+                            key={achievement.id}
+                            className="flex items-start gap-3 p-3 rounded-lg border hover:bg-muted/50 cursor-pointer"
+                            onClick={() => toggleAchievement(achievement.id!)}
+                          >
+                            <Checkbox
+                              checked={selectedAchievements.includes(achievement.id!)}
+                              onCheckedChange={() => toggleAchievement(achievement.id!)}
+                            />
+                            <div className="flex-1 text-sm">
+                              <div className="font-medium mb-1">
+                                {achievement.result || achievement.action || "Untitled"}
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                {achievement.company} • Score: {achievement.impactMeterScore || 0}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        ))
+                      )}
                     </div>
                   </div>
 
@@ -247,7 +338,19 @@ export default function ResumesList() {
                       }}
                     >
                       <Download className="h-3 w-3 mr-1" />
-                      Download
+                      Markdown
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={() => handleExportPDF(resume.id!)}
+                      disabled={exportPDFMutation.isPending}
+                    >
+                      {exportPDFMutation.isPending ? (
+                        <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                      ) : (
+                        <FileDown className="h-3 w-3 mr-1" />
+                      )}
+                      Export PDF
                     </Button>
                   </div>
                 </CardContent>
