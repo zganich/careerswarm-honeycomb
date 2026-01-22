@@ -8,6 +8,13 @@ export const users = mysqlTable("users", {
   loginMethod: varchar("loginMethod", { length: 64 }),
   role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
   
+  // Subscription and billing
+  subscriptionTier: mysqlEnum("subscriptionTier", ["free", "pro"]).default("free").notNull(),
+  stripeCustomerId: varchar("stripeCustomerId", { length: 255 }),
+  stripeSubscriptionId: varchar("stripeSubscriptionId", { length: 255 }),
+  subscriptionStatus: varchar("subscriptionStatus", { length: 50 }),
+  subscriptionEndDate: timestamp("subscriptionEndDate"),
+  
   // Extended profile fields
   currentRole: text("currentRole"),
   currentCompany: text("currentCompany"),

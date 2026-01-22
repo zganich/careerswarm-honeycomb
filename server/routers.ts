@@ -9,16 +9,9 @@ import { invokeLLM } from "./_core/llm";
 import { markdownToPDF } from "./pdf-export.mjs";
 import { readFileSync, unlinkSync } from "fs";
 import { getAllTemplates, getTemplatesByRole } from "./achievement-templates";
-import { intelligenceRouter } from "./intelligence-router";
-import { emailRouter } from "./email-router";
-import { b2bRouter } from "./b2b-router";
-import { scrapeJobDescription } from "./jd-scraper";
 
 export const appRouter = router({
   system: systemRouter,
-  intelligence: intelligenceRouter,
-  email: emailRouter,
-  b2b: b2bRouter,
   
   pastEmployerJobs: router({
     list: protectedProcedure.query(({ ctx }) => db.getUserPastJobs(ctx.user.id)),
@@ -147,12 +140,18 @@ Extract:
 
   achievements: router({
     list: protectedProcedure.query(({ ctx }) => db.getUserAchievements(ctx.user.id)),
-    
-    get: protectedProcedure
-      .input(z.object({ id: z.number() }))
-      .query(({ ctx, input }) => db.getAchievementById(input.id, ctx.user.id)),
-    
+
     create: protectedProcedure
+      .use(async ({ ctx, next }) => {
+        // Check usage limits for free tier
+        if (ctx.user.subscriptionTier === "free") {
+          const achievements = await db.getUserAchievements(ctx.user.id);
+          if (achievements.length >= 5) {
+            throw new Error("Free tier limit reached. Upgrade to Pro for unlimited achievements.");
+          }
+        }
+        return next({ ctx });
+      })
       .input(z.object({
         situation: z.string().optional(),
         task: z.string().optional(),

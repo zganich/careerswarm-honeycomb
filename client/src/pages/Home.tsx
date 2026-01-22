@@ -20,6 +20,9 @@ export default function Home() {
           <div className="flex items-center gap-4">
             {isAuthenticated ? (
               <>
+                <Link href="/pricing">
+                  <Button variant="ghost">Pricing</Button>
+                </Link>
                 <Link href="/dashboard">
                   <Button variant="ghost">Dashboard</Button>
                 </Link>

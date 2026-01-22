@@ -13,11 +13,13 @@ import JobsList from "./pages/jobs/JobsList";
 import ResumesList from "./pages/resumes/ResumesList";
 import SkillsGap from "./pages/SkillsGap";
 import PastJobs from "./pages/PastJobs";
+import Pricing from "./pages/Pricing";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/pricing" component={Pricing} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/achievements" component={AchievementsList} />
       <Route path="/achievements/new" component={NewAchievement} />

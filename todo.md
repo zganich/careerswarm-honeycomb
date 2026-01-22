@@ -107,3 +107,61 @@
 - [ ] Mobile-responsive improvements
 - [ ] Chrome Web Store submission
 - [ ] Firefox Add-ons submission
+
+## Stripe Integration (Phase 10)
+- [x] Add Stripe feature to project
+- [x] Create pricing page with Free/Pro tiers
+- [x] Implement checkout flow
+- [x] Add subscription management
+- [x] Build billing portal integration
+- [ ] Enforce usage limits (achievements, resumes)
+- [ ] Add subscription status to user profile
+
+## UNIFIED RECODE (Weeks 1-6)
+
+### Week 1: Token-Efficient Infrastructure
+- [ ] Install Redis for caching
+- [ ] Install BullMQ for job queue
+- [ ] Create model routing system (gpt-4o-mini/gpt-4o/claude-3.5)
+- [ ] Build caching layer with TTL strategies
+- [ ] Add cost tracking middleware
+- [ ] Create compressed prompt library
+- [ ] Setup agent registry pattern
+
+### Week 2: Job Scraping Automation
+- [ ] Port Scout agent (LinkedIn/Indeed/Glassdoor scraping)
+- [ ] Add job result caching (24hr TTL)
+- [ ] Build job qualification with mini model
+- [ ] Create Profiler agent (company research)
+- [ ] Add batch processing for multiple jobs
+
+### Week 3: Achievement System Optimization
+- [ ] Optimize STAR-to-XYZ with compressed prompts
+- [ ] Use mini model for Impact Meter scoring
+- [ ] Add incremental processing (only transform changed achievements)
+- [ ] Batch bulk imports in single LLM call
+- [ ] Cache achievement templates
+
+### Week 4: Automation Pipeline
+- [ ] Port Tailor agent (resume customization)
+- [ ] Port Scribe agent (cover letter generation)
+- [ ] Build 7-stage pipeline orchestration
+- [ ] Add auto-apply workflow UI
+- [ ] Implement progress tracking dashboard
+- [ ] Add email notifications for pipeline events
+
+### Week 5: Pricing & Limits
+- [ ] Update schema with subscription tiers
+- [ ] Implement feature gate middleware
+- [ ] Add usage tracking (achievements, resumes, jobs, applications)
+- [ ] Build Stripe checkout with proper webhooks
+- [ ] Create upgrade prompts at limit boundaries
+- [ ] Add billing portal integration
+
+### Week 6: Testing & Optimization
+- [ ] Write test suite for all agents
+- [ ] Load test with cost monitoring
+- [ ] A/B test prompt compression savings
+- [ ] Security audit (data privacy, encryption)
+- [ ] Performance optimization
+- [ ] Deploy and launch
