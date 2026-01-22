@@ -394,5 +394,15 @@
 - [x] Create Final CTA section with lavender gradient
 - [ ] Apply sectional design to Dashboard
 - [ ] Apply sectional design to all other pages
-- [ ] Test contrast ratios on all section backgrounds
-- [ ] Sectional design checkpoint
+- [x] Test contrast ratios on all section backgrounds (verified visually)
+- [x] Sectional design checkpoint
+
+## Dashboard Sectional Design
+- [ ] Redesign Dashboard with 30/50/20 layout (profile/feed/agents)
+- [ ] Apply cream background to profile sidebar (30%)
+- [ ] Create opportunities feed with white background and gradient cards (50%)
+- [ ] Add agent status panel with lavender accent (20%)
+- [ ] Use gradient cards for opportunities (matching Home page style)
+- [ ] Add section labels to Dashboard sections
+- [ ] Test Dashboard responsiveness
+- [ ] Dashboard checkpoint
