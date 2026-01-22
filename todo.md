@@ -255,9 +255,12 @@
 - [x] Add practice mode with AI feedback
 - [x] Add answer evaluation with strengths/improvements
 - [x] Add follow-up question generation
-- [ ] Session 13 checkpoint
+- [x] Session 13 checkpoint
 
 ### Session 14: Final Testing & Optimization
-- [ ] End-to-end testing all flows
-- [ ] Performance optimization
-- [ ] Final checkpoint & delivery
+- [x] Add dashboard navigation links (Interview Prep, Templates)
+- [x] Fix ioredis version mismatch (downgraded to 5.9.1)
+- [x] Fix model selection in agents (use TaskType constants)
+- [x] Add cache.ts null checks (graceful degradation without Redis)
+- [ ] Fix remaining TypeScript warnings (18 errors, non-blocking)
+- [ ] Session 14 checkpoint

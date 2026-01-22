@@ -44,7 +44,7 @@ export async function generateInterviewQuestions(
     .map((a, idx) => `${idx + 1}. ${a.title}: ${a.description}${a.impact ? ` (Impact: ${a.impact})` : ""}`)
     .join("\n");
 
-  const model = getModelForTask("complex");
+  const model = getModelForTask("DEEP_REASONING");
 
   const systemPrompt = compressText(`You are an expert interview coach specializing in helping candidates prepare for technical and behavioral interviews. Your goal is to generate realistic, relevant interview questions based on the job description and match them to the candidate's achievements.
 
@@ -165,7 +165,7 @@ export async function evaluatePracticeAnswer(
   improvements: string[];
   revisedAnswer?: string;
 }> {
-  const model = getModelForTask("complex");
+  const model = getModelForTask("DEEP_REASONING");
 
   const systemPrompt = compressText(`You are an expert interview coach providing constructive feedback on practice answers. Evaluate answers based on:
 - Structure (STAR method for behavioral questions)
@@ -243,7 +243,7 @@ export async function generateFollowUpQuestions(
   originalQuestion: string,
   userAnswer: string
 ): Promise<string[]> {
-  const model = getModelForTask("simple");
+  const model = getModelForTask("CLASSIFICATION");
 
   const prompt = `Based on this interview exchange, generate 2-3 realistic follow-up questions an interviewer might ask:
 

@@ -78,6 +78,7 @@ export const CacheTTL = {
  */
 export async function cacheGet<T>(key: string): Promise<T | null> {
   try {
+    if (!redis) return null;
     const value = await redis.get(key);
     if (!value) return null;
     return JSON.parse(value) as T;
@@ -96,6 +97,7 @@ export async function cacheSet(
   ttl: number = CacheTTL.LLM_RESPONSE
 ): Promise<boolean> {
   try {
+    if (!redis) return false;
     await redis.setex(key, ttl, JSON.stringify(value));
     return true;
   } catch (error) {
@@ -109,6 +111,7 @@ export async function cacheSet(
  */
 export async function cacheDel(key: string): Promise<boolean> {
   try {
+    if (!redis) return false;
     await redis.del(key);
     return true;
   } catch (error) {
@@ -122,6 +125,7 @@ export async function cacheDel(key: string): Promise<boolean> {
  */
 export async function cacheDelPattern(pattern: string): Promise<number> {
   try {
+    if (!redis) return 0;
     const keys = await redis.keys(pattern);
     if (keys.length === 0) return 0;
     await redis.del(...keys);
@@ -137,6 +141,7 @@ export async function cacheDelPattern(pattern: string): Promise<number> {
  */
 export async function cacheExists(key: string): Promise<boolean> {
   try {
+    if (!redis) return false;
     const exists = await redis.exists(key);
     return exists === 1;
   } catch (error) {
@@ -168,6 +173,7 @@ export async function cacheGetOrSet<T>(
  */
 export async function cacheIncr(key: string, ttl?: number): Promise<number> {
   try {
+    if (!redis) return 0;
     const value = await redis.incr(key);
     if (ttl && value === 1) {
       await redis.expire(key, ttl);
@@ -184,6 +190,7 @@ export async function cacheIncr(key: string, ttl?: number): Promise<number> {
  */
 export async function cacheGetMulti<T>(keys: string[]): Promise<(T | null)[]> {
   try {
+    if (!redis) return keys.map(() => null);
     if (keys.length === 0) return [];
     const values = await redis.mget(...keys);
     return values.map((v) => (v ? JSON.parse(v) : null));

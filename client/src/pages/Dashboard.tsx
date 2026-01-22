@@ -84,6 +84,12 @@ export default function Dashboard() {
               <Link href="/past-jobs">
                 <Button variant="ghost">Past Jobs</Button>
               </Link>
+              <Link href="/interview-prep">
+                <Button variant="ghost">Interview Prep</Button>
+              </Link>
+              <Link href="/resumes/templates">
+                <Button variant="ghost">Templates</Button>
+              </Link>
               <Link href="/skills-gap">
                 <Button variant="ghost">Skills Gap</Button>
               </Link>
