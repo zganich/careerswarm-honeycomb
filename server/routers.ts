@@ -983,5 +983,66 @@ ${a.startDate || ""} - ${a.endDate || "Present"}
         return { url: session.url };
       }),
     }),
+
+  // Interview Prep
+  interviewPrep: router({
+    generateQuestions: protectedProcedure
+      .input(z.object({
+        jobId: z.number(),
+        questionCount: z.number().optional(),
+        includeCompanyResearch: z.boolean().optional()
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { generateInterviewQuestions } = await import("./agents/interviewPrep");
+        
+        // Get job details
+        const job = await db.getJobById(input.jobId, ctx.user.id);
+        if (!job || !job.description || !job.companyName) {
+          throw new Error("Job not found or missing required fields");
+        }
+        
+        // Get user achievements
+        const achievements = await db.getUserAchievements(ctx.user.id);
+        
+        return generateInterviewQuestions(
+          job.description,
+          job.companyName,
+          achievements.map(a => ({
+            title: a.xyzAccomplishment || "Achievement",
+            description: `${a.situation || ""} ${a.task || ""} ${a.action || ""} ${a.result || ""}`.trim(),
+            impact: a.xyzMetricValue || undefined
+          })),
+          {
+            questionCount: input.questionCount,
+            includeCompanyResearch: input.includeCompanyResearch
+          }
+        );
+      }),
+
+    evaluateAnswer: protectedProcedure
+      .input(z.object({
+        question: z.string(),
+        answer: z.string(),
+        relevantAchievements: z.array(z.string())
+      }))
+      .mutation(async ({ input }) => {
+        const { evaluatePracticeAnswer } = await import("./agents/interviewPrep");
+        return evaluatePracticeAnswer(
+          input.question,
+          input.answer,
+          input.relevantAchievements
+        );
+      }),
+
+    generateFollowUps: protectedProcedure
+      .input(z.object({
+        question: z.string(),
+        answer: z.string()
+      }))
+      .mutation(async ({ input }) => {
+        const { generateFollowUpQuestions } = await import("./agents/interviewPrep");
+        return generateFollowUpQuestions(input.question, input.answer);
+      }),
+  }),
 });
 export type AppRouter = typeof appRouter;

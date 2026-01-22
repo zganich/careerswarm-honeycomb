@@ -247,11 +247,14 @@
 - [x] Build resume preview component (ResumeRenderer)
 - [x] Add PDF export placeholder (browser print-to-PDF for now)
 - [x] Test templates with sample data
-- [ ] Session 12 checkpoint
-- [ ] Create interview prep agent
-- [ ] Generate common questions from job description
-- [ ] Match questions to user achievements
-- [ ] Add practice mode with AI feedback
+- [x] Session 12 checkpoint
+### Session 13: Interview Prep Agent (COMPLETE)
+- [x] Create interview prep agent
+- [x] Generate common questions from job description
+- [x] Match questions to user achievements
+- [x] Add practice mode with AI feedback
+- [x] Add answer evaluation with strengths/improvements
+- [x] Add follow-up question generation
 - [ ] Session 13 checkpoint
 
 ### Session 14: Final Testing & Optimization

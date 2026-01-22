@@ -14,6 +14,7 @@ import Jobs from "./pages/Jobs";
 import Applications from "./pages/Applications";
 import ResumesList from "./pages/resumes/ResumesList";
 import ResumeTemplates from "./pages/ResumeTemplates";
+import InterviewPrep from "./pages/InterviewPrep";
 import SkillsGap from "./pages/SkillsGap";
 import PastJobs from "./pages/PastJobs";
 import Pricing from "./pages/Pricing";
@@ -33,6 +34,7 @@ function Router() {
       <Route path="/applications" component={Applications} />
       <Route path="/resumes" component={ResumesList} />
       <Route path="/resumes/templates" component={ResumeTemplates} />
+      <Route path="/interview-prep" component={InterviewPrep} />
       <Route path="/skills-gap" component={SkillsGap} />
       <Route path="/past-jobs" component={PastJobs} />
       <Route path="/404" component={NotFound} />
