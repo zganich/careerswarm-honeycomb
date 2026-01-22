@@ -42,114 +42,118 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   
-  /* Controlled Chaos Design System - Earthy Palette */
-  --color-basalt: #2A2D34;
-  --color-clay: #8C7A6B;
-  --color-slate: #6C7D8C;
-  --color-moss: #5A7D5A;
-  --color-terra-cotta: #B46A55;
-  --color-fog: #D8D8D8;
-  --color-honey: #D4A55B;
-  --color-charcoal: #1A1D24;
+  /* Controlled Chaos Design System - Lighter Earthy Palette (Lindy-Inspired) */
+  --color-cream: #FFF8E7;
+  --color-off-white: #FEFDFB;
+  --color-light-beige: #F9F5EF;
+  --color-honey-gold: #E8D399;
+  --color-warm-yellow: #F4E5A1;
+  --color-soft-amber: #D4A574;
+  --color-charcoal: #2A2D34;
+  --color-warm-gray: #5A5A5A;
+  --color-medium-gray: #8C8C8C;
+  --color-soft-lavender: #E8E3F5;
+  --color-light-mint: #E3F5F0;
+  --color-soft-coral: #F5E3E0;
 }
 
 :root {
-  /* Primary Palette - Honey (warm attention) */
-  --primary: #D4A55B;
-  --primary-foreground: #1A1D24;
+  /* Primary Palette - Honey Gold (warm attention) */
+  --primary: #E8D399;
+  --primary-foreground: #2A2D34;
   
-  /* Secondary Palette - Clay (human touch) */
-  --secondary: #8C7A6B;
-  --secondary-foreground: #FFFFFF;
+  /* Secondary Palette - Soft Amber (subtle actions) */
+  --secondary: #D4A574;
+  --secondary-foreground: #2A2D34;
   
-  /* Accent - Terra Cotta (energy, action) */
-  --accent: #B46A55;
-  --accent-foreground: #FFFFFF;
+  /* Accent - Warm Yellow (highlights) */
+  --accent: #F4E5A1;
+  --accent-foreground: #2A2D34;
   
-  /* Muted - Fog (breathing room) */
-  --muted: #D8D8D8;
-  --muted-foreground: #2A2D34;
+  /* Muted - Light Beige (breathing room) */
+  --muted: #F9F5EF;
+  --muted-foreground: #5A5A5A;
   
-  /* Background - Light with Fog tint */
-  --background: #F5F5F5;
+  /* Background - Cream (primary surface) */
+  --background: #FFF8E7;
   --foreground: #2A2D34;
   
-  /* Card - White with subtle texture */
-  --card: #FFFFFF;
+  /* Card - Off-White (content containers) */
+  --card: #FEFDFB;
   --card-foreground: #2A2D34;
   
   /* Popover */
-  --popover: #FFFFFF;
+  --popover: #FEFDFB;
   --popover-foreground: #2A2D34;
   
-  /* Destructive - Terra Cotta */
-  --destructive: #B46A55;
-  --destructive-foreground: #FFFFFF;
+  /* Destructive - Soft Coral */
+  --destructive: #F5E3E0;
+  --destructive-foreground: #8C3A2B;
   
-  /* Border - Clay */
-  --border: #8C7A6B;
-  --input: #8C7A6B;
-  --ring: #D4A55B;
+  /* Border - Warm Yellow (subtle) */
+  --border: #F4E5A1;
+  --input: #F9F5EF;
+  --ring: #E8D399;
   
-  /* Charts - Earthy tones */
-  --chart-1: #5A7D5A; /* Moss */
-  --chart-2: #6C7D8C; /* Slate */
-  --chart-3: #8C7A6B; /* Clay */
-  --chart-4: #B46A55; /* Terra Cotta */
-  --chart-5: #D4A55B; /* Honey */
+  /* Charts - Light earthy tones */
+  --chart-1: #E3F5F0; /* Light Mint */
+  --chart-2: #E8E3F5; /* Soft Lavender */
+  --chart-3: #F4E5A1; /* Warm Yellow */
+  --chart-4: #F5E3E0; /* Soft Coral */
+  --chart-5: #E8D399; /* Honey Gold */
   
   /* Sidebar */
-  --sidebar: #FFFFFF;
+  --sidebar: #FEFDFB;
   --sidebar-foreground: #2A2D34;
-  --sidebar-primary: #D4A55B;
-  --sidebar-primary-foreground: #1A1D24;
-  --sidebar-accent: #8C7A6B;
-  --sidebar-accent-foreground: #FFFFFF;
-  --sidebar-border: #8C7A6B;
-  --sidebar-ring: #D4A55B;
+  --sidebar-primary: #E8D399;
+  --sidebar-primary-foreground: #2A2D34;
+  --sidebar-accent: #D4A574;
+  --sidebar-accent-foreground: #2A2D34;
+  --sidebar-border: #F4E5A1;
+  --sidebar-ring: #E8D399;
   
-  /* Border radius - subtle (4px max) */
-  --radius: 0.25rem;
+  /* Border radius - rounded (8px for Lindy-style) */
+  --radius: 0.5rem;
 }
 
 .dark {
-  /* Dark mode - Basalt foundation */
+  /* Dark mode - Charcoal foundation (optional, light theme is primary) */
   --background: #2A2D34;
-  --foreground: #D8D8D8;
+  --foreground: #F9F5EF;
   
-  --card: #1A1D24;
-  --card-foreground: #D8D8D8;
+  --card: #3A3D44;
+  --card-foreground: #F9F5EF;
   
-  --popover: #1A1D24;
-  --popover-foreground: #D8D8D8;
+  --popover: #3A3D44;
+  --popover-foreground: #F9F5EF;
   
-  --primary: #D4A55B;
-  --primary-foreground: #1A1D24;
+  --primary: #E8D399;
+  --primary-foreground: #2A2D34;
   
-  --secondary: #6C7D8C;
-  --secondary-foreground: #FFFFFF;
+  --secondary: #D4A574;
+  --secondary-foreground: #2A2D34;
   
-  --muted: #6C7D8C;
-  --muted-foreground: #D8D8D8;
+  --muted: #5A5A5A;
+  --muted-foreground: #F9F5EF;
   
-  --accent: #B46A55;
-  --accent-foreground: #FFFFFF;
+  --accent: #F4E5A1;
+  --accent-foreground: #2A2D34;
   
-  --destructive: #B46A55;
-  --destructive-foreground: #FFFFFF;
+  --destructive: #F5E3E0;
+  --destructive-foreground: #8C3A2B;
   
-  --border: #6C7D8C;
-  --input: #6C7D8C;
-  --ring: #D4A55B;
+  --border: #5A5A5A;
+  --input: #3A3D44;
+  --ring: #E8D399;
   
-  --sidebar: #1A1D24;
-  --sidebar-foreground: #D8D8D8;
-  --sidebar-primary: #D4A55B;
-  --sidebar-primary-foreground: #1A1D24;
-  --sidebar-accent: #6C7D8C;
-  --sidebar-accent-foreground: #FFFFFF;
-  --sidebar-border: #6C7D8C;
-  --sidebar-ring: #D4A55B;
+  --sidebar: #3A3D44;
+  --sidebar-foreground: #F9F5EF;
+  --sidebar-primary: #E8D399;
+  --sidebar-primary-foreground: #2A2D34;
+  --sidebar-accent: #D4A574;
+  --sidebar-accent-foreground: #2A2D34;
+  --sidebar-border: #5A5A5A;
+  --sidebar-ring: #E8D399;
 }
 
 @layer base {
@@ -229,10 +233,74 @@
     }
   }
   
-  /* Swarm Pattern Background */
+  /* Swarm Pattern Background - Light yellow dots */
   .swarm-pattern {
-    background-image: radial-gradient(circle, rgba(140, 122, 107, 0.05) 1px, transparent 1px);
+    background-image: radial-gradient(circle, rgba(244, 229, 161, 0.15) 1px, transparent 1px);
     background-size: 20px 20px;
+  }
+  
+  /* Honeycomb Hero Pattern - Fragmented to Cohesive Gradient */
+  .hero-honeycomb {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .hero-honeycomb::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: 
+      /* Left: Fragmented hexagons (scattered, rotated, small) */
+      radial-gradient(ellipse at 10% 50%, transparent 0%, transparent 30%, rgba(244, 229, 161, 0.03) 30%, rgba(244, 229, 161, 0.03) 35%, transparent 35%),
+      radial-gradient(ellipse at 15% 30%, transparent 0%, transparent 25%, rgba(232, 211, 153, 0.04) 25%, rgba(232, 211, 153, 0.04) 30%, transparent 30%),
+      radial-gradient(ellipse at 8% 70%, transparent 0%, transparent 20%, rgba(244, 229, 161, 0.02) 20%, rgba(244, 229, 161, 0.02) 25%, transparent 25%),
+      /* Center: Swarm-like (medium density, organic clustering) */
+      radial-gradient(ellipse at 50% 50%, transparent 0%, transparent 40%, rgba(232, 211, 153, 0.06) 40%, rgba(232, 211, 153, 0.06) 45%, transparent 45%),
+      radial-gradient(ellipse at 45% 30%, transparent 0%, transparent 35%, rgba(244, 229, 161, 0.05) 35%, rgba(244, 229, 161, 0.05) 40%, transparent 40%),
+      radial-gradient(ellipse at 55% 70%, transparent 0%, transparent 38%, rgba(232, 211, 153, 0.05) 38%, rgba(232, 211, 153, 0.05) 43%, transparent 43%),
+      /* Right: Cohesive hive (structured, regular hexagon grid) */
+      radial-gradient(ellipse at 90% 50%, transparent 0%, transparent 45%, rgba(232, 211, 153, 0.08) 45%, rgba(232, 211, 153, 0.08) 50%, transparent 50%),
+      radial-gradient(ellipse at 85% 30%, transparent 0%, transparent 45%, rgba(244, 229, 161, 0.07) 45%, rgba(244, 229, 161, 0.07) 50%, transparent 50%),
+      radial-gradient(ellipse at 92% 70%, transparent 0%, transparent 45%, rgba(232, 211, 153, 0.08) 45%, rgba(232, 211, 153, 0.08) 50%, transparent 50%);
+    background-size: 
+      /* Left: Irregular sizes */
+      80px 80px, 60px 60px, 50px 50px,
+      /* Center: Medium clustering */
+      100px 100px, 90px 90px, 95px 95px,
+      /* Right: Regular grid */
+      120px 120px, 120px 120px, 120px 120px;
+    background-position:
+      /* Left: Scattered positions */
+      0% 50%, 5% 30%, 10% 70%,
+      /* Center: Organic clustering */
+      50% 50%, 45% 30%, 55% 70%,
+      /* Right: Structured alignment */
+      100% 50%, 95% 30%, 100% 70%;
+    background-repeat: no-repeat;
+    opacity: 0.6;
+    pointer-events: none;
+  }
+  
+  /* Enhanced honeycomb with actual hexagon shapes using clip-path */
+  .hero-honeycomb::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: 
+      linear-gradient(90deg, 
+        transparent 0%, 
+        transparent 20%, 
+        rgba(244, 229, 161, 0.02) 50%, 
+        rgba(232, 211, 153, 0.04) 80%, 
+        rgba(232, 211, 153, 0.06) 100%
+      );
+    mask-image: 
+      repeating-linear-gradient(60deg, transparent 0px, transparent 10px, rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.1) 11px),
+      repeating-linear-gradient(120deg, transparent 0px, transparent 10px, rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.1) 11px),
+      repeating-linear-gradient(0deg, transparent 0px, transparent 10px, rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.1) 11px);
+    mask-composite: intersect;
+    opacity: 0.3;
+    pointer-events: none;
   }
   
   /* Matte Card Finish */

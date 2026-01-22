@@ -45,8 +45,8 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <section className="container py-24 md:py-32">
-        <div className="mx-auto max-w-4xl text-center">
+      <section className="hero-honeycomb container py-24 md:py-32">
+        <div className="mx-auto max-w-4xl text-center relative z-10">
           <div className="inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm mb-6">
             <Sparkles className="h-4 w-4 text-primary" />
             <span>AI-Powered Career Evidence Platform</span>

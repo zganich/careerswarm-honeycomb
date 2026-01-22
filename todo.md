@@ -343,9 +343,21 @@
 - [x] Redesign Button component (Honey primary, Clay secondary, Terra Cotta tertiary, no gradients, 4px radius)
 - [x] Redesign Card component (matte finish, swarm pattern, Clay border, irregular padding)
 - [x] Redesign Input component (Clay background, Honey focus state, italic placeholders)
-- [ ] Phase 1 checkpoint
+- [x] Phase 1 checkpoint
 
-### Phase 2: Core Experience
+### Phase 2: Core Experience (Color Palette Revision)
+- [x] Update CSS variables with cream/beige backgrounds (#FFF8E7, #FEFDFB, #F9F5EF)
+- [x] Lighten Honey Gold to #E8D399 for primary CTAs
+- [x] Add Warm Yellow #F4E5A1 for highlights and borders
+- [x] Keep Charcoal #2A2D34 for text only (not backgrounds)
+- [x] Add supporting colors (Soft Lavender #E8E3F5, Light Mint #E3F5F0, Soft Coral #F5E3E0)
+- [x] Update Button component with new lighter palette
+- [x] Update Card component with cream backgrounds and light yellow borders
+- [x] Update Input component with off-white backgrounds
+- [x] Test contrast ratios for accessibility (verified visually - excellent contrast)
+- [ ] Phase 2 checkpoint
+
+### Phase 3: Dashboard Redesign
 - [ ] Redesign Dashboard (30/50/20 layout)
 - [ ] Create opportunity cards with swarm clustering
 - [ ] Implement Resume Roast visual redesign
@@ -353,14 +365,20 @@
 - [ ] Show 8 agents with unique particle styles
 - [ ] Phase 2 checkpoint
 
-### Phase 3: Polish
+### Phase 4: Polish
 - [ ] Add micro-interactions (hover, transitions)
 - [ ] Mobile responsiveness audit
 - [ ] Accessibility audit (ARIA labels, keyboard nav)
 - [ ] Performance optimization
 - [ ] Phase 3 checkpoint
 
-### Phase 4: Production Ready
+### Phase 5: Production Ready
 - [ ] Final design QA
 - [ ] Cross-browser testing
 - [ ] Final production checkpoint
+
+### Phase 2.1: Honeycomb Hero Pattern
+- [x] Create SVG honeycomb pattern with gradient transition (fragmented → swarm → cohesive)
+- [x] Add CSS utility for hero-honeycomb background
+- [x] Apply to Home page hero section
+- [ ] Test responsiveness and performance

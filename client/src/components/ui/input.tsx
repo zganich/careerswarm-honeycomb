@@ -54,18 +54,18 @@ function Input({
       type={type}
       data-slot="input"
       className={cn(
-        // Clay background, Basalt border, Honey focus
-        "bg-[#8C7A6B]/10 dark:bg-[#8C7A6B]/20 border-[#2A2D34] text-[#2A2D34] dark:text-[#D8D8D8]",
-        "placeholder:text-[#8C7A6B] placeholder:italic",
-        "file:text-foreground selection:bg-[#D4A55B] selection:text-[#1A1D24]",
-        "h-10 w-full min-w-0 rounded-[4px] border px-3 py-2 text-base shadow-none transition-all outline-none",
+        // Light beige background, warm yellow border, charcoal text
+        "bg-[#F9F5EF] dark:bg-[#3A3D44] border-[#F4E5A1] text-[#2A2D34] dark:text-[#F9F5EF]",
+        "placeholder:text-[#8C8C8C] placeholder:italic",
+        "file:text-foreground selection:bg-[#E8D399] selection:text-[#2A2D34]",
+        "h-10 w-full min-w-0 rounded-lg border px-3 py-2 text-base shadow-none transition-all outline-none",
         "file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium",
         "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
         "md:text-sm",
-        // Focus state: Honey border with brief swarm dots animation
-        "focus-visible:border-[#D4A55B] focus-visible:ring-2 focus-visible:ring-[#D4A55B]/30",
-        // Invalid state: Terra Cotta
-        "aria-invalid:ring-[#B46A55]/20 dark:aria-invalid:ring-[#B46A55]/40 aria-invalid:border-[#B46A55]",
+        // Focus state: Honey Gold border with ring
+        "focus-visible:border-[#E8D399] focus-visible:ring-2 focus-visible:ring-[#E8D399]/30",
+        // Invalid state: Soft Coral
+        "aria-invalid:ring-[#F5E3E0]/40 dark:aria-invalid:ring-[#F5E3E0]/20 aria-invalid:border-[#F5E3E0]",
         className
       )}
       onCompositionStart={handleCompositionStart}

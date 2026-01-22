@@ -9,26 +9,26 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        // Primary: Honey background, Charcoal text, no border, matte finish
-        default: "bg-[#D4A55B] text-[#1A1D24] hover:bg-[#C49550] active:bg-[#B48545] rounded-[4px] shadow-none",
+        // Primary: Honey Gold background, Charcoal text, rounded, matte finish
+        default: "bg-[#E8D399] text-[#2A2D34] hover:bg-[#DCC688] active:bg-[#D0B977] rounded-lg shadow-none border border-[#F4E5A1]",
         
-        // Secondary: Clay background, Charcoal text, 1px Slate border
-        secondary: "bg-[#8C7A6B] text-white hover:bg-[#7C6A5B] active:bg-[#6C5A4B] border border-[#6C7D8C] rounded-[4px] shadow-none",
+        // Secondary: Soft Amber background, Charcoal text, light yellow border
+        secondary: "bg-[#D4A574] text-[#2A2D34] hover:bg-[#C89563] active:bg-[#BC8552] border border-[#F4E5A1] rounded-lg shadow-none",
         
-        // Tertiary: Text only with Honey underline on hover
-        tertiary: "bg-transparent text-[#2A2D34] dark:text-[#D8D8D8] hover:underline hover:decoration-[#D4A55B] hover:underline-offset-4 rounded-none shadow-none",
+        // Tertiary: Text only with Honey Gold underline on hover
+        tertiary: "bg-transparent text-[#2A2D34] dark:text-[#F9F5EF] hover:underline hover:decoration-[#E8D399] hover:underline-offset-4 rounded-none shadow-none",
         
-        // Destructive: Terra Cotta
-        destructive: "bg-[#B46A55] text-white hover:bg-[#A45A45] active:bg-[#944A35] rounded-[4px] shadow-none",
+        // Destructive: Soft Coral with darker text
+        destructive: "bg-[#F5E3E0] text-[#8C3A2B] hover:bg-[#EDD3CF] active:bg-[#E5C3BE] rounded-lg shadow-none border border-[#F4E5A1]",
         
-        // Outline: Transparent with border
-        outline: "border border-[#8C7A6B] bg-transparent text-[#2A2D34] dark:text-[#D8D8D8] hover:bg-[#8C7A6B]/10 dark:hover:bg-[#8C7A6B]/20 rounded-[4px] shadow-none",
+        // Outline: Transparent with warm yellow border
+        outline: "border border-[#F4E5A1] bg-transparent text-[#2A2D34] dark:text-[#F9F5EF] hover:bg-[#F4E5A1]/20 dark:hover:bg-[#F4E5A1]/10 rounded-lg shadow-none",
         
-        // Ghost: Minimal hover state
-        ghost: "bg-transparent text-[#2A2D34] dark:text-[#D8D8D8] hover:bg-[#D8D8D8]/20 dark:hover:bg-[#6C7D8C]/20 rounded-[4px] shadow-none",
+        // Ghost: Minimal hover state with light beige
+        ghost: "bg-transparent text-[#2A2D34] dark:text-[#F9F5EF] hover:bg-[#F9F5EF] dark:hover:bg-[#5A5A5A]/20 rounded-lg shadow-none",
         
-        // Link: Simple text link
-        link: "text-[#D4A55B] underline-offset-4 hover:underline rounded-none shadow-none",
+        // Link: Honey Gold text link
+        link: "text-[#E8D399] underline-offset-4 hover:underline rounded-none shadow-none",
       },
       size: {
         default: "h-10 px-4 py-2 has-[>svg]:px-3",

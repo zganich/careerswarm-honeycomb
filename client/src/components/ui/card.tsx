@@ -7,7 +7,7 @@ function Card({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card"
       className={cn(
-        "bg-card text-card-foreground flex flex-col gap-6 rounded-[4px] border border-[#8C7A6B] shadow-none swarm-pattern",
+        "bg-card text-card-foreground flex flex-col gap-6 rounded-lg border border-[#F4E5A1] shadow-none swarm-pattern",
         "py-4 px-5", // Irregular padding (16px top/bottom, 20px left/right)
         className
       )}
