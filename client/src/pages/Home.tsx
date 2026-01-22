@@ -45,7 +45,9 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <section className="hero-honeycomb container py-24 md:py-32">
+      <section className="hero-honeycomb container py-24 md:py-32 relative" style={{
+        background: 'linear-gradient(to bottom, #FFF8E7 0%, #FFF8E7 85%, rgba(255, 248, 231, 0) 100%)'
+      }}>
         <div className="mx-auto max-w-4xl text-center relative z-10">
           <div className="inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm mb-6">
             <Sparkles className="h-4 w-4 text-primary" />
@@ -83,7 +85,9 @@ export default function Home() {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-20 md:py-32 bg-white">
+      <section className="py-20 md:py-32 relative" style={{
+        background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, #FFFFFF 15%, #FFFFFF 85%, rgba(255, 255, 255, 0) 100%)'
+      }}>
         <div className="container mx-auto max-w-6xl">
           <div className="flex items-center justify-center gap-2 mb-4">
             <div className="w-4 h-4 rounded bg-primary/20 flex items-center justify-center">
@@ -138,7 +142,9 @@ export default function Home() {
       </section>
 
       {/* Features Grid */}
-      <section className="py-20 md:py-32 bg-background">
+      <section className="py-20 md:py-32 relative" style={{
+        background: 'linear-gradient(to bottom, rgba(255, 248, 231, 0) 0%, #FFF8E7 15%, #FFF8E7 85%, rgba(255, 248, 231, 0) 100%)'
+      }}>
         <div className="container mx-auto max-w-6xl">
           <div className="flex items-center justify-center gap-2 mb-4">
             <div className="w-4 h-4 rounded bg-primary/20 flex items-center justify-center">
@@ -227,7 +233,9 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 md:py-32 bg-gradient-to-br from-[#F5F3FF] to-[#E8E3F5]">
+      <section className="py-24 md:py-32 relative" style={{
+        background: 'linear-gradient(to bottom, rgba(245, 243, 255, 0) 0%, rgba(245, 243, 255, 1) 15%, rgba(232, 227, 245, 1) 100%)'
+      }}>
         <div className="container mx-auto max-w-3xl text-center bg-white/60 backdrop-blur-sm rounded-2xl p-12 border border-[#E8E3F5]">
           <h2 className="text-3xl font-bold mb-4">Ready to Transform Your Career Story?</h2>
           <p className="text-muted-foreground mb-8 text-lg">

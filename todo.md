@@ -406,3 +406,12 @@
 - [ ] Add section labels to Dashboard sections
 - [ ] Test Dashboard responsiveness
 - [ ] Dashboard checkpoint
+
+## Gradient Blending Between Sections (Lindy-Style)
+- [x] Analyze Lindy.ai gradient blending technique (edge-fade transitions)
+- [x] Add CSS utilities for vertical gradient masks (fade top/bottom)
+- [x] Apply gradient blending to Home page sections (cream → white → lavender)
+- [x] Test opacity levels (start opaque, fade to transparent at edges)
+- [x] Ensure smooth visual flow between sections
+- [ ] Apply to Dashboard sections
+- [x] Gradient blending checkpoint
