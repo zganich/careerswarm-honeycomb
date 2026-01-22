@@ -149,6 +149,161 @@ export const pastEmployerJobs = mysqlTable("pastEmployerJobs", {
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
+// Job automation tables
+export const jobs = mysqlTable("jobs", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  companyId: int("companyId"),
+  
+  // Job details
+  title: varchar("title", { length: 255 }).notNull(),
+  companyName: varchar("companyName", { length: 255 }).notNull(),
+  location: text("location"),
+  jobUrl: text("jobUrl").notNull(),
+  description: text("description"),
+  
+  // Scraped metadata
+  platform: varchar("platform", { length: 50 }), // linkedin, indeed, glassdoor
+  postedDate: timestamp("postedDate"),
+  salaryMin: int("salaryMin"),
+  salaryMax: int("salaryMax"),
+  salaryCurrency: varchar("salaryCurrency", { length: 3 }).default("USD"),
+  employmentType: varchar("employmentType", { length: 50 }), // full-time, contract, etc
+  experienceLevel: varchar("experienceLevel", { length: 50 }),
+  
+  // AI analysis
+  requiredSkills: json("requiredSkills").$type<string[]>(),
+  preferredSkills: json("preferredSkills").$type<string[]>(),
+  responsibilities: json("responsibilities").$type<string[]>(),
+  benefits: json("benefits").$type<string[]>(),
+  
+  // Qualification score
+  qualificationScore: int("qualificationScore"), // 0-100
+  matchedSkills: json("matchedSkills").$type<string[]>(),
+  missingSkills: json("missingSkills").$type<string[]>(),
+  
+  // Status
+  status: mysqlEnum("status", ["new", "qualified", "rejected", "applied", "interviewing", "offer", "closed"]).default("new"),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export const applications = mysqlTable("applications", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  jobId: int("jobId").notNull(),
+  resumeId: int("resumeId"),
+  
+  // Application materials
+  tailoredResumeContent: text("tailoredResumeContent"),
+  coverLetterContent: text("coverLetterContent"),
+  customAnswers: json("customAnswers").$type<Record<string, string>>(),
+  
+  // Submission
+  submittedAt: timestamp("submittedAt"),
+  submissionMethod: varchar("submissionMethod", { length: 50 }), // auto, manual, email
+  confirmationNumber: varchar("confirmationNumber", { length: 255 }),
+  
+  // Tracking
+  status: mysqlEnum("status", ["draft", "submitted", "viewed", "screening", "interview_scheduled", "interviewed", "offer", "rejected", "withdrawn"]).default("draft"),
+  lastStatusUpdate: timestamp("lastStatusUpdate"),
+  
+  // Follow-up
+  nextFollowUpDate: date("nextFollowUpDate"),
+  followUpCount: int("followUpCount").default(0),
+  
+  // Interview details
+  interviewDates: json("interviewDates").$type<string[]>(),
+  interviewNotes: text("interviewNotes"),
+  
+  // Outcome
+  offerAmount: int("offerAmount"),
+  offerCurrency: varchar("offerCurrency", { length: 3 }),
+  rejectionReason: text("rejectionReason"),
+  
+  notes: text("notes"),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export const companies = mysqlTable("companies", {
+  id: int("id").autoincrement().primaryKey(),
+  
+  // Basic info
+  name: varchar("name", { length: 255 }).notNull().unique(),
+  domain: varchar("domain", { length: 255 }),
+  logoUrl: text("logoUrl"),
+  
+  // Company details
+  industry: varchar("industry", { length: 255 }),
+  size: varchar("size", { length: 50 }), // 1-10, 11-50, 51-200, etc
+  founded: int("founded"),
+  headquarters: text("headquarters"),
+  
+  // Culture & values
+  description: text("description"),
+  mission: text("mission"),
+  values: json("values").$type<string[]>(),
+  culture: text("culture"),
+  
+  // Tech & tools
+  techStack: json("techStack").$type<string[]>(),
+  
+  // Recent activity
+  recentNews: json("recentNews").$type<Array<{ title: string; url: string; date: string }>>(),
+  fundingRounds: json("fundingRounds").$type<Array<{ amount: number; date: string; stage: string }>>(),
+  
+  // Hiring
+  isHiring: boolean("isHiring").default(false),
+  openPositions: int("openPositions").default(0),
+  
+  // Cache metadata
+  lastResearchedAt: timestamp("lastResearchedAt"),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export const contacts = mysqlTable("contacts", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  companyId: int("companyId"),
+  
+  // Contact info
+  name: varchar("name", { length: 255 }).notNull(),
+  email: varchar("email", { length: 320 }),
+  phone: varchar("phone", { length: 50 }),
+  linkedinUrl: text("linkedinUrl"),
+  
+  // Role
+  title: varchar("title", { length: 255 }),
+  department: varchar("department", { length: 100 }),
+  
+  // Relationship
+  relationshipType: varchar("relationshipType", { length: 50 }), // recruiter, hiring_manager, referral, etc
+  connectionStrength: int("connectionStrength"), // 1-5
+  
+  // Interaction history
+  lastContactedAt: timestamp("lastContactedAt"),
+  contactCount: int("contactCount").default(0),
+  
+  notes: text("notes"),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Job = typeof jobs.$inferSelect;
+export type InsertJob = typeof jobs.$inferInsert;
+export type Application = typeof applications.$inferSelect;
+export type InsertApplication = typeof applications.$inferInsert;
+export type Company = typeof companies.$inferSelect;
+export type InsertCompany = typeof companies.$inferInsert;
+export type Contact = typeof contacts.$inferSelect;
+export type InsertContact = typeof contacts.$inferInsert;
+
 export type PastEmployerJob = typeof pastEmployerJobs.$inferSelect;
 export type InsertPastEmployerJob = typeof pastEmployerJobs.$inferInsert;
 

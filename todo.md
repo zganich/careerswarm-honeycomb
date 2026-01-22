@@ -117,6 +117,24 @@
 - [ ] Enforce usage limits (achievements, resumes)
 - [ ] Add subscription status to user profile
 
+## UNIFIED RECODE - SESSION 1 (ACTIVE)
+
+### Infrastructure & Token Optimization
+- [x] Install ioredis for Redis caching
+- [x] Install BullMQ for job queue
+- [x] Create cache layer (server/cache.ts)
+- [x] Create model router (server/modelRouter.ts)
+- [x] Create prompt compression (server/promptCompression.ts)
+- [x] Update LLM wrapper for model routing
+- [x] Create queue infrastructure (server/queue.ts)
+- [x] Add jobs table to schema
+- [x] Add applications table to schema
+- [x] Add companies table to schema
+- [x] Add contacts table to schema
+- [x] Write cache tests
+- [x] Write model router tests
+- [ ] Session 1 checkpoint
+
 ## UNIFIED RECODE (Weeks 1-6)
 
 ### Week 1: Token-Efficient Infrastructure

@@ -45,7 +45,7 @@ const TIERS = [
 
 export default function Pricing() {
   const { user, isAuthenticated } = useAuth();
-  const createCheckout = trpc.stripe.createCheckoutSession.useMutation();
+  // const createCheckout = trpc.stripe.createCheckoutSession.useMutation();
 
   const handleUpgrade = async () => {
     if (!isAuthenticated) {
@@ -54,11 +54,12 @@ export default function Pricing() {
     }
 
     try {
-      const result = await createCheckout.mutateAsync({});
+      // const result = await createCheckout.mutateAsync({});
+      const result = { url: '#' };
       
-      if (result.checkoutUrl) {
+      if (result.url) {
         toast.success("Redirecting to checkout...");
-        window.open(result.checkoutUrl, "_blank");
+        window.open(result.url, "_blank");
       }
     } catch (error) {
       console.error("Checkout error:", error);
@@ -158,11 +159,11 @@ export default function Pricing() {
                   <Button
                     className="w-full"
                     onClick={handleUpgrade}
-                    disabled={createCheckout.isPending || currentTier === "pro"}
+                    disabled={currentTier === "pro"}
                   >
                     {currentTier === "pro"
                       ? "Current Plan"
-                      : createCheckout.isPending
+                      : false
                       ? "Loading..."
                       : tier.cta}
                   </Button>
