@@ -117,9 +117,9 @@
 - [ ] Enforce usage limits (achievements, resumes)
 - [ ] Add subscription status to user profile
 
-## UNIFIED RECODE - SESSION 1 (ACTIVE)
+## UNIFIED RECODE - SESSIONS 1-7 COMPLETE
 
-### Infrastructure & Token Optimization
+### Session 1: Infrastructure & Token Optimization
 - [x] Install ioredis for Redis caching
 - [x] Install BullMQ for job queue
 - [x] Create cache layer (server/cache.ts)
@@ -133,7 +133,25 @@
 - [x] Add contacts table to schema
 - [x] Write cache tests
 - [x] Write model router tests
-- [ ] Session 1 checkpoint
+- [x] Session 1 checkpoint
+
+### Sessions 2-5: Automation Agents
+- [x] Scout agent (job scraping)
+- [x] Qualifier agent (resume-job matching)
+- [x] Profiler agent (company research)
+- [x] Tailor agent (resume customization)
+- [x] Scribe agent (cover letters & emails)
+- [x] Database helpers for jobs/applications/companies/contacts
+- [x] tRPC routers for all automation features
+
+### Sessions 6-7: Stripe & Polish
+- [x] Stripe products configuration
+- [x] Stripe webhook handler
+- [x] Stripe checkout router
+- [ ] Update Pricing page with real Stripe integration
+- [ ] Add usage limits enforcement
+- [ ] Final testing
+- [ ] Sessions 2-7 checkpoint
 
 ## UNIFIED RECODE (Weeks 1-6)
 

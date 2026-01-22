@@ -778,8 +778,201 @@ ${a.startDate || ""} - ${a.endDate || "Present"}
           version: 1,
           isFavorite: false,
         });
-
         return { id, content: resumeContent };
+      }),
+  }),
+  
+  // Job automation routers
+  jobs: router({
+    search: protectedProcedure
+      .input(z.object({
+        keywords: z.string(),
+        location: z.string().optional(),
+        platforms: z.array(z.enum(["linkedin", "indeed", "glassdoor"])).optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { scrapeAllPlatforms, scrapedJobToInsert } = await import("./agents/scout");
+        const { bulkCreateJobs } = await import("./db");
+        
+        const scrapedJobs = await scrapeAllPlatforms(
+          input.keywords,
+          input.location,
+          input.platforms
+        );
+        
+        const jobsData = scrapedJobs.map(job => scrapedJobToInsert(job, ctx.user.id));
+        const ids = await bulkCreateJobs(jobsData);
+        
+        return { count: ids.length, jobIds: ids };
+      }),
+    
+    list: protectedProcedure.query(async ({ ctx }) => {
+      const { getUserJobs } = await import("./db");
+      return getUserJobs(ctx.user.id);
+    }),
+    
+    get: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const { getJobById } = await import("./db");
+        return getJobById(input.id, ctx.user.id);
+      }),
+    
+    qualify: protectedProcedure
+      .input(z.object({ jobId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const { getJobById } = await import("./db");
+        const { qualifyForJob } = await import("./agents/qualifier");
+        
+        const job = await getJobById(input.jobId, ctx.user.id);
+        if (!job) throw new Error("Job not found");
+        
+        const achievements = await db.getUserAchievements(ctx.user.id);
+        const result = await qualifyForJob(job, achievements);
+        
+        // Update job with qualification data
+        const { updateJob } = await import("./db");
+        await updateJob(input.jobId, ctx.user.id, {
+          qualificationScore: result.score,
+          matchedSkills: result.matchedSkills,
+          missingSkills: result.missingSkills,
+          status: result.recommendation === "strong_match" || result.recommendation === "good_match" ? "qualified" : "rejected",
+        });
+        
+        return result;
+      }),
+  }),
+  
+  applications: router({
+    create: protectedProcedure
+      .input(z.object({
+        jobId: z.number(),
+        resumeId: z.number().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { createApplication } = await import("./db");
+        const id = await createApplication({
+          userId: ctx.user.id,
+          jobId: input.jobId,
+          resumeId: input.resumeId || null,
+          tailoredResumeContent: null,
+          coverLetterContent: null,
+          customAnswers: null,
+          submittedAt: null,
+          submissionMethod: null,
+          confirmationNumber: null,
+          status: "draft",
+          lastStatusUpdate: null,
+          nextFollowUpDate: null,
+          followUpCount: 0,
+          interviewDates: null,
+          interviewNotes: null,
+          offerAmount: null,
+          offerCurrency: null,
+          rejectionReason: null,
+          notes: null,
+        });
+        return { id };
+      }),
+    
+    list: protectedProcedure.query(async ({ ctx }) => {
+      const { getUserApplications } = await import("./db");
+      return getUserApplications(ctx.user.id);
+    }),
+    
+    get: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const { getApplicationById } = await import("./db");
+        return getApplicationById(input.id, ctx.user.id);
+      }),
+    
+    generateMaterials: protectedProcedure
+      .input(z.object({ applicationId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const { getApplicationById, updateApplication } = await import("./db");
+        const { getJobById } = await import("./db");
+        const { generateTailoredResume } = await import("./agents/tailor");
+        const { generateCoverLetter } = await import("./agents/scribe");
+        
+        const application = await getApplicationById(input.applicationId, ctx.user.id);
+        if (!application) throw new Error("Application not found");
+        
+        const job = await getJobById(application.jobId, ctx.user.id);
+        if (!job) throw new Error("Job not found");
+        
+        const achievements = await db.getUserAchievements(ctx.user.id);
+        
+        // Generate tailored resume
+        const tailoredResume = await generateTailoredResume(ctx.user, job, achievements);
+        
+        // Generate cover letter
+        const coverLetter = await generateCoverLetter(ctx.user, job, achievements);
+        
+        // Update application
+        await updateApplication(input.applicationId, ctx.user.id, {
+          tailoredResumeContent: tailoredResume.resumeContent,
+          coverLetterContent: coverLetter,
+        });
+        
+        return {
+          resume: tailoredResume.resumeContent,
+          coverLetter,
+          atsScore: tailoredResume.atsScore,
+        };
+      }),
+  }),
+  
+  companies: router({
+    research: protectedProcedure
+      .input(z.object({ companyName: z.string() }))
+      .mutation(async ({ input }) => {
+        const { researchCompany } = await import("./agents/profiler");
+        return researchCompany(input.companyName);
+      }),
+    
+    talkingPoints: protectedProcedure
+      .input(z.object({ companyName: z.string(), jobTitle: z.string() }))
+      .mutation(async ({ input }) => {
+        const { generateTalkingPoints } = await import("./agents/profiler");
+        return { points: await generateTalkingPoints(input.companyName, input.jobTitle) };
+       }),
+  }),
+  
+  stripe: router({
+    createCheckout: protectedProcedure
+      .input(z.object({ tier: z.enum(["pro"]) }))
+      .mutation(async ({ ctx, input }) => {
+        const Stripe = (await import("stripe")).default;
+        const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+          apiVersion: "2025-12-15.clover",
+        });
+
+        const { PRODUCTS } = await import("./products");
+        const product = PRODUCTS.PRO;
+
+        const session = await stripe.checkout.sessions.create({
+          mode: "subscription",
+          payment_method_types: ["card"],
+          line_items: [
+            {
+              price: product.priceId,
+              quantity: 1,
+            },
+          ],
+          success_url: `${ctx.req.headers.origin}/dashboard?subscription=success`,
+          cancel_url: `${ctx.req.headers.origin}/pricing?subscription=canceled`,
+          client_reference_id: ctx.user.id.toString(),
+          customer_email: ctx.user.email || undefined,
+          metadata: {
+            user_id: ctx.user.id.toString(),
+            customer_email: ctx.user.email || "",
+            customer_name: ctx.user.name || "",
+          },
+          allow_promotion_codes: true,
+        });
+
+        return { url: session.url };
       }),
   }),
 });

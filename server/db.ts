@@ -3,7 +3,10 @@ import { drizzle } from "drizzle-orm/mysql2";
 import { 
   InsertUser, users, pastEmployerJobs, achievements, skills, achievementSkills,
   jobDescriptions, generatedResumes, powerVerbs,
-  type Achievement, type Skill, type JobDescription, type GeneratedResume
+  jobs, applications, companies, contacts,
+  type Achievement, type Skill, type JobDescription, type GeneratedResume,
+  type Job, type InsertJob, type Application, type InsertApplication,
+  type Company, type InsertCompany, type Contact, type InsertContact
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -263,4 +266,112 @@ export async function deletePastJob(id: number, userId: number) {
   await db.delete(pastEmployerJobs).where(
     and(eq(pastEmployerJobs.id, id), eq(pastEmployerJobs.userId, userId))
   );
+}
+
+// ===== Job Automation Functions =====
+
+export async function createJob(data: Omit<InsertJob, "id">): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result: any = await db.insert(jobs).values(data);
+  return Number(result.insertId);
+}
+
+export async function getUserJobs(userId: number): Promise<Job[]> {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(jobs).where(eq(jobs.userId, userId)).orderBy(desc(jobs.createdAt));
+}
+
+export async function getJobById(id: number, userId: number): Promise<Job | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(jobs).where(and(eq(jobs.id, id), eq(jobs.userId, userId))).limit(1);
+  return result[0];
+}
+
+export async function updateJob(id: number, userId: number, data: Partial<Job>): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(jobs).set(data).where(and(eq(jobs.id, id), eq(jobs.userId, userId)));
+}
+
+export async function deleteJob(id: number, userId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  await db.delete(jobs).where(and(eq(jobs.id, id), eq(jobs.userId, userId)));
+}
+
+export async function bulkCreateJobs(jobsData: Omit<InsertJob, "id">[]): Promise<number[]> {
+  if (jobsData.length === 0) return [];
+  const db = await getDb();
+  if (!db) return [];
+  const result: any = await db.insert(jobs).values(jobsData);
+  const firstId = Number(result.insertId);
+  return Array.from({ length: jobsData.length }, (_, i) => firstId + i);
+}
+
+export async function createApplication(data: Omit<InsertApplication, "id">): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result: any = await db.insert(applications).values(data);
+  return Number(result.insertId);
+}
+
+export async function getUserApplications(userId: number): Promise<Application[]> {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(applications).where(eq(applications.userId, userId)).orderBy(desc(applications.createdAt));
+}
+
+export async function getApplicationById(id: number, userId: number): Promise<Application | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(applications).where(and(eq(applications.id, id), eq(applications.userId, userId))).limit(1);
+  return result[0];
+}
+
+export async function updateApplication(id: number, userId: number, data: Partial<Application>): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(applications).set(data).where(and(eq(applications.id, id), eq(applications.userId, userId)));
+}
+
+export async function createCompany(data: Omit<InsertCompany, "id">): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result: any = await db.insert(companies).values(data);
+  return Number(result.insertId);
+}
+
+export async function getCompanyByName(name: string): Promise<Company | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(companies).where(eq(companies.name, name)).limit(1);
+  return result[0];
+}
+
+export async function getOrCreateCompany(name: string): Promise<number> {
+  const existing = await getCompanyByName(name);
+  if (existing) return existing.id;
+
+  return createCompany({
+    name,
+    domain: null,
+    logoUrl: null,
+    industry: null,
+    size: null,
+    founded: null,
+    headquarters: null,
+    description: null,
+    mission: null,
+    values: null,
+    culture: null,
+    techStack: null,
+    recentNews: null,
+    fundingRounds: null,
+    isHiring: false,
+    openPositions: 0,
+    lastResearchedAt: null,
+  });
 }

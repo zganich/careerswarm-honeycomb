@@ -36,7 +36,7 @@ async function startServer() {
     "/api/stripe/webhook",
     express.raw({ type: "application/json" }),
     async (req, res) => {
-      const { handleStripeWebhook } = await import("../stripe-webhook");
+      const { handleStripeWebhook } = await import("./stripeWebhook");
       return handleStripeWebhook(req, res);
     }
   );

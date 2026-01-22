@@ -45,7 +45,7 @@ const TIERS = [
 
 export default function Pricing() {
   const { user, isAuthenticated } = useAuth();
-  // const createCheckout = trpc.stripe.createCheckoutSession.useMutation();
+  const createCheckout = trpc.stripe.createCheckout.useMutation();
 
   const handleUpgrade = async () => {
     if (!isAuthenticated) {
@@ -54,8 +54,7 @@ export default function Pricing() {
     }
 
     try {
-      // const result = await createCheckout.mutateAsync({});
-      const result = { url: '#' };
+      const result = await createCheckout.mutateAsync({ tier: "pro" });
       
       if (result.url) {
         toast.success("Redirecting to checkout...");
