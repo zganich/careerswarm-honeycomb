@@ -10,7 +10,7 @@
 
 import { invokeLLM } from "../_core/llm";
 import { getModelForTask } from "../modelRouter";
-import { CompressedPrompts, fillPromptTemplate } from "../promptCompression";
+import { CompressedPrompts} from "../promptCompression";
 import { cacheGetOrSet, cacheKey, CachePrefix, CacheTTL } from "../cache";
 import type { Achievement, Job, User } from "../../drizzle/schema";
 
@@ -52,11 +52,9 @@ Write a compelling cover letter.`;
         messages: [
           {
             role: "system",
-            content: "You are an expert at writing professional cover letters.",
-          },
+            content: "You are an expert at writing professional cover letters."},
           { role: "user", content: prompt },
-        ],
-      });
+        ]});
 
       return String(response.choices[0]?.message?.content || "");
     },
@@ -83,11 +81,9 @@ Keep it brief (3-4 sentences), polite, and express continued interest.`;
     messages: [
       {
         role: "system",
-        content: "You are an expert at writing professional emails.",
-      },
+        content: "You are an expert at writing professional emails."},
       { role: "user", content: prompt },
-    ],
-  });
+    ]});
 
   return String(response.choices[0]?.message?.content || "");
 }
@@ -113,11 +109,9 @@ Keep it warm, specific, and reaffirm interest. 4-5 sentences.`;
     messages: [
       {
         role: "system",
-        content: "You are an expert at writing professional thank-you notes.",
-      },
+        content: "You are an expert at writing professional thank-you notes."},
       { role: "user", content: prompt },
-    ],
-  });
+    ]});
 
   return String(response.choices[0]?.message?.content || "");
 }
@@ -134,8 +128,7 @@ export async function generateNetworkingMessage(
   const purposeText = {
     informational_interview: "request an informational interview",
     referral: "ask for a referral",
-    introduction: "introduce yourself",
-  };
+    introduction: "introduce yourself"};
 
   const prompt = `Write a professional networking message to ${purposeText[purpose]}:
 
@@ -149,11 +142,9 @@ Keep it concise (3-4 sentences), respectful of their time, and clear about your 
     messages: [
       {
         role: "system",
-        content: "You are an expert at writing professional networking messages.",
-      },
+        content: "You are an expert at writing professional networking messages."},
       { role: "user", content: prompt },
-    ],
-  });
+    ]});
 
   return String(response.choices[0]?.message?.content || "");
 }

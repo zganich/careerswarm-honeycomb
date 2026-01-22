@@ -1,0 +1,1727 @@
+{
+  "unusedImports": [
+    {
+      "file": "server/_core/sdk.ts",
+      "import": "parse",
+      "line": 4
+    },
+    {
+      "file": "server/_core/vite.ts",
+      "import": "type Server",
+      "line": 3
+    },
+    {
+      "file": "server/_core/vite.ts",
+      "import": "createServer",
+      "line": 6
+    },
+    {
+      "file": "server/agents/scribe.ts",
+      "import": "fillPromptTemplate",
+      "line": 13
+    },
+    {
+      "file": "server/b2b-router.ts",
+      "import": "invokeLLM",
+      "line": 3
+    },
+    {
+      "file": "server/cache.test.ts",
+      "import": "CacheTTL",
+      "line": 2
+    },
+    {
+      "file": "server/db.ts",
+      "import": "contacts",
+      "line": 3
+    },
+    {
+      "file": "server/db.ts",
+      "import": "type Achievement",
+      "line": 3
+    },
+    {
+      "file": "server/db.ts",
+      "import": "type Skill",
+      "line": 3
+    },
+    {
+      "file": "server/db.ts",
+      "import": "type JobDescription",
+      "line": 3
+    },
+    {
+      "file": "server/db.ts",
+      "import": "type GeneratedResume",
+      "line": 3
+    },
+    {
+      "file": "server/db.ts",
+      "import": "type Job",
+      "line": 3
+    },
+    {
+      "file": "server/db.ts",
+      "import": "type InsertJob",
+      "line": 3
+    },
+    {
+      "file": "server/db.ts",
+      "import": "type Application",
+      "line": 3
+    },
+    {
+      "file": "server/db.ts",
+      "import": "type InsertApplication",
+      "line": 3
+    },
+    {
+      "file": "server/db.ts",
+      "import": "type Company",
+      "line": 3
+    },
+    {
+      "file": "server/db.ts",
+      "import": "type InsertCompany",
+      "line": 3
+    },
+    {
+      "file": "server/db.ts",
+      "import": "type Contact",
+      "line": 3
+    },
+    {
+      "file": "server/db.ts",
+      "import": "type InsertContact",
+      "line": 3
+    },
+    {
+      "file": "server/modelRouter.test.ts",
+      "import": "TaskType",
+      "line": 2
+    },
+    {
+      "file": "server/notificationScheduler.ts",
+      "import": "isNull",
+      "line": 3
+    },
+    {
+      "file": "client/src/components/ui/alert.tsx",
+      "import": "type VariantProps",
+      "line": 2
+    },
+    {
+      "file": "client/src/components/ui/badge.tsx",
+      "import": "type VariantProps",
+      "line": 3
+    },
+    {
+      "file": "client/src/components/ui/button-group.tsx",
+      "import": "type VariantProps",
+      "line": 2
+    },
+    {
+      "file": "client/src/components/ui/button.tsx",
+      "import": "type VariantProps",
+      "line": 3
+    },
+    {
+      "file": "client/src/components/ui/empty.tsx",
+      "import": "type VariantProps",
+      "line": 1
+    },
+    {
+      "file": "client/src/components/ui/field.tsx",
+      "import": "type VariantProps",
+      "line": 2
+    },
+    {
+      "file": "client/src/components/ui/form.tsx",
+      "import": "type ControllerProps",
+      "line": 6
+    },
+    {
+      "file": "client/src/components/ui/form.tsx",
+      "import": "type FieldPath",
+      "line": 6
+    },
+    {
+      "file": "client/src/components/ui/form.tsx",
+      "import": "type FieldValues",
+      "line": 6
+    },
+    {
+      "file": "client/src/components/ui/input-group.tsx",
+      "import": "type VariantProps",
+      "line": 2
+    },
+    {
+      "file": "client/src/components/ui/item.tsx",
+      "import": "type VariantProps",
+      "line": 3
+    },
+    {
+      "file": "client/src/components/ui/sonner.tsx",
+      "import": "type ToasterProps",
+      "line": 2
+    },
+    {
+      "file": "client/src/components/ui/toggle-group.tsx",
+      "import": "type VariantProps",
+      "line": 5
+    },
+    {
+      "file": "client/src/components/ui/toggle.tsx",
+      "import": "type VariantProps",
+      "line": 3
+    },
+    {
+      "file": "client/src/lib/utils.ts",
+      "import": "type ClassValue",
+      "line": 1
+    },
+    {
+      "file": "client/src/pages/ComponentShowcase.tsx",
+      "import": "toast",
+      "line": 173
+    },
+    {
+      "file": "client/src/pages/ComponentShowcase.tsx",
+      "import": "type Message",
+      "line": 174
+    },
+    {
+      "file": "client/src/pages/Dashboard.tsx",
+      "import": "Briefcase",
+      "line": 5
+    }
+  ],
+  "deadCode": [
+    {
+      "file": "server/_core/context.ts",
+      "export": "TrpcContext",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/dataApi.ts",
+      "export": "DataApiCallOptions",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/imageGeneration.ts",
+      "export": "GenerateImageOptions",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/imageGeneration.ts",
+      "export": "GenerateImageResponse",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/llm.ts",
+      "export": "Role",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/llm.ts",
+      "export": "TextContent",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/llm.ts",
+      "export": "ImageContent",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/llm.ts",
+      "export": "FileContent",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/llm.ts",
+      "export": "MessageContent",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/llm.ts",
+      "export": "Message",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/llm.ts",
+      "export": "Tool",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/llm.ts",
+      "export": "ToolChoicePrimitive",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/llm.ts",
+      "export": "ToolChoiceByName",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/llm.ts",
+      "export": "ToolChoiceExplicit",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/llm.ts",
+      "export": "ToolChoice",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/llm.ts",
+      "export": "InvokeParams",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/llm.ts",
+      "export": "ToolCall",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/llm.ts",
+      "export": "InvokeResult",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/llm.ts",
+      "export": "JsonSchema",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/llm.ts",
+      "export": "OutputSchema",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/llm.ts",
+      "export": "ResponseFormat",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/map.ts",
+      "export": "TravelMode",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/map.ts",
+      "export": "MapType",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/map.ts",
+      "export": "SpeedUnit",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/map.ts",
+      "export": "LatLng",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/map.ts",
+      "export": "DirectionsResult",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/map.ts",
+      "export": "DistanceMatrixResult",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/map.ts",
+      "export": "GeocodingResult",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/map.ts",
+      "export": "PlacesSearchResult",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/map.ts",
+      "export": "PlaceDetailsResult",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/map.ts",
+      "export": "ElevationResult",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/map.ts",
+      "export": "TimeZoneResult",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/map.ts",
+      "export": "RoadsResult",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/notification.ts",
+      "export": "NotificationPayload",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/sdk.ts",
+      "export": "SessionPayload",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/types/cookie.d.ts",
+      "export": "parse",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/types/manusTypes.ts",
+      "export": "AuthorizeRequest",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/types/manusTypes.ts",
+      "export": "AuthorizeResponse",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/types/manusTypes.ts",
+      "export": "ExchangeTokenRequest",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/types/manusTypes.ts",
+      "export": "ExchangeTokenResponse",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/types/manusTypes.ts",
+      "export": "GetUserInfoRequest",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/types/manusTypes.ts",
+      "export": "GetUserInfoResponse",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/types/manusTypes.ts",
+      "export": "CanAccessRequest",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/types/manusTypes.ts",
+      "export": "CanAccessResponse",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/types/manusTypes.ts",
+      "export": "GetUserInfoWithJwtRequest",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/types/manusTypes.ts",
+      "export": "GetUserInfoWithJwtResponse",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/voiceTranscription.ts",
+      "export": "TranscribeOptions",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/voiceTranscription.ts",
+      "export": "WhisperSegment",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/voiceTranscription.ts",
+      "export": "WhisperResponse",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/voiceTranscription.ts",
+      "export": "TranscriptionResponse",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/voiceTranscription.ts",
+      "export": "TranscriptionError",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/_core/voiceTranscription.ts",
+      "export": "voiceRouter",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/achievement-templates.ts",
+      "export": "achievementTemplates",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/agents/profiler.ts",
+      "export": "CompanyProfile",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/agents/qualifier.ts",
+      "export": "QualificationResult",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/agents/qualifier.ts",
+      "export": "getTopQualifiedJobs",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/agents/scout.ts",
+      "export": "ScrapedJob",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/agents/scout.ts",
+      "export": "deduplicateJobs",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/agents/scout.ts",
+      "export": "scrapedJobToInsert",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/agents/tailor.ts",
+      "export": "TailoredResume",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/b2b-router.ts",
+      "export": "b2bRouter",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/email-router.ts",
+      "export": "emailRouter",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/intelligence-router.ts",
+      "export": "intelligenceRouter",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/jd-scraper.ts",
+      "export": "extractJobInfo",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/modelRouter.ts",
+      "export": "ModelUsage",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/modelRouter.ts",
+      "export": "logModelUsage",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/modelRouter.ts",
+      "export": "getUsageStats",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/notificationScheduler.ts",
+      "export": "startNotificationScheduler",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/products.ts",
+      "export": "PRODUCTS",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/products.ts",
+      "export": "SubscriptionTier",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/products.ts",
+      "export": "canAccessFeature",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/products.ts",
+      "export": "getRemainingLimit",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/promptCompression.ts",
+      "export": "truncateToTokens",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/promptCompression.ts",
+      "export": "extractKeySentences",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/promptCompression.ts",
+      "export": "abbreviate",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/promptCompression.ts",
+      "export": "compressionRatio",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/promptCompression.ts",
+      "export": "batchPrompts",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/queue.ts",
+      "export": "ScrapeJobsData",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/queue.ts",
+      "export": "QualifyApplicationData",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/queue.ts",
+      "export": "ProfileCompanyData",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/queue.ts",
+      "export": "TailorResumeData",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/queue.ts",
+      "export": "GenerateCoverLetterData",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/queue.ts",
+      "export": "SubmitApplicationData",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/queue.ts",
+      "export": "TrackStatusData",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/queue.ts",
+      "export": "SendEmailData",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/queue.ts",
+      "export": "AnalyzeAchievementData",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/queue.ts",
+      "export": "getQueue",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/queue.ts",
+      "export": "JobProcessor",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/queue.ts",
+      "export": "createWorker",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/queue.ts",
+      "export": "createQueueEvents",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/routers.ts",
+      "export": "AppRouter",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/stripe-products.ts",
+      "export": "SUBSCRIPTION_TIERS",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/stripe-products.ts",
+      "export": "SubscriptionTier",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/stripe-products.ts",
+      "export": "getTierLimits",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/stripe-products.ts",
+      "export": "getTierFeatures",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/stripe-products.ts",
+      "export": "getTierPrice",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/stripe-router.ts",
+      "export": "stripeRouter",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/usageLimits.ts",
+      "export": "UsageLimits",
+      "type": "unused_export"
+    },
+    {
+      "file": "server/usageLimits.ts",
+      "export": "getLimitsForUser",
+      "type": "unused_export"
+    },
+    {
+      "file": "client/src/components/AIChatBox.tsx",
+      "export": "Message",
+      "type": "unused_export"
+    },
+    {
+      "file": "client/src/components/AIChatBox.tsx",
+      "export": "AIChatBoxProps",
+      "type": "unused_export"
+    },
+    {
+      "file": "client/src/components/ManusDialog.tsx",
+      "export": "ManusDialog",
+      "type": "unused_export"
+    },
+    {
+      "file": "client/src/components/Map.tsx",
+      "export": "MapView",
+      "type": "unused_export"
+    },
+    {
+      "file": "client/src/components/ui/chart.tsx",
+      "export": "ChartConfig",
+      "type": "unused_export"
+    },
+    {
+      "file": "client/src/hooks/useComposition.ts",
+      "export": "UseCompositionReturn",
+      "type": "unused_export"
+    },
+    {
+      "file": "client/src/hooks/useComposition.ts",
+      "export": "UseCompositionOptions",
+      "type": "unused_export"
+    },
+    {
+      "file": "shared/_core/errors.ts",
+      "export": "HttpError",
+      "type": "unused_export"
+    },
+    {
+      "file": "shared/_core/errors.ts",
+      "export": "BadRequestError",
+      "type": "unused_export"
+    },
+    {
+      "file": "shared/_core/errors.ts",
+      "export": "UnauthorizedError",
+      "type": "unused_export"
+    },
+    {
+      "file": "shared/_core/errors.ts",
+      "export": "NotFoundError",
+      "type": "unused_export"
+    },
+    {
+      "file": "shared/resumeTemplates.ts",
+      "export": "TemplateConfig",
+      "type": "unused_export"
+    },
+    {
+      "file": "shared/resumeTemplates.ts",
+      "export": "TemplateStyles",
+      "type": "unused_export"
+    }
+  ],
+  "staleComments": [
+    {
+      "file": "server/_core/context.ts",
+      "line": 19,
+      "content": "// Authentication is optional for public procedures....",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/_core/cookies.ts",
+      "line": 36,
+      "content": "//   shouldSetDomain && !hostname.startsWith(\".\")...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/_core/dataApi.ts",
+      "line": 27,
+      "content": "// Build the full URL by appending the service path to the b...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/_core/imageGeneration.ts",
+      "line": 44,
+      "content": "// Build the full URL by appending the service path to the b...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/_core/index.ts",
+      "line": 34,
+      "content": "// Stripe webhook MUST come before express.json() for signat...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/_core/index.ts",
+      "line": 44,
+      "content": "// Configure body parser with larger size limit for file upl...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/_core/index.ts",
+      "line": 57,
+      "content": "// development mode uses Vite, production mode uses static f...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/_core/llm.ts",
+      "line": 158,
+      "content": "// If there's only text content, collapse to a single string...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/_core/map.ts",
+      "line": 12,
+      "content": "// =========================================================...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/_core/map.ts",
+      "line": 14,
+      "content": "// =========================================================...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/_core/map.ts",
+      "line": 37,
+      "content": "// =========================================================...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/_core/map.ts",
+      "line": 39,
+      "content": "// =========================================================...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/_core/map.ts",
+      "line": 61,
+      "content": "// Construct full URL: baseUrl + /v1/maps/proxy + endpoint...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/_core/map.ts",
+      "line": 64,
+      "content": "// Add API key as query parameter (standard Google Maps API ...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/_core/map.ts",
+      "line": 92,
+      "content": "// =========================================================...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/_core/map.ts",
+      "line": 94,
+      "content": "// =========================================================...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/_core/map.ts",
+      "line": 234,
+      "content": "// =========================================================...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/_core/map.ts",
+      "line": 236,
+      "content": "// =========================================================...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/_core/sdk.ts",
+      "line": 273,
+      "content": "// If user not in DB, sync from OAuth server automatically...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/_core/vite.ts",
+      "line": 35,
+      "content": "// always reload the index.html file from disk incase it cha...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/_core/vite.ts",
+      "line": 63,
+      "content": "// fall through to index.html if the file doesn't exist...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/_core/voiceTranscription.ts",
+      "line": 126,
+      "content": "// Step 3: Create FormData for multipart upload to Whisper A...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/_core/voiceTranscription.ts",
+      "line": 129,
+      "content": "// Create a Blob from the buffer and append to form...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/_core/voiceTranscription.ts",
+      "line": 137,
+      "content": "// Add prompt - use custom prompt if provided, otherwise gen...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/_core/voiceTranscription.ts",
+      "line": 173,
+      "content": "// Step 5: Parse and return the transcription result...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/agents/interviewPrep.ts",
+      "line": 150,
+      "content": "// Cache for 7 days (interview questions don't change often)...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/agents/scout.ts",
+      "line": 48,
+      "content": "// In production, use LinkedIn API or scraping service...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/agents/scout.ts",
+      "line": 92,
+      "content": "// In production, use Indeed API or scraping service...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/agents/scout.ts",
+      "line": 136,
+      "content": "// In production, use Glassdoor API or scraping service...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/b2b-router.ts",
+      "line": 25,
+      "content": "// Check if user is a recruiter (in production, check user.r...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/b2b-router.ts",
+      "line": 28,
+      "content": "// Get all achievements (in production, only from users who ...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/b2b-router.ts",
+      "line": 92,
+      "content": "// Extract user ID from anonymized candidate ID...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/b2b-router.ts",
+      "line": 101,
+      "content": "// const profile = await db.getUserProfile(userId); // Simpl...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/cache.ts",
+      "line": 3,
+      "content": "// Initialize Redis client (optional, falls back to in-memor...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/cache.ts",
+      "line": 27,
+      "content": "// Export Redis connection for BullMQ (may be null)...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/email-router.ts",
+      "line": 25,
+      "content": "// Extract username from recipient email (user123@jobs.caree...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/email-router.ts",
+      "line": 28,
+      "content": "// Find user by email or username (simplified - in productio...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/email-router.ts",
+      "line": 29,
+      "content": "// For now, we'll extract job description and return analysi...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/email-router.ts",
+      "line": 31,
+      "content": "// Use AI to extract job description from email...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/email-router.ts",
+      "line": 111,
+      "content": "// In production, send email via SendGrid/Mailgun...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/email-router.ts",
+      "line": 130,
+      "content": "// Generate forwarding address from user ID or email...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/intelligence-router.ts",
+      "line": 219,
+      "content": "// TODO: Send email to verifier with link",
+      "type": "todo"
+    },
+    {
+      "file": "server/jd-scraper.ts",
+      "line": 52,
+      "content": "// Get main content - try multiple strategies...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/jd-scraper.ts",
+      "line": 80,
+      "content": "// Try to extract title (usually first line or after \"Positi...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/modelRouter.test.ts",
+      "line": 56,
+      "content": "// (1000 * 0.15 + 500 * 0.60) / 1_000_000 = 0.00045...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/modelRouter.test.ts",
+      "line": 62,
+      "content": "// (1000 * 2.50 + 500 * 10.00) / 1_000_000 = 0.0075...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/modelRouter.test.ts",
+      "line": 68,
+      "content": "// (1000 * 3.00 + 500 * 15.00) / 1_000_000 = 0.0105...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/modelRouter.test.ts",
+      "line": 77,
+      "content": "// GPT-4o-mini should be ~90% cheaper than GPT-4o...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/modelRouter.test.ts",
+      "line": 80,
+      "content": "// GPT-4o-mini should be ~95% cheaper than Claude...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/notificationScheduler.ts",
+      "line": 34,
+      "content": "// Find applications submitted exactly N days ago that are s...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/notificationScheduler.ts",
+      "line": 79,
+      "content": "// Find applications with interviews scheduled (status = int...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/notificationScheduler.ts",
+      "line": 105,
+      "content": "// Check if interview is in the reminder window (24-25 hours...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/notificationScheduler.ts",
+      "line": 156,
+      "content": "// Reminders are handled automatically by the scheduler...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/notificationScheduler.ts",
+      "line": 171,
+      "content": "// Reminder is handled automatically by the scheduler...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/routers.ts",
+      "line": 234,
+      "content": "// AI parse multiple achievements from text...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/storage.ts",
+      "line": 1,
+      "content": "// Preconfigured storage helpers for Manus WebDev templates...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/storage.ts",
+      "line": 2,
+      "content": "// Uses the Biz-provided storage proxy (Authorization: Beare...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/stripe-router.ts",
+      "line": 137,
+      "content": "// Cancel at period end (don't immediately revoke access)...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/stripe-webhook.ts",
+      "line": 62,
+      "content": "// Update user with Stripe IDs and upgrade to Pro...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/stripe-webhook.ts",
+      "line": 144,
+      "content": "// Payment successful - subscription will be updated via sub...",
+      "type": "commented_code"
+    },
+    {
+      "file": "server/stripe-webhook.ts",
+      "line": 152,
+      "content": "// Find user and mark subscription as past_due...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/AIChatBox.tsx",
+      "line": 132,
+      "content": "// Calculate min-height for last assistant message to push u...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/AIChatBox.tsx",
+      "line": 143,
+      "content": "// - user message: 40px (item height) + 16px (margin-top fro...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/AIChatBox.tsx",
+      "line": 144,
+      "content": "// Note: margin-bottom is not counted because it naturally p...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/AIChatBox.tsx",
+      "line": 152,
+      "content": "// Scroll to bottom helper function with smooth animation...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/AIChatBox.tsx",
+      "line": 229,
+      "content": "// Apply min-height to last message only if NOT loading (whe...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/ui/dialog.tsx",
+      "line": 6,
+      "content": "// Context to track composition state across dialog children...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/ui/dialog.tsx",
+      "line": 105,
+      "content": "// Check both the native isComposing property and our contex...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/ui/dialog.tsx",
+      "line": 106,
+      "content": "// This handles Safari's timing issues with composition even...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/ui/dialog.tsx",
+      "line": 109,
+      "content": "// If IME is composing, prevent dialog from closing...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/ui/input.tsx",
+      "line": 14,
+      "content": "// Get dialog composition context if available (will be no-o...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/ui/input.tsx",
+      "line": 17,
+      "content": "// Add composition event handlers to support input method ed...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/ui/input.tsx",
+      "line": 24,
+      "content": "// Check if this is an Enter key that should be blocked...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/ui/input.tsx",
+      "line": 27,
+      "content": "// If Enter key is pressed while composing or just after com...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/ui/input.tsx",
+      "line": 28,
+      "content": "// don't call the user's onKeyDown (this blocks the business...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/ui/input.tsx",
+      "line": 41,
+      "content": "// Mark that composition just ended - this helps handle the ...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/ui/input.tsx",
+      "line": 43,
+      "content": "// Delay setting composing to false to handle Safari's event...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/ui/input.tsx",
+      "line": 44,
+      "content": "// In Safari, compositionEnd fires before the ESC keydown ev...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/ui/sidebar.tsx",
+      "line": 72,
+      "content": "// We use openProp and setOpenProp for control from outside ...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/ui/sidebar.tsx",
+      "line": 84,
+      "content": "// This sets the cookie to keep the sidebar state....",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/ui/sidebar.tsx",
+      "line": 95,
+      "content": "// Adds a keyboard shortcut to toggle the sidebar....",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/ui/sidebar.tsx",
+      "line": 111,
+      "content": "// We add a state so that we can do data-state=\"expanded\" or...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/ui/sidebar.tsx",
+      "line": 112,
+      "content": "// This makes it easier to style the sidebar with Tailwind c...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/ui/sidebar.tsx",
+      "line": 243,
+      "content": "// Adjust the padding for floating and inset variants....",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/ui/sidebar.tsx",
+      "line": 437,
+      "content": "// Increases the hit area of the button on mobile....",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/ui/sidebar.tsx",
+      "line": 572,
+      "content": "// Increases the hit area of the button on mobile....",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/ui/textarea.tsx",
+      "line": 13,
+      "content": "// Get dialog composition context if available (will be no-o...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/ui/textarea.tsx",
+      "line": 16,
+      "content": "// Add composition event handlers to support input method ed...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/ui/textarea.tsx",
+      "line": 23,
+      "content": "// Check if this is an Enter key that should be blocked...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/ui/textarea.tsx",
+      "line": 26,
+      "content": "// If Enter key is pressed while composing or just after com...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/ui/textarea.tsx",
+      "line": 27,
+      "content": "// don't call the user's onKeyDown (this blocks the business...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/ui/textarea.tsx",
+      "line": 28,
+      "content": "// Note: For textarea, Shift+Enter should still work for new...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/ui/textarea.tsx",
+      "line": 41,
+      "content": "// Mark that composition just ended - this helps handle the ...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/ui/textarea.tsx",
+      "line": 43,
+      "content": "// Delay setting composing to false to handle Safari's event...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/components/ui/textarea.tsx",
+      "line": 44,
+      "content": "// In Safari, compositionEnd fires before the ESC keydown ev...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/const.ts",
+      "line": 3,
+      "content": "// Generate login URL at runtime so redirect URI reflects th...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/hooks/useComposition.ts",
+      "line": 50,
+      "content": "// 使用两层 setTimeout 来处理 Safari 浏览器中 compositionEnd 先于 onKeyDo...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/hooks/useComposition.ts",
+      "line": 60,
+      "content": "// 在 composition 状态下，阻止 ESC 和 Enter（非 shift+Enter）事件的冒泡...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/pages/Jobs.tsx",
+      "line": 51,
+      "content": "// Job is already saved from search, just qualify it...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/pages/Jobs.tsx",
+      "line": 56,
+      "content": "// Refresh the job list to show updated qualification data...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/pages/ResumeTemplates.tsx",
+      "line": 167,
+      "content": "// In real implementation, this would save the template pref...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/pages/achievements/NewAchievement.tsx",
+      "line": 26,
+      "content": "// Check for metrics (numbers, percentages, dollar signs)...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/pages/achievements/NewAchievement.tsx",
+      "line": 29,
+      "content": "// Check for methodology (by, using, through, via, with, imp...",
+      "type": "commented_code"
+    },
+    {
+      "file": "client/src/pages/achievements/NewAchievement.tsx",
+      "line": 60,
+      "content": "// Calculate impact score whenever result changes...",
+      "type": "commented_code"
+    }
+  ],
+  "typeInconsistencies": [
+    {
+      "file": "server/_core/stripeWebhook.ts",
+      "count": 2,
+      "type": "any_type"
+    },
+    {
+      "file": "server/cache.ts",
+      "count": 2,
+      "type": "any_type"
+    },
+    {
+      "file": "server/db.ts",
+      "count": 6,
+      "type": "any_type"
+    },
+    {
+      "file": "server/intelligence-router.ts",
+      "count": 1,
+      "type": "any_type"
+    },
+    {
+      "file": "server/queue.ts",
+      "count": 4,
+      "type": "any_type"
+    },
+    {
+      "file": "server/routers.ts",
+      "count": 1,
+      "type": "any_type"
+    },
+    {
+      "file": "server/routers.ts",
+      "count": 1,
+      "type": "ts_suppression"
+    },
+    {
+      "file": "client/src/hooks/usePersistFn.ts",
+      "count": 1,
+      "type": "any_type"
+    },
+    {
+      "file": "client/src/pages/Applications.tsx",
+      "count": 2,
+      "type": "any_type"
+    },
+    {
+      "file": "client/src/pages/Dashboard.tsx",
+      "count": 1,
+      "type": "any_type"
+    },
+    {
+      "file": "client/src/pages/Jobs.tsx",
+      "count": 3,
+      "type": "any_type"
+    },
+    {
+      "file": "client/src/pages/SkillsGap.tsx",
+      "count": 1,
+      "type": "any_type"
+    },
+    {
+      "file": "client/src/pages/resumes/ResumesList.tsx",
+      "count": 4,
+      "type": "any_type"
+    }
+  ],
+  "deprecatedPatterns": [
+    {
+      "file": "server/_core/cookies.ts",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "server/_core/dataApi.ts",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "server/_core/env.ts",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "server/_core/index.ts",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "server/_core/llm.ts",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "server/_core/map.ts",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "server/_core/notification.ts",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "server/_core/oauth.ts",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "server/_core/sdk.ts",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "server/_core/trpc.ts",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "server/_core/vite.ts",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "server/_core/voiceTranscription.ts",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "server/agents/interviewPrep.ts",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "server/b2b-router.ts",
+      "pattern": "require_instead_of_import",
+      "count": 1
+    },
+    {
+      "file": "server/b2b-router.ts",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "server/cache.ts",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "server/db.ts",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "server/notificationScheduler.ts",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "server/products.ts",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "server/promptCompression.ts",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "server/queue.ts",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "server/routers.ts",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "server/storage.ts",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "server/stripe-webhook.ts",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "server/usageLimits.ts",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "client/src/_core/hooks/useAuth.ts",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "client/src/components/AIChatBox.tsx",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "client/src/components/DashboardLayout.tsx",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "client/src/components/Map.tsx",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "client/src/components/ResumeRenderer.tsx",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "client/src/components/ui/calendar.tsx",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "client/src/components/ui/carousel.tsx",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "client/src/components/ui/chart.tsx",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "client/src/components/ui/field.tsx",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "client/src/components/ui/input.tsx",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "client/src/components/ui/scroll-area.tsx",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "client/src/components/ui/select.tsx",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "client/src/components/ui/sheet.tsx",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "client/src/components/ui/sidebar.tsx",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "client/src/components/ui/textarea.tsx",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "client/src/contexts/ThemeContext.tsx",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "client/src/hooks/useComposition.ts",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "client/src/main.tsx",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "client/src/pages/Applications.tsx",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "client/src/pages/ComponentShowcase.tsx",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "client/src/pages/Dashboard.tsx",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "client/src/pages/InterviewPrep.tsx",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "client/src/pages/Jobs.tsx",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "client/src/pages/PastJobs.tsx",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "client/src/pages/Pricing.tsx",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "client/src/pages/ResumeTemplates.tsx",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "client/src/pages/SkillsGap.tsx",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "client/src/pages/achievements/NewAchievement.tsx",
+      "pattern": "loose_equality",
+      "count": 1
+    },
+    {
+      "file": "client/src/pages/resumes/ResumesList.tsx",
+      "pattern": "loose_equality",
+      "count": 1
+    }
+  ],
+  "duplicateCode": []
+}

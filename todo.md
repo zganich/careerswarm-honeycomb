@@ -269,4 +269,36 @@
 - [x] Fix job.url references in Applications.tsx
 - [x] Fix remaining cache null check
 - [ ] Fix interviewPrep invokeLLM (non-blocking, works at runtime)
-- [ ] Final ship checkpoint
+- [x] Final ship checkpoint
+
+### Session 15: TypeScript Fixes & Code Quality
+- [x] Fix interviewPrep.ts invokeLLM API signature (18 errors)
+- [x] Fix Applications.tsx type errors
+- [x] Fix ResumeRenderer.tsx JSX namespace error
+- [x] Fix stripeWebhook.ts Subscription type error
+- [x] Run full TypeScript check (0 errors achieved!)
+- [ ] Session 15 checkpoint
+
+### Session 16: Usage Limits Enforcement Testing
+- [ ] Test Free tier achievement limit (10 max)
+- [ ] Test Free tier resume limit (3/month)
+- [ ] Test Pro tier unlimited access
+- [ ] Verify upgrade prompts appear correctly
+- [ ] Test subscription status persistence
+- [ ] Session 16 checkpoint
+
+### Session 17: User Onboarding Flow
+- [ ] Create welcome wizard for new users
+- [ ] Add tooltips to key features
+- [ ] Build guided tour for achievement creation
+- [ ] Add contextual help for job search
+- [ ] Create onboarding progress tracker
+- [ ] Session 17 checkpoint
+
+### Session 18: Performance Optimization & Final Delivery
+- [ ] Optimize database queries (add indexes)
+- [ ] Implement lazy loading for large lists
+- [ ] Add request caching headers
+- [ ] Optimize bundle size (code splitting)
+- [ ] Run Lighthouse performance audit
+- [ ] Final production checkpoint

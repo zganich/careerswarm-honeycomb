@@ -83,7 +83,7 @@ export async function handleStripeWebhook(req: Request, res: Response) {
         await db.update(users)
           .set({
             subscriptionStatus: subscription.status,
-            subscriptionEndDate: new Date(subscription.current_period_end * 1000),
+            subscriptionEndDate: (subscription as any).current_period_end ? new Date((subscription as any).current_period_end * 1000) : null,
           })
           .where(eq(users.id, user.id));
 

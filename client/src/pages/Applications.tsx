@@ -72,7 +72,7 @@ export default function Applications() {
     };
     
     applications.forEach(app => {
-      if (app.status in counts) {
+      if (app.status && app.status in counts) {
         counts[app.status as ApplicationStatus]++;
       }
     });
@@ -158,7 +158,7 @@ export default function Applications() {
                     </CardTitle>
                     <CardDescription className="flex items-center gap-2">
                       <Building2 className="h-4 w-4" />
-                      {application.job?.company || "Unknown Company"}
+                      {application.job?.companyName || "Unknown Company"}
                       {application.job?.location && (
                         <>
                           <span>•</span>
@@ -176,7 +176,7 @@ export default function Applications() {
                 <div className="grid gap-4 md:grid-cols-2">
                   {/* Left Column: Details */}
                   <div className="space-y-3">
-                    {application.job?.qualificationScore !== null && (
+                    {application.job && application.job.qualificationScore !== null && (
                       <div className="flex items-center gap-2">
                         <TrendingUp className="h-4 w-4 text-muted-foreground" />
                         <span className="text-sm">Match Score:</span>
@@ -184,17 +184,17 @@ export default function Applications() {
                       </div>
                     )}
                     
-                    {application.appliedDate && (
+                    {application.lastStatusUpdate && (
                       <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4 text-muted-foreground" />
                         <span className="text-sm">Applied:</span>
                         <span className="text-sm text-muted-foreground">
-                          {new Date(application.appliedDate).toLocaleDateString()}
+                          {new Date(application.lastStatusUpdate).toLocaleDateString()}
                         </span>
                       </div>
                     )}
 
-                    {application.job?.url && (
+                    {application.job?.jobUrl && (
                       <a
                         href={application.job.jobUrl}
                         target="_blank"
@@ -212,7 +212,7 @@ export default function Applications() {
                     <div>
                       <label className="text-sm font-medium mb-2 block">Update Status</label>
                       <Select
-                        value={application.status}
+                        value={application.status || ''}
                         onValueChange={(value) => handleStatusChange(application.id, value as ApplicationStatus)}
                       >
                         <SelectTrigger>

@@ -312,7 +312,7 @@ export function ResumeRenderer({ template, data, className = "" }: ResumeRendere
     );
   };
 
-  const sectionRenderers: Record<string, () => JSX.Element | null> = {
+  const sectionRenderers: Record<string, () => React.ReactElement | null> = {
     header: renderHeader,
     summary: renderSummary,
     experience: renderExperience,

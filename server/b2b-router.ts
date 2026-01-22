@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "./_core/trpc";
-import { invokeLLM } from "./_core/llm";
+import {} from "./_core/llm";
 import * as db from "./db";
 
 /**
@@ -19,8 +19,7 @@ export const b2bRouter = router({
       skills: z.array(z.string()).optional(),
       yearsExperience: z.array(z.number()).optional(), // [min, max]
       verifiedOnly: z.boolean().optional(),
-      limit: z.number().default(20),
-    }))
+      limit: z.number().default(20)}))
     .mutation(async ({ ctx, input }) => {
       // Check if user is a recruiter (in production, check user.role === 'recruiter')
       // For now, allow all authenticated users
@@ -63,8 +62,7 @@ export const b2bRouter = router({
             title: a.xyzAccomplishment || `${a.action?.substring(0, 50)}...`,
             verified: false, // In production, check verification table
             skills: [], // Extract from achievement text
-            impactScore: 75,
-          })),
+            impactScore: 75})),
           trajectoryScore: Math.round(avgImpactScore),
           contactAvailable: true,
           yearsExperience: 5, // Calculate from achievements date range
@@ -77,8 +75,7 @@ export const b2bRouter = router({
       return {
         matches: matches.slice(0, input.limit),
         total: matches.length,
-        query: input.query,
-      };
+        query: input.query};
     }),
 
   /**
@@ -86,8 +83,7 @@ export const b2bRouter = router({
    */
   getCandidateProfile: protectedProcedure
     .input(z.object({
-      candidateId: z.string(),
-    }))
+      candidateId: z.string()}))
     .query(async ({ ctx, input }) => {
       // Extract user ID from anonymized candidate ID
       const userId = parseInt(input.candidateId.replace('anon_', ''));
@@ -116,11 +112,9 @@ export const b2bRouter = router({
           startDate: a.startDate,
           endDate: a.endDate,
           impactScore: 75,
-          verified: false,
-        })),
+          verified: false})),
         skills: [], // Aggregate from achievements
-        trajectoryScore: 75,
-      };
+        trajectoryScore: 75};
     }),
 
   /**
@@ -129,8 +123,7 @@ export const b2bRouter = router({
   getMarketInsights: protectedProcedure
     .input(z.object({
       role: z.string(),
-      industry: z.string().optional(),
-    }))
+      industry: z.string().optional()}))
     .query(async ({ ctx, input }) => {
       // In production, aggregate real data
       // For now, return mock insights
@@ -147,8 +140,7 @@ export const b2bRouter = router({
             currency: "USD"
           },
           demandTrend: "increasing",
-          candidateCount: 1247,
-        },
+          candidateCount: 1247},
         benchmarks: [
           {
             metric: "Team Leadership",
@@ -162,5 +154,4 @@ export const b2bRouter = router({
           }
         ]
       };
-    }),
-});
+    })});

@@ -7,10 +7,8 @@ import {
   cacheGetOrSet,
   cacheIncr,
   cacheKey,
-  CachePrefix,
-  CacheTTL,
-  redis,
-} from "./cache";
+  CachePrefix
+  redis} from "./cache";
 
 describe("Cache Layer", () => {
   beforeAll(async () => {

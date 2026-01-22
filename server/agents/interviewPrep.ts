@@ -44,7 +44,7 @@ export async function generateInterviewQuestions(
     .map((a, idx) => `${idx + 1}. ${a.title}: ${a.description}${a.impact ? ` (Impact: ${a.impact})` : ""}`)
     .join("\n");
 
-  const model = getModelForTask("complex");
+  const model = getModelForTask("DEEP_REASONING");
 
   const systemPrompt = compressText(`You are an expert interview coach specializing in helping candidates prepare for technical and behavioral interviews. Your goal is to generate realistic, relevant interview questions based on the job description and match them to the candidate's achievements.
 
@@ -136,15 +136,16 @@ Return as JSON:
           additionalProperties: false
         }
       }
-    }
-  }, model);
+    },
+    model
+  });
 
   const content = response.choices[0].message.content;
-  if (!content) {
+  if (!content || typeof content !== 'string') {
     throw new Error("No content in LLM response");
   }
 
-  const result: InterviewPrepResult = JSON.parse(content);
+  const result: InterviewPrepResult = JSON.parse(content as string);
 
   // Cache for 7 days (interview questions don't change often)
   await cacheSet(cacheKey, result, CacheTTL.COMPANY_PROFILE);
@@ -165,7 +166,7 @@ export async function evaluatePracticeAnswer(
   improvements: string[];
   revisedAnswer?: string;
 }> {
-  const model = getModelForTask("complex");
+  const model = getModelForTask("DEEP_REASONING");
 
   const systemPrompt = compressText(`You are an expert interview coach providing constructive feedback on practice answers. Evaluate answers based on:
 - Structure (STAR method for behavioral questions)
@@ -225,15 +226,16 @@ Return as JSON:
           additionalProperties: false
         }
       }
-    }
-  }, model);
+    },
+    model
+  });
 
   const content = response.choices[0].message.content;
-  if (!content) {
+  if (!content || typeof content !== 'string') {
     throw new Error("No content in LLM response");
   }
 
-  return JSON.parse(content);
+  return JSON.parse(content as string);
 }
 
 /**
@@ -243,7 +245,7 @@ export async function generateFollowUpQuestions(
   originalQuestion: string,
   userAnswer: string
 ): Promise<string[]> {
-  const model = getModelForTask("simple");
+  const model = getModelForTask("CLASSIFICATION");
 
   const prompt = `Based on this interview exchange, generate 2-3 realistic follow-up questions an interviewer might ask:
 
@@ -274,14 +276,15 @@ Return as JSON array of strings:
           additionalProperties: false
         }
       }
-    }
-  }, model);
+    },
+    model
+  });
 
   const content = response.choices[0].message.content;
-  if (!content) {
+  if (!content || typeof content !== 'string') {
     return [];
   }
 
-  const parsed = JSON.parse(content);
+  const parsed = JSON.parse(content as string);
   return parsed.questions || [];
 }
