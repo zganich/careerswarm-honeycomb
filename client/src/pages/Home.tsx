@@ -46,7 +46,7 @@ export default function Home() {
 
       {/* Hero Section */}
       <section className="hero-honeycomb container py-24 md:py-32 relative" style={{
-        background: 'linear-gradient(to bottom, #FFF8E7 0%, #FFF8E7 85%, rgba(255, 248, 231, 0) 100%)'
+        background: 'linear-gradient(to bottom, #FEFDFB 0%, #FEFDFB 85%, rgba(254, 253, 251, 0) 100%)'
       }}>
         <div className="mx-auto max-w-4xl text-center relative z-10">
           <div className="inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm mb-6">

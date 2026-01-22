@@ -9,8 +9,8 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        // Primary: Honey Gold background, Charcoal text, rounded, matte finish
-        default: "bg-[#E8D399] text-[#2A2D34] hover:bg-[#DCC688] active:bg-[#D0B977] rounded-lg shadow-none border border-[#F4E5A1]",
+        // Primary: Matte Orange background, White text, rounded, matte finish
+        default: "bg-[#E8934C] text-white hover:bg-[#D67F3A] active:bg-[#C46B28] rounded-lg shadow-none border-none",
         
         // Secondary: Soft Amber background, Charcoal text, light yellow border
         secondary: "bg-[#D4A574] text-[#2A2D34] hover:bg-[#C89563] active:bg-[#BC8552] border border-[#F4E5A1] rounded-lg shadow-none",
