@@ -148,3 +148,90 @@ In Manus, save checkpoint with description: "Production-ready: All features comp
 **Time to Launch:** 5-8 hours of final testing, content review, and configuration
 
 **Recommendation:** Complete pre-launch checklist, then deploy. Post-launch enhancements can be added based on user feedback.
+
+
+---
+
+## Playwright E2E Test Suite (Optional - 30 hours)
+
+### Setup & Configuration (3 hours)
+- [ ] Install Playwright: `pnpm add -D @playwright/test`
+- [ ] Install browsers: `pnpm exec playwright install`
+- [ ] Create `playwright.config.ts` with cross-browser config
+- [ ] Set up test directory structure (`tests/auth`, `tests/achievements`, etc.)
+- [ ] Configure CI/CD workflow (`.github/workflows/playwright.yml`)
+
+### Authentication (3 hours)
+- [ ] Create `tests/fixtures/auth.ts` with database-level auth bypass
+- [ ] Implement JWT token generation for test users
+- [ ] Create authenticated page fixture
+- [ ] Write session management tests
+- [ ] Test cleanup (delete test users after tests)
+
+### Test Data Management (2 hours)
+- [ ] Create `tests/fixtures/test-data.ts` with data generators
+- [ ] Implement `generateAchievement()`, `generateJobDescription()`, `generateResume()`
+- [ ] Create `tests/fixtures/db-helpers.ts` for database operations
+- [ ] Implement cleanup utilities
+
+### Achievement Tests (4 hours)
+- [ ] Test STAR wizard form submission
+- [ ] Test Impact Meter scoring (verify high score for quantified results)
+- [ ] Test XYZ transformation (verify AI output format)
+- [ ] Test achievement edit and delete
+- [ ] Test achievement list pagination
+
+### Job Search Tests (3 hours)
+- [ ] Test job search with keyword
+- [ ] Test save job and verify auto-qualification
+- [ ] Test fit % badge appears
+- [ ] Test skills gap analysis
+
+### Resume Generation Tests (3 hours)
+- [ ] Test template selection
+- [ ] Test resume generation with achievements
+- [ ] Test resume preview rendering
+- [ ] Test PDF export download
+
+### Application Tracking Tests (2 hours)
+- [ ] Test status update (Draft → Applied → Interview)
+- [ ] Test follow-up reminder scheduling
+- [ ] Test interview prep reminder scheduling
+
+### Interview Prep Tests (2 hours)
+- [ ] Test question generation from job description
+- [ ] Test practice mode answer submission
+- [ ] Test AI feedback output
+
+### Stripe Tests (3 hours)
+- [ ] Test checkout redirect to Stripe
+- [ ] Simulate webhook events (`checkout.session.completed`)
+- [ ] Test usage limit enforcement (10 achievements, 3 resumes)
+- [ ] Test upgrade flow
+
+### Cross-Browser & Mobile (3 hours)
+- [ ] Run tests on Firefox
+- [ ] Run tests on Safari (WebKit)
+- [ ] Run tests on mobile Chrome (Pixel 5)
+- [ ] Run tests on mobile Safari (iPhone 12)
+- [ ] Fix browser-specific issues
+
+### Polish & Documentation (2 hours)
+- [ ] Fix flaky tests (add retries, improve selectors)
+- [ ] Optimize test performance (<15 minutes for full suite)
+- [ ] Write README for test suite
+- [ ] Document test patterns and troubleshooting
+- [ ] Create test dashboard (pass/fail trends)
+
+### Total: 30 hours, 25 tests, ~12 minute execution time
+
+**Benefits:**
+- Automated regression testing on every PR
+- 95%+ test coverage of critical user flows
+- Fast feedback loops (12 minutes vs 4-6 hours manual)
+- Cross-browser and mobile testing
+- CI/CD integration
+
+**ROI:** Break-even after 5-8 releases (~2 months), saves 50+ hours/year
+
+**See PLAYWRIGHT_TEST_PLAN.md for detailed implementation guide**
