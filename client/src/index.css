@@ -250,18 +250,18 @@
     position: absolute;
     inset: 0;
     background-image: 
-      /* Left: Fragmented hexagons (scattered, rotated, small) - very subtle */
-      radial-gradient(ellipse at 10% 50%, transparent 0%, transparent 30%, rgba(245, 166, 35, 0.01) 30%, rgba(245, 166, 35, 0.01) 35%, transparent 35%),
-      radial-gradient(ellipse at 15% 30%, transparent 0%, transparent 25%, rgba(245, 166, 35, 0.015) 25%, rgba(245, 166, 35, 0.015) 30%, transparent 30%),
-      radial-gradient(ellipse at 8% 70%, transparent 0%, transparent 20%, rgba(245, 166, 35, 0.008) 20%, rgba(245, 166, 35, 0.008) 25%, transparent 25%),
-      /* Center: Swarm-like (medium density, organic clustering) - slightly more visible */
-      radial-gradient(ellipse at 50% 50%, transparent 0%, transparent 40%, rgba(245, 166, 35, 0.025) 40%, rgba(245, 166, 35, 0.025) 45%, transparent 45%),
-      radial-gradient(ellipse at 45% 30%, transparent 0%, transparent 35%, rgba(245, 166, 35, 0.02) 35%, rgba(245, 166, 35, 0.02) 40%, transparent 40%),
-      radial-gradient(ellipse at 55% 70%, transparent 0%, transparent 38%, rgba(245, 166, 35, 0.02) 38%, rgba(245, 166, 35, 0.02) 43%, transparent 43%),
+      /* Left: Fragmented hexagons (scattered, rotated, small) - subtle but visible */
+      radial-gradient(ellipse at 10% 50%, transparent 0%, transparent 30%, rgba(245, 166, 35, 0.05) 30%, rgba(245, 166, 35, 0.05) 35%, transparent 35%),
+      radial-gradient(ellipse at 15% 30%, transparent 0%, transparent 25%, rgba(245, 166, 35, 0.06) 25%, rgba(245, 166, 35, 0.06) 30%, transparent 30%),
+      radial-gradient(ellipse at 8% 70%, transparent 0%, transparent 20%, rgba(245, 166, 35, 0.04) 20%, rgba(245, 166, 35, 0.04) 25%, transparent 25%),
+      /* Center: Swarm-like (medium density, organic clustering) - more visible */
+      radial-gradient(ellipse at 50% 50%, transparent 0%, transparent 40%, rgba(245, 166, 35, 0.08) 40%, rgba(245, 166, 35, 0.08) 45%, transparent 45%),
+      radial-gradient(ellipse at 45% 30%, transparent 0%, transparent 35%, rgba(245, 166, 35, 0.07) 35%, rgba(245, 166, 35, 0.07) 40%, transparent 40%),
+      radial-gradient(ellipse at 55% 70%, transparent 0%, transparent 38%, rgba(245, 166, 35, 0.07) 38%, rgba(245, 166, 35, 0.07) 43%, transparent 43%),
       /* Right: Cohesive hive (structured, regular hexagon grid) - most visible */
-      radial-gradient(ellipse at 90% 50%, transparent 0%, transparent 45%, rgba(245, 166, 35, 0.035) 45%, rgba(245, 166, 35, 0.035) 50%, transparent 50%),
-      radial-gradient(ellipse at 85% 30%, transparent 0%, transparent 45%, rgba(245, 166, 35, 0.03) 45%, rgba(245, 166, 35, 0.03) 50%, transparent 50%),
-      radial-gradient(ellipse at 92% 70%, transparent 0%, transparent 45%, rgba(245, 166, 35, 0.035) 45%, rgba(245, 166, 35, 0.035) 50%, transparent 50%);
+      radial-gradient(ellipse at 90% 50%, transparent 0%, transparent 45%, rgba(245, 166, 35, 0.12) 45%, rgba(245, 166, 35, 0.12) 50%, transparent 50%),
+      radial-gradient(ellipse at 85% 30%, transparent 0%, transparent 45%, rgba(245, 166, 35, 0.10) 45%, rgba(245, 166, 35, 0.10) 50%, transparent 50%),
+      radial-gradient(ellipse at 92% 70%, transparent 0%, transparent 45%, rgba(245, 166, 35, 0.12) 45%, rgba(245, 166, 35, 0.12) 50%, transparent 50%);
     background-size: 
       /* Left: Irregular sizes */
       80px 80px, 60px 60px, 50px 50px,
@@ -277,7 +277,7 @@
       /* Right: Structured alignment */
       100% 50%, 95% 30%, 100% 70%;
     background-repeat: no-repeat;
-    opacity: 0.25;
+    opacity: 0.5;
     pointer-events: none;
   }
   
@@ -290,16 +290,16 @@
       linear-gradient(90deg, 
         transparent 0%, 
         transparent 20%, 
-        rgba(245, 166, 35, 0.008) 50%, 
-        rgba(245, 166, 35, 0.015) 80%, 
-        rgba(245, 166, 35, 0.025) 100%
+        rgba(245, 166, 35, 0.03) 50%, 
+        rgba(245, 166, 35, 0.05) 80%, 
+        rgba(245, 166, 35, 0.08) 100%
       );
     mask-image: 
       repeating-linear-gradient(60deg, transparent 0px, transparent 10px, rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.1) 11px),
       repeating-linear-gradient(120deg, transparent 0px, transparent 10px, rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.1) 11px),
       repeating-linear-gradient(0deg, transparent 0px, transparent 10px, rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.1) 11px);
     mask-composite: intersect;
-    opacity: 0.15;
+    opacity: 0.35;
     pointer-events: none;
   }
   

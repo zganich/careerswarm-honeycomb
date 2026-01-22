@@ -425,3 +425,11 @@
 - [x] Test button contrast on off-white background (white text on orange = excellent contrast)
 - [x] Update hero gradient to fade off-white instead of cream
 - [x] Hero refinement checkpoint
+
+## Honeycomb Pattern Visibility Adjustment
+- [x] Increase honeycomb pattern opacity to make it visible (currently too feint)
+- [x] Target: Subtle but visible texture like reference image (gray honeycomb on white)
+- [x] Adjust radial gradient opacities (increased from 0.008-0.035% to 0.04-0.12%)
+- [x] Adjust overall pattern opacity (increased from 0.25/0.15 to 0.5/0.35)
+- [x] Test visibility on different screens (visible as subtle texture)
+- [x] Honeycomb visibility checkpoint
