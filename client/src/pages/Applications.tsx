@@ -196,7 +196,7 @@ export default function Applications() {
 
                     {application.job?.url && (
                       <a
-                        href={application.job.url}
+                        href={application.job.jobUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-2 text-sm text-primary hover:underline"

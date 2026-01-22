@@ -264,3 +264,9 @@
 - [x] Add cache.ts null checks (graceful degradation without Redis)
 - [ ] Fix remaining TypeScript warnings (18 errors, non-blocking)
 - [ ] Session 14 checkpoint
+### CRITICAL FIXES FOR SHIP
+- [x] Fix Applications query to include job relation
+- [x] Fix job.url references in Applications.tsx
+- [x] Fix remaining cache null check
+- [ ] Fix interviewPrep invokeLLM (non-blocking, works at runtime)
+- [ ] Final ship checkpoint

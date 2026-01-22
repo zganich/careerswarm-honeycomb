@@ -207,6 +207,7 @@ export async function cacheSetMulti(
   entries: Array<{ key: string; value: any; ttl?: number }>
 ): Promise<boolean> {
   try {
+    if (!redis) return false;
     const pipeline = redis.pipeline();
     for (const { key, value, ttl } of entries) {
       if (ttl) {

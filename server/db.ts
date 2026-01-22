@@ -318,10 +318,23 @@ export async function createApplication(data: Omit<InsertApplication, "id">): Pr
   return Number(result.insertId);
 }
 
-export async function getUserApplications(userId: number): Promise<Application[]> {
+export async function getUserApplications(userId: number) {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(applications).where(eq(applications.userId, userId)).orderBy(desc(applications.createdAt));
+  const result = await db
+    .select({
+      application: applications,
+      job: jobs,
+    })
+    .from(applications)
+    .leftJoin(jobs, eq(applications.jobId, jobs.id))
+    .where(eq(applications.userId, userId))
+    .orderBy(desc(applications.createdAt));
+  
+  return result.map(r => ({
+    ...r.application,
+    job: r.job || undefined,
+  }));
 }
 
 export async function getApplicationById(id: number, userId: number): Promise<Application | undefined> {
