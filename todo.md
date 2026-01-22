@@ -240,16 +240,14 @@
 - [x] Email templates (using notifyOwner for now, extensible to user emails)
 - [ ] Add notification preferences to user settings (future enhancement)
 - [x] Test notification delivery (scheduler running, checks every hour)
-- [ ] Session 11 checkpoint
-
+- [x] Session 11 checkpoint
 ### Session 12: Resume Templates & Preview
-- [ ] Create 3 resume templates (Modern, Classic, Tech)
-- [ ] Add template selection to resume generation
-- [ ] Build live preview component
-- [ ] Add PDF export with templates
+- [x] Create 3 resume templates (Modern, Classic, Tech)
+- [x] Add template selection UI with comparison
+- [x] Build resume preview component (ResumeRenderer)
+- [x] Add PDF export placeholder (browser print-to-PDF for now)
+- [x] Test templates with sample data
 - [ ] Session 12 checkpoint
-
-### Session 13: Interview Prep Agent
 - [ ] Create interview prep agent
 - [ ] Generate common questions from job description
 - [ ] Match questions to user achievements
