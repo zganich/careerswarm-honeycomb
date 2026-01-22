@@ -12,7 +12,7 @@ const TIERS = [
     price: "$0",
     description: "Perfect for getting started",
     features: [
-      "5 achievements",
+      "10 achievements",
       "3 resumes per month",
       "Basic templates",
       "STAR methodology wizard",
