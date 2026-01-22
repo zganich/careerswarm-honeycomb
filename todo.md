@@ -355,7 +355,7 @@
 - [x] Update Card component with cream backgrounds and light yellow borders
 - [x] Update Input component with off-white backgrounds
 - [x] Test contrast ratios for accessibility (verified visually - excellent contrast)
-- [ ] Phase 2 checkpoint
+- [x] Phase 2 checkpoint
 
 ### Phase 3: Dashboard Redesign
 - [ ] Redesign Dashboard (30/50/20 layout)
@@ -381,4 +381,18 @@
 - [x] Create SVG honeycomb pattern with gradient transition (fragmented → swarm → cohesive)
 - [x] Add CSS utility for hero-honeycomb background
 - [x] Apply to Home page hero section
-- [ ] Test responsiveness and performance
+- [x] Test responsiveness and performance
+
+## Sectional Design System (Lindy-Inspired)
+- [x] Redesign Home page with alternating section backgrounds (cream → white → lavender gradient)
+- [x] Add soft gradient feature cards (yellow, lavender, mint, coral, blue, orange)
+- [x] Add section labels with icons (uppercase, small text)
+- [x] Increase vertical padding between sections (80-128px py-20 md:py-32)
+- [x] Create "How It Works" 3-step section with gradient cards (lavender, yellow, mint)
+- [x] Update Features grid with unique card background colors (6 gradients)
+- [ ] Add Social Proof section (white background)
+- [x] Create Final CTA section with lavender gradient
+- [ ] Apply sectional design to Dashboard
+- [ ] Apply sectional design to all other pages
+- [ ] Test contrast ratios on all section backgrounds
+- [ ] Sectional design checkpoint

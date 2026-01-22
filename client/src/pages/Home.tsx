@@ -82,17 +82,78 @@ export default function Home() {
         </div>
       </section>
 
+      {/* How It Works Section */}
+      <section className="py-20 md:py-32 bg-white">
+        <div className="container mx-auto max-w-6xl">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <div className="w-4 h-4 rounded bg-primary/20 flex items-center justify-center">
+              <div className="w-2 h-2 rounded bg-primary"></div>
+            </div>
+            <span className="text-xs uppercase tracking-wider text-muted-foreground font-medium">How It Works</span>
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
+            Easy as one, two, three.
+          </h2>
+          <p className="text-center text-muted-foreground mb-16 max-w-2xl mx-auto">
+            Build your career evidence library in minutes, get AI-powered feedback, and generate tailored resumes for every opportunity.
+          </p>
+          <div className="grid md:grid-cols-3 gap-8">
+            <Card className="bg-gradient-to-br from-[#F5F3FF] to-[#EBE8FF] border-[#E8E3F5] relative overflow-visible">
+              <div className="absolute -top-4 -left-4 w-12 h-12 rounded-full bg-[#9B87D9] text-white flex items-center justify-center font-bold text-xl shadow-lg">
+                1
+              </div>
+              <CardContent className="pt-8">
+                <h3 className="font-semibold text-xl mb-3">Build Your Master Profile</h3>
+                <p className="text-muted-foreground text-sm">
+                  Capture your achievements using our STAR methodology wizard. Add metrics, context, and impact for each accomplishment.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-[#FFF9E6] to-[#FFF5D6] border-[#F4E5A1] relative overflow-visible">
+              <div className="absolute -top-4 -left-4 w-12 h-12 rounded-full bg-[#E8D399] text-[#2A2D34] flex items-center justify-center font-bold text-xl shadow-lg">
+                2
+              </div>
+              <CardContent className="pt-8">
+                <h3 className="font-semibold text-xl mb-3">Get Real-Time Feedback</h3>
+                <p className="text-muted-foreground text-sm">
+                  Watch your Impact Meter score rise as you add strong verbs, quantifiable results, and methodology. AI guides you to excellence.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-[#F0FFF4] to-[#E3F5F0] border-[#E3F5F0] relative overflow-visible">
+              <div className="absolute -top-4 -left-4 w-12 h-12 rounded-full bg-[#5BA88D] text-white flex items-center justify-center font-bold text-xl shadow-lg">
+                3
+              </div>
+              <CardContent className="pt-8">
+                <h3 className="font-semibold text-xl mb-3">Generate Tailored Resumes</h3>
+                <p className="text-muted-foreground text-sm">
+                  Paste any job description. Our AI matches your best achievements and generates optimized resumes in seconds.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* Features Grid */}
-      <section className="container py-16 md:py-24 bg-muted/50">
-        <div className="mx-auto max-w-5xl">
-          <h2 className="text-3xl font-bold text-center mb-12">
+      <section className="py-20 md:py-32 bg-background">
+        <div className="container mx-auto max-w-6xl">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <div className="w-4 h-4 rounded bg-primary/20 flex items-center justify-center">
+              <div className="w-2 h-2 rounded bg-primary"></div>
+            </div>
+            <span className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Features</span>
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
             Everything You Need to Stand Out
           </h2>
           <div className="grid md:grid-cols-3 gap-6">
-            <Card>
+            <Card className="bg-gradient-to-br from-[#FFF9E6] to-[#FFF5D6] border-[#F4E5A1]">
               <CardContent className="pt-6">
-                <div className="rounded-lg bg-primary/10 w-12 h-12 flex items-center justify-center mb-4">
-                  <Zap className="h-6 w-6 text-primary" />
+                <div className="rounded-lg bg-[#E8D399]/20 w-12 h-12 flex items-center justify-center mb-4">
+                  <Zap className="h-6 w-6 text-[#D4A55B]" />
                 </div>
                 <h3 className="font-semibold text-lg mb-2">Impact Meter</h3>
                 <p className="text-muted-foreground text-sm">
@@ -102,10 +163,10 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-gradient-to-br from-[#F5F3FF] to-[#EBE8FF] border-[#E8E3F5]">
               <CardContent className="pt-6">
-                <div className="rounded-lg bg-primary/10 w-12 h-12 flex items-center justify-center mb-4">
-                  <Target className="h-6 w-6 text-primary" />
+                <div className="rounded-lg bg-[#E8E3F5]/40 w-12 h-12 flex items-center justify-center mb-4">
+                  <Target className="h-6 w-6 text-[#9B87D9]" />
                 </div>
                 <h3 className="font-semibold text-lg mb-2">Google XYZ Format</h3>
                 <p className="text-muted-foreground text-sm">
@@ -114,10 +175,10 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-gradient-to-br from-[#F0FFF4] to-[#E3F5F0] border-[#E3F5F0]">
               <CardContent className="pt-6">
-                <div className="rounded-lg bg-primary/10 w-12 h-12 flex items-center justify-center mb-4">
-                  <TrendingUp className="h-6 w-6 text-primary" />
+                <div className="rounded-lg bg-[#E3F5F0]/60 w-12 h-12 flex items-center justify-center mb-4">
+                  <TrendingUp className="h-6 w-6 text-[#5BA88D]" />
                 </div>
                 <h3 className="font-semibold text-lg mb-2">Smart Matching</h3>
                 <p className="text-muted-foreground text-sm">
@@ -126,10 +187,10 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-gradient-to-br from-[#FFF5F3] to-[#F5E3E0] border-[#F5E3E0]">
               <CardContent className="pt-6">
-                <div className="rounded-lg bg-primary/10 w-12 h-12 flex items-center justify-center mb-4">
-                  <FileText className="h-6 w-6 text-primary" />
+                <div className="rounded-lg bg-[#F5E3E0]/60 w-12 h-12 flex items-center justify-center mb-4">
+                  <FileText className="h-6 w-6 text-[#D4A574]" />
                 </div>
                 <h3 className="font-semibold text-lg mb-2">STAR Methodology</h3>
                 <p className="text-muted-foreground text-sm">
@@ -138,10 +199,10 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-gradient-to-br from-[#F0F9FF] to-[#E0F2FE] border-[#BAE6FD]">
               <CardContent className="pt-6">
-                <div className="rounded-lg bg-primary/10 w-12 h-12 flex items-center justify-center mb-4">
-                  <Sparkles className="h-6 w-6 text-primary" />
+                <div className="rounded-lg bg-[#BAE6FD]/40 w-12 h-12 flex items-center justify-center mb-4">
+                  <Sparkles className="h-6 w-6 text-[#0EA5E9]" />
                 </div>
                 <h3 className="font-semibold text-lg mb-2">Master Profile</h3>
                 <p className="text-muted-foreground text-sm">
@@ -150,10 +211,10 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-gradient-to-br from-[#FFF7ED] to-[#FFEDD5] border-[#FED7AA]">
               <CardContent className="pt-6">
-                <div className="rounded-lg bg-primary/10 w-12 h-12 flex items-center justify-center mb-4">
-                  <Award className="h-6 w-6 text-primary" />
+                <div className="rounded-lg bg-[#FED7AA]/40 w-12 h-12 flex items-center justify-center mb-4">
+                  <Award className="h-6 w-6 text-[#F97316]" />
                 </div>
                 <h3 className="font-semibold text-lg mb-2">Tailored Output</h3>
                 <p className="text-muted-foreground text-sm">
@@ -166,8 +227,8 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="container py-24">
-        <div className="mx-auto max-w-3xl text-center bg-primary/5 rounded-2xl p-12 border">
+      <section className="py-24 md:py-32 bg-gradient-to-br from-[#F5F3FF] to-[#E8E3F5]">
+        <div className="container mx-auto max-w-3xl text-center bg-white/60 backdrop-blur-sm rounded-2xl p-12 border border-[#E8E3F5]">
           <h2 className="text-3xl font-bold mb-4">Ready to Transform Your Career Story?</h2>
           <p className="text-muted-foreground mb-8 text-lg">
             Join professionals who are landing interviews with evidence-based resumes.
