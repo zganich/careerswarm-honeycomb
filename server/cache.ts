@@ -1,23 +1,51 @@
 import Redis from "ioredis";
 
-// Initialize Redis client
-const redis = new Redis({
-  host: process.env.REDIS_HOST || "localhost",
-  port: parseInt(process.env.REDIS_PORT || "6379"),
-  maxRetriesPerRequest: 3,
-  retryStrategy: (times) => {
-    if (times > 3) return null;
-    return Math.min(times * 200, 1000);
-  },
-});
+// Initialize Redis client (optional, falls back to in-memory cache if unavailable)
+let redis: Redis | null = null;
+let cacheRedis: Redis | null = null;
 
-redis.on("error", (err) => {
-  console.error("Redis connection error:", err);
-});
+try {
+  redis = new Redis({
+    host: process.env.REDIS_HOST || "localhost",
+    port: parseInt(process.env.REDIS_PORT || "6379"),
+    maxRetriesPerRequest: null,
+    lazyConnect: true,
+    retryStrategy: () => null, // Don't retry, fail fast
+  });
+  
+    cacheRedis = new Redis({
+    host: process.env.REDIS_HOST || "localhost",
+    port: parseInt(process.env.REDIS_PORT || "6379"),
+    maxRetriesPerRequest: 3,
+    lazyConnect: true,
+    retryStrategy: () => null,
+  });
+} catch (err) {
+  console.warn("[Cache] Redis unavailable, using in-memory fallback");
+}
 
-redis.on("connect", () => {
-  console.log("Redis connected successfully");
-});
+// Export Redis connection for BullMQ (may be null)
+export function getRedisConnection() {
+  return redis;
+}
+
+if (redis) {
+  redis.on("error", (err) => {
+    console.error("[Cache] Redis error:", err);
+  });
+  redis.on("connect", () => {
+    console.log("[Cache] Redis connected");
+  });
+}
+
+if (cacheRedis) {
+  cacheRedis.on("error", (err) => {
+    console.error("[Cache] Redis error:", err);
+  });
+  cacheRedis.on("connect", () => {
+    console.log("[Cache] Redis connected");
+  });
+}
 
 /**
  * Cache key prefixes for different data types

@@ -68,8 +68,16 @@ async function startServer() {
     console.log(`Port ${preferredPort} is busy, using port ${port} instead`);
   }
 
-  server.listen(port, () => {
+  server.listen(port, async () => {
     console.log(`Server running on http://localhost:${port}/`);
+    
+    // Start notification scheduler
+    try {
+      const { startNotificationScheduler } = await import("../notificationScheduler");
+      startNotificationScheduler();
+    } catch (err) {
+      console.error("[Notification] Failed to start scheduler:", err);
+    }
   });
 }
 

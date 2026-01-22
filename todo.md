@@ -230,5 +230,33 @@
 - [x] Add navigation links to new pages (Jobs, Applications)
 - [x] Test job search flow end-to-end (via UI)
 - [x] Test application tracker workflow (via UI)
-- [ ] Fix ioredis version mismatch (non-blocking)
+- [ ] Fix ioredis version mismatch (non-blocking, server runs fine)
+- [x] Final checkpoint & delivery
+
+### Session 11: Email Notifications & Reminders (ACTIVE)
+- [x] Create notification scheduler service (database-backed, no Redis required)
+- [x] Add follow-up reminder logic (3 days, 1 week, 2 weeks)
+- [x] Add interview prep reminders (1 day before)
+- [x] Email templates (using notifyOwner for now, extensible to user emails)
+- [ ] Add notification preferences to user settings (future enhancement)
+- [x] Test notification delivery (scheduler running, checks every hour)
+- [ ] Session 11 checkpoint
+
+### Session 12: Resume Templates & Preview
+- [ ] Create 3 resume templates (Modern, Classic, Tech)
+- [ ] Add template selection to resume generation
+- [ ] Build live preview component
+- [ ] Add PDF export with templates
+- [ ] Session 12 checkpoint
+
+### Session 13: Interview Prep Agent
+- [ ] Create interview prep agent
+- [ ] Generate common questions from job description
+- [ ] Match questions to user achievements
+- [ ] Add practice mode with AI feedback
+- [ ] Session 13 checkpoint
+
+### Session 14: Final Testing & Optimization
+- [ ] End-to-end testing all flows
+- [ ] Performance optimization
 - [ ] Final checkpoint & delivery

@@ -1,5 +1,7 @@
 import { Queue, Worker, Job, QueueEvents } from "bullmq";
-import { redis } from "./cache";
+import { getRedisConnection } from "./cache";
+
+const redis = getRedisConnection();
 
 /**
  * Job queue names
@@ -82,6 +84,10 @@ const queues = new Map<QueueName, Queue>();
  * Get or create queue
  */
 export function getQueue(name: QueueName): Queue {
+  if (!redis) {
+    throw new Error("Redis connection not available for job queue");
+  }
+  
   if (!queues.has(name)) {
     const queue = new Queue(name, {
       connection: redis,
@@ -203,6 +209,10 @@ export function createWorker<T>(
     };
   }
 ): Worker<T> {
+  if (!redis) {
+    throw new Error("Redis connection not available for worker");
+  }
+  
   return new Worker<T>(queueName, processor, {
     connection: redis,
     concurrency: options?.concurrency || 5,
@@ -214,6 +224,9 @@ export function createWorker<T>(
  * Listen to queue events
  */
 export function createQueueEvents(queueName: QueueName): QueueEvents {
+  if (!redis) {
+    throw new Error("Redis connection not available for queue events");
+  }
   return new QueueEvents(queueName, { connection: redis });
 }
 
