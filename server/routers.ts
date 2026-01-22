@@ -151,13 +151,8 @@ Extract:
 
     create: protectedProcedure
       .use(async ({ ctx, next }) => {
-        // Check usage limits for free tier
-        if (ctx.user.subscriptionTier === "free") {
-          const achievements = await db.getUserAchievements(ctx.user.id);
-          if (achievements.length >= 5) {
-            throw new Error("Free tier limit reached. Upgrade to Pro for unlimited achievements.");
-          }
-        }
+        const { checkAchievementLimit } = await import("./usageLimits");
+        await checkAchievementLimit(ctx.user.id);
         return next({ ctx });
       })
       .input(z.object({
@@ -987,7 +982,6 @@ ${a.startDate || ""} - ${a.endDate || "Present"}
 
         return { url: session.url };
       }),
-  }),
+    }),
 });
-
 export type AppRouter = typeof appRouter;

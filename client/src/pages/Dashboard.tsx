@@ -11,6 +11,7 @@ export default function Dashboard() {
   const { data: jobs, isLoading: jobsLoading } = trpc.jobDescriptions.list.useQuery();
   const { data: resumes, isLoading: resumesLoading } = trpc.resumes.list.useQuery();
   const { data: suggestions } = trpc.achievements.getSuggestions.useQuery();
+  const { data: usageStats } = trpc.system.usageStats.useQuery();
 
   if (authLoading) {
     return (
@@ -77,6 +78,9 @@ export default function Dashboard() {
               <Link href="/resumes">
                 <Button variant="ghost">Resumes</Button>
               </Link>
+              <Link href="/applications">
+                <Button variant="ghost">Applications</Button>
+              </Link>
               <Link href="/past-jobs">
                 <Button variant="ghost">Past Jobs</Button>
               </Link>
@@ -117,6 +121,72 @@ export default function Dashboard() {
             </Link>
           ))}
         </div>
+
+        {/* Usage Stats */}
+        {usageStats && (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Usage & Limits</span>
+                {usageStats.subscriptionTier === "free" && (
+                  <Link href="/pricing">
+                    <Button size="sm" variant="outline">Upgrade to Pro</Button>
+                  </Link>
+                )}
+              </CardTitle>
+              <CardDescription>
+                {usageStats.subscriptionTier === "pro" ? "Pro Plan - Unlimited" : "Free Plan"}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {/* Achievements Usage */}
+                <div>
+                  <div className="flex justify-between text-sm mb-2">
+                    <span>Achievements</span>
+                    <span className="text-muted-foreground">
+                      {usageStats.achievements.used} / {usageStats.achievements.limit === Infinity ? "∞" : usageStats.achievements.limit}
+                    </span>
+                  </div>
+                  {usageStats.achievements.limit !== Infinity && (
+                    <div className="w-full bg-muted rounded-full h-2">
+                      <div
+                        className={`h-2 rounded-full transition-all ${
+                          usageStats.achievements.percentage >= 90 ? "bg-red-500" :
+                          usageStats.achievements.percentage >= 70 ? "bg-yellow-500" :
+                          "bg-green-500"
+                        }`}
+                        style={{ width: `${Math.min(usageStats.achievements.percentage, 100)}%` }}
+                      />
+                    </div>
+                  )}
+                </div>
+                
+                {/* Resumes Usage */}
+                <div>
+                  <div className="flex justify-between text-sm mb-2">
+                    <span>Resumes (this month)</span>
+                    <span className="text-muted-foreground">
+                      {usageStats.resumes.used} / {usageStats.resumes.limit === Infinity ? "∞" : usageStats.resumes.limit}
+                    </span>
+                  </div>
+                  {usageStats.resumes.limit !== Infinity && (
+                    <div className="w-full bg-muted rounded-full h-2">
+                      <div
+                        className={`h-2 rounded-full transition-all ${
+                          usageStats.resumes.percentage >= 90 ? "bg-red-500" :
+                          usageStats.resumes.percentage >= 70 ? "bg-yellow-500" :
+                          "bg-green-500"
+                        }`}
+                        style={{ width: `${Math.min(usageStats.resumes.percentage, 100)}%` }}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Average Impact Score */}
         {achievements && achievements.length > 0 && (

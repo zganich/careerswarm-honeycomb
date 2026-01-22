@@ -210,7 +210,7 @@
 - [x] Display fit % and skills gap
 - [x] Add sort by match score
 - [x] Make responsive (mobile/tablet/desktop)
-- [ ] Session 8 checkpoint
+- [x] Session 8 checkpoint
 
 ### Session 9: Application Tracker & Usage Limits (ACTIVE)
 - [x] Create /applications page with pipeline view
@@ -220,4 +220,15 @@
 - [ ] Enforce Free tier limits (10 achievements, 3 resumes/month)
 - [ ] Show upgrade prompts when limits reached
 - [ ] Add usage stats to dashboard
-- [ ] Sessions 8-9 checkpoint
+- [x] Sessions 8-9 checkpoint
+
+### Session 10: Final Polish & Testing (ACTIVE)
+- [x] Create usage limits middleware
+- [x] Add subscription check to protected procedures
+- [x] Show upgrade prompts when limits hit (via TRPCError messages)
+- [x] Update Dashboard with usage stats widget
+- [x] Add navigation links to new pages (Jobs, Applications)
+- [x] Test job search flow end-to-end (via UI)
+- [x] Test application tracker workflow (via UI)
+- [ ] Fix ioredis version mismatch (non-blocking)
+- [ ] Final checkpoint & delivery
