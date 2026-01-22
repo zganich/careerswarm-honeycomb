@@ -1,5 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import { WelcomeWizard } from "@/components/WelcomeWizard";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
 import { Award, FileText, Target, TrendingUp, Plus, Loader2, Lightbulb, Briefcase } from "lucide-react";
@@ -7,6 +9,7 @@ import { Link, Redirect } from "wouter";
 
 export default function Dashboard() {
   const { user, loading: authLoading } = useAuth();
+  const [showWelcome, setShowWelcome] = useState(false);
   const { data: achievements, isLoading: achievementsLoading } = trpc.achievements.list.useQuery();
   const { data: jobs, isLoading: jobsLoading } = trpc.jobDescriptions.list.useQuery();
   const { data: resumes, isLoading: resumesLoading } = trpc.resumes.list.useQuery();
@@ -24,6 +27,13 @@ export default function Dashboard() {
   if (!user) {
     return <Redirect to="/" />;
   }
+
+  // Show welcome wizard for new users (no achievements yet)
+  useEffect(() => {
+    if (user && achievements && achievements.length === 0 && !localStorage.getItem('welcomeCompleted')) {
+      setShowWelcome(true);
+    }
+  }, [user, achievements]);
 
   const stats = [
     {
@@ -54,7 +64,16 @@ export default function Dashboard() {
     : 0;
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      {showWelcome && (
+        <WelcomeWizard
+          onComplete={() => {
+            setShowWelcome(false);
+            localStorage.setItem('welcomeCompleted', 'true');
+          }}
+        />
+      )}
+      <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container flex h-16 items-center justify-between">
@@ -280,5 +299,6 @@ export default function Dashboard() {
         </div>
       </main>
     </div>
+    </>
   );
 }

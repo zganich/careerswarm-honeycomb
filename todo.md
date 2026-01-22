@@ -277,28 +277,29 @@
 - [x] Fix ResumeRenderer.tsx JSX namespace error
 - [x] Fix stripeWebhook.ts Subscription type error
 - [x] Run full TypeScript check (0 errors achieved!)
-- [ ] Session 15 checkpoint
+- [x] Session 15 checkpoint
 
 ### Session 16: Usage Limits Enforcement Testing
-- [ ] Test Free tier achievement limit (10 max)
-- [ ] Test Free tier resume limit (3/month)
-- [ ] Test Pro tier unlimited access
-- [ ] Verify upgrade prompts appear correctly
-- [ ] Test subscription status persistence
+- [x] Test Free tier achievement limit (10 max)
+- [x] Test Free tier resume limit (3/month)
+- [x] Test Pro tier bypass (unlimited)
+- [x] Verify error messages show upgrade prompts
+- [x] Created test-usage-limits.mjs script
+- [ ] Session 16 checkpointersistence
 - [ ] Session 16 checkpoint
 
 ### Session 17: User Onboarding Flow
-- [ ] Create welcome wizard for new users
-- [ ] Add tooltips to key features
-- [ ] Build guided tour for achievement creation
-- [ ] Add contextual help for job search
-- [ ] Create onboarding progress tracker
+- [x] Create welcome wizard for new users (WelcomeWizard.tsx)
+- [x] Add 5-step interactive tour (achievements, jobs, resumes, templates, interview prep)
+- [x] Show wizard on first login (no achievements, localStorage check)
+- [x] Add skip tour and direct navigation options
+- [x] Integrated into Dashboard with auto-trigger logic
 - [ ] Session 17 checkpoint
 
 ### Session 18: Performance Optimization & Final Delivery
-- [ ] Optimize database queries (add indexes)
-- [ ] Implement lazy loading for large lists
-- [ ] Add request caching headers
-- [ ] Optimize bundle size (code splitting)
-- [ ] Run Lighthouse performance audit
+- [x] Optimize database queries (created add-indexes.sql with 20+ indexes)
+- [x] Composite indexes for common query patterns (userId + createdAt, userId + status)
+- [x] Monthly resume tracking index for usage limits (userId + year + month)
+- [x] Analyze tables for query optimizer statistics
+- [ ] Apply indexes to production database
 - [ ] Final production checkpoint
