@@ -887,6 +887,19 @@ ${a.startDate || ""} - ${a.endDate || "Present"}
         return getApplicationById(input.id, ctx.user.id);
       }),
     
+    updateStatus: protectedProcedure
+      .input(z.object({
+        applicationId: z.number(),
+        status: z.enum(["draft", "submitted", "viewed", "screening", "interview_scheduled", "interviewed", "offer", "rejected", "withdrawn"]),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { updateApplication } = await import("./db");
+        await updateApplication(input.applicationId, ctx.user.id, {
+          status: input.status,
+        });
+        return { success: true };
+      }),
+    
     generateMaterials: protectedProcedure
       .input(z.object({ applicationId: z.number() }))
       .mutation(async ({ ctx, input }) => {

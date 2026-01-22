@@ -148,10 +148,10 @@
 - [x] Stripe products configuration
 - [x] Stripe webhook handler
 - [x] Stripe checkout router
-- [ ] Update Pricing page with real Stripe integration
+- [x] Update Pricing page with real Stripe integration
 - [ ] Add usage limits enforcement
 - [ ] Final testing
-- [ ] Sessions 2-7 checkpoint
+- [x] Sessions 2-7 checkpoint
 
 ## UNIFIED RECODE (Weeks 1-6)
 
@@ -201,3 +201,23 @@
 - [ ] Security audit (data privacy, encryption)
 - [ ] Performance optimization
 - [ ] Deploy and launch
+
+### Session 8: Job Search UI (ACTIVE)
+- [x] Create /jobs page with search form
+- [x] Add job results list with cards
+- [x] Implement save job feature
+- [x] Add auto-qualification on save
+- [x] Display fit % and skills gap
+- [x] Add sort by match score
+- [x] Make responsive (mobile/tablet/desktop)
+- [ ] Session 8 checkpoint
+
+### Session 9: Application Tracker & Usage Limits (ACTIVE)
+- [x] Create /applications page with pipeline view
+- [x] Add status columns (9 statuses: draft → withdrawn)
+- [x] Implement status updates via dropdown
+- [ ] Add usage limits middleware
+- [ ] Enforce Free tier limits (10 achievements, 3 resumes/month)
+- [ ] Show upgrade prompts when limits reached
+- [ ] Add usage stats to dashboard
+- [ ] Sessions 8-9 checkpoint
