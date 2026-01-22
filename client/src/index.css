@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Instrument+Sans:wght@400;500;600;700&display=swap');
 
 @custom-variant dark (&:is(.dark *));
 
@@ -40,86 +41,149 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  
+  /* Controlled Chaos Design System - Earthy Palette */
+  --color-basalt: #2A2D34;
+  --color-clay: #8C7A6B;
+  --color-slate: #6C7D8C;
+  --color-moss: #5A7D5A;
+  --color-terra-cotta: #B46A55;
+  --color-fog: #D8D8D8;
+  --color-honey: #D4A55B;
+  --color-charcoal: #1A1D24;
 }
 
 :root {
-  --primary: var(--color-blue-700);
-  --primary-foreground: var(--color-blue-50);
-  --sidebar-primary: var(--color-blue-600);
-  --sidebar-primary-foreground: var(--color-blue-50);
-  --chart-1: var(--color-blue-300);
-  --chart-2: var(--color-blue-500);
-  --chart-3: var(--color-blue-600);
-  --chart-4: var(--color-blue-700);
-  --chart-5: var(--color-blue-800);
-  --radius: 0.65rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.235 0.015 65);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.235 0.015 65);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.235 0.015 65);
-  --secondary: oklch(0.98 0.001 286.375);
-  --secondary-foreground: oklch(0.4 0.015 65);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.141 0.005 285.823);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.623 0.214 259.815);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.235 0.015 65);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.623 0.214 259.815);
+  /* Primary Palette - Honey (warm attention) */
+  --primary: #D4A55B;
+  --primary-foreground: #1A1D24;
+  
+  /* Secondary Palette - Clay (human touch) */
+  --secondary: #8C7A6B;
+  --secondary-foreground: #FFFFFF;
+  
+  /* Accent - Terra Cotta (energy, action) */
+  --accent: #B46A55;
+  --accent-foreground: #FFFFFF;
+  
+  /* Muted - Fog (breathing room) */
+  --muted: #D8D8D8;
+  --muted-foreground: #2A2D34;
+  
+  /* Background - Light with Fog tint */
+  --background: #F5F5F5;
+  --foreground: #2A2D34;
+  
+  /* Card - White with subtle texture */
+  --card: #FFFFFF;
+  --card-foreground: #2A2D34;
+  
+  /* Popover */
+  --popover: #FFFFFF;
+  --popover-foreground: #2A2D34;
+  
+  /* Destructive - Terra Cotta */
+  --destructive: #B46A55;
+  --destructive-foreground: #FFFFFF;
+  
+  /* Border - Clay */
+  --border: #8C7A6B;
+  --input: #8C7A6B;
+  --ring: #D4A55B;
+  
+  /* Charts - Earthy tones */
+  --chart-1: #5A7D5A; /* Moss */
+  --chart-2: #6C7D8C; /* Slate */
+  --chart-3: #8C7A6B; /* Clay */
+  --chart-4: #B46A55; /* Terra Cotta */
+  --chart-5: #D4A55B; /* Honey */
+  
+  /* Sidebar */
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #2A2D34;
+  --sidebar-primary: #D4A55B;
+  --sidebar-primary-foreground: #1A1D24;
+  --sidebar-accent: #8C7A6B;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #8C7A6B;
+  --sidebar-ring: #D4A55B;
+  
+  /* Border radius - subtle (4px max) */
+  --radius: 0.25rem;
 }
 
 .dark {
-  --primary: var(--color-blue-700);
-  --primary-foreground: var(--color-blue-50);
-  --sidebar-primary: var(--color-blue-500);
-  --sidebar-primary-foreground: var(--color-blue-50);
-  --background: oklch(0.141 0.005 285.823);
-  --foreground: oklch(0.85 0.005 65);
-  --card: oklch(0.21 0.006 285.885);
-  --card-foreground: oklch(0.85 0.005 65);
-  --popover: oklch(0.21 0.006 285.885);
-  --popover-foreground: oklch(0.85 0.005 65);
-  --secondary: oklch(0.24 0.006 286.033);
-  --secondary-foreground: oklch(0.7 0.005 65);
-  --muted: oklch(0.274 0.006 286.033);
-  --muted-foreground: oklch(0.705 0.015 286.067);
-  --accent: oklch(0.274 0.006 286.033);
-  --accent-foreground:  oklch(0.92 0.005 65);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.488 0.243 264.376);
-  --chart-1: var(--color-blue-300);
-  --chart-2: var(--color-blue-500);
-  --chart-3: var(--color-blue-600);
-  --chart-4: var(--color-blue-700);
-  --chart-5: var(--color-blue-800);
-  --sidebar: oklch(0.21 0.006 285.885);
-  --sidebar-foreground: oklch(0.85 0.005 65);
-  --sidebar-accent: oklch(0.274 0.006 286.033);
-  --sidebar-accent-foreground:  oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.488 0.243 264.376);
+  /* Dark mode - Basalt foundation */
+  --background: #2A2D34;
+  --foreground: #D8D8D8;
+  
+  --card: #1A1D24;
+  --card-foreground: #D8D8D8;
+  
+  --popover: #1A1D24;
+  --popover-foreground: #D8D8D8;
+  
+  --primary: #D4A55B;
+  --primary-foreground: #1A1D24;
+  
+  --secondary: #6C7D8C;
+  --secondary-foreground: #FFFFFF;
+  
+  --muted: #6C7D8C;
+  --muted-foreground: #D8D8D8;
+  
+  --accent: #B46A55;
+  --accent-foreground: #FFFFFF;
+  
+  --destructive: #B46A55;
+  --destructive-foreground: #FFFFFF;
+  
+  --border: #6C7D8C;
+  --input: #6C7D8C;
+  --ring: #D4A55B;
+  
+  --sidebar: #1A1D24;
+  --sidebar-foreground: #D8D8D8;
+  --sidebar-primary: #D4A55B;
+  --sidebar-primary-foreground: #1A1D24;
+  --sidebar-accent: #6C7D8C;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #6C7D8C;
+  --sidebar-ring: #D4A55B;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+  
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    letter-spacing: 0;
   }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+  
+  h1 {
+    font-size: 48px;
+    letter-spacing: -0.03em;
+  }
+  
+  h2 {
+    font-size: 32px;
+  }
+  
+  h3 {
+    font-size: 24px;
+  }
+  
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),
   [type="button"]:not(:disabled),
@@ -136,22 +200,12 @@
 @layer components {
   /**
    * Custom container utility that centers content and adds responsive padding.
-   *
-   * This overrides Tailwind's default container behavior to:
-   * - Auto-center content (mx-auto)
-   * - Add responsive horizontal padding
-   * - Set max-width for large screens
-   *
-   * Usage: <div className="container">...</div>
-   *
-   * For custom widths, use max-w-* utilities directly:
-   * <div className="max-w-6xl mx-auto px-4">...</div>
    */
   .container {
     width: 100%;
     margin-left: auto;
     margin-right: auto;
-    padding-left: 1rem; /* 16px - mobile padding */
+    padding-left: 1rem;
     padding-right: 1rem;
   }
 
@@ -162,16 +216,92 @@
 
   @media (min-width: 640px) {
     .container {
-      padding-left: 1.5rem; /* 24px - tablet padding */
+      padding-left: 1.5rem;
       padding-right: 1.5rem;
     }
   }
 
   @media (min-width: 1024px) {
     .container {
-      padding-left: 2rem; /* 32px - desktop padding */
+      padding-left: 2rem;
       padding-right: 2rem;
-      max-width: 1280px; /* Standard content width */
+      max-width: 1280px;
     }
   }
+  
+  /* Swarm Pattern Background */
+  .swarm-pattern {
+    background-image: radial-gradient(circle, rgba(140, 122, 107, 0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  
+  /* Matte Card Finish */
+  .card-matte {
+    background: var(--card);
+    border: 1px solid var(--border);
+    box-shadow: none;
+  }
+  
+  /* Organic Line (slightly imperfect) */
+  .organic-line {
+    position: relative;
+  }
+  
+  .organic-line::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--primary);
+    filter: blur(0.5px);
+  }
+}
+
+/* Swarm Animation Keyframes */
+@keyframes swarm-float {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  33% {
+    transform: translate(2px, -2px);
+  }
+  66% {
+    transform: translate(-2px, 2px);
+  }
+}
+
+@keyframes swarm-gather {
+  0% {
+    opacity: 0;
+    transform: translate(var(--tx, 0), var(--ty, 0)) scale(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+@keyframes swarm-scatter {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--tx, 0), var(--ty, 0)) scale(0);
+  }
+}
+
+.swarm-float {
+  animation: swarm-float 3s ease-in-out infinite;
+}
+
+.swarm-gather {
+  animation: swarm-gather 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.swarm-scatter {
+  animation: swarm-scatter 0.4s cubic-bezier(0.36, 0, 0.66, -0.56) forwards;
 }

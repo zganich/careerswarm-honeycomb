@@ -54,9 +54,18 @@ function Input({
       type={type}
       data-slot="input"
       className={cn(
-        "file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-        "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
-        "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+        // Clay background, Basalt border, Honey focus
+        "bg-[#8C7A6B]/10 dark:bg-[#8C7A6B]/20 border-[#2A2D34] text-[#2A2D34] dark:text-[#D8D8D8]",
+        "placeholder:text-[#8C7A6B] placeholder:italic",
+        "file:text-foreground selection:bg-[#D4A55B] selection:text-[#1A1D24]",
+        "h-10 w-full min-w-0 rounded-[4px] border px-3 py-2 text-base shadow-none transition-all outline-none",
+        "file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium",
+        "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
+        "md:text-sm",
+        // Focus state: Honey border with brief swarm dots animation
+        "focus-visible:border-[#D4A55B] focus-visible:ring-2 focus-visible:ring-[#D4A55B]/30",
+        // Invalid state: Terra Cotta
+        "aria-invalid:ring-[#B46A55]/20 dark:aria-invalid:ring-[#B46A55]/40 aria-invalid:border-[#B46A55]",
         className
       )}
       onCompositionStart={handleCompositionStart}

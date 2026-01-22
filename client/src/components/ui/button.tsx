@@ -5,28 +5,38 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-ring aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
-        destructive:
-          "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
-        outline:
-          "border bg-transparent shadow-xs hover:bg-accent dark:bg-transparent dark:border-input dark:hover:bg-input/50",
-        secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost:
-          "hover:bg-accent dark:hover:bg-accent/50",
-        link: "text-primary underline-offset-4 hover:underline",
+        // Primary: Honey background, Charcoal text, no border, matte finish
+        default: "bg-[#D4A55B] text-[#1A1D24] hover:bg-[#C49550] active:bg-[#B48545] rounded-[4px] shadow-none",
+        
+        // Secondary: Clay background, Charcoal text, 1px Slate border
+        secondary: "bg-[#8C7A6B] text-white hover:bg-[#7C6A5B] active:bg-[#6C5A4B] border border-[#6C7D8C] rounded-[4px] shadow-none",
+        
+        // Tertiary: Text only with Honey underline on hover
+        tertiary: "bg-transparent text-[#2A2D34] dark:text-[#D8D8D8] hover:underline hover:decoration-[#D4A55B] hover:underline-offset-4 rounded-none shadow-none",
+        
+        // Destructive: Terra Cotta
+        destructive: "bg-[#B46A55] text-white hover:bg-[#A45A45] active:bg-[#944A35] rounded-[4px] shadow-none",
+        
+        // Outline: Transparent with border
+        outline: "border border-[#8C7A6B] bg-transparent text-[#2A2D34] dark:text-[#D8D8D8] hover:bg-[#8C7A6B]/10 dark:hover:bg-[#8C7A6B]/20 rounded-[4px] shadow-none",
+        
+        // Ghost: Minimal hover state
+        ghost: "bg-transparent text-[#2A2D34] dark:text-[#D8D8D8] hover:bg-[#D8D8D8]/20 dark:hover:bg-[#6C7D8C]/20 rounded-[4px] shadow-none",
+        
+        // Link: Simple text link
+        link: "text-[#D4A55B] underline-offset-4 hover:underline rounded-none shadow-none",
       },
       size: {
-        default: "h-9 px-4 py-2 has-[>svg]:px-3",
-        sm: "h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
-        lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
-        icon: "size-9",
+        default: "h-10 px-4 py-2 has-[>svg]:px-3",
+        sm: "h-8 px-3 has-[>svg]:px-2.5",
+        lg: "h-12 px-6 has-[>svg]:px-4",
+        icon: "size-10",
         "icon-sm": "size-8",
-        "icon-lg": "size-10",
+        "icon-lg": "size-12",
       },
     },
     defaultVariants: {
