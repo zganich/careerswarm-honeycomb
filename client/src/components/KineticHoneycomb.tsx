@@ -95,6 +95,46 @@ export function KineticHoneycomb({ onGridCompletion }: KineticHoneycombProps = {
     };
     canvas.addEventListener('mousemove', handleMouseMove);
 
+    // Touch event handlers for mobile support
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        const touch = e.touches[0];
+        const rect = canvas.getBoundingClientRect();
+        mouseRef.current = {
+          x: touch.clientX - rect.left,
+          y: touch.clientY - rect.top,
+        };
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (mouseMoveScheduledRef.current) return;
+      if (e.touches.length > 0) {
+        mouseMoveScheduledRef.current = true;
+        requestAnimationFrame(() => {
+          const touch = e.touches[0];
+          const rect = canvas.getBoundingClientRect();
+          mouseRef.current = {
+            x: touch.clientX - rect.left,
+            y: touch.clientY - rect.top,
+          };
+          mouseMoveScheduledRef.current = false;
+        });
+        // Prevent scroll only when touching the canvas
+        e.preventDefault();
+      }
+    };
+
+    const handleTouchEnd = () => {
+      // Reset mouse position to neutral when touch ends
+      // This prevents particles from staying attracted to last touch point
+      mouseRef.current = { x: -1000, y: -1000 };
+    };
+
+    canvas.addEventListener('touchstart', handleTouchStart, { passive: true });
+    canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+    canvas.addEventListener('touchend', handleTouchEnd, { passive: true });
+
     // Animation loop
     const animate = () => {
       // FPS tracking
@@ -242,6 +282,9 @@ export function KineticHoneycomb({ onGridCompletion }: KineticHoneycombProps = {
     return () => {
       window.removeEventListener('resize', resizeCanvas);
       canvas.removeEventListener('mousemove', handleMouseMove);
+      canvas.removeEventListener('touchstart', handleTouchStart);
+      canvas.removeEventListener('touchmove', handleTouchMove);
+      canvas.removeEventListener('touchend', handleTouchEnd);
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
