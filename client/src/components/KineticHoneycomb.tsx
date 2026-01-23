@@ -6,19 +6,29 @@ interface Particle {
   vx: number;
   vy: number;
   size: number;
+  baseSize: number; // Original size before variance
   opacity: number;
   rotation: number;
   rotationSpeed: number;
+  color: string; // Color for gradient (gray → orange)
   targetX?: number;
   targetY?: number;
   isLocked?: boolean;
+  // Spring physics for overshoot
+  springVelocity?: number;
+  springOffset?: number;
 }
 
-export function KineticHoneycomb() {
+interface KineticHoneycombProps {
+  onGridCompletion?: (percentage: number) => void;
+}
+
+export function KineticHoneycomb({ onGridCompletion }: KineticHoneycombProps = {}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
   const mouseRef = useRef({ x: 0, y: 0 });
   const animationFrameRef = useRef<number>(0);
+  const lastCompletionRef = useRef<number>(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -41,16 +51,22 @@ export function KineticHoneycomb() {
       const particleCount = 65; // Increased by 30% for denser chaos
       
       for (let i = 0; i < particleCount; i++) {
+        const baseSize = Math.random() * 3 + 1;
+        const sizeVariance = 1 + (Math.random() - 0.5) * 0.4; // 20% variance
         particlesRef.current.push({
           x: Math.random() * canvas.width * 0.3, // Left 30%
           y: Math.random() * canvas.height,
           vx: (Math.random() - 0.5) * 0.5,
           vy: (Math.random() - 0.5) * 0.5,
-          size: Math.random() * 3 + 1,
+          baseSize: baseSize,
+          size: baseSize * sizeVariance, // Organic size variance
           opacity: Math.random() * 0.3 + 0.1,
           rotation: Math.random() * Math.PI * 2, // Random initial rotation
           rotationSpeed: (Math.random() - 0.5) * 0.02, // Subtle tumbling
+          color: '#9CA3AF', // Start as muted gray
           isLocked: false,
+          springVelocity: 0,
+          springOffset: 0,
         });
       }
     };
@@ -71,14 +87,38 @@ export function KineticHoneycomb() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       particlesRef.current.forEach((particle) => {
-        // If particle is locked in grid, don't move it
+        // Spring physics for locked particles (overshoot effect)
         if (particle.isLocked) {
-          drawHexagon(ctx, particle.x, particle.y, particle.size * 2, particle.opacity, 0); // No rotation when locked
+          if (particle.springOffset !== undefined && particle.springVelocity !== undefined) {
+            // Apply spring force
+            const springForce = -particle.springOffset * 0.3; // Spring constant
+            particle.springVelocity = (particle.springVelocity + springForce) * 0.85; // Damping
+            particle.springOffset += particle.springVelocity;
+            
+            // Stop spring when settled
+            if (Math.abs(particle.springOffset) < 0.1 && Math.abs(particle.springVelocity) < 0.1) {
+              particle.springOffset = 0;
+              particle.springVelocity = 0;
+            }
+          }
+          
+          const springX = particle.x + (particle.springOffset || 0);
+          const springY = particle.y + (particle.springOffset || 0) * 0.5;
+          drawHexagon(ctx, springX, springY, particle.baseSize * 2, particle.opacity, 0, particle.color);
           return;
         }
         
         // Update rotation (tumbling through space)
         particle.rotation += particle.rotationSpeed;
+        
+        // Color gradient: gray → orange based on position
+        const progressToRight = particle.x / (canvas.width * 0.7);
+        const grayR = 156, grayG = 163, grayB = 175; // #9CA3AF
+        const orangeR = 249, orangeG = 115, orangeB = 22; // #F97316
+        const r = Math.round(grayR + (orangeR - grayR) * progressToRight);
+        const g = Math.round(grayG + (orangeG - grayG) * progressToRight);
+        const b = Math.round(grayB + (orangeB - grayB) * progressToRight);
+        particle.color = `rgb(${r}, ${g}, ${b})`;
 
         // Mouse attraction (The Flow)
         const dx = mouseRef.current.x - particle.x;
@@ -106,9 +146,19 @@ export function KineticHoneycomb() {
         // Check if particle reached right side (lock into grid)
         if (particle.x > canvas.width * 0.7) {
           particle.isLocked = true;
-          particle.x = Math.round(particle.x / 30) * 30; // Snap to grid
-          particle.y = Math.round(particle.y / 30) * 30;
+          const targetX = Math.round(particle.x / 30) * 30;
+          const targetY = Math.round(particle.y / 30) * 30;
+          
+          // Initialize spring physics for overshoot
+          const velocity = Math.sqrt(particle.vx * particle.vx + particle.vy * particle.vy);
+          particle.springVelocity = velocity * 2; // Initial overshoot velocity
+          particle.springOffset = 0;
+          
+          particle.x = targetX;
+          particle.y = targetY;
+          particle.size = particle.baseSize; // Normalize size when locked
           particle.opacity = 0.4;
+          particle.color = '#F97316'; // Full brand orange when locked
           particle.rotationSpeed = 0; // Stop tumbling when locked
         }
 
@@ -120,13 +170,20 @@ export function KineticHoneycomb() {
         particle.x = Math.max(0, Math.min(canvas.width, particle.x));
         particle.y = Math.max(0, Math.min(canvas.height, particle.y));
 
-        // Draw particle with rotation
-        if (particle.isLocked) {
-          drawHexagon(ctx, particle.x, particle.y, particle.size * 2, particle.opacity, 0);
-        } else {
-          drawHexagon(ctx, particle.x, particle.y, particle.size, particle.opacity, particle.rotation);
-        }
+        // Draw particle with rotation and color
+        drawHexagon(ctx, particle.x, particle.y, particle.size, particle.opacity, particle.rotation, particle.color);
       });
+      
+      // Track grid completion percentage
+      const lockedCount = particlesRef.current.filter(p => p.isLocked).length;
+      const totalCount = particlesRef.current.length;
+      const completionPercentage = Math.round((lockedCount / totalCount) * 100);
+      
+      // Trigger callback when completion percentage changes
+      if (onGridCompletion && completionPercentage !== lastCompletionRef.current) {
+        lastCompletionRef.current = completionPercentage;
+        onGridCompletion(completionPercentage);
+      }
 
       animationFrameRef.current = requestAnimationFrame(animate);
     };
@@ -142,14 +199,15 @@ export function KineticHoneycomb() {
     };
   }, []);
 
-  // Draw hexagon outline with rotation
+  // Draw hexagon outline with rotation and color
   const drawHexagon = (
     ctx: CanvasRenderingContext2D,
     x: number,
     y: number,
     size: number,
     opacity: number,
-    rotation: number = 0
+    rotation: number = 0,
+    color: string = '#F97316'
   ) => {
     ctx.save();
     ctx.translate(x, y);
@@ -167,7 +225,19 @@ export function KineticHoneycomb() {
       }
     }
     ctx.closePath();
-    ctx.strokeStyle = `rgba(249, 115, 22, ${opacity})`;
+    
+    // Parse color and apply opacity
+    if (color.startsWith('#')) {
+      // Hex color
+      const r = parseInt(color.slice(1, 3), 16);
+      const g = parseInt(color.slice(3, 5), 16);
+      const b = parseInt(color.slice(5, 7), 16);
+      ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+    } else {
+      // RGB color
+      ctx.strokeStyle = color.replace('rgb', 'rgba').replace(')', `, ${opacity})`);
+    }
+    
     ctx.lineWidth = 1;
     ctx.stroke();
     
