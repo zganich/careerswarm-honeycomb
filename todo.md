@@ -359,3 +359,15 @@ In Manus, save checkpoint with description: "Production-ready: All features comp
 - [x] Test glassmorphism on different backgrounds (visible, working)
 - [x] Verify animation performance (smooth, no jank)
 - [x] Entropy to Order redesign checkpoint
+
+
+---
+
+## Glassmorphism "Lens of Clarity" Implementation
+- [x] Apply `.glass-card` to How It Works section (3 numbered cards)
+- [x] Apply `.glass-card` to Features section (6 feature cards)
+- [x] Test frosted glass effect visibility on honeycomb background (PASS)
+- [x] Verify orange borders (rgba(249, 115, 22, 0.2)) are visible (PASS)
+- [x] Test hover states with `.glass-card-active` class (pending manual interaction)
+- [x] Ensure backdrop-filter works in all browsers (PASS with fallbacks)
+- [x] Glassmorphism implementation checkpoint

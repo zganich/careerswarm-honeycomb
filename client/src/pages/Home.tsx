@@ -104,7 +104,7 @@ export default function Home() {
             Build your career evidence library in minutes, get AI-powered feedback, and generate tailored resumes for every opportunity.
           </p>
           <div className="grid md:grid-cols-3 gap-8">
-            <Card className="bg-gradient-to-br from-[#F5F3FF] to-[#EBE8FF] border-[#E8E3F5] relative overflow-visible">
+            <Card className="glass-card hover:glass-card-active transition-all duration-300 relative overflow-visible">
               <div className="absolute -top-4 -left-4 w-12 h-12 rounded-full bg-[#9B87D9] text-white flex items-center justify-center font-bold text-xl shadow-lg">
                 1
               </div>
@@ -116,7 +116,7 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-[#FFF9E6] to-[#FFF5D6] border-[#F4E5A1] relative overflow-visible">
+            <Card className="glass-card hover:glass-card-active transition-all duration-300 relative overflow-visible">
               <div className="absolute -top-4 -left-4 w-12 h-12 rounded-full bg-[#E8D399] text-[#2A2D34] flex items-center justify-center font-bold text-xl shadow-lg">
                 2
               </div>
@@ -128,7 +128,7 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-[#F0FFF4] to-[#E3F5F0] border-[#E3F5F0] relative overflow-visible">
+            <Card className="glass-card hover:glass-card-active transition-all duration-300 relative overflow-visible">
               <div className="absolute -top-4 -left-4 w-12 h-12 rounded-full bg-[#5BA88D] text-white flex items-center justify-center font-bold text-xl shadow-lg">
                 3
               </div>
@@ -158,7 +158,7 @@ export default function Home() {
             Everything You Need to Stand Out
           </h2>
           <div className="grid md:grid-cols-3 gap-6">
-            <Card className="bg-gradient-to-br from-[#FFF9E6] to-[#FFF5D6] border-[#F4E5A1]">
+            <Card className="glass-card hover:glass-card-active transition-all duration-300">
               <CardContent className="pt-6">
                 <div className="rounded-lg bg-[#E8D399]/20 w-12 h-12 flex items-center justify-center mb-4">
                   <Zap className="h-6 w-6 text-[#D4A55B]" />
@@ -171,7 +171,7 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-[#F5F3FF] to-[#EBE8FF] border-[#E8E3F5]">
+            <Card className="glass-card hover:glass-card-active transition-all duration-300">
               <CardContent className="pt-6">
                 <div className="rounded-lg bg-[#E8E3F5]/40 w-12 h-12 flex items-center justify-center mb-4">
                   <Target className="h-6 w-6 text-[#9B87D9]" />
@@ -183,7 +183,7 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-[#F0FFF4] to-[#E3F5F0] border-[#E3F5F0]">
+            <Card className="glass-card hover:glass-card-active transition-all duration-300">
               <CardContent className="pt-6">
                 <div className="rounded-lg bg-[#E3F5F0]/60 w-12 h-12 flex items-center justify-center mb-4">
                   <TrendingUp className="h-6 w-6 text-[#5BA88D]" />
@@ -195,7 +195,7 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-[#FFF5F3] to-[#F5E3E0] border-[#F5E3E0]">
+            <Card className="glass-card hover:glass-card-active transition-all duration-300">
               <CardContent className="pt-6">
                 <div className="rounded-lg bg-[#F5E3E0]/60 w-12 h-12 flex items-center justify-center mb-4">
                   <FileText className="h-6 w-6 text-[#D4A574]" />
@@ -207,7 +207,7 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-[#F0F9FF] to-[#E0F2FE] border-[#BAE6FD]">
+            <Card className="glass-card hover:glass-card-active transition-all duration-300">
               <CardContent className="pt-6">
                 <div className="rounded-lg bg-[#BAE6FD]/40 w-12 h-12 flex items-center justify-center mb-4">
                   <Sparkles className="h-6 w-6 text-[#0EA5E9]" />
@@ -219,7 +219,7 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-[#FFF7ED] to-[#FFEDD5] border-[#FED7AA]">
+            <Card className="glass-card hover:glass-card-active transition-all duration-300">
               <CardContent className="pt-6">
                 <div className="rounded-lg bg-[#FED7AA]/40 w-12 h-12 flex items-center justify-center mb-4">
                   <Award className="h-6 w-6 text-[#F97316]" />
