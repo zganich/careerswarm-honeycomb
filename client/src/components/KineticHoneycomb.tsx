@@ -29,6 +29,13 @@ export function KineticHoneycomb({ onGridCompletion }: KineticHoneycombProps = {
   const mouseRef = useRef({ x: 0, y: 0 });
   const animationFrameRef = useRef<number>(0);
   const lastCompletionRef = useRef<number>(0);
+  const mouseMoveScheduledRef = useRef<boolean>(false);
+  
+  // FPS tracking for adaptive quality
+  const fpsHistoryRef = useRef<number[]>([]);
+  const lastFrameTimeRef = useRef<number>(performance.now());
+  const lowFpsCountRef = useRef<number>(0);
+  const initialParticleCountRef = useRef<number>(50);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -72,18 +79,60 @@ export function KineticHoneycomb({ onGridCompletion }: KineticHoneycombProps = {
     };
     initParticles();
 
-    // Mouse tracking
+    // Throttled mouse tracking using requestAnimationFrame
     const handleMouseMove = (e: MouseEvent) => {
-      const rect = canvas.getBoundingClientRect();
-      mouseRef.current = {
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
-      };
+      if (mouseMoveScheduledRef.current) return;
+      
+      mouseMoveScheduledRef.current = true;
+      requestAnimationFrame(() => {
+        const rect = canvas.getBoundingClientRect();
+        mouseRef.current = {
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top,
+        };
+        mouseMoveScheduledRef.current = false;
+      });
     };
     canvas.addEventListener('mousemove', handleMouseMove);
 
     // Animation loop
     const animate = () => {
+      // FPS tracking
+      const currentTime = performance.now();
+      const deltaTime = currentTime - lastFrameTimeRef.current;
+      const currentFPS = Math.round(1000 / deltaTime);
+      lastFrameTimeRef.current = currentTime;
+      
+      // Track FPS history (last 60 frames = ~1 second)
+      fpsHistoryRef.current.push(currentFPS);
+      if (fpsHistoryRef.current.length > 60) {
+        fpsHistoryRef.current.shift();
+      }
+      
+      // Adaptive quality: reduce particles if FPS stays below 50 for 2+ seconds
+      if (fpsHistoryRef.current.length >= 60) {
+        const avgFPS = fpsHistoryRef.current.reduce((a, b) => a + b, 0) / fpsHistoryRef.current.length;
+        if (avgFPS < 50) {
+          lowFpsCountRef.current++;
+          // If low FPS persists for 120 frames (~2 seconds), reduce particles
+          if (lowFpsCountRef.current >= 120 && particlesRef.current.length > 35) {
+            const unlocked = particlesRef.current.filter(p => !p.isLocked);
+            if (unlocked.length > 0) {
+              // Remove 15 particles (50 → 35)
+              const toRemove = Math.min(15, unlocked.length);
+              for (let i = 0; i < toRemove; i++) {
+                const idx = particlesRef.current.indexOf(unlocked[i]);
+                if (idx > -1) particlesRef.current.splice(idx, 1);
+              }
+              console.log(`[Adaptive Quality] Reduced particles to ${particlesRef.current.length} for better performance`);
+            }
+            lowFpsCountRef.current = 0; // Reset counter
+          }
+        } else {
+          lowFpsCountRef.current = 0; // Reset if FPS recovers
+        }
+      }
+      
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       particlesRef.current.forEach((particle) => {
