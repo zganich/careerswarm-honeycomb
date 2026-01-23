@@ -74,8 +74,8 @@
   --muted: #F9F5EF;
   --muted-foreground: #5A5A5A;
   
-  /* Background - Cream (primary surface) */
-  --background: #FFF8E7;
+  /* Background - Off-White (primary surface) - Lindy-inspired light aesthetic */
+  --background: #FEFDFB;
   --foreground: #2A2D34;
   
   /* Card - Off-White (content containers) */
@@ -277,7 +277,7 @@
       /* Right: Structured alignment */
       100% 50%, 95% 30%, 100% 70%;
     background-repeat: no-repeat;
-    opacity: 0.5;
+    opacity: 0.8;
     pointer-events: none;
   }
   
@@ -290,16 +290,16 @@
       linear-gradient(90deg, 
         transparent 0%, 
         transparent 20%, 
-        rgba(245, 166, 35, 0.03) 50%, 
-        rgba(245, 166, 35, 0.05) 80%, 
-        rgba(245, 166, 35, 0.08) 100%
+        rgba(245, 166, 35, 0.06) 50%, 
+        rgba(245, 166, 35, 0.10) 80%, 
+        rgba(245, 166, 35, 0.15) 100%
       );
     mask-image: 
-      repeating-linear-gradient(60deg, transparent 0px, transparent 10px, rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.1) 11px),
-      repeating-linear-gradient(120deg, transparent 0px, transparent 10px, rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.1) 11px),
-      repeating-linear-gradient(0deg, transparent 0px, transparent 10px, rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.1) 11px);
+      repeating-linear-gradient(60deg, transparent 0px, transparent 10px, rgba(0,0,0,0.2) 10px, rgba(0,0,0,0.2) 11px),
+      repeating-linear-gradient(120deg, transparent 0px, transparent 10px, rgba(0,0,0,0.2) 10px, rgba(0,0,0,0.2) 11px),
+      repeating-linear-gradient(0deg, transparent 0px, transparent 10px, rgba(0,0,0,0.2) 10px, rgba(0,0,0,0.2) 11px);
     mask-composite: intersect;
-    opacity: 0.35;
+    opacity: 0.6;
     pointer-events: none;
   }
   
