@@ -170,7 +170,7 @@
   }
   
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-weight: 700;
     line-height: 1.1;
     letter-spacing: -0.02em;
@@ -354,6 +354,22 @@
     box-shadow: 0 20px 40px rgba(249, 115, 22, 0.15), 0 10px 20px rgba(0, 0, 0, 0.1);
   }
   
+  /* Magnifying Glass Effect: Reveal honeycomb structure on hover */
+  .tilt-on-hover:hover ~ .hero-honeycomb::before,
+  .tilt-on-hover:hover ~ .hero-honeycomb::after,
+  .tilt-on-hover:hover ~ .hero-honeycomb > div:first-child::before {
+    opacity: 1.2; /* 20% increase in honeycomb visibility */
+  }
+  
+  /* For cards inside hero section */
+  .hero-honeycomb:has(.tilt-on-hover:hover)::before {
+    opacity: 1.08; /* 0.9 * 1.2 = 1.08 */
+  }
+  
+  .hero-honeycomb:has(.tilt-on-hover:hover)::after {
+    opacity: 1.02; /* 0.85 * 1.2 = 1.02 */
+  }
+  
   /* Matte Card Finish */
   .card-matte {
     background: var(--card);
@@ -375,6 +391,23 @@
     height: 2px;
     background: var(--primary);
     filter: blur(0.5px);
+  }
+}
+
+/* Accessibility: Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .hero-honeycomb::before,
+  .hero-honeycomb::after,
+  .hero-honeycomb > div:first-child::before {
+    animation: none !important;
+  }
+  
+  .tilt-on-hover:hover {
+    transform: none !important;
+  }
+  
+  canvas {
+    display: none !important;
   }
 }
 

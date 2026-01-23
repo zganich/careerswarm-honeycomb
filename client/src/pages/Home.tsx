@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { getLoginUrl } from "@/const";
 import { Target, Zap, TrendingUp, FileText, Sparkles, Award } from "lucide-react";
+import { KineticHoneycomb } from "@/components/KineticHoneycomb";
 import { Link } from "wouter";
 
 export default function Home() {
@@ -48,6 +49,7 @@ export default function Home() {
       <section className="hero-honeycomb container py-24 md:py-32 relative" style={{
         background: 'linear-gradient(to bottom, #FEFDFB 0%, #FEFDFB 85%, rgba(254, 253, 251, 0) 100%)'
       }}>
+        <KineticHoneycomb />
         <div className="mx-auto max-w-4xl text-center relative z-10">
           <div className="inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm mb-6">
             <Sparkles className="h-4 w-4 text-primary" />

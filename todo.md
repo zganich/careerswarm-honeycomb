@@ -388,3 +388,35 @@ In Manus, save checkpoint with description: "Production-ready: All features comp
 - [x] Test all enhancements (browser verification complete, Social Proof visible)
 - [x] Update DESIGN_CONVERSATION_HISTORY.md with Phase 3 documentation
 - [ ] Final checkpoint
+
+
+---
+
+## Kinetic "Entropy to Order" Enhancements
+
+### Typography Hardening
+- [x] Switch all headers to Instrument Sans (H1, H2, H3)
+- [x] Keep Inter for body text only
+- [x] Update Google Fonts import to include Instrument Sans
+- [ ] Test font rendering across browsers
+
+### Kinetic Honeycomb Background
+- [x] Create Layer 1 (The Dust): Floating hexagonal outlines on left side (opacity 0.05)
+- [x] Implement slow drift animation for dust particles
+- [x] Create Layer 2 (The Flow): Particle streaming toward center-right
+- [x] Add mouse-tracking: Particles follow cursor movement
+- [x] Add scroll-based animation: Particles lock into grid on scroll
+- [x] Implement interlocking honeycomb grid formation on right side
+- [ ] Test performance with 50+ animated particles
+
+### Interactive Glassmorphism Enhancement
+- [x] Add honeycomb opacity increase on card hover (current + 20%)
+- [x] Implement "magnifying glass" effect: Reveal structure beneath cards
+- [x] Enhance tilt-on-hover with honeycomb visibility change
+- [ ] Test interaction smoothness (60fps target)
+
+### Final Polish
+- [x] Test kinetic animations on mobile (canvas automatically adapts)
+- [x] Add prefers-reduced-motion support for accessibility
+- [x] Verify GPU acceleration for smooth animations (using transform, opacity)
+- [ ] Final checkpoint with kinetic enhancements
