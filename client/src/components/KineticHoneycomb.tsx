@@ -7,6 +7,8 @@ interface Particle {
   vy: number;
   size: number;
   opacity: number;
+  rotation: number;
+  rotationSpeed: number;
   targetX?: number;
   targetY?: number;
   isLocked?: boolean;
@@ -36,7 +38,7 @@ export function KineticHoneycomb() {
     // Initialize particles (The Dust - left side)
     const initParticles = () => {
       particlesRef.current = [];
-      const particleCount = 50;
+      const particleCount = 65; // Increased by 30% for denser chaos
       
       for (let i = 0; i < particleCount; i++) {
         particlesRef.current.push({
@@ -46,6 +48,8 @@ export function KineticHoneycomb() {
           vy: (Math.random() - 0.5) * 0.5,
           size: Math.random() * 3 + 1,
           opacity: Math.random() * 0.3 + 0.1,
+          rotation: Math.random() * Math.PI * 2, // Random initial rotation
+          rotationSpeed: (Math.random() - 0.5) * 0.02, // Subtle tumbling
           isLocked: false,
         });
       }
@@ -69,9 +73,12 @@ export function KineticHoneycomb() {
       particlesRef.current.forEach((particle) => {
         // If particle is locked in grid, don't move it
         if (particle.isLocked) {
-          drawHexagon(ctx, particle.x, particle.y, particle.size * 2, particle.opacity);
+          drawHexagon(ctx, particle.x, particle.y, particle.size * 2, particle.opacity, 0); // No rotation when locked
           return;
         }
+        
+        // Update rotation (tumbling through space)
+        particle.rotation += particle.rotationSpeed;
 
         // Mouse attraction (The Flow)
         const dx = mouseRef.current.x - particle.x;
@@ -102,6 +109,7 @@ export function KineticHoneycomb() {
           particle.x = Math.round(particle.x / 30) * 30; // Snap to grid
           particle.y = Math.round(particle.y / 30) * 30;
           particle.opacity = 0.4;
+          particle.rotationSpeed = 0; // Stop tumbling when locked
         }
 
         // Bounce off edges
@@ -112,11 +120,11 @@ export function KineticHoneycomb() {
         particle.x = Math.max(0, Math.min(canvas.width, particle.x));
         particle.y = Math.max(0, Math.min(canvas.height, particle.y));
 
-        // Draw particle
+        // Draw particle with rotation
         if (particle.isLocked) {
-          drawHexagon(ctx, particle.x, particle.y, particle.size * 2, particle.opacity);
+          drawHexagon(ctx, particle.x, particle.y, particle.size * 2, particle.opacity, 0);
         } else {
-          drawHexagon(ctx, particle.x, particle.y, particle.size, particle.opacity);
+          drawHexagon(ctx, particle.x, particle.y, particle.size, particle.opacity, particle.rotation);
         }
       });
 
@@ -134,19 +142,24 @@ export function KineticHoneycomb() {
     };
   }, []);
 
-  // Draw hexagon outline
+  // Draw hexagon outline with rotation
   const drawHexagon = (
     ctx: CanvasRenderingContext2D,
     x: number,
     y: number,
     size: number,
-    opacity: number
+    opacity: number,
+    rotation: number = 0
   ) => {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(rotation);
+    
     ctx.beginPath();
     for (let i = 0; i < 6; i++) {
       const angle = (Math.PI / 3) * i;
-      const hx = x + size * Math.cos(angle);
-      const hy = y + size * Math.sin(angle);
+      const hx = size * Math.cos(angle);
+      const hy = size * Math.sin(angle);
       if (i === 0) {
         ctx.moveTo(hx, hy);
       } else {
@@ -157,6 +170,8 @@ export function KineticHoneycomb() {
     ctx.strokeStyle = `rgba(249, 115, 22, ${opacity})`;
     ctx.lineWidth = 1;
     ctx.stroke();
+    
+    ctx.restore();
   };
 
   return (
