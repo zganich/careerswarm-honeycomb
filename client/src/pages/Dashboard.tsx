@@ -131,7 +131,7 @@ export default function Dashboard() {
         <div className="grid md:grid-cols-3 gap-6 mb-8">
           {stats.map((stat) => (
             <Link key={stat.title} href={stat.href}>
-              <Card className="cursor-pointer hover:border-primary transition-colors">
+              <Card className="glass-card hover:glass-card-active cursor-pointer transition-all duration-300">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <CardTitle className="text-sm font-medium text-muted-foreground">
                     {stat.title}
@@ -149,7 +149,7 @@ export default function Dashboard() {
 
         {/* Usage Stats */}
         {usageStats && (
-          <Card className="mb-8">
+          <Card className="glass-card mb-8">
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <span>Usage & Limits</span>
@@ -215,7 +215,7 @@ export default function Dashboard() {
 
         {/* Average Impact Score */}
         {achievements && achievements.length > 0 && (
-          <Card className="mb-8">
+          <Card className="glass-card mb-8">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="h-5 w-5 text-primary" />
@@ -238,7 +238,7 @@ export default function Dashboard() {
 
         {/* AI Suggestions */}
         {suggestions && suggestions.length > 0 && (
-          <Card className="mb-6 border-primary/50">
+          <Card className="glass-card mb-6 border-primary/50">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Lightbulb className="h-5 w-5 text-yellow-500" />
