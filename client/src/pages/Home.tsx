@@ -54,12 +54,14 @@ export default function Home() {
             <span>AI-Powered Career Evidence Platform</span>
           </div>
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
-            Transform Your Achievements Into{" "}
-            <span className="text-primary">Powerful Resumes</span>
+            Turn Career Chaos into{" "}
+            <span className="relative inline-block">
+              <span className="text-primary relative z-10">Structured Success</span>
+              <span className="absolute inset-0 bg-primary/10 blur-xl animate-pulse" />
+            </span>
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Stop guessing what recruiters want. Build a Master Profile of your career evidence,
-            get real-time quality feedback, and generate tailored resumes that stand out.
+            The job market is messy. Your resume shouldn't be. Let the Swarm assemble your fragmented experience into a perfect fit.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             {isAuthenticated ? (

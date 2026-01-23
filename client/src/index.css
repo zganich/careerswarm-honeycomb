@@ -1,6 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Instrument+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 @custom-variant dark (&:is(.dark *));
 
@@ -58,42 +58,42 @@
 }
 
 :root {
-  /* Primary Palette - Matte Orange (warm attention) */
-  --primary: #E8934C;
+  /* Primary Palette - Vibrant Matte Orange (energetic action) */
+  --primary: #F97316;
   --primary-foreground: #FFFFFF;
   
   /* Secondary Palette - Soft Amber (subtle actions) */
   --secondary: #D4A574;
-  --secondary-foreground: #2A2D34;
+  --secondary-foreground: #111827;
   
-  /* Accent - Warm Yellow (highlights) */
-  --accent: #F4E5A1;
-  --accent-foreground: #2A2D34;
+  /* Accent - Light Orange (highlights) */
+  --accent: #FED7AA;
+  --accent-foreground: #111827;
   
-  /* Muted - Light Beige (breathing room) */
-  --muted: #F9F5EF;
-  --muted-foreground: #5A5A5A;
+  /* Muted - Cool Grey (section backgrounds) */
+  --muted: #F8FAFC;
+  --muted-foreground: #6B7280;
   
-  /* Background - Off-White (primary surface) - Lindy-inspired light aesthetic */
-  --background: #FEFDFB;
-  --foreground: #2A2D34;
+  /* Background - Pure White (Lab aesthetic) */
+  --background: #FFFFFF;
+  --foreground: #111827;
   
-  /* Card - Off-White (content containers) */
-  --card: #FEFDFB;
-  --card-foreground: #2A2D34;
+  /* Card - Pure White (content containers) */
+  --card: #FFFFFF;
+  --card-foreground: #111827;
   
   /* Popover */
-  --popover: #FEFDFB;
-  --popover-foreground: #2A2D34;
+  --popover: #FFFFFF;
+  --popover-foreground: #111827;
   
   /* Destructive - Soft Coral */
   --destructive: #F5E3E0;
   --destructive-foreground: #8C3A2B;
   
-  /* Border - Warm Yellow (subtle) */
-  --border: #F4E5A1;
-  --input: #F9F5EF;
-  --ring: #E8D399;
+  /* Border - Light Orange (subtle) */
+  --border: rgba(249, 115, 22, 0.2);
+  --input: #F8FAFC;
+  --ring: #F97316;
   
   /* Charts - Light earthy tones */
   --chart-1: #E3F5F0; /* Light Mint */
@@ -103,14 +103,14 @@
   --chart-5: #E8D399; /* Honey Gold */
   
   /* Sidebar */
-  --sidebar: #FEFDFB;
-  --sidebar-foreground: #2A2D34;
-  --sidebar-primary: #E8D399;
-  --sidebar-primary-foreground: #2A2D34;
-  --sidebar-accent: #D4A574;
-  --sidebar-accent-foreground: #2A2D34;
-  --sidebar-border: #F4E5A1;
-  --sidebar-ring: #E8D399;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #111827;
+  --sidebar-primary: #F97316;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #FED7AA;
+  --sidebar-accent-foreground: #111827;
+  --sidebar-border: rgba(249, 115, 22, 0.2);
+  --sidebar-ring: #F97316;
   
   /* Border radius - rounded (8px for Lindy-style) */
   --radius: 0.5rem;
@@ -170,9 +170,10 @@
   }
   
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    line-height: 1.2;
-    letter-spacing: -0.01em;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
   }
   
   h1 {
@@ -239,68 +240,107 @@
     background-size: 20px 20px;
   }
   
-  /* Honeycomb Hero Pattern - Fragmented to Cohesive Gradient */
+  /* Entropy to Order - Animated Honeycomb Flow */
   .hero-honeycomb {
     position: relative;
     overflow: hidden;
   }
   
+  /* Left: Chaos - Scattered hexagon fragments (dust particles) */
   .hero-honeycomb::before {
     content: '';
     position: absolute;
     inset: 0;
     background-image: 
-      /* Left: Fragmented hexagons (scattered, rotated, small) - subtle but visible */
-      radial-gradient(ellipse at 10% 50%, transparent 0%, transparent 30%, rgba(245, 166, 35, 0.05) 30%, rgba(245, 166, 35, 0.05) 35%, transparent 35%),
-      radial-gradient(ellipse at 15% 30%, transparent 0%, transparent 25%, rgba(245, 166, 35, 0.06) 25%, rgba(245, 166, 35, 0.06) 30%, transparent 30%),
-      radial-gradient(ellipse at 8% 70%, transparent 0%, transparent 20%, rgba(245, 166, 35, 0.04) 20%, rgba(245, 166, 35, 0.04) 25%, transparent 25%),
-      /* Center: Swarm-like (medium density, organic clustering) - more visible */
-      radial-gradient(ellipse at 50% 50%, transparent 0%, transparent 40%, rgba(245, 166, 35, 0.08) 40%, rgba(245, 166, 35, 0.08) 45%, transparent 45%),
-      radial-gradient(ellipse at 45% 30%, transparent 0%, transparent 35%, rgba(245, 166, 35, 0.07) 35%, rgba(245, 166, 35, 0.07) 40%, transparent 40%),
-      radial-gradient(ellipse at 55% 70%, transparent 0%, transparent 38%, rgba(245, 166, 35, 0.07) 38%, rgba(245, 166, 35, 0.07) 43%, transparent 43%),
-      /* Right: Cohesive hive (structured, regular hexagon grid) - most visible */
-      radial-gradient(ellipse at 90% 50%, transparent 0%, transparent 45%, rgba(245, 166, 35, 0.12) 45%, rgba(245, 166, 35, 0.12) 50%, transparent 50%),
-      radial-gradient(ellipse at 85% 30%, transparent 0%, transparent 45%, rgba(245, 166, 35, 0.10) 45%, rgba(245, 166, 35, 0.10) 50%, transparent 50%),
-      radial-gradient(ellipse at 92% 70%, transparent 0%, transparent 45%, rgba(245, 166, 35, 0.12) 45%, rgba(245, 166, 35, 0.12) 50%, transparent 50%);
-    background-size: 
-      /* Left: Irregular sizes */
-      80px 80px, 60px 60px, 50px 50px,
-      /* Center: Medium clustering */
-      100px 100px, 90px 90px, 95px 95px,
-      /* Right: Regular grid */
-      120px 120px, 120px 120px, 120px 120px;
-    background-position:
-      /* Left: Scattered positions */
-      0% 50%, 5% 30%, 10% 70%,
-      /* Center: Organic clustering */
-      50% 50%, 45% 30%, 55% 70%,
-      /* Right: Structured alignment */
-      100% 50%, 95% 30%, 100% 70%;
-    background-repeat: no-repeat;
-    opacity: 0.8;
+      /* Scattered fragments - low opacity, small, random */
+      radial-gradient(circle at 5% 20%, rgba(249, 115, 22, 0.08) 2px, transparent 2px),
+      radial-gradient(circle at 12% 45%, rgba(249, 115, 22, 0.06) 1.5px, transparent 1.5px),
+      radial-gradient(circle at 8% 70%, rgba(249, 115, 22, 0.07) 2px, transparent 2px),
+      radial-gradient(circle at 15% 85%, rgba(249, 115, 22, 0.05) 1px, transparent 1px),
+      radial-gradient(circle at 3% 55%, rgba(249, 115, 22, 0.06) 1.5px, transparent 1.5px),
+      radial-gradient(circle at 18% 30%, rgba(249, 115, 22, 0.08) 2px, transparent 2px),
+      radial-gradient(circle at 10% 10%, rgba(249, 115, 22, 0.05) 1px, transparent 1px),
+      radial-gradient(circle at 20% 60%, rgba(249, 115, 22, 0.07) 1.5px, transparent 1.5px);
+    background-size: 40px 40px, 30px 30px, 35px 35px, 25px 25px, 32px 32px, 38px 38px, 28px 28px, 33px 33px;
+    background-position: 0% 0%, 5% 10%, 10% 20%, 15% 30%, 3% 15%, 18% 5%, 8% 25%, 12% 35%;
+    background-repeat: repeat;
+    opacity: 0.9;
+    z-index: 1;
+    animation: float-chaos 20s ease-in-out infinite;
     pointer-events: none;
   }
   
-  /* Enhanced honeycomb with actual hexagon shapes using clip-path */
+  /* Center: Swarm - Streaming particles with glow */
   .hero-honeycomb::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: 
-      linear-gradient(90deg, 
-        transparent 0%, 
-        transparent 20%, 
-        rgba(245, 166, 35, 0.06) 50%, 
-        rgba(245, 166, 35, 0.10) 80%, 
-        rgba(245, 166, 35, 0.15) 100%
-      );
-    mask-image: 
-      repeating-linear-gradient(60deg, transparent 0px, transparent 10px, rgba(0,0,0,0.2) 10px, rgba(0,0,0,0.2) 11px),
-      repeating-linear-gradient(120deg, transparent 0px, transparent 10px, rgba(0,0,0,0.2) 10px, rgba(0,0,0,0.2) 11px),
-      repeating-linear-gradient(0deg, transparent 0px, transparent 10px, rgba(0,0,0,0.2) 10px, rgba(0,0,0,0.2) 11px);
-    mask-composite: intersect;
-    opacity: 0.6;
+    background-image: 
+      /* Streaming particles moving toward center-right */
+      radial-gradient(ellipse at 40% 50%, rgba(249, 115, 22, 0.12) 3px, transparent 3px),
+      radial-gradient(ellipse at 48% 35%, rgba(249, 115, 22, 0.10) 2.5px, transparent 2.5px),
+      radial-gradient(ellipse at 52% 65%, rgba(249, 115, 22, 0.11) 3px, transparent 3px),
+      radial-gradient(ellipse at 45% 20%, rgba(249, 115, 22, 0.09) 2px, transparent 2px),
+      radial-gradient(ellipse at 55% 80%, rgba(249, 115, 22, 0.10) 2.5px, transparent 2.5px),
+      radial-gradient(ellipse at 42% 70%, rgba(249, 115, 22, 0.11) 3px, transparent 3px),
+      radial-gradient(ellipse at 58% 40%, rgba(249, 115, 22, 0.12) 3px, transparent 3px);
+    background-size: 50px 50px, 45px 45px, 48px 48px, 42px 42px, 46px 46px, 49px 49px, 47px 47px;
+    background-position: 40% 50%, 45% 35%, 50% 65%, 42% 20%, 55% 80%, 38% 70%, 58% 40%;
+    background-repeat: repeat;
+    opacity: 0.85;
+    z-index: 2;
+    animation: stream-swarm 15s ease-in-out infinite;
     pointer-events: none;
+  }
+  
+  /* Right: Structure - Perfect honeycomb grid with breathing animation */
+  .hero-honeycomb > div:first-child::before {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 40%;
+    background-image:
+      /* Perfect hexagon grid */
+      radial-gradient(circle at 85% 25%, rgba(249, 115, 22, 0.15) 4px, transparent 4px),
+      radial-gradient(circle at 92% 25%, rgba(249, 115, 22, 0.15) 4px, transparent 4px),
+      radial-gradient(circle at 88.5% 32%, rgba(249, 115, 22, 0.15) 4px, transparent 4px),
+      radial-gradient(circle at 85% 50%, rgba(249, 115, 22, 0.15) 4px, transparent 4px),
+      radial-gradient(circle at 92% 50%, rgba(249, 115, 22, 0.15) 4px, transparent 4px),
+      radial-gradient(circle at 88.5% 57%, rgba(249, 115, 22, 0.15) 4px, transparent 4px),
+      radial-gradient(circle at 85% 75%, rgba(249, 115, 22, 0.15) 4px, transparent 4px),
+      radial-gradient(circle at 92% 75%, rgba(249, 115, 22, 0.15) 4px, transparent 4px),
+      radial-gradient(circle at 88.5% 82%, rgba(249, 115, 22, 0.15) 4px, transparent 4px);
+    background-size: 60px 60px;
+    background-position: 85% 25%, 92% 25%, 88.5% 32%, 85% 50%, 92% 50%, 88.5% 57%, 85% 75%, 92% 75%, 88.5% 82%;
+    background-repeat: repeat-y;
+    opacity: 1;
+    z-index: 3;
+    animation: breathe-structure 8s ease-in-out infinite;
+    pointer-events: none;
+  }
+  
+  /* Glassmorphism - Frosted Glass Panels (The Lens of Clarity) */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    border: 1px solid rgba(249, 115, 22, 0.2);
+    box-shadow: 
+      0 8px 32px 0 rgba(249, 115, 22, 0.08),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.5);
+  }
+  
+  .glass-card-active {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(16px) saturate(200%);
+    -webkit-backdrop-filter: blur(16px) saturate(200%);
+    border: 1px solid rgba(249, 115, 22, 0.4);
+    box-shadow: 
+      0 12px 40px 0 rgba(249, 115, 22, 0.12),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.6),
+      0 0 0 1px rgba(249, 115, 22, 0.1);
   }
   
   /* Matte Card Finish */
@@ -327,16 +367,49 @@
   }
 }
 
-/* Swarm Animation Keyframes */
-@keyframes swarm-float {
+/* Entropy to Order Animation Keyframes */
+
+/* Chaos: Floating dust particles */
+@keyframes float-chaos {
   0%, 100% {
-    transform: translate(0, 0);
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0.9;
   }
-  33% {
-    transform: translate(2px, -2px);
+  25% {
+    transform: translate(3px, -3px) rotate(2deg);
+    opacity: 0.85;
   }
-  66% {
-    transform: translate(-2px, 2px);
+  50% {
+    transform: translate(-2px, 4px) rotate(-1deg);
+    opacity: 0.9;
+  }
+  75% {
+    transform: translate(4px, 2px) rotate(1deg);
+    opacity: 0.88;
+  }
+}
+
+/* Swarm: Streaming toward structure */
+@keyframes stream-swarm {
+  0%, 100% {
+    transform: translateX(0) scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: translateX(5px) scale(1.02);
+    opacity: 0.9;
+  }
+}
+
+/* Structure: Breathing honeycomb grid */
+@keyframes breathe-structure {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.01);
+    opacity: 0.95;
   }
 }
 

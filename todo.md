@@ -339,3 +339,23 @@ In Manus, save checkpoint with description: "Production-ready: All features comp
 - [x] Apply gradient blending classes to all sections (already implemented)
 - [x] Test honeycomb visibility on live site
 - [x] Verify Lindy-inspired light aesthetic
+
+
+---
+
+## "Entropy to Order" Visual Redesign
+- [x] Update color palette: Pure white (#FFFFFF), Cool Grey (#F8FAFC), Vibrant Orange (#F97316)
+- [x] Replace cream/beige with white/grey "Lab" aesthetic
+- [x] Change primary button color from #E8934C to #F97316
+- [x] Update text color from charcoal to near-black (#111827)
+- [x] Implement animated honeycomb flow (left chaos → middle swarm → right structure)
+- [x] Add subtle "breathing" animation to structured honeycomb grid
+- [x] Create glassmorphism feature cards (frosted glass panels)
+- [x] Add 1px orange border (rgba(249, 115, 22, 0.2)) to active cards
+- [x] Switch typography from Instrument Sans to Inter or Geist Sans
+- [x] Redesign hero headline: "Turn Career Chaos into [Structured Success]"
+- [x] Add animated highlight to "Structured Success" text
+- [x] Update subheadline with "Swarm" metaphor copy
+- [x] Test glassmorphism on different backgrounds (visible, working)
+- [x] Verify animation performance (smooth, no jank)
+- [x] Entropy to Order redesign checkpoint
