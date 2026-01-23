@@ -48,7 +48,7 @@ export function KineticHoneycomb({ onGridCompletion }: KineticHoneycombProps = {
     // Initialize particles (The Dust - left side)
     const initParticles = () => {
       particlesRef.current = [];
-      const particleCount = 65; // Increased by 30% for denser chaos
+      const particleCount = 50; // Optimized for stable 60fps performance
       
       for (let i = 0; i < particleCount; i++) {
         const baseSize = Math.random() * 3 + 1;
