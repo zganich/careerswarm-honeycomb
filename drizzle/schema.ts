@@ -323,3 +323,38 @@ export const achievementVerifications = mysqlTable("achievementVerifications", {
 
 export type AchievementVerification = typeof achievementVerifications.$inferSelect;
 export type InsertAchievementVerification = typeof achievementVerifications.$inferInsert;
+
+// Source Materials - Raw material for Master Profile
+export const sourceMaterials = mysqlTable("sourceMaterials", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  
+  // Source type and title
+  type: mysqlEnum("type", ["FILE", "URL"]).notNull(),
+  title: varchar("title", { length: 500 }).notNull(),
+  
+  // Extracted content
+  content: text("content").notNull(), // Raw text extracted from file or URL
+  
+  // Metadata (JSON)
+  metadata: json("metadata").$type<{
+    // For FILE type
+    fileName?: string;
+    fileSize?: number;
+    mimeType?: string;
+    
+    // For URL type
+    url?: string;
+    domain?: string;
+    scrapedAt?: string;
+    
+    // Common
+    wordCount?: number;
+    parseErrors?: string[];
+  }>(),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type SourceMaterial = typeof sourceMaterials.$inferSelect;
+export type InsertSourceMaterial = typeof sourceMaterials.$inferInsert;

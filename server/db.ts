@@ -4,6 +4,7 @@ import {
   InsertUser, users, pastEmployerJobs, achievements, skills, achievementSkills,
   jobDescriptions, generatedResumes, powerVerbs,
   jobs, applications, companies, contacts,
+  sourceMaterials, type InsertSourceMaterial,
   type Achievement, type Skill, type JobDescription, type GeneratedResume,
   type Job, type InsertJob, type Application, type InsertApplication,
   type Company, type InsertCompany, type Contact, type InsertContact
@@ -387,4 +388,34 @@ export async function getOrCreateCompany(name: string): Promise<number> {
     openPositions: 0,
     lastResearchedAt: null,
   });
+}
+
+// ============================================================================
+// Source Materials
+// ============================================================================
+
+export async function createSourceMaterial(data: InsertSourceMaterial): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result: any = await db.insert(sourceMaterials).values(data);
+  return Number(result.insertId);
+}
+
+export async function getSourceMaterialsByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(sourceMaterials).where(eq(sourceMaterials.userId, userId)).orderBy(desc(sourceMaterials.createdAt));
+}
+
+export async function getSourceMaterialById(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const results = await db.select().from(sourceMaterials).where(and(eq(sourceMaterials.id, id), eq(sourceMaterials.userId, userId))).limit(1);
+  return results[0] || null;
+}
+
+export async function deleteSourceMaterial(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db.delete(sourceMaterials).where(and(eq(sourceMaterials.id, id), eq(sourceMaterials.userId, userId)));
 }

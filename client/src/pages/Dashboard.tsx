@@ -1,6 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { WelcomeWizard } from "@/components/WelcomeWizard";
+import { SourceMaterialUploader } from "@/components/SourceMaterialUploader";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
@@ -265,6 +266,25 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         )}
+
+        {/* Source Material Uploader */}
+        <Card className="glass-card mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5 text-primary" />
+              Master Profile - Source Materials
+            </CardTitle>
+            <CardDescription>
+              Upload your existing resumes or import from your portfolio website to build your master profile
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <SourceMaterialUploader onUploadComplete={() => {
+              // Optionally refresh source materials list here
+              console.log("Upload complete");
+            }} />
+          </CardContent>
+        </Card>
 
         {/* Quick Actions */}
         <div className="grid md:grid-cols-2 gap-6">

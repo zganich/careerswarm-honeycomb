@@ -43,6 +43,13 @@
       "when": 1769048824432,
       "tag": "0005_freezing_dark_phoenix",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1769283667727,
+      "tag": "0006_silly_pet_avengers",
+      "breakpoints": true
     }
   ]
 }

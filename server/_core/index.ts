@@ -44,6 +44,13 @@ async function startServer() {
   // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
+  
+  // Source material ingestion APIs (must come before tRPC for file uploads)
+  const ingestFileRouter = (await import("../api-ingest-file")).default;
+  const ingestLinkRouter = (await import("../api-ingest-link")).default;
+  app.use("/api/ingest/file", ingestFileRouter);
+  app.use("/api/ingest/link", ingestLinkRouter);
+  
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
   // tRPC API
