@@ -1048,6 +1048,44 @@ ${a.startDate || ""} - ${a.endDate || "Present"}
       return getUserJobs(ctx.user.id);
     }),
     
+    createManual: protectedProcedure
+      .input(z.object({
+        title: z.string(),
+        companyName: z.string(),
+        description: z.string(),
+        jobUrl: z.string().optional(),
+        location: z.string().optional(),
+        qualificationScore: z.number().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { createJob } = await import("./db");
+        const jobId = await createJob({
+          userId: ctx.user.id,
+          companyId: null,
+          title: input.title,
+          companyName: input.companyName,
+          location: input.location || null,
+          jobUrl: input.jobUrl || "manual",
+          description: input.description,
+          platform: "manual",
+          postedDate: null,
+          salaryMin: null,
+          salaryMax: null,
+          salaryCurrency: "USD",
+          employmentType: null,
+          experienceLevel: null,
+          requiredSkills: null,
+          preferredSkills: null,
+          responsibilities: null,
+          benefits: null,
+          qualificationScore: input.qualificationScore || null,
+          matchedSkills: null,
+          missingSkills: null,
+          status: "new",
+        });
+        return { jobId };
+      }),
+    
     get: protectedProcedure
       .input(z.object({ id: z.number() }))
       .query(async ({ ctx, input }) => {
@@ -1127,13 +1165,38 @@ ${a.startDate || ""} - ${a.endDate || "Present"}
     updateStatus: protectedProcedure
       .input(z.object({
         applicationId: z.number(),
-        status: z.enum(["draft", "submitted", "viewed", "screening", "interview_scheduled", "interviewed", "offer", "rejected", "withdrawn"]),
+        status: z.enum(["scouted", "saved", "draft", "submitted", "viewed", "screening", "interview_scheduled", "interviewed", "offer", "rejected", "withdrawn"]),
       }))
       .mutation(async ({ ctx, input }) => {
         const { updateApplication } = await import("./db");
         await updateApplication(input.applicationId, ctx.user.id, {
           status: input.status,
         });
+        return { success: true };
+      }),
+    
+    update: protectedProcedure
+      .input(z.object({
+        applicationId: z.number(),
+        notes: z.string().optional(),
+        interviewNotes: z.string().optional(),
+        nextFollowUpDate: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { updateApplication } = await import("./db");
+        const { applicationId, nextFollowUpDate, ...updates } = input;
+        await updateApplication(applicationId, ctx.user.id, {
+          ...updates,
+          nextFollowUpDate: nextFollowUpDate ? new Date(nextFollowUpDate) : undefined,
+        });
+        return { success: true };
+      }),
+    
+    delete: protectedProcedure
+      .input(z.object({ applicationId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const { deleteApplication } = await import("./db");
+        await deleteApplication(input.applicationId, ctx.user.id);
         return { success: true };
       }),
     

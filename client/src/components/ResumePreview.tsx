@@ -8,7 +8,9 @@ import {
   AlertCircle, 
   TrendingUp,
   Sparkles,
-  FileText
+  FileText,
+  Loader2,
+  Briefcase
 } from "lucide-react";
 
 interface ResumePreviewProps {
@@ -19,6 +21,8 @@ interface ResumePreviewProps {
   selectedAchievements: any[];
   onExport: () => void;
   onClose: () => void;
+  onCreateApplication?: () => void;
+  isCreatingApplication?: boolean;
 }
 
 export function ResumePreview({
@@ -29,6 +33,8 @@ export function ResumePreview({
   selectedAchievements,
   onExport,
   onClose,
+  onCreateApplication,
+  isCreatingApplication = false,
 }: ResumePreviewProps) {
   // Determine match score color and label
   const getMatchScoreColor = (score: number) => {
@@ -184,10 +190,29 @@ export function ResumePreview({
         <Button variant="outline" onClick={onClose}>
           Close
         </Button>
-        <Button onClick={onExport} className="gap-2">
+        <Button variant="outline" onClick={onExport} className="gap-2">
           <Download className="h-4 w-4" />
           Export to PDF
         </Button>
+        {onCreateApplication && (
+          <Button 
+            onClick={onCreateApplication} 
+            className="gap-2"
+            disabled={isCreatingApplication}
+          >
+            {isCreatingApplication ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Creating...
+              </>
+            ) : (
+              <>
+                <Briefcase className="h-4 w-4" />
+                Create Application
+              </>
+            )}
+          </Button>
+        )}
       </div>
 
       {/* Hidden print content */}

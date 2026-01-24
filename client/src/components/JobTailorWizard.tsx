@@ -22,7 +22,12 @@ export function JobTailorWizard({ onSuccess }: JobTailorWizardProps) {
   const tailorMutation = trpc.resumes.tailor.useMutation({
     onSuccess: (data) => {
       toast.success(`Resume generated! Match score: ${data.matchScore}%`);
-      onSuccess(data);
+      onSuccess({
+        ...data,
+        jobTitle,
+        company,
+        jobDescription,
+      });
     },
     onError: (error) => {
       toast.error(`Generation failed: ${error.message}`);

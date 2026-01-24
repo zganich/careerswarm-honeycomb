@@ -206,8 +206,11 @@ export const applications = mysqlTable("applications", {
   confirmationNumber: varchar("confirmationNumber", { length: 255 }),
   
   // Tracking
-  status: mysqlEnum("status", ["draft", "submitted", "viewed", "screening", "interview_scheduled", "interviewed", "offer", "rejected", "withdrawn"]).default("draft"),
+  status: mysqlEnum("status", ["scouted", "saved", "draft", "submitted", "viewed", "screening", "interview_scheduled", "interviewed", "offer", "rejected", "withdrawn"]).default("draft"),
   lastStatusUpdate: timestamp("lastStatusUpdate"),
+  
+  // AI Agent Analysis (for Profiler agent)
+  painPoints: json("painPoints").$type<{challenge: string; impact: string; keywords: string[]}[]>(),
   
   // Follow-up
   nextFollowUpDate: date("nextFollowUpDate"),

@@ -338,17 +338,37 @@ export async function getUserApplications(userId: number) {
   }));
 }
 
-export async function getApplicationById(id: number, userId: number): Promise<Application | undefined> {
+export async function getApplicationById(id: number, userId: number) {
   const db = await getDb();
   if (!db) return undefined;
-  const result = await db.select().from(applications).where(and(eq(applications.id, id), eq(applications.userId, userId))).limit(1);
-  return result[0];
+  const result = await db
+    .select({
+      application: applications,
+      job: jobs,
+    })
+    .from(applications)
+    .leftJoin(jobs, eq(applications.jobId, jobs.id))
+    .where(and(eq(applications.id, id), eq(applications.userId, userId)))
+    .limit(1);
+  
+  if (!result[0]) return undefined;
+  
+  return {
+    ...result[0].application,
+    job: result[0].job || undefined,
+  };
 }
 
 export async function updateApplication(id: number, userId: number, data: Partial<Application>): Promise<void> {
   const db = await getDb();
   if (!db) return;
   await db.update(applications).set(data).where(and(eq(applications.id, id), eq(applications.userId, userId)));
+}
+
+export async function deleteApplication(id: number, userId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  await db.delete(applications).where(and(eq(applications.id, id), eq(applications.userId, userId)));
 }
 
 export async function createCompany(data: Omit<InsertCompany, "id">): Promise<number> {

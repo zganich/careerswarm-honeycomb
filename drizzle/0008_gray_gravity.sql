@@ -1,0 +1,2 @@
+ALTER TABLE `applications` MODIFY COLUMN `status` enum('scouted','saved','draft','submitted','viewed','screening','interview_scheduled','interviewed','offer','rejected','withdrawn') DEFAULT 'draft';--> statement-breakpoint
+ALTER TABLE `applications` ADD `painPoints` json;

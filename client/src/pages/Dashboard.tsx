@@ -10,13 +10,21 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
 import { Award, FileText, Target, TrendingUp, Plus, Loader2, Lightbulb, Briefcase } from "lucide-react";
-import { Link, Redirect } from "wouter";
+import { Link, Redirect, useLocation } from "wouter";
+import { toast } from "sonner";
 
 export default function Dashboard() {
   const { user, loading: authLoading } = useAuth();
+  const [, setLocation] = useLocation();
   const [showWelcome, setShowWelcome] = useState(false);
   const [showTailorWizard, setShowTailorWizard] = useState(false);
   const [tailorResult, setTailorResult] = useState<any>(null);
+  const [jobData, setJobData] = useState<{title: string; company: string; description: string} | null>(null);
+  const [isCreatingApplication, setIsCreatingApplication] = useState(false);
+  
+  const createJobMutation = trpc.jobs.createManual.useMutation();
+  const createApplicationMutation = trpc.applications.create.useMutation();
+  
   const { data: achievements, isLoading: achievementsLoading } = trpc.achievements.list.useQuery();
   const { data: jobs, isLoading: jobsLoading } = trpc.jobDescriptions.list.useQuery();
   const { data: resumes, isLoading: resumesLoading } = trpc.resumes.list.useQuery();
@@ -368,6 +376,12 @@ export default function Dashboard() {
               <JobTailorWizard 
                 onSuccess={(result) => {
                   setTailorResult(result);
+                  // Store job data from wizard for application creation
+                  setJobData({
+                    title: result.jobTitle || '',
+                    company: result.company || '',
+                    description: result.jobDescription || '',
+                  });
                 }} 
               />
             ) : (
@@ -381,7 +395,39 @@ export default function Dashboard() {
                 onClose={() => {
                   setShowTailorWizard(false);
                   setTailorResult(null);
+                  setJobData(null);
                 }}
+                onCreateApplication={async () => {
+                  if (!jobData || !tailorResult.resumeId) return;
+                  
+                  setIsCreatingApplication(true);
+                  try {
+                    // First create the job
+                    const jobResult = await createJobMutation.mutateAsync({
+                      title: jobData.title,
+                      companyName: jobData.company,
+                      description: jobData.description,
+                      qualificationScore: tailorResult.matchScore,
+                    });
+                    
+                    // Then create the application
+                    await createApplicationMutation.mutateAsync({
+                      jobId: jobResult.jobId,
+                      resumeId: tailorResult.resumeId,
+                    });
+                    
+                    toast.success("Application created! Redirecting to Swarm Board...");
+                    setShowTailorWizard(false);
+                    setTailorResult(null);
+                    setJobData(null);
+                    setTimeout(() => setLocation("/applications"), 1000);
+                  } catch (error: any) {
+                    toast.error(`Failed to create application: ${error.message}`);
+                  } finally {
+                    setIsCreatingApplication(false);
+                  }
+                }}
+                isCreatingApplication={isCreatingApplication}
               />
             )}
           </DialogContent>

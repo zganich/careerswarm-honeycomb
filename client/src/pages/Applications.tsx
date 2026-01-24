@@ -1,274 +1,105 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
+import { ApplicationBoard } from "@/components/ApplicationBoard";
+import { ApplicationDetailModal } from "@/components/ApplicationDetailModal";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, FileText, Building2, Calendar, TrendingUp, ExternalLink } from "lucide-react";
-import { toast } from "sonner";
-
-type ApplicationStatus = "draft" | "submitted" | "viewed" | "screening" | "interview_scheduled" | "interviewed" | "offer" | "rejected" | "withdrawn";
-
-const statusConfig: Record<ApplicationStatus, { label: string; color: string; icon: string }> = {
-  draft: { label: "Draft", color: "bg-gray-500", icon: "📝" },
-  submitted: { label: "Submitted", color: "bg-blue-500", icon: "📤" },
-  viewed: { label: "Viewed", color: "bg-cyan-500", icon: "👀" },
-  screening: { label: "Screening", color: "bg-purple-500", icon: "🔍" },
-  interview_scheduled: { label: "Interview Scheduled", color: "bg-yellow-500", icon: "📅" },
-  interviewed: { label: "Interviewed", color: "bg-orange-500", icon: "💬" },
-  offer: { label: "Offer", color: "bg-green-500", icon: "🎉" },
-  rejected: { label: "Rejected", color: "bg-red-500", icon: "❌" },
-  withdrawn: { label: "Withdrawn", color: "bg-gray-400", icon: "🚫" },
-};
+import { Card } from "@/components/ui/card";
+import { Plus, Loader2 } from "lucide-react";
 
 export default function Applications() {
-  const [selectedStatus, setSelectedStatus] = useState<ApplicationStatus | "all">("all");
-  
-  const applicationsQuery = trpc.applications.list.useQuery();
-  const updateStatusMutation = trpc.applications.updateStatus.useMutation();
-  const generateMaterialsMutation = trpc.applications.generateMaterials.useMutation();
-  const utils = trpc.useUtils();
+  const [selectedApplicationId, setSelectedApplicationId] = useState<number | null>(null);
+  const { data: applications, isLoading } = trpc.applications.list.useQuery();
 
-  const applications = applicationsQuery.data || [];
-  const filteredApplications = selectedStatus === "all"
-    ? applications
-    : applications.filter(app => app.status === selectedStatus);
-
-  const handleStatusChange = async (applicationId: number, newStatus: ApplicationStatus) => {
-    try {
-      await updateStatusMutation.mutateAsync({
-        applicationId,
-        status: newStatus,
-      });
-      
-      toast.success("Application status updated");
-      utils.applications.list.invalidate();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to update status");
-    }
+  const stats = {
+    total: applications?.length || 0,
+    draft: applications?.filter(app => app.status === "draft").length || 0,
+    submitted: applications?.filter(app => app.status === "submitted").length || 0,
+    interviewing: applications?.filter(app => app.status === "interview_scheduled" || app.status === "interviewed").length || 0,
+    offer: applications?.filter(app => app.status === "offer").length || 0,
+    rejected: applications?.filter(app => app.status === "rejected").length || 0,
   };
-
-  const handleGenerateMaterials = async (applicationId: number) => {
-    try {
-      await generateMaterialsMutation.mutateAsync({ applicationId });
-      toast.success("Resume and cover letter generated!");
-      utils.applications.list.invalidate();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to generate materials");
-    }
-  };
-
-  const getStatusCounts = () => {
-    const counts: Record<ApplicationStatus, number> = {
-      draft: 0,
-      submitted: 0,
-      viewed: 0,
-      screening: 0,
-      interview_scheduled: 0,
-      interviewed: 0,
-      offer: 0,
-      rejected: 0,
-      withdrawn: 0,
-    };
-    
-    applications.forEach(app => {
-      if (app.status && app.status in counts) {
-        counts[app.status as ApplicationStatus]++;
-      }
-    });
-    
-    return counts;
-  };
-
-  const statusCounts = getStatusCounts();
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-7xl">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2">Application Tracker</h1>
-        <p className="text-muted-foreground">
-          Manage your job applications and track progress through the hiring pipeline
-        </p>
-      </div>
-
-      {/* Status Overview Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-        {(Object.keys(statusConfig) as ApplicationStatus[]).map(status => (
-          <Card
-            key={status}
-            className={`cursor-pointer transition-all ${
-              selectedStatus === status ? "ring-2 ring-primary" : ""
-            }`}
-            onClick={() => setSelectedStatus(status)}
-          >
-            <CardContent className="pt-6">
-              <div className="text-center">
-                <div className="text-3xl mb-2">{statusConfig[status].icon}</div>
-                <div className="text-2xl font-bold mb-1">{statusCounts[status]}</div>
-                <div className="text-sm text-muted-foreground">{statusConfig[status].label}</div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Filter Controls */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-muted-foreground">Filter:</span>
-          <Button
-            variant={selectedStatus === "all" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setSelectedStatus("all")}
-          >
-            All ({applications.length})
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-amber-50/30">
+      <div className="container mx-auto py-8 space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900">The Swarm Board</h1>
+            <p className="text-muted-foreground mt-1">
+              Track your job applications from saved to offer
+            </p>
+          </div>
+          <Button asChild>
+            <a href="/jobs">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Application
+            </a>
           </Button>
         </div>
+
+        {/* Statistics Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+          <Card className="p-4">
+            <div className="text-2xl font-bold text-slate-900">{stats.total}</div>
+            <div className="text-sm text-muted-foreground">Total</div>
+          </Card>
+          <Card className="p-4">
+            <div className="text-2xl font-bold text-slate-500">{stats.draft}</div>
+            <div className="text-sm text-muted-foreground">Saved</div>
+          </Card>
+          <Card className="p-4">
+            <div className="text-2xl font-bold text-blue-500">{stats.submitted}</div>
+            <div className="text-sm text-muted-foreground">Applied</div>
+          </Card>
+          <Card className="p-4">
+            <div className="text-2xl font-bold text-amber-500">{stats.interviewing}</div>
+            <div className="text-sm text-muted-foreground">Interviewing</div>
+          </Card>
+          <Card className="p-4">
+            <div className="text-2xl font-bold text-green-500">{stats.offer}</div>
+            <div className="text-sm text-muted-foreground">Offers</div>
+          </Card>
+          <Card className="p-4">
+            <div className="text-2xl font-bold text-red-500">{stats.rejected}</div>
+            <div className="text-sm text-muted-foreground">Rejected</div>
+          </Card>
+        </div>
+
+        {/* Kanban Board */}
+        {isLoading ? (
+          <Card className="p-12">
+            <div className="flex items-center justify-center">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+          </Card>
+        ) : applications && applications.length > 0 ? (
+          <Card className="p-6">
+            <ApplicationBoard onCardClick={setSelectedApplicationId} />
+          </Card>
+        ) : (
+          <Card className="p-12">
+            <div className="text-center space-y-4">
+              <div className="text-muted-foreground">
+                No applications yet. Start by finding a job and creating a tailored resume.
+              </div>
+              <Button asChild>
+                <a href="/jobs">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Find Jobs
+                </a>
+              </Button>
+            </div>
+          </Card>
+        )}
       </div>
 
-      {/* Applications List */}
-      {applicationsQuery.isLoading ? (
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-        </div>
-      ) : filteredApplications.length === 0 ? (
-        <Card className="py-12">
-          <CardContent className="text-center">
-            <FileText className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-            <h3 className="text-lg font-semibold mb-2">No applications yet</h3>
-            <p className="text-muted-foreground mb-4">
-              {selectedStatus === "all"
-                ? "Start by searching for jobs and saving ones you're interested in"
-                : `No applications in ${statusConfig[selectedStatus as ApplicationStatus].label} status`}
-            </p>
-            <Button onClick={() => window.location.href = "/jobs"}>
-              Search Jobs
-            </Button>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid gap-4">
-          {filteredApplications.map(application => (
-            <Card key={application.id}>
-              <CardHeader>
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <CardTitle className="text-xl mb-1">
-                      {application.job?.title || "Unknown Position"}
-                    </CardTitle>
-                    <CardDescription className="flex items-center gap-2">
-                      <Building2 className="h-4 w-4" />
-                      {application.job?.companyName || "Unknown Company"}
-                      {application.job?.location && (
-                        <>
-                          <span>•</span>
-                          <span>{application.job.location}</span>
-                        </>
-                      )}
-                    </CardDescription>
-                  </div>
-                  <Badge className={`${statusConfig[application.status as ApplicationStatus]?.color || "bg-gray-500"} text-white`}>
-                    {statusConfig[application.status as ApplicationStatus]?.label || application.status}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-4 md:grid-cols-2">
-                  {/* Left Column: Details */}
-                  <div className="space-y-3">
-                    {application.job && application.job.qualificationScore !== null && (
-                      <div className="flex items-center gap-2">
-                        <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm">Match Score:</span>
-                        <Badge variant="outline">{application.job.qualificationScore}%</Badge>
-                      </div>
-                    )}
-                    
-                    {application.lastStatusUpdate && (
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm">Applied:</span>
-                        <span className="text-sm text-muted-foreground">
-                          {new Date(application.lastStatusUpdate).toLocaleDateString()}
-                        </span>
-                      </div>
-                    )}
-
-                    {application.job?.jobUrl && (
-                      <a
-                        href={application.job.jobUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-sm text-primary hover:underline"
-                      >
-                        <ExternalLink className="h-4 w-4" />
-                        View Job Posting
-                      </a>
-                    )}
-                  </div>
-
-                  {/* Right Column: Actions */}
-                  <div className="space-y-3">
-                    <div>
-                      <label className="text-sm font-medium mb-2 block">Update Status</label>
-                      <Select
-                        value={application.status || ''}
-                        onValueChange={(value) => handleStatusChange(application.id, value as ApplicationStatus)}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {(Object.keys(statusConfig) as ApplicationStatus[]).map(status => (
-                            <SelectItem key={status} value={status}>
-                              {statusConfig[status].icon} {statusConfig[status].label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {!application.resumeId && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleGenerateMaterials(application.id)}
-                        disabled={generateMaterialsMutation.isPending}
-                        className="w-full"
-                      >
-                        {generateMaterialsMutation.isPending ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Generating...
-                          </>
-                        ) : (
-                          <>
-                            <FileText className="mr-2 h-4 w-4" />
-                            Generate Resume & Cover Letter
-                          </>
-                        )}
-                      </Button>
-                    )}
-
-                    {application.resumeId && (
-                      <div className="text-sm text-muted-foreground">
-                        ✓ Resume & cover letter generated
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Notes Section */}
-                {application.notes && (
-                  <div className="mt-4 pt-4 border-t">
-                    <p className="text-sm text-muted-foreground">{application.notes}</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+      {/* Detail Modal */}
+      <ApplicationDetailModal
+        applicationId={selectedApplicationId}
+        open={selectedApplicationId !== null}
+        onClose={() => setSelectedApplicationId(null)}
+      />
     </div>
   );
 }
