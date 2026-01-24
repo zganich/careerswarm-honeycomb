@@ -1116,6 +1116,171 @@ ${a.startDate || ""} - ${a.endDate || "Present"}
         
         return result;
       }),
+    
+    scout: protectedProcedure
+      .input(z.object({
+        query: z.string().min(1, "Job title is required"),
+        location: z.string().optional(),
+        minSalary: z.number().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { searchJobs } = await import("./services/scout");
+        const { invokeLLM } = await import("./_core/llm");
+        const { getUserAchievements } = await import("./db");
+        const { createJob, createApplication } = await import("./db");
+        
+        // Step 1: Search for jobs
+        const rawJobs = await searchJobs(input.query, input.location);
+        
+        // Step 2: Get user's master profile for qualification
+        const achievements = await getUserAchievements(ctx.user.id);
+        const profileSummary = achievements
+          .slice(0, 5)
+          .map(a => `${a.situation}: ${a.task} → ${a.action} → ${a.result}`)
+          .join("\n");
+        
+        // Step 3: Qualify each job with AI
+        const qualifiedJobs: Array<{ job: typeof rawJobs[0]; score: number }> = [];
+        
+        for (const job of rawJobs) {
+          try {
+            const response = await invokeLLM({
+              messages: [
+                {
+                  role: "system",
+                  content: `You are a picky recruiter evaluating job matches.
+
+Rate this job from 0-100 based on how well it matches the candidate's profile.
+
+**Scoring Guidelines:**
+- 0-30: Poor match (junior role for senior candidate, or vice versa, wrong domain)
+- 31-50: Weak match (some skills overlap but significant gaps)
+- 51-70: Moderate match (decent fit but not ideal)
+- 71-85: Good match (strong fit, minor gaps)
+- 86-100: Excellent match (perfect fit, all requirements met)
+
+**Critical Filters:**
+- If candidate is senior (5+ years) and role is junior (1-2 years): Return 0
+- If candidate is junior (1-2 years) and role is senior/staff: Return 0
+- If role requires skills candidate doesn't have: Reduce score by 20 per major skill gap
+
+**Output JSON:**
+{
+  "score": number (0-100),
+  "reasoning": "string (2-3 sentences explaining the score)"
+}`,
+                },
+                {
+                  role: "user",
+                  content: `**Candidate Profile:**\n${profileSummary}\n\n**Job Posting:**\nTitle: ${job.title}\nCompany: ${job.company}\nLocation: ${job.location}\nSalary: ${job.salary || "Not specified"}\nDescription: ${job.description}`,
+                },
+              ],
+              response_format: {
+                type: "json_schema",
+                json_schema: {
+                  name: "job_match_score",
+                  strict: true,
+                  schema: {
+                    type: "object",
+                    properties: {
+                      score: {
+                        type: "number",
+                        description: "Match score from 0-100",
+                      },
+                      reasoning: {
+                        type: "string",
+                        description: "2-3 sentences explaining the score",
+                      },
+                    },
+                    required: ["score", "reasoning"],
+                    additionalProperties: false,
+                  },
+                },
+              },
+            });
+            
+            const content = response.choices[0].message.content;
+            const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
+            const result = JSON.parse(contentStr || "{}");
+            const score = result.score || 0;
+            
+            // Only keep jobs with score > 70
+            if (score > 70) {
+              qualifiedJobs.push({ job, score });
+            }
+          } catch (error) {
+            console.error(`Failed to qualify job ${job.title}:`, error);
+            // Skip this job if qualification fails
+          }
+        }
+        
+        // Step 4: Create job and application records for qualified matches
+        const createdApplications: number[] = [];
+        
+        for (const { job, score } of qualifiedJobs) {
+          try {
+            // Create job record
+            const jobId = await createJob({
+              userId: ctx.user.id,
+              companyId: null,
+              title: job.title,
+              companyName: job.company,
+              location: job.location,
+              jobUrl: job.url,
+              description: job.description,
+              platform: "scouted",
+              postedDate: job.postedDate ? new Date(job.postedDate) : null,
+              salaryMin: null, // Could parse from job.salary
+              salaryMax: null,
+              salaryCurrency: "USD",
+              employmentType: job.employmentType || null,
+              experienceLevel: job.experienceLevel || null,
+              requiredSkills: null,
+              preferredSkills: null,
+              responsibilities: null,
+              benefits: null,
+              qualificationScore: score,
+              matchedSkills: null,
+              missingSkills: null,
+              status: "qualified",
+            });
+            
+            // Create application with SCOUTED status
+            const applicationId = await createApplication({
+              userId: ctx.user.id,
+              jobId,
+              resumeId: null,
+              tailoredResumeContent: null,
+              coverLetterContent: null,
+              customAnswers: null,
+              submittedAt: null,
+              submissionMethod: null,
+              confirmationNumber: null,
+              status: "scouted",
+              lastStatusUpdate: null,
+              nextFollowUpDate: null,
+              followUpCount: 0,
+              interviewDates: null,
+              interviewNotes: null,
+              offerAmount: null,
+              offerCurrency: null,
+              rejectionReason: null,
+              notes: null,
+            });
+            
+            createdApplications.push(applicationId);
+          } catch (error) {
+            console.error(`Failed to create application for ${job.title}:`, error);
+          }
+        }
+        
+        return {
+          totalScanned: rawJobs.length,
+          qualifiedCount: qualifiedJobs.length,
+          createdCount: createdApplications.length,
+          applicationIds: createdApplications,
+        };
+      }),
   }),
   
   applications: router({

@@ -4,10 +4,12 @@ import { ApplicationBoard } from "@/components/ApplicationBoard";
 import { ApplicationDetailModal } from "@/components/ApplicationDetailModal";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Plus, Loader2 } from "lucide-react";
+import { Plus, Loader2, Target } from "lucide-react";
+import { ScoutMissionModal } from "@/components/ScoutMissionModal";
 
 export default function Applications() {
   const [selectedApplicationId, setSelectedApplicationId] = useState<number | null>(null);
+  const [scoutModalOpen, setScoutModalOpen] = useState(false);
   const { data: applications, isLoading } = trpc.applications.list.useQuery();
 
   const stats = {
@@ -30,12 +32,21 @@ export default function Applications() {
               Track your job applications from saved to offer
             </p>
           </div>
-          <Button asChild>
-            <a href="/jobs">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Application
-            </a>
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => setScoutModalOpen(true)}
+              className="bg-orange-500 hover:bg-orange-600"
+            >
+              <Target className="mr-2 h-4 w-4" />
+              Launch Scout Mission
+            </Button>
+            <Button variant="outline" asChild>
+              <a href="/jobs">
+                <Plus className="mr-2 h-4 w-4" />
+                Add Manually
+              </a>
+            </Button>
+          </div>
         </div>
 
         {/* Statistics Cards */}
@@ -99,6 +110,12 @@ export default function Applications() {
         applicationId={selectedApplicationId}
         open={selectedApplicationId !== null}
         onClose={() => setSelectedApplicationId(null)}
+      />
+
+      {/* Scout Mission Modal */}
+      <ScoutMissionModal
+        open={scoutModalOpen}
+        onOpenChange={setScoutModalOpen}
       />
     </div>
   );

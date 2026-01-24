@@ -1373,3 +1373,69 @@ Port The Scribe Agent from the legacy Python codebase to generate peer-level Lin
 - Consider adding email template variations (follow-up, thank you, etc.)
 - Add outreach analytics (open rates, response rates) if email integration added
 
+
+
+## The Scout Agent (Phase 8)
+
+**Status:** ✅ Complete  
+**Priority:** HIGH - Automated job discovery
+
+### Objective
+Build The Scout Agent to automate job discovery by searching external sources (LinkedIn/Indeed), qualifying matches using AI, and populating the Swarm Board with high-quality "SCOUTED" opportunities.
+
+### Scraper Service
+- [x] Create `server/services/scout.ts` with searchJobs interface
+- [x] Implement mock scraper with realistic dummy data (15 jobs)
+- [x] Job data structure: title, company, location, salary, description, url, experienceLevel
+- [x] Add variety: different seniority levels (Junior, Mid, Senior, Staff, Principal, Executive)
+- [x] Include top tech companies (Stripe, Airbnb, Netflix, Figma, etc.)
+- [x] Future: Add real scraper implementation with ZenRows/proxy (commented code included)
+
+### Backend Implementation
+- [x] Create `jobs.scout` tRPC procedure
+- [x] Input: query (job title), location, minSalary (optional)
+- [x] Call searchJobs to get up to 15 raw candidates
+- [x] Implement AI Qualifier:
+  - Fetch user's top 5 achievements for profile summary
+  - Pass profile + job description to LLM
+  - System prompt: "You are a picky recruiter. Rate 0-100 based on match."
+  - Scoring guidelines: 0-30 poor, 31-50 weak, 51-70 moderate, 71-85 good, 86-100 excellent
+  - Filter junior/senior mismatches (return 0 for wrong seniority)
+  - Structured JSON output with score and reasoning
+- [x] Keep only jobs with matchScore > 70
+- [x] Create job records for qualified matches (platform: "scouted")
+- [x] Create application records with status 'scouted'
+- [x] Return totalScanned, qualifiedCount, createdCount, applicationIds
+
+### Frontend Implementation
+- [x] Verify 'SCOUTED' column exists in ApplicationBoard (status: "scouted")
+- [x] Add "Launch Scout Mission" button to Applications page (orange, prominent)
+- [x] Create ScoutMissionModal component:
+  - Input: Job Title (required)
+  - Input: Location (optional)
+  - Input: Min Salary (optional)
+  - Loading states: "Scouting the web...", "Searching and qualifying with AI"
+  - Success toast: "Mission Complete: Added X high-match jobs" with scan stats
+  - Error handling with toast notifications
+- [x] Add mutation with invalidate on success
+- [x] Clear form after successful mission
+
+### Testing
+- [x] Write vitest test for scout service (6 tests, all passing)
+- [x] Test mock scraper returns jobs matching query ✅
+- [x] Test location filtering (including remote) ✅
+- [x] Test returns up to 15 results ✅
+- [x] Test required job fields present ✅
+- [x] Test variety of seniority levels ✅
+- [x] Skip integration test (requires user data + LLM calls)
+- [x] Manual UI testing documented in test file
+
+### Success Criteria
+- ✅ Mock scraper returns realistic job data (15 diverse jobs)
+- ✅ AI qualifier rates jobs 0-100 with structured output
+- ✅ Only high-match jobs (>70%) added to board
+- ✅ Applications created with SCOUTED status
+- ✅ Scout Mission UI with loading states and success messages
+- ✅ User can launch scout from Applications page
+- ✅ All tests passing (6 passed, 1 skipped integration test)
+
