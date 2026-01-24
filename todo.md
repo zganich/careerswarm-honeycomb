@@ -1243,3 +1243,49 @@ Build an AI agent that analyzes job descriptions to identify company pain points
 - ✅ Auto-runs when application created from Job Matcher
 - ✅ Users can manually trigger re-analysis
 - ✅ Graceful error handling for edge cases
+
+
+## Port Profiler Agent from Python (Legacy Codebase)
+
+**Status:** ✅ Complete  
+**Priority:** HIGH - Match legacy implementation exactly
+
+### Objective
+Port the Profiler Agent logic from the original Python codebase to TypeScript backend, matching the exact system prompt and output format.
+
+### Database Schema
+- [x] Update profilerAnalysis schema to include strategicHook field
+- [x] Match legacy format: {painPoints: string[], strategicHook: string, interviewQuestions: string[]}
+- [x] Run database migration (0006_silly_pet_avengers.sql)
+
+### Backend Implementation
+- [x] Update applications.profile procedure with legacy system prompt
+- [x] Use exact forbidden words list from Python version
+- [x] Output schema: painPoints (exactly 3), strategicHook (1), interviewQuestions (exactly 3)
+- [x] Structured JSON output with minItems/maxItems constraints
+- [x] Temperature 0.7 (default in invokeLLM)
+- [x] Focus areas: Churn, Expansion, Technical Debt
+
+### Frontend Implementation
+- [x] Redesign Strategic Intel section in ApplicationDetailModal
+- [x] Strategic Hook at top in highlighted amber/orange gradient box
+- [x] Pain Points list with red theme and alert icons
+- [x] Interview Questions in blue theme with message icons
+- [x] Empty state: "Run Strategic Analysis" button
+- [x] Loading states and error handling
+- [x] Re-run analysis button
+
+### Testing
+- [x] Update vitest tests for new schema (painPoints, strategicHook, interviewQuestions)
+- [x] Test error handling for missing job descriptions ✅
+- [x] All tests passing (1 passed, 2 skipped LLM tests)
+- [x] Validate Dashboard profiler trigger still works
+
+### Success Criteria
+- ✅ System prompt matches Python version exactly (Corporate Strategy Consultant persona)
+- ✅ Output schema matches legacy format (painPoints[], strategicHook, interviewQuestions[])
+- ✅ Strategic Hook displayed prominently in amber box at top
+- ✅ Pain Points and Interview Questions clearly separated with color themes
+- ✅ Banned words documented in system prompt
+- ✅ Auto-triggers when application created from Job Matcher
+- ✅ Manual trigger available in application detail modal

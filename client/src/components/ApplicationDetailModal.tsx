@@ -242,7 +242,7 @@ export function ApplicationDetailModal({ applicationId, open, onClose }: Applica
                       Strategic Intel
                     </h3>
                     {/* @ts-ignore */}
-                    {(!application.painPoints || application.painPoints.length === 0) && (
+                    {(!application.profilerAnalysis || !application.profilerAnalysis.painPoints) && (
                       <Button 
                         onClick={handleRunProfiler}
                         disabled={profileMutation.isPending}
@@ -257,7 +257,7 @@ export function ApplicationDetailModal({ applicationId, open, onClose }: Applica
                         ) : (
                           <>
                             <Sparkles className="h-4 w-4" />
-                            Run Profiler Analysis
+                            Run Strategic Analysis
                           </>
                         )}
                       </Button>
@@ -265,59 +265,48 @@ export function ApplicationDetailModal({ applicationId, open, onClose }: Applica
                   </div>
 
                   {/* @ts-ignore */}
-                  {(!application.painPoints || application.painPoints.length === 0) && !profileMutation.isPending && (
+                  {(!application.profilerAnalysis || !application.profilerAnalysis.painPoints) && !profileMutation.isPending && (
                     <div className="text-center py-8 text-muted-foreground">
                       <Lightbulb className="h-12 w-12 mx-auto mb-3 opacity-50" />
                       <p className="font-medium">No strategic analysis yet</p>
-                      <p className="text-sm mt-1">Click "Run Profiler Analysis" to extract company pain points,</p>
-                      <p className="text-sm">shadow requirements, and strategic interview questions.</p>
+                      <p className="text-sm mt-1">Click "Run Strategic Analysis" to identify pain points,</p>
+                      <p className="text-sm">generate a strategic hook, and prepare interview questions.</p>
                     </div>
                   )}
 
                   {/* @ts-ignore */}
-                  {application.painPoints && application.painPoints.length > 0 && (
+                  {application.profilerAnalysis && application.profilerAnalysis.painPoints && (
                     <div className="space-y-6">
-                      {/* Critical Challenges */}
+                      {/* Strategic Hook */}
+                      {/* @ts-ignore */}
+                      {application.profilerAnalysis.strategicHook && (
+                        <div className="border-2 border-amber-500 rounded-lg p-4 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30">
+                          <h4 className="font-semibold flex items-center gap-2 mb-2 text-amber-700 dark:text-amber-400">
+                            <Target className="h-5 w-5" />
+                            Strategic Hook
+                          </h4>
+                          {/* @ts-ignore */}
+                          <p className="text-sm font-medium leading-relaxed">{application.profilerAnalysis.strategicHook}</p>
+                        </div>
+                      )}
+
+                      <Separator />
+
+                      {/* Pain Points */}
                       <div>
                         <h4 className="font-semibold flex items-center gap-2 mb-3 text-red-600 dark:text-red-400">
                           <AlertTriangle className="h-4 w-4" />
-                          Critical Challenges
+                          Pain Points
                         </h4>
                         <div className="space-y-2">
                           {/* @ts-ignore */}
-                          {application.painPoints.map((pain: any, idx: number) => (
+                          {application.profilerAnalysis.painPoints.map((painPoint: string, idx: number) => (
                             <div key={idx} className="border-l-4 border-red-500 pl-4 py-2 bg-red-50 dark:bg-red-950/20 rounded-r">
-                              <div className="font-medium text-sm">{pain.challenge}</div>
-                              {pain.impact && (
-                                <Badge variant="destructive" className="mt-2 text-xs">
-                                  Impact: {pain.impact}
-                                </Badge>
-                              )}
+                              <p className="font-medium text-sm">{painPoint}</p>
                             </div>
                           ))}
                         </div>
                       </div>
-
-                      <Separator />
-
-                      {/* Shadow Requirements */}
-                      {/* @ts-ignore */}
-                      {application.profilerAnalysis?.cultureClues && application.profilerAnalysis.cultureClues.length > 0 && (
-                        <div>
-                          <h4 className="font-semibold flex items-center gap-2 mb-3 text-amber-600 dark:text-amber-400">
-                            <Eye className="h-4 w-4" />
-                            Shadow Requirements
-                          </h4>
-                          <div className="space-y-2">
-                            {/* @ts-ignore */}
-                            {application.profilerAnalysis.cultureClues.map((clue: string, idx: number) => (
-                              <div key={idx} className="border-l-4 border-amber-500 pl-4 py-2 bg-amber-50 dark:bg-amber-950/20 rounded-r">
-                                <p className="text-sm">{clue}</p>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
 
                       <Separator />
 

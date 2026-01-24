@@ -72,36 +72,28 @@ Our team values collaboration, innovation, and work-life balance. We're a fast-p
       applicationId: testApplicationId,
     });
 
-    // Verify structure
-    expect(result).toHaveProperty("challenges");
-    expect(result).toHaveProperty("cultureClues");
+    // Verify structure (legacy format)
+    expect(result).toHaveProperty("painPoints");
+    expect(result).toHaveProperty("strategicHook");
     expect(result).toHaveProperty("interviewQuestions");
 
-    // Verify challenges array
-    expect(Array.isArray(result.challenges)).toBe(true);
-    expect(result.challenges.length).toBeGreaterThan(0);
-    expect(result.challenges.length).toBeLessThanOrEqual(4);
+    // Verify painPoints array (exactly 3)
+    expect(Array.isArray(result.painPoints)).toBe(true);
+    expect(result.painPoints.length).toBe(3);
     
-    // Verify each challenge is a non-empty string
-    result.challenges.forEach((challenge) => {
-      expect(typeof challenge).toBe("string");
-      expect(challenge.length).toBeGreaterThan(10);
+    // Verify each pain point is a non-empty string
+    result.painPoints.forEach((painPoint) => {
+      expect(typeof painPoint).toBe("string");
+      expect(painPoint.length).toBeGreaterThan(10);
     });
 
-    // Verify culture clues array
-    expect(Array.isArray(result.cultureClues)).toBe(true);
-    expect(result.cultureClues.length).toBeGreaterThan(0);
-    expect(result.cultureClues.length).toBeLessThanOrEqual(4);
-    
-    result.cultureClues.forEach((clue) => {
-      expect(typeof clue).toBe("string");
-      expect(clue.length).toBeGreaterThan(10);
-    });
+    // Verify strategic hook
+    expect(typeof result.strategicHook).toBe("string");
+    expect(result.strategicHook.length).toBeGreaterThan(20);
 
-    // Verify interview questions array
+    // Verify interview questions array (exactly 3)
     expect(Array.isArray(result.interviewQuestions)).toBe(true);
-    expect(result.interviewQuestions.length).toBeGreaterThan(0);
-    expect(result.interviewQuestions.length).toBeLessThanOrEqual(4);
+    expect(result.interviewQuestions.length).toBe(3);
     
     result.interviewQuestions.forEach((question) => {
       expect(typeof question).toBe("string");
@@ -111,10 +103,10 @@ Our team values collaboration, innovation, and work-life balance. We're a fast-p
     });
 
     console.log("\n=== Profiler Analysis Results ===");
-    console.log("\nChallenges:");
-    result.challenges.forEach((c, i) => console.log(`  ${i + 1}. ${c}`));
-    console.log("\nCulture Clues:");
-    result.cultureClues.forEach((c, i) => console.log(`  ${i + 1}. ${c}`));
+    console.log("\nPain Points:");
+    result.painPoints.forEach((p, i) => console.log(`  ${i + 1}. ${p}`));
+    console.log("\nStrategic Hook:");
+    console.log(`  ${result.strategicHook}`);
     console.log("\nInterview Questions:");
     result.interviewQuestions.forEach((q, i) => console.log(`  ${i + 1}. ${q}`));
   });
@@ -125,14 +117,14 @@ Our team values collaboration, innovation, and work-life balance. We're a fast-p
       id: testApplicationId,
     });
 
-    // Verify profilerAnalysis is stored
+    // Verify profilerAnalysis is stored (legacy format)
     expect(application).toBeDefined();
     expect(application?.profilerAnalysis).toBeDefined();
-    expect(application?.profilerAnalysis?.challenges).toBeDefined();
-    expect(application?.profilerAnalysis?.cultureClues).toBeDefined();
+    expect(application?.profilerAnalysis?.painPoints).toBeDefined();
+    expect(application?.profilerAnalysis?.strategicHook).toBeDefined();
     expect(application?.profilerAnalysis?.interviewQuestions).toBeDefined();
 
-    // Verify painPoints is also stored (legacy format)
+    // Verify painPoints is also stored (for backward compatibility)
     expect(application?.painPoints).toBeDefined();
     expect(Array.isArray(application?.painPoints)).toBe(true);
   });

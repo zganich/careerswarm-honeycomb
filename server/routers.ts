@@ -1252,21 +1252,41 @@ ${a.startDate || ""} - ${a.endDate || "Present"}
           throw new Error("Job description is too short or missing for analysis");
         }
         
-        // The Profiler Persona System Prompt
-        const systemPrompt = `You are a corporate strategist and 'Pain Point' detective specializing in job market analysis.
+        // The Profiler Persona System Prompt (ported from Python legacy codebase)
+        const systemPrompt = `You are a Corporate Strategy Consultant.
 
-Your mission: Analyze job descriptions not for keywords, but for underlying business problems and strategic needs.
+Your task is to analyze a company based on the Job Description (JD).
 
-You excel at:
-1. Identifying critical challenges the company is facing (e.g., 'Scaling infrastructure', 'Reducing churn', 'Entering new markets')
-2. Inferring 'Shadow Requirements'—what they aren't explicitly saying but definitely need
-3. Detecting cultural signals and team dynamics from the language used
-4. Formulating strategic interview questions that demonstrate deep understanding
+**Instructions:**
+Identify the top 3 'Pain Points' this role solves. Is it Churn? Expansion? Technical Debt?
 
-Output your analysis as structured JSON with these exact fields:
-- challenges: Array of 3-4 critical business problems (strings)
-- cultureClues: Array of 3-4 cultural or team insights (strings)
-- interviewQuestions: Array of 3-4 strategic questions to ask (strings)`;
+**Focus Areas:**
+- Churn: Customer retention issues, high churn rates, retention strategy needs
+- Expansion: Growth challenges, market expansion, upselling/cross-selling opportunities
+- Technical Debt: Legacy systems, scalability issues, infrastructure modernization needs
+
+**Strategic Hook:**
+Generate 1 'Strategic Hook' - a specific, compelling insight based on:
+- Recent company news (funding rounds, product launches, executive changes)
+- Industry trends affecting the company
+- Specific challenges mentioned in the JD
+- Company growth stage indicators
+
+Make it specific and actionable - something that would catch a hiring manager's attention.
+
+**Interview Questions:**
+Generate 3 strategic interview questions the candidate should ask that demonstrate deep understanding of the company's challenges.
+
+**CRITICAL - FORBIDDEN AI FLUFF WORDS (WILL CAUSE REJECTION):**
+NEVER use these words: orchestrated, spearheaded, visionary, synergy, leverage, utilize, facilitate, champion, holistic, paradigm, robust, innovative.
+Use instead: led, managed, built, created, drove, executed, achieved, delivered, increased, reduced.
+
+**Output JSON:**
+{
+  "painPoints": ["string", "string", "string"],
+  "strategicHook": "string",
+  "interviewQuestions": ["string", "string", "string"]
+}`;
 
         const userPrompt = `Analyze this job description for ${companyName}:
 
@@ -1288,23 +1308,26 @@ Provide strategic intelligence that helps a candidate position themselves as the
               schema: {
                 type: "object",
                 properties: {
-                  challenges: {
+                  painPoints: {
                     type: "array",
                     items: { type: "string" },
-                    description: "Critical business challenges the company is facing"
+                    description: "Top 3 pain points this role solves (Churn, Expansion, Technical Debt, etc.)",
+                    minItems: 3,
+                    maxItems: 3,
                   },
-                  cultureClues: {
-                    type: "array",
-                    items: { type: "string" },
-                    description: "Cultural signals and team dynamics insights"
+                  strategicHook: {
+                    type: "string",
+                    description: "A compelling strategic hook based on company context and JD"
                   },
                   interviewQuestions: {
                     type: "array",
                     items: { type: "string" },
-                    description: "Strategic questions to ask during interviews"
+                    description: "Strategic questions to ask during interviews",
+                    minItems: 3,
+                    maxItems: 3,
                   },
                 },
-                required: ["challenges", "cultureClues", "interviewQuestions"],
+                required: ["painPoints", "strategicHook", "interviewQuestions"],
                 additionalProperties: false,
               },
             },
@@ -1314,9 +1337,9 @@ Provide strategic intelligence that helps a candidate position themselves as the
         const content = String(response.choices[0]?.message?.content || "{}");
         const analysis = JSON.parse(content);
         
-        // Transform to match the painPoints schema format
-        const painPoints = analysis.challenges.map((challenge: string, index: number) => ({
-          challenge,
+        // Transform to match the legacy painPoints schema format
+        const painPoints = analysis.painPoints.map((painPoint: string) => ({
+          challenge: painPoint,
           impact: "High", // Default impact level
           keywords: [], // Can be enhanced later
         }));
@@ -1325,15 +1348,15 @@ Provide strategic intelligence that helps a candidate position themselves as the
         await updateApplication(input.applicationId, ctx.user.id, {
           painPoints,
           profilerAnalysis: {
-            challenges: analysis.challenges,
-            cultureClues: analysis.cultureClues,
+            painPoints: analysis.painPoints,
+            strategicHook: analysis.strategicHook,
             interviewQuestions: analysis.interviewQuestions,
           },
         });
         
         return {
-          challenges: analysis.challenges,
-          cultureClues: analysis.cultureClues,
+          painPoints: analysis.painPoints,
+          strategicHook: analysis.strategicHook,
           interviewQuestions: analysis.interviewQuestions,
         };
       }),
