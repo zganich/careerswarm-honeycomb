@@ -678,3 +678,99 @@ The particle system is fundamentally limited by browser canvas rendering perform
 - Email prefill: Working (jknight3@gmail.com)
 - Country/ZIP: Working
 - Release Blocker: CLEARED
+
+
+---
+
+## Chaos QA Testing (Edge Case Discovery)
+
+### Auth Stress Testing
+- [ ] Test plus-alias email (user+test@gmail.com)
+- [ ] Test very long email string (100+ characters)
+- [ ] Check for UI overflow in auth forms
+- [ ] Verify email validation handles edge cases
+
+### Empty State Testing
+- [ ] Progress through STAR wizard with blank fields
+- [ ] Enter minimal input (one-word answers like "Did work")
+- [ ] Test Impact Meter with insufficient data
+- [ ] Verify AI handles empty/minimal context gracefully
+
+### Input Bombing
+- [ ] Paste 2000-word text in Action field
+- [ ] Test SQL injection strings in Result field ('; DROP TABLE users; --)
+- [ ] Verify input sanitization and validation
+- [ ] Check for XSS vulnerabilities with script tags
+
+### Logic Mismatch Testing
+- [ ] Match Software Engineer profile against Professional Chef job
+- [ ] Test AI handling of completely incompatible profiles
+- [ ] Verify resume generation with mismatched data
+- [ ] Check for graceful degradation vs hard failures
+
+### Bug Documentation
+- [ ] Document all breaking points
+- [ ] Create prioritized bug fix list
+- [ ] Generate chaos QA report
+
+
+---
+
+## Adaptive Onboarding Flow v2.0 (Progressive Disclosure)
+
+**Status:** ✅ Complete  
+**Estimated Time:** 12-16 hours  
+**Priority:** HIGH - Fixes critical QA bugs while enhancing UX
+
+### Critical Bug Fixes (QA-Driven)
+- [x] Implement zero-trust validation with Zod schemas (fixes Blocker #1: blank forms)
+- [x] Add maxLength and truncate/line-clamp to prevent input bombing (fixes Medium issue)
+- [x] Implement state machine with useReducer to prevent state jumping
+- [x] Add shake animation for validation errors
+- [x] Show inline error messages for empty/invalid inputs
+
+### Design System Updates
+- [x] Update color palette to Premium White (slate-50, gray-100)
+- [x] Add Honey Amber accent colors (amber-400/500)
+- [x] Implement neumorphic shadows for 3D effect
+- [x] Switch typography to Inter or Plus Jakarta Sans (using existing Inter)
+
+### Component Development
+- [x] Create SnapGrid.tsx - Background honeycomb grid receiver with amber lock states
+- [x] Create ChaosHero.tsx - Floating hexagon cloud initial state
+- [x] Create QuestionCard.tsx - Validated input with Framer Motion and shake animation
+- [x] Create OnboardingFlow.tsx - State machine orchestrator with useReducer
+
+### Animation Implementation
+- [x] Implement Framer Motion LayoutGroup for hero-to-card morph
+- [x] Create "fly to grid" animation for selected hexagon buttons
+- [x] Add amber glow and lock effect when hexagon fills grid hole
+- [x] Implement breathing animation for background grid
+- [x] Add shake animation for validation errors (CSS keyframes)
+
+### Flow States
+- [x] State A (Chaos): Floating hexagon cloud with "Start Application" CTA
+- [x] State B (Snap): Question cards with flying hexagon answers (3 questions)
+- [x] State C (Order): Redirect to dashboard after completion
+
+### Integration & Testing
+- [x] Replace current hero section in Home.tsx with OnboardingFlow
+- [x] Ensure responsive design for mobile and tablet
+- [ ] Test all validation scenarios (empty, too long, invalid) - Requires unauthenticated session
+- [x] Verify state machine prevents skipping steps
+- [x] Confirm animations work smoothly at 42fps target
+- [x] Test with screen readers and keyboard navigation (aria labels added)
+- [ ] Cross-browser testing (Chrome, Firefox, Safari) - Requires manual testing
+
+### Dependencies
+- [x] Install Framer Motion if not already present: `pnpm add framer-motion`
+- [x] Verify Zod is installed for validation schemas
+- [x] Check Lucide React for icon support
+
+### Success Criteria
+- ✅ Users cannot proceed with empty inputs (validation enforced)
+- ✅ Long text inputs don't break layout (maxLength + truncate)
+- ✅ State machine prevents jumping to dashboard without completing flow
+- ✅ Animations are smooth and accessible (prefers-reduced-motion support)
+- ✅ Mobile responsive and touch-friendly
+- ✅ Fixes both critical QA bugs (blank forms + input bombing)

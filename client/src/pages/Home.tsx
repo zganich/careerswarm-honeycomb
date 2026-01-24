@@ -3,14 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { getLoginUrl } from "@/const";
 import { Target, Zap, TrendingUp, FileText, Sparkles, Award } from "lucide-react";
-import { KineticHoneycomb } from "@/components/KineticHoneycomb";
+import { OnboardingFlow } from "@/components/OnboardingFlow";
 import { Link } from "wouter";
-import { useState } from "react";
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
-  const [gridCompletion, setGridCompletion] = useState(0);
-  const shouldPulse = gridCompletion >= 80;
 
   return (
     <div className="min-h-screen">
@@ -48,53 +45,24 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="hero-honeycomb container py-24 md:py-32 relative" style={{
-        background: 'linear-gradient(to bottom, #FEFDFB 0%, #FEFDFB 85%, rgba(254, 253, 251, 0) 100%)'
-      }}>
-        <KineticHoneycomb onGridCompletion={setGridCompletion} />
-        <div className="mx-auto max-w-4xl text-center relative z-10">
-          <div className="inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm mb-6">
-            <Sparkles className="h-4 w-4 text-primary" />
-            <span>AI-Powered Career Evidence Platform</span>
-          </div>
+      {/* Hero Section - Replaced with Adaptive Onboarding Flow */}
+      {!isAuthenticated ? (
+        <OnboardingFlow />
+      ) : (
+        <section className="container py-24 md:py-32 text-center">
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
-            Turn Career Chaos into{" "}
-            <span className="relative inline-block">
-              <span className="text-primary relative z-10" style={{ letterSpacing: '-0.02em' }}>Structured Success</span>
-              <span className="absolute inset-0 bg-primary/10 blur-xl animate-pulse" />
-            </span>
+            Welcome back, {user?.name}!
           </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            The job market is messy. Your resume shouldn't be. Let the Swarm assemble your fragmented experience into a perfect fit.
+          <p className="text-xl text-muted-foreground mb-8">
+            Continue building your career evidence.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            {isAuthenticated ? (
-              <Link href="/dashboard">
-                <Button 
-                  size="lg" 
-                  className={`text-lg px-8 transition-all duration-300 ${
-                    shouldPulse ? 'animate-pulse shadow-lg shadow-primary/50' : ''
-                  }`}
-                >
-                  Go to Dashboard
-                </Button>
-              </Link>
-            ) : (
-              <>
-                <a href={getLoginUrl()}>
-                  <Button size="lg" className="text-lg px-8">
-                    Start Building Free
-                  </Button>
-                </a>
-                <Button size="lg" variant="outline" className="text-lg px-8">
-                  Watch Demo
-                </Button>
-              </>
-            )}
-          </div>
-        </div>
-      </section>
+          <Link href="/dashboard">
+            <Button size="lg" className="text-lg px-8">
+              Go to Dashboard
+            </Button>
+          </Link>
+        </section>
+      )}
 
       {/* How It Works Section */}
       <section className="py-20 md:py-32 relative" style={{
