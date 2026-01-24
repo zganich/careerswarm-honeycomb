@@ -1750,6 +1750,258 @@ Generate:
         
         return outreach;
       }),
+    
+    predictSuccess: protectedProcedure
+      .input(z.object({ applicationId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const { getApplicationById, updateApplication } = await import("./db");
+        const { invokeLLM } = await import("./_core/llm");
+        const { getUserAchievements } = await import("./db");
+        
+        const application = await getApplicationById(input.applicationId, ctx.user.id);
+        if (!application) {
+          throw new Error("Application not found");
+        }
+        
+        if (!application.job) {
+          throw new Error("Application has no associated job");
+        }
+        
+        // Get user's profile context
+        const achievements = await getUserAchievements(ctx.user.id);
+        const profileSummary = achievements.slice(0, 5).map(a => 
+          `${a.xyzAccomplishment || a.situation}: ${a.result}`
+        ).join("\n");
+        
+        // Call LLM with Success Predictor system prompt
+        const response = await invokeLLM({
+          messages: [
+            {
+              role: "system",
+              content: `You are a data-driven hiring analyst with 15+ years of experience in talent acquisition.
+
+Your task is to predict the probability (0-100%) of this candidate receiving an offer for this role.
+
+**Analysis Framework:**
+1. Match Quality: How well does the candidate's experience align with the role requirements?
+2. Achievement Strength: Are their accomplishments quantified, impactful, and relevant?
+3. Seniority Fit: Does their experience level match the role (avoid junior/senior mismatches)?
+4. Skill Coverage: Do they have the critical technical and soft skills mentioned in the JD?
+5. Cultural Signals: Do their achievements suggest they'd thrive in this company's environment?
+
+**Scoring Guidelines:**
+- 0-30%: Poor fit (major gaps, wrong seniority, or missing critical skills)
+- 31-50%: Weak fit (some relevant experience but significant concerns)
+- 51-70%: Moderate fit (decent match with room for improvement)
+- 71-85%: Strong fit (well-aligned experience and skills)
+- 86-100%: Excellent fit (ideal candidate profile)
+
+**Green Flags** (positive signals that increase probability):
+- Quantified achievements with strong metrics
+- Direct experience with required technologies/methodologies
+- Leadership or ownership of similar initiatives
+- Industry-specific expertise
+- Cultural alignment indicators
+
+**Red Flags** (concerns that decrease probability):
+- Seniority mismatch (too junior or overqualified)
+- Missing critical required skills
+- Lack of quantified results
+- Experience in unrelated domains
+- Gaps in timeline or unclear progression`,
+            },
+            {
+              role: "user",
+              content: `Analyze this application:
+
+**Job Title:** ${application.job.title}
+**Company:** ${application.job.companyName}
+
+**Job Description:**
+${application.job.description}
+
+**Candidate Profile:**
+${profileSummary}
+
+**Current Application Status:** ${application.status}
+
+Provide your analysis.`,
+            },
+          ],
+          response_format: {
+            type: "json_schema",
+            json_schema: {
+              name: "success_prediction",
+              strict: true,
+              schema: {
+                type: "object",
+                properties: {
+                  probability: {
+                    type: "number",
+                    description: "Probability of receiving an offer (0-100)",
+                  },
+                  reasoning: {
+                    type: "string",
+                    description: "2-3 sentence explanation of the probability score",
+                  },
+                  greenFlags: {
+                    type: "array",
+                    description: "Positive signals that increase success probability",
+                    items: { type: "string" },
+                    minItems: 2,
+                    maxItems: 5,
+                  },
+                  redFlags: {
+                    type: "array",
+                    description: "Concerns that decrease success probability",
+                    items: { type: "string" },
+                    minItems: 1,
+                    maxItems: 5,
+                  },
+                },
+                required: ["probability", "reasoning", "greenFlags", "redFlags"],
+                additionalProperties: false,
+              },
+            },
+          },
+        });
+        
+        const content = response.choices[0]?.message?.content;
+        if (!content || typeof content !== "string") {
+          throw new Error("Invalid LLM response");
+        }
+        
+        const prediction = JSON.parse(content) as {
+          probability: number;
+          reasoning: string;
+          greenFlags: string[];
+          redFlags: string[];
+        };
+        
+        // Store in analytics column
+        const currentAnalytics = application.analytics as any || {};
+        await updateApplication(input.applicationId, ctx.user.id, {
+          analytics: {
+            ...currentAnalytics,
+            successPrediction: prediction,
+          },
+        });
+        
+        return prediction;
+      }),
+    
+    analyzeSkillGap: protectedProcedure
+      .input(z.object({ applicationId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const { getApplicationById, updateApplication } = await import("./db");
+        const { invokeLLM } = await import("./_core/llm");
+        const { getUserAchievements } = await import("./db");
+        
+        const application = await getApplicationById(input.applicationId, ctx.user.id);
+        if (!application) {
+          throw new Error("Application not found");
+        }
+        
+        if (!application.job) {
+          throw new Error("Application has no associated job");
+        }
+        
+        // Get user's skills and experience
+        const achievements = await getUserAchievements(ctx.user.id);
+        const userSkills = achievements.map(a => 
+          `${a.xyzAccomplishment || a.situation} (${a.roleTitle || 'Role'})`
+        ).join("\n");
+        
+        // Call LLM with Skill Gap Agent system prompt
+        const response = await invokeLLM({
+          messages: [
+            {
+              role: "system",
+              content: `You are a career development advisor and skills analyst.
+
+Your task is to identify the critical skills, certifications, or experiences mentioned in the Job Description that are missing from the candidate's profile.
+
+**Analysis Framework:**
+1. **Required Skills**: Extract technical skills, tools, frameworks, languages explicitly required
+2. **Preferred Skills**: Identify nice-to-have skills that would strengthen the application
+3. **Certifications**: Note any certifications, licenses, or credentials mentioned
+4. **Experience Gaps**: Identify specific types of experience (e.g., "5+ years managing teams") they may lack
+5. **Domain Knowledge**: Spot industry-specific knowledge or methodologies they haven't demonstrated
+
+**Upskilling Plan Guidelines:**
+- Prioritize skills that appear multiple times or are marked as "required"
+- Suggest specific, actionable learning resources (courses, certifications, projects)
+- Include estimated time to acquire each skill (e.g., "2-4 weeks", "3-6 months")
+- Focus on high-ROI skills that transfer across multiple roles
+- Be realistic about what can be learned vs. what requires years of experience`,
+            },
+            {
+              role: "user",
+              content: `Analyze the skill gap for this application:
+
+**Job Title:** ${application.job.title}
+**Company:** ${application.job.companyName}
+
+**Job Description:**
+${application.job.description}
+
+**Candidate's Current Skills & Experience:**
+${userSkills}
+
+Identify missing skills and create an upskilling plan.`,
+            },
+          ],
+          response_format: {
+            type: "json_schema",
+            json_schema: {
+              name: "skill_gap_analysis",
+              strict: true,
+              schema: {
+                type: "object",
+                properties: {
+                  missingSkills: {
+                    type: "array",
+                    description: "Critical skills or experiences missing from the candidate's profile",
+                    items: { type: "string" },
+                    minItems: 1,
+                    maxItems: 8,
+                  },
+                  upskillingPlan: {
+                    type: "array",
+                    description: "Actionable steps to acquire missing skills (with time estimates and resources)",
+                    items: { type: "string" },
+                    minItems: 1,
+                    maxItems: 8,
+                  },
+                },
+                required: ["missingSkills", "upskillingPlan"],
+                additionalProperties: false,
+              },
+            },
+          },
+        });
+        
+        const content = response.choices[0]?.message?.content;
+        if (!content || typeof content !== "string") {
+          throw new Error("Invalid LLM response");
+        }
+        
+        const analysis = JSON.parse(content) as {
+          missingSkills: string[];
+          upskillingPlan: string[];
+        };
+        
+        // Store in analytics column
+        const currentAnalytics = application.analytics as any || {};
+        await updateApplication(input.applicationId, ctx.user.id, {
+          analytics: {
+            ...currentAnalytics,
+            skillGap: analysis,
+          },
+        });
+        
+        return analysis;
+      }),
   }),
   
   companies: router({

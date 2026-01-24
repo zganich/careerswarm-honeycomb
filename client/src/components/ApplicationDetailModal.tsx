@@ -72,9 +72,41 @@ export function ApplicationDetailModal({ applicationId, open, onClose }: Applica
     },
   });
 
+  const successMutation = trpc.applications.predictSuccess.useMutation({
+    onSuccess: (data) => {
+      toast.success("Success prediction complete!");
+      utils.applications.get.invalidate({ id: applicationId! });
+      utils.applications.list.invalidate();
+    },
+    onError: (error) => {
+      toast.error(`Prediction failed: ${error.message}`);
+    },
+  });
+
+  const skillGapMutation = trpc.applications.analyzeSkillGap.useMutation({
+    onSuccess: (data) => {
+      toast.success("Skill gap analysis complete!");
+      utils.applications.get.invalidate({ id: applicationId! });
+      utils.applications.list.invalidate();
+    },
+    onError: (error) => {
+      toast.error(`Analysis failed: ${error.message}`);
+    },
+  });
+
   const handleRunProfiler = () => {
     if (!applicationId) return;
     profileMutation.mutate({ applicationId });
+  };
+
+  const handleRunSuccessPredictor = () => {
+    if (!applicationId) return;
+    successMutation.mutate({ applicationId });
+  };
+
+  const handleRunSkillGap = () => {
+    if (!applicationId) return;
+    skillGapMutation.mutate({ applicationId });
   };
 
   // Update notes when application loads
@@ -363,6 +395,224 @@ export function ApplicationDetailModal({ applicationId, open, onClose }: Applica
                           )}
                         </Button>
                       </div>
+                    </div>
+                  )}
+                </Card>
+
+                {/* Success Predictor Section */}
+                <Card className="p-4 border-2 border-green-500/20 bg-gradient-to-br from-green-50/50 to-transparent dark:from-green-950/20">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-semibold flex items-center gap-2 text-lg">
+                      <Target className="h-5 w-5 text-green-600 dark:text-green-400" />
+                      Success Prediction
+                    </h3>
+                    {/* @ts-ignore */}
+                    {(!application.analytics?.successPrediction) && (
+                      <Button 
+                        onClick={handleRunSuccessPredictor}
+                        disabled={successMutation.isPending}
+                        size="sm"
+                        className="gap-2"
+                      >
+                        {successMutation.isPending ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Predicting...
+                          </>
+                        ) : (
+                          <>
+                            <Target className="h-4 w-4" />
+                            Predict Success
+                          </>
+                        )}
+                      </Button>
+                    )}
+                  </div>
+
+                  {/* @ts-ignore */}
+                  {(!application.analytics?.successPrediction) && !successMutation.isPending && (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Target className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                      <p className="font-medium">No success prediction yet</p>
+                      <p className="text-sm mt-1">Click "Predict Success" to analyze your probability of receiving an offer.</p>
+                    </div>
+                  )}
+
+                  {/* @ts-ignore */}
+                  {application.analytics?.successPrediction && (
+                    <div className="space-y-6">
+                      {/* Success Gauge */}
+                      <div className="flex flex-col items-center justify-center py-6">
+                        {/* Circular Progress Ring */}
+                        <div className="relative w-40 h-40">
+                          <svg className="w-full h-full transform -rotate-90">
+                            {/* Background circle */}
+                            <circle
+                              cx="80"
+                              cy="80"
+                              r="70"
+                              stroke="currentColor"
+                              strokeWidth="12"
+                              fill="none"
+                              className="text-gray-200 dark:text-gray-700"
+                            />
+                            {/* Progress circle */}
+                            <circle
+                              cx="80"
+                              cy="80"
+                              r="70"
+                              stroke="currentColor"
+                              strokeWidth="12"
+                              fill="none"
+                              strokeLinecap="round"
+                              /* @ts-ignore */
+                              strokeDasharray={`${2 * Math.PI * 70}`}
+                              /* @ts-ignore */
+                              strokeDashoffset={`${2 * Math.PI * 70 * (1 - application.analytics.successPrediction.probability / 100)}`}
+                              className={
+                                /* @ts-ignore */
+                                application.analytics.successPrediction.probability >= 70 ? "text-green-500" :
+                                /* @ts-ignore */
+                                application.analytics.successPrediction.probability >= 40 ? "text-yellow-500" :
+                                "text-red-500"
+                              }
+                            />
+                          </svg>
+                          {/* Center text */}
+                          <div className="absolute inset-0 flex flex-col items-center justify-center">
+                            {/* @ts-ignore */}
+                            <span className="text-4xl font-bold">{Math.round(application.analytics.successPrediction.probability)}%</span>
+                            <span className="text-xs text-muted-foreground mt-1">Success Rate</span>
+                          </div>
+                        </div>
+                        {/* Reasoning */}
+                        {/* @ts-ignore */}
+                        <p className="text-sm text-center mt-4 max-w-md italic text-muted-foreground">{application.analytics.successPrediction.reasoning}</p>
+                      </div>
+
+                      <Separator />
+
+                      {/* Green Flags */}
+                      {/* @ts-ignore */}
+                      {application.analytics.successPrediction.greenFlags && application.analytics.successPrediction.greenFlags.length > 0 && (
+                        <div>
+                          <h4 className="font-semibold flex items-center gap-2 mb-3 text-green-600 dark:text-green-400">
+                            ✓ Green Flags
+                          </h4>
+                          <div className="space-y-2">
+                            {/* @ts-ignore */}
+                            {application.analytics.successPrediction.greenFlags.map((flag: string, idx: number) => (
+                              <div key={idx} className="border-l-4 border-green-500 pl-4 py-2 bg-green-50 dark:bg-green-950/20 rounded-r">
+                                <p className="text-sm">{flag}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Red Flags */}
+                      {/* @ts-ignore */}
+                      {application.analytics.successPrediction.redFlags && application.analytics.successPrediction.redFlags.length > 0 && (
+                        <div>
+                          <h4 className="font-semibold flex items-center gap-2 mb-3 text-red-600 dark:text-red-400">
+                            <AlertTriangle className="h-4 w-4" />
+                            Red Flags
+                          </h4>
+                          <div className="space-y-2">
+                            {/* @ts-ignore */}
+                            {application.analytics.successPrediction.redFlags.map((flag: string, idx: number) => (
+                              <div key={idx} className="border-l-4 border-red-500 pl-4 py-2 bg-red-50 dark:bg-red-950/20 rounded-r">
+                                <p className="text-sm">{flag}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </Card>
+
+                {/* Skill Gap Analysis Section */}
+                <Card className="p-4 border-2 border-purple-500/20 bg-gradient-to-br from-purple-50/50 to-transparent dark:from-purple-950/20">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-semibold flex items-center gap-2 text-lg">
+                      <Lightbulb className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                      Skill Gap Analysis
+                    </h3>
+                    {/* @ts-ignore */}
+                    {(!application.analytics?.skillGap) && (
+                      <Button 
+                        onClick={handleRunSkillGap}
+                        disabled={skillGapMutation.isPending}
+                        size="sm"
+                        className="gap-2"
+                      >
+                        {skillGapMutation.isPending ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Analyzing...
+                          </>
+                        ) : (
+                          <>
+                            <Lightbulb className="h-4 w-4" />
+                            Analyze Skill Gap
+                          </>
+                        )}
+                      </Button>
+                    )}
+                  </div>
+
+                  {/* @ts-ignore */}
+                  {(!application.analytics?.skillGap) && !skillGapMutation.isPending && (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Lightbulb className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                      <p className="font-medium">No skill gap analysis yet</p>
+                      <p className="text-sm mt-1">Click "Analyze Skill Gap" to identify missing skills and get an upskilling plan.</p>
+                    </div>
+                  )}
+
+                  {/* @ts-ignore */}
+                  {application.analytics?.skillGap && (
+                    <div className="space-y-6">
+                      {/* Missing Skills */}
+                      {/* @ts-ignore */}
+                      {application.analytics.skillGap.missingSkills && application.analytics.skillGap.missingSkills.length > 0 && (
+                        <div>
+                          <h4 className="font-semibold flex items-center gap-2 mb-3 text-amber-600 dark:text-amber-400">
+                            <AlertTriangle className="h-4 w-4" />
+                            Missing Pieces
+                          </h4>
+                          <div className="space-y-2">
+                            {/* @ts-ignore */}
+                            {application.analytics.skillGap.missingSkills.map((skill: string, idx: number) => (
+                              <div key={idx} className="border-l-4 border-amber-500 pl-4 py-2 bg-amber-50 dark:bg-amber-950/20 rounded-r">
+                                <p className="text-sm font-medium">{skill}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      <Separator />
+
+                      {/* Upskilling Plan */}
+                      {/* @ts-ignore */}
+                      {application.analytics.skillGap.upskillingPlan && application.analytics.skillGap.upskillingPlan.length > 0 && (
+                        <div>
+                          <h4 className="font-semibold flex items-center gap-2 mb-3 text-purple-600 dark:text-purple-400">
+                            <Sparkles className="h-4 w-4" />
+                            Upskilling Plan
+                          </h4>
+                          <div className="space-y-3">
+                            {/* @ts-ignore */}
+                            {application.analytics.skillGap.upskillingPlan.map((step: string, idx: number) => (
+                              <div key={idx} className="border-l-4 border-purple-500 pl-4 py-2 bg-purple-50 dark:bg-purple-950/20 rounded-r">
+                                <p className="text-sm">{step}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </Card>

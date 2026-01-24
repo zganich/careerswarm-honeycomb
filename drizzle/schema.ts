@@ -216,6 +216,20 @@ export const applications = mysqlTable("applications", {
   // AI Agent Outreach (for Scribe agent)
   outreachContent: json("outreachContent").$type<{linkedinMessage: string; coldEmailSubject: string; coldEmailBody: string}>(),
   
+  // AI Agent Analytics (for Success Predictor & Skill Gap agents)
+  analytics: json("analytics").$type<{
+    successPrediction?: {
+      probability: number;
+      reasoning: string;
+      greenFlags: string[];
+      redFlags: string[];
+    };
+    skillGap?: {
+      missingSkills: string[];
+      upskillingPlan: string[];
+    };
+  }>(),
+  
   // Follow-up
   nextFollowUpDate: date("nextFollowUpDate"),
   followUpCount: int("followUpCount").default(0),

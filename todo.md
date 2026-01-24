@@ -1584,3 +1584,68 @@ Add PDF upload support to Resume Roaster so users can drag-and-drop PDF resumes 
 - ✅ Invalid buffer rejection
 - Manual testing required for real PDF extraction
 
+
+
+## Intelligence Fleet - Success Predictor & Skill Gap (Phases 10 & 11)
+
+**Status:** ✅ Complete  
+**Priority:** HIGH - Advanced strategic analytics
+
+### Objective
+Implement Success Predictor and Skill Gap agents to provide probability predictions, green/red flags, missing skills analysis, and upskilling plans for each application.
+
+### Database Schema
+- [x] Add `analytics` JSON column to applications table OR extend profilerAnalysis
+- [x] Schema: { successPrediction: { probability: number, reasoning: string, greenFlags: string[], redFlags: string[] }, skillGap: { missingSkills: string[], upskillingPlan: string[] } }
+- [x] Run database migration
+
+### Backend Implementation - Success Predictor
+- [x] Create `applications.predictSuccess` tRPC procedure
+- [x] Input: applicationId
+- [x] System prompt: "You are a data-driven hiring analyst. Predict probability of offer (0-100%)."
+- [x] Fetch: jobDescription, user profile/achievements, application status
+- [x] Output: probability (0-100), reasoning, greenFlags[], redFlags[]
+- [x] Store in analytics column
+
+### Backend Implementation - Skill Gap Agent
+- [x] Create `applications.analyzeSkillGap` tRPC procedure
+- [x] Input: applicationId
+- [x] System prompt: "Identify critical skills/certifications missing from user's profile."
+- [x] Fetch: jobDescription requirements, user skills/achievements
+- [x] Output: missingSkills[], upskillingPlan[] (with resources/courses)
+- [x] Store in analytics column
+
+### Frontend Implementation
+- [x] Update ApplicationDetailModal Overview tab
+- [x] Add Success Gauge section:
+  - Circular progress ring showing probability (0-100%)
+  - Color-coded: Red (<40%), Yellow (40-70%), Green (>70%)
+  - Display reasoning text
+  - List green flags with checkmark icons
+  - List red flags with warning icons
+- [x] Add Gap Analysis section:
+  - "Missing Pieces" heading
+  - List missing skills with gap icons
+  - Upskilling plan with course/resource links
+  - "Start Learning" CTA buttons
+- [x] Add "Run Intelligence Analysis" button if analytics empty
+- [x] Loading states for both agents
+- [x] Re-run analysis button
+
+### Testing
+- [x] Write vitest tests for predictSuccess procedure
+- [x] Write vitest tests for analyzeSkillGap procedure
+- [x] Test probability calculation logic
+- [x] Test skill extraction from job descriptions
+- [x] Test upskilling plan generation
+- [x] Manual UI testing of success gauge and gap analysis
+
+### Success Criteria
+- ✅ Success probability calculated (0-100%)
+- ✅ Green flags and red flags identified
+- ✅ Missing skills extracted from JD
+- ✅ Upskilling plan with actionable resources
+- ✅ Visual success gauge with circular progress
+- ✅ Gap analysis with missing skills list
+- ✅ All tests passing
+
