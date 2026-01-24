@@ -802,3 +802,63 @@ The particle system is fundamentally limited by browser canvas rendering perform
 - ✅ OnboardingFlow renders for unauthenticated users
 - ✅ No "more hooks" error in console
 - ✅ All hooks called in consistent order regardless of auth state
+
+
+---
+
+## Master Profile Engine - Phase 2: AI Extraction & UI
+
+**Status:** ✅ Complete  
+**Priority:** HIGH - Core feature for automated achievement extraction
+
+### Objective
+Build AI-powered extraction pipeline to automatically convert uploaded source materials (resumes, portfolios) into STAR-formatted achievements, with UI for managing source materials and tracking extraction status.
+
+### Database Updates
+- [x] Add `status` field to `sourceMaterials` table (PENDING/PROCESSED/FAILED)
+- [x] Add `errorMessage` field for failure details
+- [x] Run database migration (drizzle/0007_special_scorpion.sql)
+
+### Backend Implementation
+- [x] Create tRPC procedure `sourceMaterials.list` to fetch user's source materials
+- [x] Create tRPC procedure `sourceMaterials.delete` to remove source material
+- [x] Create tRPC procedure `sourceMaterials.synthesize` for AI extraction:
+  - Fetch source material content by ID
+  - Call LLM with system prompt to extract achievements
+  - Parse and validate JSON response
+  - Bulk insert achievements into database
+  - Update source material status to PROCESSED/FAILED
+  - Return count of extracted achievements
+- [x] Add `updateSourceMaterialStatus` helper to db.ts
+
+### Frontend Implementation
+- [x] Create `SourceMaterialList.tsx` component:
+  - Display all source materials with title, type icon, word count
+  - Show status badge (PENDING/PROCESSED/FAILED)
+  - "Extract Achievements" button (visible for PENDING status)
+  - Delete button with confirmation
+  - Loading state during extraction
+- [x] Integrate SourceMaterialList below SourceMaterialUploader in Dashboard
+- [x] Add success toast showing count of extracted achievements
+- [x] Invalidate achievements query after successful extraction
+
+### AI Integration
+- [x] Design system prompt for achievement extraction
+- [x] Define JSON schema for extracted achievements (STAR format)
+- [x] Implement validation for LLM response
+- [x] Handle edge cases (no achievements found, malformed JSON, already processed)
+
+### Testing
+- [x] Write vitest tests for synthesis logic (9/9 passing)
+- [x] Test achievement extraction schema validation
+- [x] Test error handling for invalid LLM responses
+- [x] Test status transitions (PENDING → PROCESSED/FAILED)
+- [x] Test retry logic for failed extractions
+
+### Success Criteria
+- ✅ Users can view list of uploaded source materials
+- ✅ Users can trigger AI extraction with one click
+- ✅ Extracted achievements appear in achievements list
+- ✅ Status tracking shows PENDING/PROCESSED/FAILED states
+- ✅ Error handling works for failed extractions
+- ✅ All tests pass

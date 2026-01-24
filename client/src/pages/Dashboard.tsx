@@ -2,6 +2,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { WelcomeWizard } from "@/components/WelcomeWizard";
 import { SourceMaterialUploader } from "@/components/SourceMaterialUploader";
+import { SourceMaterialList } from "@/components/SourceMaterialList";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
@@ -280,9 +281,15 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <SourceMaterialUploader onUploadComplete={() => {
-              // Optionally refresh source materials list here
+              // Refresh source materials list after upload
               console.log("Upload complete");
             }} />
+            
+            {/* Source Materials List */}
+            <div className="mt-8">
+              <h3 className="text-lg font-semibold mb-4">Uploaded Materials</h3>
+              <SourceMaterialList />
+            </div>
           </CardContent>
         </Card>
 

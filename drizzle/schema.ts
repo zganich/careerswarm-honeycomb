@@ -336,6 +336,10 @@ export const sourceMaterials = mysqlTable("sourceMaterials", {
   // Extracted content
   content: text("content").notNull(), // Raw text extracted from file or URL
   
+  // Processing status
+  status: mysqlEnum("status", ["PENDING", "PROCESSED", "FAILED"]).default("PENDING").notNull(),
+  errorMessage: text("errorMessage"), // Error details if status is FAILED
+  
   // Metadata (JSON)
   metadata: json("metadata").$type<{
     // For FILE type

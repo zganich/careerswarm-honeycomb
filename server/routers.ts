@@ -984,6 +984,151 @@ ${a.startDate || ""} - ${a.endDate || "Present"}
       }),
     }),
 
+  // Source Materials
+  sourceMaterials: router({
+    list: protectedProcedure.query(async ({ ctx }) => {
+      return db.getSourceMaterialsByUserId(ctx.user.id);
+    }),
+    
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.deleteSourceMaterial(input.id, ctx.user.id);
+        return { success: true };
+      }),
+    
+    synthesize: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        // Get source material
+        const material = await db.getSourceMaterialById(input.id, ctx.user.id);
+        if (!material) {
+          throw new Error("Source material not found");
+        }
+        
+        if (material.status === "PROCESSED") {
+          throw new Error("This source material has already been processed");
+        }
+        
+        try {
+          // Call LLM to extract achievements
+          const systemPrompt = `You are an expert resume writer and career coach. Your task is to analyze resume text and extract distinct professional achievements.
+
+For each achievement you find, extract:
+- situation: The context or circumstances (company, role, team size, challenges)
+- task: The specific challenge or goal that needed to be addressed
+- action: The specific actions taken to address the task (be detailed)
+- result: The quantifiable outcome or impact (use numbers, percentages, or measurable results)
+- role: The job title or position held
+- company: The company name (if mentioned)
+
+Rules:
+- Extract ONLY achievements that have measurable results or clear impact
+- Each achievement should be a distinct accomplishment, not a job duty
+- Focus on achievements with quantifiable metrics (revenue, time saved, users, etc.)
+- If no clear achievements are found, return an empty array
+- Do not invent or embellish information`;
+
+          const response = await invokeLLM({
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: `Extract professional achievements from this resume/profile text:\n\n${material.content}` }
+            ],
+            response_format: {
+              type: "json_schema",
+              json_schema: {
+                name: "achievement_extraction",
+                strict: true,
+                schema: {
+                  type: "object",
+                  properties: {
+                    achievements: {
+                      type: "array",
+                      items: {
+                        type: "object",
+                        properties: {
+                          situation: { type: "string" },
+                          task: { type: "string" },
+                          action: { type: "string" },
+                          result: { type: "string" },
+                          role: { type: "string" },
+                          company: { type: "string" }
+                        },
+                        required: ["situation", "task", "action", "result", "role"],
+                        additionalProperties: false
+                      }
+                    }
+                  },
+                  required: ["achievements"],
+                  additionalProperties: false
+                }
+              }
+            }
+          });
+          
+          // Parse response
+          const content = response.choices[0]?.message?.content;
+          if (!content) {
+            throw new Error("No response from LLM");
+          }
+          
+          // Handle both string and array content types
+          const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
+          const parsed = JSON.parse(contentStr);
+          const achievements = parsed.achievements || [];
+          
+          // Bulk insert achievements
+          let insertedCount = 0;
+          for (const achievement of achievements) {
+            await db.createAchievement({
+              userId: ctx.user.id,
+              situation: achievement.situation,
+              task: achievement.task,
+              action: achievement.action,
+              result: achievement.result,
+              company: achievement.company || null,
+              roleTitle: achievement.role,
+              // Set default values for other required fields
+              xyzAccomplishment: null,
+              xyzMetricValue: null,
+              xyzMetricUnit: null,
+              xyzMetricPrecision: null,
+              xyzMechanism: null,
+              startDate: null,
+              endDate: null,
+              teamSize: null,
+              budgetAmount: null,
+              budgetCurrency: "USD",
+              impactMeterScore: 0,
+              hasStrongVerb: false,
+              hasMetric: false,
+              hasMethodology: false,
+              evidenceTier: 4,
+            });
+            insertedCount++;
+          }
+          
+          // Update source material status
+          const { updateSourceMaterialStatus } = await import("./db");
+          await updateSourceMaterialStatus(input.id, "PROCESSED", null);
+          
+          return {
+            success: true,
+            count: insertedCount,
+            message: `Successfully extracted ${insertedCount} achievement(s)`
+          };
+        } catch (error: any) {
+          console.error("[Synthesize] Error:", error);
+          
+          // Update source material status to FAILED
+          const { updateSourceMaterialStatus } = await import("./db");
+          await updateSourceMaterialStatus(input.id, "FAILED", error.message);
+          
+          throw new Error(`Failed to extract achievements: ${error.message}`);
+        }
+      }),
+  }),
+  
   // Interview Prep
   interviewPrep: router({
     generateQuestions: protectedProcedure

@@ -419,3 +419,9 @@ export async function deleteSourceMaterial(id: number, userId: number) {
   if (!db) return;
   await db.delete(sourceMaterials).where(and(eq(sourceMaterials.id, id), eq(sourceMaterials.userId, userId)));
 }
+
+export async function updateSourceMaterialStatus(id: number, status: "PENDING" | "PROCESSED" | "FAILED", errorMessage: string | null) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(sourceMaterials).set({ status, errorMessage }).where(eq(sourceMaterials.id, id));
+}
