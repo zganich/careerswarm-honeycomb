@@ -2113,6 +2113,177 @@ Identify missing skills and create an upskilling plan.`,
         
         return analysis;
       }),
+    
+    analyzePivot: protectedProcedure
+      .input(z.object({ applicationId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const { getApplicationById, updateApplication } = await import("./db");
+        const { invokeLLM } = await import("./_core/llm");
+        const { getUserAchievements } = await import("./db");
+        
+        const application = await getApplicationById(input.applicationId, ctx.user.id);
+        if (!application) {
+          throw new Error("Application not found");
+        }
+        
+        if (!application.job) {
+          throw new Error("Application has no associated job");
+        }
+        
+        // Get user's background and experience
+        const achievements = await getUserAchievements(ctx.user.id);
+        const userBackground = achievements.map(a => 
+          `Role: ${a.roleTitle || 'Unknown'} - ${a.xyzAccomplishment || a.situation || a.task}`
+        ).join("\n");
+        
+        // Get current role from most recent achievement
+        const currentRole = achievements[0]?.roleTitle || ctx.user.currentRole || "Current Role";
+        
+        // Call LLM with Pivot Analyzer system prompt
+        const response = await invokeLLM({
+          messages: [
+            {
+              role: "system",
+              content: `You are a career transition strategist specializing in identifying transferable skills for career pivots.
+
+Your task is to identify 3-5 "Bridge Skills" - skills the candidate already has that can be strategically reframed for the target role.
+
+**Bridge Skill Framework:**
+1. **Identify Transferable Skills**: Find skills from their current/past roles that apply to the target role
+2. **Context Translation**: Show how the skill translates from their background to the new context
+3. **Strategic Framing**: Provide language to position this skill compellingly
+
+**Examples of Bridge Skills:**
+- Sales → Strategy: "Client needs analysis" becomes "Market opportunity assessment"
+- Teaching → Training: "Curriculum design" becomes "Learning program development"
+- Engineering → Product: "Technical architecture" becomes "Product systems thinking"
+- Operations → Consulting: "Process optimization" becomes "Operational excellence advisory"
+
+**CRITICAL CONSTRAINTS:**
+- NO FLUFF WORDS: Absolutely forbidden: synergy, leverage, utilize, robust, dynamic, innovative, cutting-edge, best-in-class, world-class, game-changing, disruptive
+- Be specific and concrete
+- Focus on skills they demonstrably have (based on their achievements)
+- Each bridge skill must show clear before/after context
+- Strategic framing must be actionable (usable in interviews/resumes)
+
+**Pivot Strategy Guidelines:**
+- Acknowledge the transition clearly ("Moving from X to Y")
+- Highlight the unique value of their background
+- Position the pivot as strategic, not desperate
+- Focus on transferable strengths, not gaps`,
+            },
+            {
+              role: "user",
+              content: `Analyze the career pivot for this application:
+
+**Target Role:** ${application.job.title}
+**Target Company:** ${application.job.companyName}
+**Current/Previous Role:** ${currentRole}
+
+**Job Description:**
+${application.job.description}
+
+**Candidate's Background & Achievements:**
+${userBackground}
+
+Identify 3-5 bridge skills and create a pivot strategy.`,
+            },
+          ],
+          response_format: {
+            type: "json_schema",
+            json_schema: {
+              name: "pivot_analysis",
+              strict: true,
+              schema: {
+                type: "object",
+                properties: {
+                  bridgeSkills: {
+                    type: "array",
+                    description: "3-5 transferable skills that bridge from current to target role",
+                    items: {
+                      type: "object",
+                      properties: {
+                        skill: {
+                          type: "string",
+                          description: "The core transferable skill (e.g., 'Client needs analysis')",
+                        },
+                        fromContext: {
+                          type: "string",
+                          description: "How this skill appears in their current/past role",
+                        },
+                        toContext: {
+                          type: "string",
+                          description: "How this skill applies to the target role",
+                        },
+                        strategicFrame: {
+                          type: "string",
+                          description: "Language to position this skill in interviews/resumes",
+                        },
+                      },
+                      required: ["skill", "fromContext", "toContext", "strategicFrame"],
+                      additionalProperties: false,
+                    },
+                    minItems: 3,
+                    maxItems: 5,
+                  },
+                  pivotStrategy: {
+                    type: "string",
+                    description: "Overall strategy for positioning this career transition (2-3 sentences)",
+                  },
+                  transferableStrengths: {
+                    type: "array",
+                    description: "3-5 key strengths from their background that add unique value",
+                    items: { type: "string" },
+                    minItems: 3,
+                    maxItems: 5,
+                  },
+                },
+                required: ["bridgeSkills", "pivotStrategy", "transferableStrengths"],
+                additionalProperties: false,
+              },
+            },
+          },
+        });
+        
+        const content = response.choices[0]?.message?.content;
+        if (!content || typeof content !== "string") {
+          throw new Error("Invalid LLM response");
+        }
+        
+        const analysis = JSON.parse(content) as {
+          bridgeSkills: Array<{
+            skill: string;
+            fromContext: string;
+            toContext: string;
+            strategicFrame: string;
+          }>;
+          pivotStrategy: string;
+          transferableStrengths: string[];
+        };
+        
+        // Validate no fluff words in output
+        const fluffWords = ['synergy', 'leverage', 'utilize', 'robust', 'dynamic', 'innovative', 'cutting-edge', 'best-in-class', 'world-class', 'game-changing', 'disruptive'];
+        const fullText = JSON.stringify(analysis).toLowerCase();
+        const foundFluff = fluffWords.filter(word => fullText.includes(word));
+        
+        if (foundFluff.length > 0) {
+          console.warn(`Fluff words detected in pivot analysis: ${foundFluff.join(', ')}`);
+          // Remove fluff words from the output
+          const cleanAnalysis = JSON.parse(
+            JSON.stringify(analysis).replace(new RegExp(fluffWords.join('|'), 'gi'), '[removed]')
+          );
+          analysis.bridgeSkills = cleanAnalysis.bridgeSkills;
+          analysis.pivotStrategy = cleanAnalysis.pivotStrategy;
+          analysis.transferableStrengths = cleanAnalysis.transferableStrengths;
+        }
+        
+        // Store in pivotAnalysis column
+        await updateApplication(input.applicationId, ctx.user.id, {
+          pivotAnalysis: analysis,
+        });
+        
+        return analysis;
+      }),
   }),
   
   companies: router({

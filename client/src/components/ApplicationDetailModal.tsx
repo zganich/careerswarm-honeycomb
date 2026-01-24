@@ -94,6 +94,17 @@ export function ApplicationDetailModal({ applicationId, open, onClose }: Applica
     },
   });
 
+  const pivotMutation = trpc.applications.analyzePivot.useMutation({
+    onSuccess: (data) => {
+      toast.success("Career pivot analysis complete!");
+      utils.applications.get.invalidate({ id: applicationId! });
+      utils.applications.list.invalidate();
+    },
+    onError: (error) => {
+      toast.error(`Pivot analysis failed: ${error.message}`);
+    },
+  });
+
   const handleRunProfiler = () => {
     if (!applicationId) return;
     profileMutation.mutate({ applicationId });
@@ -107,6 +118,11 @@ export function ApplicationDetailModal({ applicationId, open, onClose }: Applica
   const handleRunSkillGap = () => {
     if (!applicationId) return;
     skillGapMutation.mutate({ applicationId });
+  };
+
+  const handleRunPivotAnalysis = () => {
+    if (!applicationId) return;
+    pivotMutation.mutate({ applicationId });
   };
 
   // Update notes when application loads
@@ -202,10 +218,11 @@ export function ApplicationDetailModal({ applicationId, open, onClose }: Applica
             </DialogHeader>
 
             <Tabs defaultValue="overview" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="overview">Overview</TabsTrigger>
                 <TabsTrigger value="documents">Documents</TabsTrigger>
                 <TabsTrigger value="strategy">Strategy</TabsTrigger>
+                <TabsTrigger value="career-path">Career Path</TabsTrigger>
                 <TabsTrigger value="notes">Notes</TabsTrigger>
               </TabsList>
 
@@ -786,6 +803,130 @@ export function ApplicationDetailModal({ applicationId, open, onClose }: Applica
                           <>
                             <Sparkles className="h-4 w-4 mr-2" />
                             Generate Outreach Strategy
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </Card>
+                )}
+              </TabsContent>
+
+              {/* Career Path Tab */}
+              <TabsContent value="career-path" className="space-y-4 mt-4">
+                {application.pivotAnalysis ? (
+                  <>
+                    {/* Pivot Strategy */}
+                    <Card className="p-6 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-950/20 dark:to-blue-950/20 border-purple-200 dark:border-purple-800">
+                      <h3 className="font-semibold text-lg flex items-center gap-2 mb-4 text-purple-900 dark:text-purple-100">
+                        <Target className="h-5 w-5" />
+                        Career Transition Strategy
+                      </h3>
+                      <p className="text-sm leading-relaxed text-gray-700 dark:text-gray-300">
+                        {application.pivotAnalysis.pivotStrategy}
+                      </p>
+                    </Card>
+
+                    {/* Bridge Skills */}
+                    <Card className="p-6">
+                      <h3 className="font-semibold text-lg flex items-center gap-2 mb-4">
+                        <Sparkles className="h-5 w-5 text-purple-600" />
+                        Bridge Skills (Transferable Strengths)
+                      </h3>
+                      <div className="space-y-6">
+                        {application.pivotAnalysis.bridgeSkills.map((bridge, index) => (
+                          <div key={index} className="relative pl-6 border-l-2 border-purple-300 dark:border-purple-700">
+                            <div className="absolute -left-2 top-0 w-4 h-4 rounded-full bg-purple-500"></div>
+                            <h4 className="font-semibold text-purple-900 dark:text-purple-100 mb-2">
+                              {bridge.skill}
+                            </h4>
+                            <div className="space-y-2 text-sm">
+                              <div className="flex items-start gap-2">
+                                <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-300 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-700">
+                                  From
+                                </Badge>
+                                <p className="flex-1 text-gray-600 dark:text-gray-400">{bridge.fromContext}</p>
+                              </div>
+                              <div className="flex items-start gap-2">
+                                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-300 dark:bg-green-950 dark:text-green-300 dark:border-green-700">
+                                  To
+                                </Badge>
+                                <p className="flex-1 text-gray-600 dark:text-gray-400">{bridge.toContext}</p>
+                              </div>
+                              <div className="mt-3 p-3 bg-purple-50 dark:bg-purple-950/30 rounded-md border border-purple-200 dark:border-purple-800">
+                                <p className="text-xs font-medium text-purple-700 dark:text-purple-300 mb-1">Strategic Frame:</p>
+                                <p className="text-sm text-gray-700 dark:text-gray-300 italic">"{bridge.strategicFrame}"</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </Card>
+
+                    {/* Transferable Strengths */}
+                    <Card className="p-6">
+                      <h3 className="font-semibold text-lg flex items-center gap-2 mb-4">
+                        <Lightbulb className="h-5 w-5 text-amber-600" />
+                        Your Unique Value
+                      </h3>
+                      <div className="flex flex-wrap gap-2">
+                        {application.pivotAnalysis.transferableStrengths.map((strength, index) => (
+                          <Badge 
+                            key={index}
+                            variant="outline"
+                            className="bg-gradient-to-r from-purple-50 to-blue-50 text-purple-700 border-purple-300 dark:from-purple-950/30 dark:to-blue-950/30 dark:text-purple-300 dark:border-purple-700 px-3 py-1"
+                          >
+                            {strength}
+                          </Badge>
+                        ))}
+                      </div>
+                    </Card>
+
+                    <Button
+                      onClick={handleRunPivotAnalysis}
+                      disabled={pivotMutation.isPending}
+                      variant="outline"
+                      className="w-full border-purple-300 hover:bg-purple-50 dark:border-purple-700 dark:hover:bg-purple-950/30"
+                    >
+                      {pivotMutation.isPending ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Re-analyzing Pivot...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="mr-2 h-4 w-4" />
+                          Re-analyze Career Path
+                        </>
+                      )}
+                    </Button>
+                  </>
+                ) : (
+                  <Card className="p-8 text-center">
+                    <div className="flex flex-col items-center gap-4">
+                      <div className="p-4 bg-purple-100 dark:bg-purple-950/30 rounded-full">
+                        <Target className="h-8 w-8 text-purple-600 dark:text-purple-400" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-lg mb-2">Career Pivot Analysis</h3>
+                        <p className="text-sm text-muted-foreground mb-4 max-w-md">
+                          Identify transferable skills and strategic framing for career transitions.
+                          Get 3-5 "Bridge Skills" that connect your background to this role.
+                        </p>
+                      </div>
+                      <Button
+                        onClick={handleRunPivotAnalysis}
+                        disabled={pivotMutation.isPending}
+                        className="bg-purple-600 hover:bg-purple-700 text-white"
+                      >
+                        {pivotMutation.isPending ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Analyzing...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="mr-2 h-4 w-4" />
+                            Analyze Career Path
                           </>
                         )}
                       </Button>

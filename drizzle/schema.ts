@@ -238,6 +238,18 @@ export const applications = mysqlTable("applications", {
     };
   }>(),
   
+  // AI Agent Pivot Analysis (for career transitions)
+  pivotAnalysis: json("pivotAnalysis").$type<{
+    bridgeSkills: Array<{
+      skill: string;
+      fromContext: string;
+      toContext: string;
+      strategicFrame: string;
+    }>;
+    pivotStrategy: string;
+    transferableStrengths: string[];
+  }>(),
+  
   // Follow-up
   nextFollowUpDate: date("nextFollowUpDate"),
   followUpCount: int("followUpCount").default(0),
