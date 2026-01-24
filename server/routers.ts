@@ -984,6 +984,7 @@ ${a.startDate || ""} - ${a.endDate || "Present"}
           resumeFormat: "markdown",
           version: 1,
           isFavorite: false,
+          atsAnalysis: null,
         });
         return { id, content: resumeContent };
       }),
@@ -1119,6 +1120,7 @@ ${a.startDate || ""} - ${a.endDate || "Present"}
           resumeFormat: "markdown",
           version: 1,
           isFavorite: false,
+          atsAnalysis: null,
         });
         
         return {
@@ -1130,6 +1132,115 @@ ${a.startDate || ""} - ${a.endDate || "Present"}
           selectedAchievementIds: analysis.selectedAchievementIds,
           selectedAchievements,
         };
+      }),
+    
+    checkATS: protectedProcedure
+      .input(z.object({ resumeId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const { invokeLLM } = await import("./_core/llm");
+        const { getResumeById, updateGeneratedResume } = await import("./db");
+        
+        // Fetch resume
+        const resume = await getResumeById(input.resumeId, ctx.user.id);
+        if (!resume) {
+          throw new Error("Resume not found");
+        }
+        
+        // Fetch associated job description if available
+        let jobDescription = "";
+        if (resume.jobDescriptionId) {
+          const { getJobDescriptionById } = await import("./db");
+          const jd = await getJobDescriptionById(resume.jobDescriptionId, ctx.user.id);
+          jobDescription = jd?.jobDescriptionText || "";
+        }
+        
+        // Call LLM with ATS Persona
+        const response = await invokeLLM({
+          messages: [
+            {
+              role: "system",
+              content: `You are a technical ATS (Applicant Tracking System) parser (like Taleo or Greenhouse).
+
+Your job is to analyze resumes for parsing compatibility and keyword optimization.
+
+**Analysis Criteria:**
+1. **Formatting Issues** - Identify elements that break ATS parsing:
+   - Multi-column layouts (columns cause text scrambling)
+   - Tables (often parsed incorrectly)
+   - Headers/footers (usually ignored by ATS)
+   - Text boxes or graphics (cannot be parsed)
+   - Special characters or symbols (may cause encoding errors)
+   - Non-standard fonts or formatting
+   - Images or logos (cannot be read)
+
+2. **Section Headings** - Check for standard ATS-friendly section names:
+   - "Experience" or "Work Experience" or "Professional Experience"
+   - "Education"
+   - "Skills" or "Technical Skills"
+   - "Certifications" (if applicable)
+   - Avoid creative headings like "My Journey" or "What I've Done"
+
+3. **Keyword Density** - Compare resume against job description:
+   - Identify exact keyword matches (skills, tools, technologies)
+   - Check for industry-standard terminology
+   - Flag missing critical keywords from job description
+
+4. **ATS Score** - Calculate overall score (0-100):
+   - 90-100: Excellent (no formatting issues, strong keyword match, standard headings)
+   - 70-89: Good (minor issues, decent keyword coverage)
+   - 50-69: Fair (some formatting problems, missing keywords)
+   - 0-49: Poor (major formatting issues, weak keyword match)
+
+**Output Format:**
+Return ONLY valid JSON with this exact structure:
+{
+  "atsScore": <number 0-100>,
+  "formattingIssues": ["issue 1", "issue 2", ...],
+  "keywordMatch": ["matched keyword 1", "matched keyword 2", ...],
+  "recommendedChanges": ["change 1", "change 2", ...]
+}
+
+**Rules:**
+- Be strict about formatting issues (ATS systems are unforgiving)
+- Prioritize exact keyword matches over synonyms
+- Provide actionable, specific recommendations
+- If no job description provided, focus on formatting and general best practices`
+            },
+            {
+              role: "user",
+              content: `Analyze this resume for ATS compatibility:
+
+**Resume Content:**
+${resume.resumeContent}
+
+**Job Description (for keyword matching):**
+${jobDescription || "No job description provided - focus on formatting and general best practices"}
+
+Provide ATS analysis in JSON format.`
+            }
+          ],
+          response_format: {
+            type: "json_object"
+          }
+        });
+        
+        const content = String(response.choices[0]?.message?.content || "{}");
+        const analysis = JSON.parse(content);
+        
+        // Validate and structure the response
+        const atsAnalysis = {
+          atsScore: analysis.atsScore || 0,
+          formattingIssues: Array.isArray(analysis.formattingIssues) ? analysis.formattingIssues : [],
+          keywordMatch: Array.isArray(analysis.keywordMatch) ? analysis.keywordMatch : [],
+          recommendedChanges: Array.isArray(analysis.recommendedChanges) ? analysis.recommendedChanges : [],
+        };
+        
+        // Store in database
+        await updateGeneratedResume(input.resumeId, ctx.user.id, {
+          atsAnalysis,
+        });
+        
+        return atsAnalysis;
       }),
   }),
   

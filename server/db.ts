@@ -195,6 +195,14 @@ export async function getResumeById(id: number, userId: number) {
   return result[0] || null;
 }
 
+export async function updateGeneratedResume(id: number, userId: number, data: Partial<Omit<GeneratedResume, 'id' | 'userId' | 'createdAt' | 'updatedAt'>>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(generatedResumes)
+    .set(data)
+    .where(and(eq(generatedResumes.id, id), eq(generatedResumes.userId, userId)));
+}
+
 // Power Verbs
 export async function getPowerVerbs() {
   const db = await getDb();

@@ -113,6 +113,14 @@ export const generatedResumes = mysqlTable("generatedResumes", {
   resumeContent: text("resumeContent").notNull(),
   selectedAchievementIds: json("selectedAchievementIds").$type<number[]>(),
   
+  // ATS Compatibility Analysis
+  atsAnalysis: json("atsAnalysis").$type<{
+    atsScore: number;
+    formattingIssues: string[];
+    keywordMatch: string[];
+    recommendedChanges: string[];
+  }>(),
+  
   version: int("version").default(1),
   isFavorite: boolean("isFavorite").default(false),
   

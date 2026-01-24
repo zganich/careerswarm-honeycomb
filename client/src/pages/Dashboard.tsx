@@ -387,6 +387,7 @@ export default function Dashboard() {
               />
             ) : (
               <ResumePreview
+                resumeId={tailorResult.resumeId}
                 resumeContent={tailorResult.resumeContent}
                 matchScore={tailorResult.matchScore}
                 missingKeywords={tailorResult.missingKeywords}

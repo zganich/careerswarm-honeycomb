@@ -1649,3 +1649,53 @@ Implement Success Predictor and Skill Gap agents to provide probability predicti
 - ✅ Gap analysis with missing skills list
 - ✅ All tests passing
 
+
+
+## ATS Compatibility Agent (Phase 14)
+
+**Status:** ✅ Complete  
+**Priority:** HIGH - Critical for resume optimization
+
+### Objective
+Implement ATS Compatibility Agent to score resumes for automated system parsing, identify formatting issues, check keyword density, and provide recommendations for improving ATS compatibility.
+
+### Database Schema
+- [x] Add `atsAnalysis` JSON column to generated_resumes table
+- [x] Schema: { atsScore: number, formattingIssues: string[], keywordMatch: string[], recommendedChanges: string[] }
+- [x] Run database migration
+
+### Backend Implementation
+- [x] Create `resumes.checkATS` tRPC procedure
+- [x] Input: resumeId
+- [x] System prompt: "You are a technical ATS (Applicant Tracking System) parser (like Taleo or Greenhouse)"
+- [x] Fetch: resumeContent and associated jobDescription
+- [x] Analyze: formatting issues (columns, tables, graphics), keyword density, section headings
+- [x] Output: atsScore (0-100), formattingIssues[], keywordMatch[], recommendedChanges[]
+- [x] Store result in generated_resumes table
+
+### Frontend Implementation
+- [x] Update ResumePreview.tsx with ATS Check section
+- [x] Display ATS Score (0-100) prominently with color coding
+- [x] Show "Formatting Green Flags" checklist
+- [x] Display "Recommended Changes" list
+- [x] Add "Run ATS Check" button (Re-scan)
+- [x] Loading states and error handling
+- [x] Visual score gauge or progress bar
+
+### Testing
+- [x] Write vitest tests for checkATS procedure
+- [x] Test ATS score calculation logic
+- [x] Test formatting issue detection
+- [x] Test keyword matching against job description
+- [x] Test recommendation generation
+- [x] Manual UI testing of ATS check display
+
+### Success Criteria
+- ✅ ATS score calculated (0-100)
+- ✅ Formatting issues identified
+- ✅ Keyword matches detected
+- ✅ Actionable recommendations provided
+- ✅ Results stored in database
+- ✅ Visual ATS score display in UI
+- ✅ All tests passing
+
