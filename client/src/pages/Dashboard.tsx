@@ -3,6 +3,9 @@ import { Button } from "@/components/ui/button";
 import { WelcomeWizard } from "@/components/WelcomeWizard";
 import { SourceMaterialUploader } from "@/components/SourceMaterialUploader";
 import { SourceMaterialList } from "@/components/SourceMaterialList";
+import { JobTailorWizard } from "@/components/JobTailorWizard";
+import { ResumePreview } from "@/components/ResumePreview";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
@@ -12,6 +15,8 @@ import { Link, Redirect } from "wouter";
 export default function Dashboard() {
   const { user, loading: authLoading } = useAuth();
   const [showWelcome, setShowWelcome] = useState(false);
+  const [showTailorWizard, setShowTailorWizard] = useState(false);
+  const [tailorResult, setTailorResult] = useState<any>(null);
   const { data: achievements, isLoading: achievementsLoading } = trpc.achievements.list.useQuery();
   const { data: jobs, isLoading: jobsLoading } = trpc.jobDescriptions.list.useQuery();
   const { data: resumes, isLoading: resumesLoading } = trpc.resumes.list.useQuery();
@@ -324,7 +329,63 @@ export default function Dashboard() {
               </Link>
             </CardContent>
           </Card>
+
+          <Card className="md:col-span-2 border-amber-200 bg-amber-50/50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Briefcase className="h-5 w-5 text-amber-600" />
+                Generate Tailored Resume
+              </CardTitle>
+              <CardDescription>
+                AI-powered resume generator that selects your best achievements for any job
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                className="w-full" 
+                onClick={() => setShowTailorWizard(true)}
+                disabled={!achievements || achievements.length === 0}
+              >
+                <Briefcase className="h-4 w-4 mr-2" />
+                Create Tailored Resume
+              </Button>
+              {(!achievements || achievements.length === 0) && (
+                <p className="text-xs text-muted-foreground mt-2 text-center">
+                  Add achievements first to generate resumes
+                </p>
+              )}
+            </CardContent>
+          </Card>
         </div>
+
+        {/* Job Tailor Wizard Dialog */}
+        <Dialog open={showTailorWizard} onOpenChange={setShowTailorWizard}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Generate Tailored Resume</DialogTitle>
+            </DialogHeader>
+            {!tailorResult ? (
+              <JobTailorWizard 
+                onSuccess={(result) => {
+                  setTailorResult(result);
+                }} 
+              />
+            ) : (
+              <ResumePreview
+                resumeContent={tailorResult.resumeContent}
+                matchScore={tailorResult.matchScore}
+                missingKeywords={tailorResult.missingKeywords}
+                professionalSummary={tailorResult.professionalSummary}
+                selectedAchievements={tailorResult.selectedAchievements}
+                onExport={() => window.print()}
+                onClose={() => {
+                  setShowTailorWizard(false);
+                  setTailorResult(null);
+                }}
+              />
+            )}
+          </DialogContent>
+        </Dialog>
       </main>
     </div>
     </>

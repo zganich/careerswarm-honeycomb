@@ -976,3 +976,92 @@ Add string similarity-based deduplication to `achievements.bulkImport` to preven
 - ✅ User sees clear feedback about skipped count
 - ✅ Similarity threshold prevents false positives
 - ✅ All tests pass
+
+
+---
+
+## Job Matcher Phase 4: Tailored Resume Generator
+
+**Status:** ✅ Complete  
+**Priority:** HIGH - Core feature for ATS optimization
+
+### Objective
+Build AI-powered tailored resume generator that selects the best achievements from the master profile based on a specific job description, providing match scoring, gap analysis, and ATS optimization.
+
+### Backend Implementation
+- [x] Create `resumes.tailor` tRPC procedure:
+  - Accept input: `jobDescription`, `jobTitle`, `company`
+  - Fetch all user achievements from database
+  - Call LLM with ATS optimizer system prompt
+  - Pass achievement pool (JSON) + target JD to LLM
+  - Request LLM to select top 5-7 most relevant achievements
+  - Generate professional summary tailored to role
+  - Calculate match score (0-100)
+  - Identify missing keywords/skills
+  - Return: `{ selectedAchievementIds, matchScore, missingKeywords, professionalSummary, resumeContent, selectedAchievements }`
+  - Save result to `generated_resumes` table with achievement links
+
+### Frontend Implementation
+- [x] Create `JobTailorWizard.tsx` component:
+  - Step 1: Job Description Input
+    - Textarea for pasting JD (10,000 char limit)
+    - Input fields for Job Title and Company Name (100 char limit)
+    - Validation for required fields (min 50 chars for JD)
+  - Step 2: Generation
+    - "Generate Tailored Resume" button
+    - Loading state with rotating progress messages (6 messages, 2s intervals)
+    - Error handling with toast notifications
+- [x] Create `ResumePreview.tsx` component:
+  - Display match score with color-coded visual indicator (green/amber/red)
+  - Show gap analysis with missing keywords as badges
+  - Display selected achievements in STAR format with impact scores
+  - Show generated professional summary in dedicated card
+  - "Export to PDF" button (uses window.print)
+  - "Close" action to return to dashboard
+- [x] Integrate into Dashboard:
+  - Added prominent "Generate Tailored Resume" card in Quick Actions
+  - Dialog modal with wizard and preview
+  - State management for wizard flow (input → generation → preview)
+  - Disabled state when no achievements exist
+
+### Database Schema
+- [x] Verify `generated_resumes` table exists with fields:
+  - id, userId, jobDescriptionId (nullable), resumeContent
+  - selectedAchievementIds (JSON), resumeFormat, version
+  - isFavorite, createdAt
+  - Note: Match score and analysis stored in resumeContent footer
+
+### AI Integration
+- [x] Design ATS optimizer system prompt:
+  - Expert ATS optimizer and career coach persona
+  - 5 selection criteria (match requirements, keyword alignment, impact scores, cohesive story, preserve wording)
+  - Strict JSON output format requirement
+- [x] Define achievement selection criteria:
+  - Direct match to job requirements
+  - Keyword alignment between achievements and JD
+  - Higher impact scores prioritized
+  - 5-7 achievements for cohesive narrative
+  - Original wording preserved
+- [x] Implement match scoring algorithm (LLM-generated 0-100 score)
+- [x] Create keyword extraction logic (LLM identifies missing skills)
+- [x] Generate professional summary based on JD (2-3 sentence role-specific summary)
+
+### Testing
+- [x] Write vitest tests for tailor procedure (18/18 passing)
+- [x] Test achievement selection logic (5-7 achievements)
+- [x] Test match score classification (Excellent/Good/Needs Improvement)
+- [x] Test gap analysis (missing keyword identification)
+- [x] Test professional summary generation (2-3 sentences)
+- [x] Test input validation (min lengths, required fields)
+- [x] Test resume content generation (STAR format, match score footer)
+- [x] Test JSON response parsing (with/without markdown blocks)
+- [x] Test response structure validation
+
+### Success Criteria
+- ✅ Users can paste JD and generate tailored resume
+- ✅ AI selects most relevant achievements (5-7)
+- ✅ Match score accurately reflects fit
+- ✅ Gap analysis identifies missing skills
+- ✅ Professional summary is role-specific
+- ✅ Resume preview is clean and professional
+- ✅ Export to PDF works
