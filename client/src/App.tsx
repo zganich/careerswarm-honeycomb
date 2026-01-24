@@ -21,11 +21,13 @@ import Pricing from "./pages/Pricing";
 import FAQ from "./pages/FAQ";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
+import Roast from "./pages/Roast";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/roast" component={Roast} />
       <Route path="/pricing" component={Pricing} />
       <Route path="/faq" component={FAQ} />
       <Route path="/privacy" component={Privacy} />

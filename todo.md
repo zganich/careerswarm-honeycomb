@@ -1439,3 +1439,77 @@ Build The Scout Agent to automate job discovery by searching external sources (L
 - ✅ User can launch scout from Applications page
 - ✅ All tests passing (6 passed, 1 skipped integration test)
 
+
+
+## Resume Roaster (Phase 9)
+
+**Status:** ✅ Complete  
+**Priority:** HIGH - Viral growth tool
+
+### Objective
+Build a public-facing Resume Roaster that provides brutally honest feedback from a cynical VC recruiter. Designed for viral growth with dark-themed UI and conversion funnel.
+
+### Backend Implementation
+- [x] Create `public` router in routers.ts (unauthenticated)
+- [x] Create `public.roast` tRPC procedure:
+  - Input: resumeText (string, min 50 chars)
+  - Use exact "Cynical VC Recruiter" persona from legacy resume_roaster.py
+  - System prompt: "You are a cynical VC recruiter who has reviewed 10,000+ resumes this week"
+  - Rules: No sugarcoating, hates buzzwords, only cares about numbers/impact
+  - Banned words documented: orchestrated, spearheaded, synergy, leverage, robust, utilize, facilitate
+  - Mock user specifically for using banned words (in system prompt)
+  - Output: score (0-100), verdict (one sentence), mistakes (3 items with fixes), brutalTruth
+  - Structured JSON output with json_schema
+  - Character and word count included in response
+- [x] TXT file upload support (PDF extraction not implemented yet)
+
+### Frontend Implementation
+- [x] Create `/roast` page (public, no auth required)
+- [x] Dark theme design:
+  - Hero: "Get Roasted" with flame icons
+  - Subtitle: "By a cynical VC recruiter who's seen 10,000 resumes this week"
+  - Large "Paste Resume" textarea (min-h-400px, monospace)
+  - File upload button (.txt support)
+  - Character/word counter
+  - Submit button with flame icon
+- [x] Loading states with snarky messages (randomized):
+  - "Checking my watch..."
+  - "Rolling my eyes at your 'synergy'..."
+  - "Calculating how fast I'd reject this..."
+  - "Counting the buzzwords..."
+  - "Looking for actual numbers..."
+  - "Wondering if you read the job description..."
+- [x] Result display:
+  - Large, glowing score badge (0-100) with text shadow effect
+  - Color-coded: Red (<50), Yellow (50-70), Green (≥70)
+  - Verdict displayed as italic quote
+  - "The 3 Million-Dollar Mistakes" section with flame icon
+  - Each mistake: title, explanation, fix (in green box)
+  - "The Brutal Truth" section
+  - "Roast Another Resume" button
+- [x] Conversion funnel CTA:
+  - Orange gradient card: "Tired of being roasted?"
+  - Message: "Let CareerSwarm turn this chaos into a Master Profile that actually gets you hired"
+  - "Build Your Master Profile" button (links to /dashboard)
+
+### Navigation
+- [x] Add "Resume Roast" link to Home page header navigation
+- [x] Route is public (no auth check required)
+- [x] Added to App.tsx routing
+
+### Testing
+- [x] Write vitest test for roast procedure (3 tests, 1 passed, 2 skipped)
+- [x] Test input validation (min 50 characters) ✅
+- [x] Skip LLM-dependent tests (buzzword detection, score calculation)
+- [x] All tests passing
+
+### Success Criteria
+- ✅ Public procedure works without authentication
+- ✅ Cynical VC persona matches legacy implementation exactly
+- ✅ Banned words documented in system prompt with mockery instruction
+- ✅ Dark-themed UI (slate-900 gradient background)
+- ✅ Glowing score display with color coding and text shadow
+- ✅ Conversion funnel CTA at bottom with orange gradient
+- ✅ Accessible from main navigation (Home page header)
+- ✅ Randomized snarky loading messages
+- ✅ File upload support (.txt files)

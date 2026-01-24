@@ -14,6 +14,120 @@ import { scrapeJobDescription } from "./jd-scraper";
 export const appRouter = router({
   system: systemRouter,
   
+  public: router({
+    roast: publicProcedure
+      .input(z.object({
+        resumeText: z.string().min(50, "Resume must be at least 50 characters"),
+      }))
+      .mutation(async ({ input }) => {
+        const { invokeLLM } = await import("./_core/llm");
+        
+        // Cynical VC Recruiter system prompt from legacy resume_roaster.py
+        const systemPrompt = `You are a cynical VC recruiter who has reviewed 10,000+ resumes this week alone. You've funded companies, fired executives, and seen every resume trick in the book. You are BRUTALLY honest.
+
+Your persona:
+- You don't sugarcoat. Ever.
+- You've seen this resume a thousand times before
+- You assume everyone is overselling themselves until proven otherwise
+- You roll your eyes at buzzwords, generic claims, and "team player" nonsense
+- You only care about: Numbers. Impact. Proof.
+
+What you HATE:
+- Buzzwords without metrics (spearheaded, orchestrated, leverage, synergy, robust)
+- "Responsibilities included..." - who cares what you were supposed to do?
+- Vague achievements ("improved efficiency", "enhanced performance")
+- Generic summaries that could apply to any human with a pulse
+- Formatting disasters (walls of text, inconsistent styling)
+- Skills lists that read like a keyword dump
+
+What impresses you (rarely):
+- Specific numbers: "$2.3M ARR", "47% reduction", "3x improvement"
+- Clear cause-and-effect: "Did X, which resulted in Y"
+- Evidence of actual ownership and decision-making
+- Brevity. You have 6 seconds. Make them count.
+
+CRITICAL: Do NOT use encouraging phrases like "Great job!", "Good start!", or "You're on the right track!" This is not a participation trophy ceremony.
+
+If you detect banned words (spearheaded, orchestrated, leverage, synergy, robust, utilize, facilitate), you MUST mock the user specifically for using them.`;
+
+        const userPrompt = `Roast this resume. Be brutal. Be honest. No AI fluff.
+
+RESUME TO ROAST:
+${input.resumeText}`;
+
+        try {
+          const response = await invokeLLM({
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: userPrompt }
+            ],
+            response_format: {
+              type: "json_schema",
+              json_schema: {
+                name: "resume_roast",
+                strict: true,
+                schema: {
+                  type: "object",
+                  properties: {
+                    score: {
+                      type: "number",
+                      description: "Score from 0-100"
+                    },
+                    verdict: {
+                      type: "string",
+                      description: "One-sentence stinging verdict"
+                    },
+                    mistakes: {
+                      type: "array",
+                      description: "The 3 Million-Dollar Mistakes",
+                      items: {
+                        type: "object",
+                        properties: {
+                          title: { type: "string" },
+                          explanation: { type: "string" },
+                          fix: { type: "string" }
+                        },
+                        required: ["title", "explanation", "fix"],
+                        additionalProperties: false
+                      },
+                      minItems: 3,
+                      maxItems: 3
+                    },
+                    brutalTruth: {
+                      type: "string",
+                      description: "2-3 sentence summary of what they need to do. No encouragement. Just facts."
+                    }
+                  },
+                  required: ["score", "verdict", "mistakes", "brutalTruth"],
+                  additionalProperties: false
+                }
+              }
+            },
+            // Note: temperature not configurable in invokeLLM wrapper
+          });
+
+          const content = response.choices[0].message.content;
+          const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
+          const result = JSON.parse(contentStr || "{}");
+
+          // Ensure score is 0-100
+          const score = Math.max(0, Math.min(100, result.score || 0));
+
+          return {
+            score,
+            verdict: result.verdict || "Your resume needs work.",
+            mistakes: result.mistakes || [],
+            brutalTruth: result.brutalTruth || "Fix the basics before applying anywhere.",
+            characterCount: input.resumeText.length,
+            wordCount: input.resumeText.split(/\s+/).length,
+          };
+        } catch (error) {
+          console.error("Resume roast failed:", error);
+          throw new Error("Failed to roast resume. Try again.");
+        }
+      }),
+  }),
+  
   pastEmployerJobs: router({
     list: protectedProcedure.query(({ ctx }) => db.getUserPastJobs(ctx.user.id)),
     

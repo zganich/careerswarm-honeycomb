@@ -19,6 +19,9 @@ export default function Home() {
             <span className="font-bold text-xl">Careerswarm</span>
           </div>
           <div className="flex items-center gap-4">
+            <Link href="/roast">
+              <Button variant="ghost">Resume Roast</Button>
+            </Link>
             {isAuthenticated ? (
               <>
                 <Link href="/pricing">
