@@ -211,6 +211,7 @@ export const applications = mysqlTable("applications", {
   
   // AI Agent Analysis (for Profiler agent)
   painPoints: json("painPoints").$type<{challenge: string; impact: string; keywords: string[]}[]>(),
+  profilerAnalysis: json("profilerAnalysis").$type<{challenges: string[]; cultureClues: string[]; interviewQuestions: string[]}>(),
   
   // Follow-up
   nextFollowUpDate: date("nextFollowUpDate"),

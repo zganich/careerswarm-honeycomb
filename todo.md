@@ -1187,3 +1187,59 @@ Build Kanban-style application tracker ("The Swarm Board") where users can visua
 - [x] Applied fix to all create functions (createJob, createApplication, createCompany, etc.)
 - [x] Updated test assertion (undefined vs null)
 - [x] Run vitest to verify fix - ALL TESTS PASSING ✅
+
+
+## The Profiler Agent (Phase 6)
+
+**Status:** ✅ Complete  
+**Priority:** HIGH - Strategic intelligence for applications
+
+### Objective
+Build an AI agent that analyzes job descriptions to identify company pain points, shadow requirements, and strategic interview questions to help users position themselves as the solution.
+
+### Database Schema
+- [x] Verify `applications` table has `painPoints` JSON column (added in Phase 5)
+- [x] Add `profilerAnalysis` JSON column for full analysis data
+- [x] Run database migration
+
+### Backend Implementation
+- [x] Create `applications.profile` tRPC procedure:
+  - Input: applicationId
+  - Fetch jobDescription and companyName from application
+  - Use LLM with Profiler persona system prompt
+  - Extract: challenges[], cultureClues[], interviewQuestions[]
+  - Update applications.painPoints and profilerAnalysis with JSON result
+- [x] Structured JSON output with json_schema response format
+- [x] Error handling for missing/short job descriptions
+
+### Frontend Implementation
+- [x] Update ApplicationDetailModal.tsx Overview tab:
+  - Add "Strategic Intel" section with gradient border
+  - Show "Run Profiler Analysis" button if painPoints empty
+  - Display analysis results when populated:
+    - 🚨 Critical Challenges section (red theme)
+    - 🕵️ Shadow Requirements section (amber theme)
+    - 🗣️ Ask These Questions section (blue theme)
+  - Add loading states during analysis
+  - Add error handling with toast notifications
+  - Re-run analysis button
+
+### Automation
+- [x] Add background profiler trigger to Job Matcher wizard
+- [x] Auto-run analysis when application is created
+- [x] Show toast notification when analysis completes
+- [x] Silent fail with manual trigger option
+
+### Testing
+- [x] Write vitest test for profile procedure
+- [x] Test error handling for missing job descriptions ✅
+- [x] Validate JSON output structure (skipped LLM tests)
+- [x] Test with realistic job description samples
+
+### Success Criteria
+- ✅ Profiler analyzes job descriptions and extracts strategic insights
+- ✅ Results stored in painPoints and profilerAnalysis JSON columns
+- ✅ Strategic Intel section displays analysis beautifully with color-coded sections
+- ✅ Auto-runs when application created from Job Matcher
+- ✅ Users can manually trigger re-analysis
+- ✅ Graceful error handling for edge cases

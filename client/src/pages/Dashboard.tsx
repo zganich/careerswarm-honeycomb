@@ -24,6 +24,7 @@ export default function Dashboard() {
   
   const createJobMutation = trpc.jobs.createManual.useMutation();
   const createApplicationMutation = trpc.applications.create.useMutation();
+  const profileMutation = trpc.applications.profile.useMutation();
   
   const { data: achievements, isLoading: achievementsLoading } = trpc.achievements.list.useQuery();
   const { data: jobs, isLoading: jobsLoading } = trpc.jobDescriptions.list.useQuery();
@@ -411,10 +412,23 @@ export default function Dashboard() {
                     });
                     
                     // Then create the application
-                    await createApplicationMutation.mutateAsync({
+                    const appResult = await createApplicationMutation.mutateAsync({
                       jobId: jobResult.jobId,
                       resumeId: tailorResult.resumeId,
                     });
+                    
+                    // Trigger profiler analysis in background
+                    profileMutation.mutate(
+                      { applicationId: appResult.id },
+                      {
+                        onSuccess: () => {
+                          toast.success("Strategic analysis complete!");
+                        },
+                        onError: () => {
+                          // Silent fail - user can manually trigger later
+                        },
+                      }
+                    );
                     
                     toast.success("Application created! Redirecting to Swarm Board...");
                     setShowTailorWizard(false);

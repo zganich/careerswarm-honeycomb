@@ -1234,6 +1234,109 @@ ${a.startDate || ""} - ${a.endDate || "Present"}
           atsScore: tailoredResume.atsScore,
         };
       }),
+    
+    profile: protectedProcedure
+      .input(z.object({ applicationId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const { getApplicationById, updateApplication } = await import("./db");
+        const { invokeLLM } = await import("./_core/llm");
+        
+        // Fetch application with job details
+        const application = await getApplicationById(input.applicationId, ctx.user.id);
+        if (!application) throw new Error("Application not found");
+        
+        const jobDescription = application.job?.description;
+        const companyName = application.job?.companyName || "the company";
+        
+        if (!jobDescription || jobDescription.length < 50) {
+          throw new Error("Job description is too short or missing for analysis");
+        }
+        
+        // The Profiler Persona System Prompt
+        const systemPrompt = `You are a corporate strategist and 'Pain Point' detective specializing in job market analysis.
+
+Your mission: Analyze job descriptions not for keywords, but for underlying business problems and strategic needs.
+
+You excel at:
+1. Identifying critical challenges the company is facing (e.g., 'Scaling infrastructure', 'Reducing churn', 'Entering new markets')
+2. Inferring 'Shadow Requirements'—what they aren't explicitly saying but definitely need
+3. Detecting cultural signals and team dynamics from the language used
+4. Formulating strategic interview questions that demonstrate deep understanding
+
+Output your analysis as structured JSON with these exact fields:
+- challenges: Array of 3-4 critical business problems (strings)
+- cultureClues: Array of 3-4 cultural or team insights (strings)
+- interviewQuestions: Array of 3-4 strategic questions to ask (strings)`;
+
+        const userPrompt = `Analyze this job description for ${companyName}:
+
+${jobDescription}
+
+Provide strategic intelligence that helps a candidate position themselves as the solution to the company's core challenges.`;
+        
+        // Call LLM with structured output
+        const response = await invokeLLM({
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userPrompt }
+          ],
+          response_format: {
+            type: "json_schema",
+            json_schema: {
+              name: "profiler_analysis",
+              strict: true,
+              schema: {
+                type: "object",
+                properties: {
+                  challenges: {
+                    type: "array",
+                    items: { type: "string" },
+                    description: "Critical business challenges the company is facing"
+                  },
+                  cultureClues: {
+                    type: "array",
+                    items: { type: "string" },
+                    description: "Cultural signals and team dynamics insights"
+                  },
+                  interviewQuestions: {
+                    type: "array",
+                    items: { type: "string" },
+                    description: "Strategic questions to ask during interviews"
+                  },
+                },
+                required: ["challenges", "cultureClues", "interviewQuestions"],
+                additionalProperties: false,
+              },
+            },
+          },
+        });
+        
+        const content = String(response.choices[0]?.message?.content || "{}");
+        const analysis = JSON.parse(content);
+        
+        // Transform to match the painPoints schema format
+        const painPoints = analysis.challenges.map((challenge: string, index: number) => ({
+          challenge,
+          impact: "High", // Default impact level
+          keywords: [], // Can be enhanced later
+        }));
+        
+        // Update application with analysis results
+        await updateApplication(input.applicationId, ctx.user.id, {
+          painPoints,
+          profilerAnalysis: {
+            challenges: analysis.challenges,
+            cultureClues: analysis.cultureClues,
+            interviewQuestions: analysis.interviewQuestions,
+          },
+        });
+        
+        return {
+          challenges: analysis.challenges,
+          cultureClues: analysis.cultureClues,
+          interviewQuestions: analysis.interviewQuestions,
+        };
+      }),
   }),
   
   companies: router({

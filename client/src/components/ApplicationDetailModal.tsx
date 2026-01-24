@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Card } from "@/components/ui/card";
-import { Loader2, FileText, Calendar, Trash2, Save, ExternalLink, Target, Lightbulb } from "lucide-react";
+import { Loader2, FileText, Calendar, Trash2, Save, ExternalLink, Target, Lightbulb, AlertTriangle, Eye, MessageSquare, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 interface ApplicationDetailModalProps {
@@ -48,6 +48,22 @@ export function ApplicationDetailModal({ applicationId, open, onClose }: Applica
       toast.error(`Failed to delete application: ${error.message}`);
     },
   });
+
+  const profileMutation = trpc.applications.profile.useMutation({
+    onSuccess: (data) => {
+      toast.success("Strategic analysis complete!");
+      utils.applications.get.invalidate({ id: applicationId! });
+      utils.applications.list.invalidate();
+    },
+    onError: (error) => {
+      toast.error(`Analysis failed: ${error.message}`);
+    },
+  });
+
+  const handleRunProfiler = () => {
+    if (!applicationId) return;
+    profileMutation.mutate({ applicationId });
+  };
 
   // Update notes when application loads
   useEffect(() => {
@@ -218,34 +234,137 @@ export function ApplicationDetailModal({ applicationId, open, onClose }: Applica
                   </Card>
                 )}
 
-                {/* Pain Points (Profiler Agent Analysis) */}
-                {/* @ts-ignore */}
-                {application.painPoints && application.painPoints.length > 0 && (
-                  <Card className="p-4">
-                    <h3 className="font-semibold flex items-center gap-2 mb-3">
-                      <Lightbulb className="h-4 w-4 text-amber-500" />
-                      Company Pain Points (AI Analysis)
+                {/* Strategic Intel Section (Profiler Agent) */}
+                <Card className="p-4 border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-semibold flex items-center gap-2 text-lg">
+                      <Sparkles className="h-5 w-5 text-primary" />
+                      Strategic Intel
                     </h3>
-                    <div className="space-y-3">
-                      {/* @ts-ignore */}
-                      {application.painPoints.map((pain: any, idx: number) => (
-                        <div key={idx} className="border-l-2 border-amber-500 pl-3">
-                          <div className="font-medium text-sm">{pain.challenge}</div>
-                          <div className="text-sm text-muted-foreground mt-1">{pain.impact}</div>
-                          {pain.keywords && pain.keywords.length > 0 && (
-                            <div className="flex flex-wrap gap-1 mt-2">
-                              {pain.keywords.map((keyword: string, kidx: number) => (
-                                <Badge key={kidx} variant="secondary" className="text-xs">
-                                  {keyword}
-                                </Badge>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      ))}
+                    {/* @ts-ignore */}
+                    {(!application.painPoints || application.painPoints.length === 0) && (
+                      <Button 
+                        onClick={handleRunProfiler}
+                        disabled={profileMutation.isPending}
+                        size="sm"
+                        className="gap-2"
+                      >
+                        {profileMutation.isPending ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Analyzing...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="h-4 w-4" />
+                            Run Profiler Analysis
+                          </>
+                        )}
+                      </Button>
+                    )}
+                  </div>
+
+                  {/* @ts-ignore */}
+                  {(!application.painPoints || application.painPoints.length === 0) && !profileMutation.isPending && (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Lightbulb className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                      <p className="font-medium">No strategic analysis yet</p>
+                      <p className="text-sm mt-1">Click "Run Profiler Analysis" to extract company pain points,</p>
+                      <p className="text-sm">shadow requirements, and strategic interview questions.</p>
                     </div>
-                  </Card>
-                )}
+                  )}
+
+                  {/* @ts-ignore */}
+                  {application.painPoints && application.painPoints.length > 0 && (
+                    <div className="space-y-6">
+                      {/* Critical Challenges */}
+                      <div>
+                        <h4 className="font-semibold flex items-center gap-2 mb-3 text-red-600 dark:text-red-400">
+                          <AlertTriangle className="h-4 w-4" />
+                          Critical Challenges
+                        </h4>
+                        <div className="space-y-2">
+                          {/* @ts-ignore */}
+                          {application.painPoints.map((pain: any, idx: number) => (
+                            <div key={idx} className="border-l-4 border-red-500 pl-4 py-2 bg-red-50 dark:bg-red-950/20 rounded-r">
+                              <div className="font-medium text-sm">{pain.challenge}</div>
+                              {pain.impact && (
+                                <Badge variant="destructive" className="mt-2 text-xs">
+                                  Impact: {pain.impact}
+                                </Badge>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <Separator />
+
+                      {/* Shadow Requirements */}
+                      {/* @ts-ignore */}
+                      {application.profilerAnalysis?.cultureClues && application.profilerAnalysis.cultureClues.length > 0 && (
+                        <div>
+                          <h4 className="font-semibold flex items-center gap-2 mb-3 text-amber-600 dark:text-amber-400">
+                            <Eye className="h-4 w-4" />
+                            Shadow Requirements
+                          </h4>
+                          <div className="space-y-2">
+                            {/* @ts-ignore */}
+                            {application.profilerAnalysis.cultureClues.map((clue: string, idx: number) => (
+                              <div key={idx} className="border-l-4 border-amber-500 pl-4 py-2 bg-amber-50 dark:bg-amber-950/20 rounded-r">
+                                <p className="text-sm">{clue}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      <Separator />
+
+                      {/* Ask These Questions */}
+                      {/* @ts-ignore */}
+                      {application.profilerAnalysis?.interviewQuestions && application.profilerAnalysis.interviewQuestions.length > 0 && (
+                        <div>
+                          <h4 className="font-semibold flex items-center gap-2 mb-3 text-blue-600 dark:text-blue-400">
+                            <MessageSquare className="h-4 w-4" />
+                            Ask These Questions
+                          </h4>
+                          <div className="space-y-2">
+                            {/* @ts-ignore */}
+                            {application.profilerAnalysis.interviewQuestions.map((question: string, idx: number) => (
+                              <div key={idx} className="border-l-4 border-blue-500 pl-4 py-2 bg-blue-50 dark:bg-blue-950/20 rounded-r">
+                                <p className="text-sm font-medium">{question}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Re-run button */}
+                      <div className="pt-2">
+                        <Button 
+                          onClick={handleRunProfiler}
+                          disabled={profileMutation.isPending}
+                          variant="outline"
+                          size="sm"
+                          className="w-full gap-2"
+                        >
+                          {profileMutation.isPending ? (
+                            <>
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                              Re-analyzing...
+                            </>
+                          ) : (
+                            <>
+                              <Sparkles className="h-4 w-4" />
+                              Re-run Analysis
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </Card>
               </TabsContent>
 
               {/* Documents Tab */}
