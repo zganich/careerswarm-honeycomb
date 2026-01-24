@@ -862,3 +862,67 @@ Build AI-powered extraction pipeline to automatically convert uploaded source ma
 - ✅ Status tracking shows PENDING/PROCESSED/FAILED states
 - ✅ Error handling works for failed extractions
 - ✅ All tests pass
+
+
+---
+
+## Master Profile Engine - Phase 3: Review & Dedupe
+
+**Status:** ✅ Complete  
+**Priority:** HIGH - Prevent duplicates and improve data quality
+
+### Objective
+Implement staging area for AI-extracted achievements with review modal, allowing users to edit, approve, or discard achievements before importing to prevent duplicates and low-quality entries.
+
+### Backend Refactor
+- [x] Modify `sourceMaterials.synthesize` procedure:
+  - Stop automatic `db.insert` of achievements
+  - Return array of extracted achievements to client
+  - Add confidence score calculation (mock based on metrics)
+  - Keep status update to PROCESSED
+- [x] Create `achievements.bulkImport` tRPC procedure:
+  - Accept array of validated achievement objects
+  - Perform bulk insert into achievements table
+  - Return count of saved records
+  - Include usage limit check
+
+### Frontend Implementation
+- [x] Create `ExtractionReviewModal.tsx` component:
+  - Header showing count of found achievements
+  - Scrollable list of candidate cards
+  - Each card has editable STAR fields (Situation, Task, Action, Result)
+  - Checkbox to "Keep" item (default: checked)
+  - Delete button to discard individual items
+  - Footer with "Discard All" and "Import [N] Selected" buttons
+  - Confidence score display per achievement
+  - Empty state for no achievements found
+- [x] Update `SourceMaterialList.tsx`:
+  - Trigger review modal after extraction completes
+  - Pass extracted achievements to modal
+  - Handle modal close and bulk import
+  - Show success toast with count
+  - Refresh achievements list automatically
+
+### User Experience Flow
+1. User clicks "Extract Achievements" button
+2. Show loading spinner during extraction
+3. Open review modal with extracted achievements
+4. User reviews, edits, and selects achievements to keep
+5. User clicks "Import [N] Selected Achievements"
+6. Modal closes, success toast appears
+7. Achievements list refreshes automatically
+
+### Testing
+- [x] Write vitest tests for bulkImport procedure (10/10 passing)
+- [x] Test input validation for achievement structure
+- [x] Test bulk operations (single, multiple, empty arrays)
+- [x] Test response format validation
+- [x] Test staging area workflow (select/deselect, edit)
+
+### Success Criteria
+- ✅ Extracted achievements shown in review modal before import
+- ✅ Users can edit STAR fields before importing
+- ✅ Users can select/deselect achievements to import
+- ✅ Bulk import only saves selected achievements
+- ✅ No duplicates created from automatic insertion
+- ✅ All tests pass

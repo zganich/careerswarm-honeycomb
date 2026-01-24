@@ -225,6 +225,62 @@ Extract:
         await db.deleteAchievement(input.id, ctx.user.id);
         return { success: true };
       }),
+    
+    bulkImport: protectedProcedure
+      .use(async ({ ctx, next }) => {
+        // Check usage limits before bulk import
+        const { checkAchievementLimit } = await import("./usageLimits");
+        await checkAchievementLimit(ctx.user.id);
+        return next({ ctx });
+      })
+      .input(z.object({
+        achievements: z.array(z.object({
+          situation: z.string(),
+          task: z.string(),
+          action: z.string(),
+          result: z.string(),
+          company: z.string().optional(),
+          role: z.string(),
+        }))
+      }))
+      .mutation(async ({ ctx, input }) => {
+        let insertedCount = 0;
+        
+        for (const achievement of input.achievements) {
+          await db.createAchievement({
+            userId: ctx.user.id,
+            situation: achievement.situation,
+            task: achievement.task,
+            action: achievement.action,
+            result: achievement.result,
+            company: achievement.company || null,
+            roleTitle: achievement.role,
+            // Set default values for other required fields
+            xyzAccomplishment: null,
+            xyzMetricValue: null,
+            xyzMetricUnit: null,
+            xyzMetricPrecision: null,
+            xyzMechanism: null,
+            startDate: null,
+            endDate: null,
+            teamSize: null,
+            budgetAmount: null,
+            budgetCurrency: "USD",
+            impactMeterScore: 0,
+            hasStrongVerb: false,
+            hasMetric: false,
+            hasMethodology: false,
+            evidenceTier: 4,
+          });
+          insertedCount++;
+        }
+        
+        return {
+          success: true,
+          count: insertedCount,
+          message: `Successfully imported ${insertedCount} achievement(s)`
+        };
+      }),
 
     bulkCreate: protectedProcedure
       .input(z.object({
@@ -1077,45 +1133,22 @@ Rules:
           const parsed = JSON.parse(contentStr);
           const achievements = parsed.achievements || [];
           
-          // Bulk insert achievements
-          let insertedCount = 0;
-          for (const achievement of achievements) {
-            await db.createAchievement({
-              userId: ctx.user.id,
-              situation: achievement.situation,
-              task: achievement.task,
-              action: achievement.action,
-              result: achievement.result,
-              company: achievement.company || null,
-              roleTitle: achievement.role,
-              // Set default values for other required fields
-              xyzAccomplishment: null,
-              xyzMetricValue: null,
-              xyzMetricUnit: null,
-              xyzMetricPrecision: null,
-              xyzMechanism: null,
-              startDate: null,
-              endDate: null,
-              teamSize: null,
-              budgetAmount: null,
-              budgetCurrency: "USD",
-              impactMeterScore: 0,
-              hasStrongVerb: false,
-              hasMetric: false,
-              hasMethodology: false,
-              evidenceTier: 4,
-            });
-            insertedCount++;
-          }
+          // Add confidence score (mock for now - can be enhanced later)
+          const achievementsWithScore = achievements.map((achievement: any) => ({
+            ...achievement,
+            confidenceScore: achievement.result && achievement.result.match(/\d+/) ? 0.9 : 0.7
+          }));
           
-          // Update source material status
+          // Update source material status to PROCESSED
           const { updateSourceMaterialStatus } = await import("./db");
           await updateSourceMaterialStatus(input.id, "PROCESSED", null);
           
+          // Return extracted achievements for review (don't auto-insert)
           return {
             success: true,
-            count: insertedCount,
-            message: `Successfully extracted ${insertedCount} achievement(s)`
+            count: achievementsWithScore.length,
+            achievements: achievementsWithScore,
+            message: `Found ${achievementsWithScore.length} potential achievement(s) for review`
           };
         } catch (error: any) {
           console.error("[Synthesize] Error:", error);

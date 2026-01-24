@@ -4,11 +4,24 @@ import { Card, CardContent } from "@/components/ui/card";
 import { FileText, Link as LinkIcon, Loader2, Trash2, Sparkles, CheckCircle, XCircle, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
+import { ExtractionReviewModal } from "@/components/ExtractionReviewModal";
+
+interface ExtractedAchievement {
+  situation: string;
+  task: string;
+  action: string;
+  result: string;
+  role: string;
+  company?: string;
+  confidenceScore?: number;
+}
 
 export function SourceMaterialList() {
   const utils = trpc.useUtils();
   const { data: materials, isLoading } = trpc.sourceMaterials.list.useQuery();
   const [processingId, setProcessingId] = useState<number | null>(null);
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
+  const [extractedAchievements, setExtractedAchievements] = useState<ExtractedAchievement[]>([]);
   
   const deleteMutation = trpc.sourceMaterials.delete.useMutation({
     onSuccess: () => {
@@ -26,15 +39,36 @@ export function SourceMaterialList() {
     },
     onSuccess: (data) => {
       utils.sourceMaterials.list.invalidate();
-      utils.achievements.list.invalidate();
       setProcessingId(null);
-      toast.success(data.message || `Extracted ${data.count} achievements!`);
+      
+      // Open review modal with extracted achievements
+      if (data.achievements && data.achievements.length > 0) {
+        setExtractedAchievements(data.achievements);
+        setReviewModalOpen(true);
+      } else {
+        toast.info("No achievements found in this source material");
+      }
     },
     onError: (error, variables) => {
       setProcessingId(null);
       toast.error(`Extraction failed: ${error.message}`);
     },
   });
+  
+  const bulkImportMutation = trpc.achievements.bulkImport.useMutation({
+    onSuccess: (data) => {
+      utils.achievements.list.invalidate();
+      toast.success(data.message || `Imported ${data.count} achievements!`);
+      setReviewModalOpen(false);
+    },
+    onError: (error) => {
+      toast.error(`Import failed: ${error.message}`);
+    },
+  });
+  
+  const handleImport = (selectedAchievements: ExtractedAchievement[]) => {
+    bulkImportMutation.mutate({ achievements: selectedAchievements });
+  };
   
   const handleDelete = (id: number, title: string) => {
     if (confirm(`Delete "${title}"? This cannot be undone.`)) {
@@ -44,6 +78,15 @@ export function SourceMaterialList() {
   
   const handleExtract = (id: number) => {
     synthesizeMutation.mutate({ id });
+  };
+  
+  const handleModalClose = (open: boolean) => {
+    if (!bulkImportMutation.isPending) {
+      setReviewModalOpen(open);
+      if (!open) {
+        setExtractedAchievements([]);
+      }
+    }
   };
   
   if (isLoading) {
@@ -64,6 +107,7 @@ export function SourceMaterialList() {
   }
   
   return (
+    <>
     <div className="space-y-3">
       {materials.map((material) => {
         const isProcessing = processingId === material.id;
@@ -188,5 +232,15 @@ export function SourceMaterialList() {
         );
       })}
     </div>
+    
+    {/* Extraction Review Modal */}
+    <ExtractionReviewModal
+      open={reviewModalOpen}
+      onOpenChange={handleModalClose}
+      achievements={extractedAchievements}
+      onImport={handleImport}
+      isImporting={bulkImportMutation.isPending}
+    />
+    </>
   );
 }
