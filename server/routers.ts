@@ -244,9 +244,43 @@ Extract:
         }))
       }))
       .mutation(async ({ ctx, input }) => {
-        let insertedCount = 0;
+        // Import string similarity library
+        const { compareTwoStrings } = await import("string-similarity");
         
-        for (const achievement of input.achievements) {
+        // Fetch existing achievements for deduplication (only task and action fields)
+        const existingAchievements = await db.getUserAchievements(ctx.user.id);
+        
+        // Filter out duplicates
+        const uniqueAchievements = [];
+        let skippedCount = 0;
+        
+        for (const candidate of input.achievements) {
+          let isDuplicate = false;
+          
+          // Compare against existing achievements
+          for (const existing of existingAchievements) {
+            const actionSimilarity = compareTwoStrings(
+              candidate.action.toLowerCase(),
+              (existing.action || '').toLowerCase()
+            );
+            
+            // If similarity > 85%, consider it a duplicate
+            if (actionSimilarity > 0.85) {
+              isDuplicate = true;
+              break;
+            }
+          }
+          
+          if (!isDuplicate) {
+            uniqueAchievements.push(candidate);
+          } else {
+            skippedCount++;
+          }
+        }
+        
+        // Insert only unique achievements
+        let insertedCount = 0;
+        for (const achievement of uniqueAchievements) {
           await db.createAchievement({
             userId: ctx.user.id,
             situation: achievement.situation,
@@ -275,10 +309,18 @@ Extract:
           insertedCount++;
         }
         
+        // Build message based on results
+        let message = `Successfully imported ${insertedCount} achievement(s)`;
+        if (skippedCount > 0) {
+          message += ` (${skippedCount} duplicate${skippedCount > 1 ? 's' : ''} removed)`;
+        }
+        
         return {
           success: true,
-          count: insertedCount,
-          message: `Successfully imported ${insertedCount} achievement(s)`
+          added: insertedCount,
+          skipped: skippedCount,
+          count: insertedCount, // Keep for backward compatibility
+          message
         };
       }),
 

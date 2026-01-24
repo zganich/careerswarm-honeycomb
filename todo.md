@@ -926,3 +926,53 @@ Implement staging area for AI-extracted achievements with review modal, allowing
 - ✅ Bulk import only saves selected achievements
 - ✅ No duplicates created from automatic insertion
 - ✅ All tests pass
+
+
+---
+
+## Deduplication Logic for Bulk Import
+
+**Status:** ✅ Complete  
+**Priority:** HIGH - Prevent duplicate achievements from multiple sources
+
+### Objective
+Add string similarity-based deduplication to `achievements.bulkImport` to prevent users from accidentally creating duplicate entries when importing from multiple resume files or sources.
+
+### Implementation Steps
+- [x] Install `string-similarity` library for text comparison (v4.0.4 + @types/string-similarity)
+- [x] Update `achievements.bulkImport` procedure:
+  - Fetch existing achievements for current user using `getUserAchievements`
+  - Compare incoming candidates against existing records
+  - Use 85% similarity threshold to flag duplicates
+  - Filter out duplicates before insertion
+  - Return `{ added: number, skipped: number, count, message }` with backward compatibility
+- [x] Frontend toast message automatically updated:
+  - Uses `data.message` from backend response
+  - Shows "Successfully imported X achievement(s) (Y duplicates removed)"
+  - Handles zero skipped case gracefully (no duplicate text shown)
+
+### Deduplication Algorithm
+1. Fetch user's existing achievements (select only `task` and `action`)
+2. For each incoming candidate:
+   - Compare `action` field against all existing `action` fields
+   - Calculate similarity score using string-similarity
+   - If any match > 0.85 (85%), mark as duplicate
+3. Filter out duplicates from insert payload
+4. Insert only unique achievements
+5. Return counts: { added, skipped }
+
+### Testing
+- [x] Write vitest tests for similarity comparison (15/15 passing)
+- [x] Test with identical achievements (100% match)
+- [x] Test with near-duplicates (85-95% match)
+- [x] Test with unique achievements (< 85% match)
+- [x] Test with empty existing achievements list
+- [x] Test return value format
+- [x] Test deduplication algorithm with various scenarios
+- [x] Test message formatting (no duplicates, single, multiple)
+
+### Success Criteria
+- ✅ Duplicates automatically detected and skipped
+- ✅ User sees clear feedback about skipped count
+- ✅ Similarity threshold prevents false positives
+- ✅ All tests pass
