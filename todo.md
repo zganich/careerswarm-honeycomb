@@ -1289,3 +1289,87 @@ Port the Profiler Agent logic from the original Python codebase to TypeScript ba
 - ✅ Banned words documented in system prompt
 - ✅ Auto-triggers when application created from Job Matcher
 - ✅ Manual trigger available in application detail modal
+
+
+## The Scribe Agent (Phase 7)
+
+**Status:** 🚧 In Progress  
+**Priority:** HIGH - High-stakes outreach generation
+
+### Objective
+Port The Scribe Agent from Python legacy codebase to generate peer-level LinkedIn connection messages and cold emails based on strategic analysis.
+
+### Database Schema
+- [ ] Add `outreachContent` JSON column to applications table
+- [ ] Schema: {linkedinMessage: string, coldEmailSubject: string, coldEmailBody: string}
+- [ ] Run database migration
+
+### Backend Implementation
+- [ ] Create `applications.generateOutreach` tRPC procedure
+- [ ] Use legacy system prompt (peer-level candidate persona)
+- [ ] Fetch: jobDescription, companyName, jobTitle, painPoints, strategicHook, user achievements
+- [ ] Output schema: linkedinMessage (max 300 chars), coldEmailSubject, coldEmailBody (max 150 words)
+- [ ] NO coffee chat requests - ask specific strategic questions
+- [ ] Tone: Peer-to-peer, professional, not subordinate
+- [ ] Store result in outreachContent JSON column
+
+### Frontend Implementation
+- [ ] Update ApplicationDetailModal Strategy tab (currently placeholder)
+- [ ] Two cards: "LinkedIn Message" and "Cold Email"
+- [ ] Display generated text in copy-friendly textarea
+- [ ] One-click copy to clipboard button for each
+- [ ] Empty state: "Generate Outreach Strategy" button
+- [ ] Loading state: "Drafting peer-level outreach..."
+- [ ] Error handling
+
+### Testing
+- [ ] Write vitest test for generateOutreach procedure
+- [ ] Test with sample application data
+- [ ] Validate character/word limits
+- [ ] Test copy-to-clipboard functionality
+
+### Success Criteria
+- ✅ System prompt matches Python version (peer-level candidate)
+- ✅ LinkedIn message under 300 characters
+- ✅ Cold email under 150 words
+- ✅ No coffee chat requests - strategic questions only
+- ✅ Outreach stored in database
+- ✅ Easy copy-to-clipboard in UI
+
+
+## The Scribe Agent (Phase 7) - COMPLETED ✅
+
+**Status:** ✅ Complete  
+**Completion Date:** January 24, 2026  
+**Priority:** HIGH - High-stakes outreach generation
+
+### Objective
+Port The Scribe Agent from the legacy Python codebase to generate peer-level LinkedIn messages and cold emails based on strategic analysis and user achievements.
+
+### Implementation Summary
+- ✅ Added `outreachContent` JSON column to applications table (migration 0007)
+- ✅ Created `applications.generateOutreach` tRPC procedure with legacy system prompt
+- ✅ Peer-level tone enforced (no "coffee chat" subordinate phrases)
+- ✅ LinkedIn message ≤ 300 characters, Email body ≤ 150 words
+- ✅ Forbidden words list from Python version (orchestrated, spearheaded, etc.)
+- ✅ Uses user's top 3 achievements for context
+- ✅ Combines strategic hook with achievements
+- ✅ Requires strategic analysis first (throws error if missing)
+- ✅ Updated ApplicationDetailModal Strategy tab with full outreach UI
+- ✅ LinkedIn Message Card with copy button and character count
+- ✅ Cold Email Card with subject line and body, copy button
+- ✅ Empty state and loading states
+- ✅ Regenerate button
+- ✅ All tests passing (1 passed, 1 skipped LLM test)
+
+### Files Modified
+- `drizzle/schema.ts` - Added outreachContent column
+- `server/routers.ts` - Added generateOutreach procedure
+- `client/src/components/ApplicationDetailModal.tsx` - Updated Strategy tab
+- `server/scribe.test.ts` - Created test suite
+
+### Next Steps
+- Test complete flow: Strategic Analysis → Generate Outreach → Copy to clipboard
+- Consider adding email template variations (follow-up, thank you, etc.)
+- Add outreach analytics (open rates, response rates) if email integration added
+

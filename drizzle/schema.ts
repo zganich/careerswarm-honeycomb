@@ -213,6 +213,9 @@ export const applications = mysqlTable("applications", {
   painPoints: json("painPoints").$type<{challenge: string; impact: string; keywords: string[]}[]>(),
   profilerAnalysis: json("profilerAnalysis").$type<{painPoints: string[]; strategicHook: string; interviewQuestions: string[]}>(),
   
+  // AI Agent Outreach (for Scribe agent)
+  outreachContent: json("outreachContent").$type<{linkedinMessage: string; coldEmailSubject: string; coldEmailBody: string}>(),
+  
   // Follow-up
   nextFollowUpDate: date("nextFollowUpDate"),
   followUpCount: int("followUpCount").default(0),

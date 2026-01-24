@@ -71,6 +71,13 @@
       "when": 1769289466902,
       "tag": "0009_fair_gorilla_man",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1769291330449,
+      "tag": "0010_hesitant_sprite",
+      "breakpoints": true
     }
   ]
 }

@@ -1360,6 +1360,117 @@ Provide strategic intelligence that helps a candidate position themselves as the
           interviewQuestions: analysis.interviewQuestions,
         };
       }),
+    
+    generateOutreach: protectedProcedure
+      .input(z.object({ applicationId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const { getApplicationById, updateApplication } = await import("./db");
+        const { invokeLLM } = await import("./_core/llm");
+        const { getUserAchievements } = await import("./db");
+        
+        // Fetch application with job and profiler analysis
+        const application = await getApplicationById(input.applicationId, ctx.user.id);
+        if (!application) {
+          throw new Error("Application not found");
+        }
+        
+        if (!application.job) {
+          throw new Error("Application has no associated job");
+        }
+        
+        // Get user's top achievements for context
+        const achievements = await getUserAchievements(ctx.user.id);
+        const topAchievements = achievements.slice(0, 3).map(a => `${a.xyzAccomplishment || a.situation}: ${a.result}`).join("\n");
+        
+        // Get profiler analysis
+        const profilerAnalysis = application.profilerAnalysis as {painPoints: string[]; strategicHook: string; interviewQuestions: string[]} | null;
+        if (!profilerAnalysis || !profilerAnalysis.strategicHook) {
+          throw new Error("Run Strategic Analysis first to generate outreach");
+        }
+        
+        // Call LLM with Scribe Agent system prompt
+        const response = await invokeLLM({
+          messages: [
+            {
+              role: "system",
+              content: `You are a peer-level candidate writing to a Hiring Manager. Your task is to write a LinkedIn connection message (max 300 chars) and a Cold Email (max 150 words).
+
+**Instructions:**
+1. Analyze the 'Strategic Hook' and 'Pain Points' provided.
+2. Combine the Hook with the User's specific achievement (e.g., 'I saw your launch of X. I built a similar workflow...').
+3. **CRITICAL:** Do NOT ask for a "coffee chat." Ask a specific strategic question related to their pain point.
+4. Tone: Peer-to-peer, professional, concise. Not subordinate.
+
+**FORBIDDEN WORDS:**
+NEVER use: orchestrated, spearheaded, visionary, synergy, leverage, utilize, facilitate, champion, holistic, paradigm, robust, innovative.
+Use instead: led, managed, built, created, drove, executed, achieved.`,
+            },
+            {
+              role: "user",
+              content: `Generate outreach for this application:
+
+**Job:** ${application.job.title} at ${application.job.companyName}
+
+**Strategic Hook:** ${profilerAnalysis.strategicHook}
+
+**Pain Points:**
+${profilerAnalysis.painPoints.map((p, i) => `${i + 1}. ${p}`).join("\n")}
+
+**My Top Achievements:**
+${topAchievements}
+
+Generate:
+1. LinkedIn connection message (max 300 characters)
+2. Cold email subject line
+3. Cold email body (max 150 words)`,
+            },
+          ],
+          response_format: {
+            type: "json_schema",
+            json_schema: {
+              name: "outreach_content",
+              strict: true,
+              schema: {
+                type: "object",
+                properties: {
+                  linkedinMessage: {
+                    type: "string",
+                    description: "LinkedIn connection message, max 300 characters",
+                  },
+                  coldEmailSubject: {
+                    type: "string",
+                    description: "Cold email subject line",
+                  },
+                  coldEmailBody: {
+                    type: "string",
+                    description: "Cold email body, max 150 words",
+                  },
+                },
+                required: ["linkedinMessage", "coldEmailSubject", "coldEmailBody"],
+                additionalProperties: false,
+              },
+            },
+          },
+        });
+        
+        const content = response.choices[0]?.message?.content;
+        if (!content) {
+          throw new Error("Failed to generate outreach content");
+        }
+        
+        const outreach = JSON.parse(typeof content === 'string' ? content : JSON.stringify(content)) as {
+          linkedinMessage: string;
+          coldEmailSubject: string;
+          coldEmailBody: string;
+        };
+        
+        // Store in database
+        await updateApplication(input.applicationId, ctx.user.id, {
+          outreachContent: outreach as any,
+        });
+        
+        return outreach;
+      }),
   }),
   
   companies: router({

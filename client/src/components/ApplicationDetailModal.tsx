@@ -4,10 +4,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Card } from "@/components/ui/card";
-import { Loader2, FileText, Calendar, Trash2, Save, ExternalLink, Target, Lightbulb, AlertTriangle, Eye, MessageSquare, Sparkles } from "lucide-react";
+import { Loader2, FileText, Calendar, Trash2, Save, ExternalLink, Target, Lightbulb, AlertTriangle, Eye, MessageSquare, Sparkles, Copy, Mail } from "lucide-react";
 import { toast } from "sonner";
 
 interface ApplicationDetailModalProps {
@@ -57,6 +58,17 @@ export function ApplicationDetailModal({ applicationId, open, onClose }: Applica
     },
     onError: (error) => {
       toast.error(`Analysis failed: ${error.message}`);
+    },
+  });
+
+  const outreachMutation = trpc.applications.generateOutreach.useMutation({
+    onSuccess: (data) => {
+      toast.success("Outreach strategy generated!");
+      utils.applications.get.invalidate({ id: applicationId! });
+      utils.applications.list.invalidate();
+    },
+    onError: (error) => {
+      toast.error(`Failed to generate outreach: ${error.message}`);
     },
   });
 
@@ -401,16 +413,135 @@ export function ApplicationDetailModal({ applicationId, open, onClose }: Applica
 
               {/* Strategy Tab */}
               <TabsContent value="strategy" className="space-y-4 mt-4">
-                <Card className="p-12">
-                  <div className="text-center text-muted-foreground">
-                    <Lightbulb className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p className="font-medium">Strategy Tools Coming Soon</p>
-                    <p className="text-sm mt-2">
-                      This tab will house the "Scribe" agent for cover letter generation
-                      and interview preparation strategies.
-                    </p>
-                  </div>
-                </Card>
+                {/* @ts-ignore */}
+                {application.outreachContent ? (
+                  <>
+                    {/* LinkedIn Message Card */}
+                    <Card className="p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-semibold flex items-center gap-2">
+                          <svg className="h-5 w-5 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                          </svg>
+                          LinkedIn Connection Message
+                        </h3>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            navigator.clipboard.writeText((application.outreachContent as any).linkedinMessage);
+                            toast.success("Copied to clipboard!");
+                          }}
+                        >
+                          <Copy className="h-4 w-4 mr-2" />
+                          Copy
+                        </Button>
+                      </div>
+                      <Textarea
+                        value={(application.outreachContent as any).linkedinMessage}
+                        readOnly
+                        rows={4}
+                        className="resize-none font-mono text-sm bg-muted/30"
+                      />
+                      <p className="text-xs text-muted-foreground mt-2">
+                        {(application.outreachContent as any).linkedinMessage.length} / 300 characters
+                      </p>
+                    </Card>
+
+                    {/* Cold Email Card */}
+                    <Card className="p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-semibold flex items-center gap-2">
+                          <Mail className="h-5 w-5 text-primary" />
+                          Cold Email
+                        </h3>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const emailContent = `Subject: ${(application.outreachContent as any).coldEmailSubject}\n\n${(application.outreachContent as any).coldEmailBody}`;
+                            navigator.clipboard.writeText(emailContent);
+                            toast.success("Email copied to clipboard!");
+                          }}
+                        >
+                          <Copy className="h-4 w-4 mr-2" />
+                          Copy Email
+                        </Button>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <div>
+                          <label className="text-xs font-medium text-muted-foreground">Subject Line</label>
+                          <Input
+                            value={(application.outreachContent as any).coldEmailSubject}
+                            readOnly
+                            className="mt-1 font-mono text-sm bg-muted/30"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label className="text-xs font-medium text-muted-foreground">Email Body</label>
+                          <Textarea
+                            value={(application.outreachContent as any).coldEmailBody}
+                            readOnly
+                            rows={8}
+                            className="mt-1 resize-none font-mono text-sm bg-muted/30"
+                          />
+                        </div>
+                      </div>
+                    </Card>
+
+                    {/* Re-generate Button */}
+                    <Button
+                      onClick={() => {
+                        outreachMutation.mutate({ applicationId: application.id });
+                      }}
+                      disabled={outreachMutation.isPending}
+                      variant="outline"
+                      className="w-full"
+                    >
+                      {outreachMutation.isPending ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Regenerating...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="h-4 w-4 mr-2" />
+                          Regenerate Outreach
+                        </>
+                      )}
+                    </Button>
+                  </>
+                ) : (
+                  <Card className="p-12">
+                    <div className="text-center">
+                      <Lightbulb className="h-12 w-12 mx-auto mb-4 opacity-50 text-muted-foreground" />
+                      <p className="font-medium mb-2">Generate Outreach Strategy</p>
+                      <p className="text-sm text-muted-foreground mb-6">
+                        Create peer-level LinkedIn and email outreach based on your strategic analysis
+                      </p>
+                      <Button
+                        onClick={() => {
+                          outreachMutation.mutate({ applicationId: application.id });
+                        }}
+                        disabled={outreachMutation.isPending}
+                      >
+                        {outreachMutation.isPending ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Drafting peer-level outreach...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="h-4 w-4 mr-2" />
+                            Generate Outreach Strategy
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </Card>
+                )}
               </TabsContent>
 
               {/* Notes Tab */}
