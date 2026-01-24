@@ -51,6 +51,10 @@ async function startServer() {
   app.use("/api/ingest/file", ingestFileRouter);
   app.use("/api/ingest/link", ingestLinkRouter);
   
+  // PDF upload for Resume Roaster
+  const { createPDFUploadRouter } = await import("../pdf-upload-route");
+  app.use(createPDFUploadRouter());
+  
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
   // tRPC API

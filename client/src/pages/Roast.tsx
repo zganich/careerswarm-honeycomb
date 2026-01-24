@@ -38,25 +38,74 @@ export default function Roast() {
     roastMutation.mutate({ resumeText: resumeText.trim() });
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const [isUploadingPDF, setIsUploadingPDF] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
-    if (file.type !== "text/plain" && !file.name.endsWith(".txt")) {
-      toast.error("Please upload a .txt file");
-      return;
+  const handleFileUpload = async (file: File) => {
+    if (file.type === "application/pdf") {
+      // Handle PDF upload
+      setIsUploadingPDF(true);
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        const response = await fetch("/api/upload-pdf", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || "Failed to process PDF");
+        }
+
+        const data = await response.json();
+        setResumeText(data.text);
+        toast.success(`PDF loaded: ${data.wordCount} words extracted`);
+      } catch (error) {
+        toast.error("PDF upload failed", {
+          description: error instanceof Error ? error.message : "Unknown error",
+        });
+      } finally {
+        setIsUploadingPDF(false);
+      }
+    } else if (file.type === "text/plain" || file.name.endsWith(".txt")) {
+      // Handle TXT upload
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const text = event.target?.result as string;
+        setResumeText(text);
+        toast.success("Resume loaded");
+      };
+      reader.onerror = () => {
+        toast.error("Failed to read file");
+      };
+      reader.readAsText(file);
+    } else {
+      toast.error("Please upload a .pdf or .txt file");
     }
+  };
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const text = event.target?.result as string;
-      setResumeText(text);
-      toast.success("Resume loaded");
-    };
-    reader.onerror = () => {
-      toast.error("Failed to read file");
-    };
-    reader.readAsText(file);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) handleFileUpload(file);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) handleFileUpload(file);
   };
 
   const loadingMessages = [
@@ -100,8 +149,8 @@ export default function Roast() {
                   <div className="flex items-center gap-2">
                     <input
                       type="file"
-                      accept=".txt"
-                      onChange={handleFileUpload}
+                      accept=".pdf,.txt"
+                      onChange={handleInputChange}
                       className="hidden"
                       id="file-upload"
                     />
@@ -111,19 +160,46 @@ export default function Roast() {
                       size="sm"
                       onClick={() => document.getElementById("file-upload")?.click()}
                       className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                      disabled={isUploadingPDF}
                     >
-                      <Upload className="mr-2 h-4 w-4" />
-                      Upload .txt
+                      {isUploadingPDF ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Processing PDF...
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="mr-2 h-4 w-4" />
+                          Upload PDF/TXT
+                        </>
+                      )}
                     </Button>
                   </div>
                 </div>
-                <Textarea
-                  value={resumeText}
-                  onChange={(e) => setResumeText(e.target.value)}
-                  placeholder="Paste your resume text here... (minimum 50 characters)"
-                  className="min-h-[400px] bg-slate-900/50 border-slate-600 text-white placeholder:text-slate-500 font-mono text-sm"
-                  disabled={roastMutation.isPending}
-                />
+                <div
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  className={`relative rounded-lg transition-all ${
+                    isDragging ? "ring-2 ring-orange-500 ring-offset-2 ring-offset-slate-800" : ""
+                  }`}
+                >
+                  {isDragging && (
+                    <div className="absolute inset-0 bg-orange-500/10 border-2 border-dashed border-orange-500 rounded-lg flex items-center justify-center z-10">
+                      <div className="text-center text-orange-400">
+                        <Upload className="h-12 w-12 mx-auto mb-2" />
+                        <p className="font-semibold">Drop your resume here to see if it survives...</p>
+                      </div>
+                    </div>
+                  )}
+                  <Textarea
+                    value={resumeText}
+                    onChange={(e) => setResumeText(e.target.value)}
+                    placeholder="Paste your resume text here or drag & drop a PDF... (minimum 50 characters)"
+                    className="min-h-[400px] bg-slate-900/50 border-slate-600 text-white placeholder:text-slate-500 font-mono text-sm"
+                    disabled={roastMutation.isPending || isUploadingPDF}
+                  />
+                </div>
                 <div className="flex items-center justify-between text-sm text-slate-400">
                   <span>{resumeText.length} characters</span>
                   <span>{resumeText.split(/\s+/).filter(Boolean).length} words</span>

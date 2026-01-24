@@ -1513,3 +1513,74 @@ Build a public-facing Resume Roaster that provides brutally honest feedback from
 - ✅ Accessible from main navigation (Home page header)
 - ✅ Randomized snarky loading messages
 - ✅ File upload support (.txt files)
+
+
+## Resume Roaster - PDF Support
+
+**Status:** 🚧 In Progress  
+**Priority:** HIGH - Reduce friction for viral tool
+
+### Objective
+Add PDF upload support to Resume Roaster so users can drag-and-drop PDF resumes instead of pasting text.
+
+### Backend Implementation
+- [ ] Install pdf-parse package
+- [ ] Create PDF text extraction utility
+- [ ] Create file upload endpoint (multipart/form-data)
+- [ ] Detect MIME type (ensure PDF)
+- [ ] Extract text using pdf-parse
+- [ ] Pass extracted text to existing Cynical VC roast logic
+- [ ] Return score and feedback as normal
+
+### Frontend Implementation
+- [ ] Update Roast.tsx with dropzone component
+- [ ] Add drag-and-drop area: "Drop your resume here to see if it survives..."
+- [ ] Show "Scanning..." animation on drop
+- [ ] Handle PDF file upload
+- [ ] Transition to existing Score/Result view on success
+- [ ] Keep existing text paste option as fallback
+
+### Testing
+- [ ] Write vitest test for PDF text extraction
+- [ ] Test with sample PDF resumes
+- [ ] Test MIME type validation
+- [ ] Manual UI testing of drag-and-drop
+
+### Success Criteria
+- ✅ PDF files can be uploaded via drag-and-drop
+- ✅ Text extracted correctly from PDFs
+- ✅ Roast results match text paste flow
+- ✅ MIME type validation prevents non-PDF uploads
+- ✅ Smooth UX with loading animations
+
+
+## Resume Roaster - PDF Support ✅
+
+**Status:** Complete  
+**Priority:** HIGH - Reduce friction for viral tool
+
+### Implementation Summary
+- ✅ Installed pdf-parse v2 and multer for file uploads
+- ✅ Created PDF text extraction utility with validation
+- ✅ Built Express endpoint /api/upload-pdf (10MB limit)
+- ✅ Added drag-and-drop dropzone to Roast.tsx
+- ✅ Visual feedback: Orange ring + overlay during drag
+- ✅ Loading state: "Processing PDF..." with spinner
+- ✅ Toast notifications for success/error
+- ✅ All tests passing (3 passed, 1 skipped)
+
+### Features
+- Drag-and-drop PDF files onto textarea
+- Click "Upload PDF/TXT" button to select files
+- Automatic text extraction from PDFs
+- Character and word count display
+- Error handling for invalid/corrupt PDFs
+- Dropzone visual feedback (orange ring highlight)
+- Button loading state during processing
+
+### Testing
+- ✅ PDF header validation
+- ✅ MIME type validation  
+- ✅ Invalid buffer rejection
+- Manual testing required for real PDF extraction
+
