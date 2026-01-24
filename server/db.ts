@@ -243,7 +243,9 @@ export async function createPastEmployerJob(data: any) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   const result: any = await db.insert(pastEmployerJobs).values(data);
-  return { id: Number(result.insertId) };
+  const insertId = result[0]?.insertId || result.insertId;
+  if (!insertId) throw new Error("Failed to get insert ID");
+  return { id: Number(insertId) };
 }
 
 export async function getUserPastJobs(userId: number) {
@@ -275,7 +277,9 @@ export async function createJob(data: Omit<InsertJob, "id">): Promise<number> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   const result: any = await db.insert(jobs).values(data);
-  return Number(result.insertId);
+  const insertId = result[0]?.insertId || result.insertId;
+  if (!insertId) throw new Error("Failed to get insert ID");
+  return Number(insertId);
 }
 
 export async function getUserJobs(userId: number): Promise<Job[]> {
@@ -304,11 +308,12 @@ export async function deleteJob(id: number, userId: number): Promise<void> {
 }
 
 export async function bulkCreateJobs(jobsData: Omit<InsertJob, "id">[]): Promise<number[]> {
-  if (jobsData.length === 0) return [];
   const db = await getDb();
   if (!db) return [];
   const result: any = await db.insert(jobs).values(jobsData);
-  const firstId = Number(result.insertId);
+  const insertId = result[0]?.insertId || result.insertId;
+  if (!insertId) throw new Error("Failed to get insert ID");
+  const firstId = Number(insertId);
   return Array.from({ length: jobsData.length }, (_, i) => firstId + i);
 }
 
@@ -316,7 +321,9 @@ export async function createApplication(data: Omit<InsertApplication, "id">): Pr
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   const result: any = await db.insert(applications).values(data);
-  return Number(result.insertId);
+  const insertId = result[0]?.insertId || result.insertId;
+  if (!insertId) throw new Error("Failed to get insert ID");
+  return Number(insertId);
 }
 
 export async function getUserApplications(userId: number) {
@@ -375,7 +382,9 @@ export async function createCompany(data: Omit<InsertCompany, "id">): Promise<nu
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   const result: any = await db.insert(companies).values(data);
-  return Number(result.insertId);
+  const insertId = result[0]?.insertId || result.insertId;
+  if (!insertId) throw new Error("Failed to get insert ID");
+  return Number(insertId);
 }
 
 export async function getCompanyByName(name: string): Promise<Company | undefined> {
@@ -418,7 +427,9 @@ export async function createSourceMaterial(data: InsertSourceMaterial): Promise<
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   const result: any = await db.insert(sourceMaterials).values(data);
-  return Number(result.insertId);
+  const insertId = result[0]?.insertId || result.insertId;
+  if (!insertId) throw new Error("Failed to get insert ID");
+  return Number(insertId);
 }
 
 export async function getSourceMaterialsByUserId(userId: number) {

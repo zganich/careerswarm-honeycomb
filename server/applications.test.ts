@@ -59,7 +59,7 @@ describe("Applications Router", () => {
     }
   });
 
-  it.skip("should complete full application lifecycle", async () => {
+  it("should complete full application lifecycle", async () => {
     const caller = appRouter.createCaller({
       user: { id: testUserId, openId: "test", name: "Test User", email: "test@example.com", role: "user" },
       req: {} as any,
@@ -126,7 +126,7 @@ describe("Applications Router", () => {
 
     // Verify application was deleted
     const deletedApp = await caller.applications.get({ id: testApplicationId });
-    expect(deletedApp).toBeNull();
+    expect(deletedApp).toBeUndefined();
     
     testApplicationId = 0; // Mark as deleted so cleanup doesn't try to delete again
   });

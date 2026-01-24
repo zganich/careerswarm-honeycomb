@@ -1175,3 +1175,15 @@ Build Kanban-style application tracker ("The Swarm Board") where users can visua
 - ✅ Users can add notes to applications
 - ✅ Job Matcher creates application automatically
 - ✅ Navigation includes Applications page
+
+
+## Fix createJob Returning NaN in Tests
+
+**Status:** ✅ Complete  
+**Priority:** HIGH - Blocking integration tests
+
+- [x] Inspect createJob function in server/db.ts
+- [x] Fixed MySQL insert ID extraction (result[0].insertId for array format)
+- [x] Applied fix to all create functions (createJob, createApplication, createCompany, etc.)
+- [x] Updated test assertion (undefined vs null)
+- [x] Run vitest to verify fix - ALL TESTS PASSING ✅
