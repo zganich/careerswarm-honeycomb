@@ -774,3 +774,31 @@ The particle system is fundamentally limited by browser canvas rendering perform
 - ✅ Animations are smooth and accessible (prefers-reduced-motion support)
 - ✅ Mobile responsive and touch-friendly
 - ✅ Fixes both critical QA bugs (blank forms + input bombing)
+
+
+---
+
+## Critical Bug Fix: React Hooks Violation in Home.tsx
+
+**Status:** ✅ Complete  
+**Priority:** CRITICAL - Blocks dashboard access  
+**Error:** "Rendered more hooks than during the previous render"
+
+### Root Cause
+~~Conditional rendering in Home.tsx causes different hook counts between OnboardingFlow and authenticated user view.~~
+
+**Actual Root Cause:** Dashboard.tsx had `useEffect` hook called AFTER conditional returns (`if (!user) return <Redirect />`), causing "more hooks than previous render" error when authentication state changed.
+
+### Fix Steps
+- [x] Analyze Home.tsx to identify hooks violation
+- [x] Move all hooks (useAuth, useState, useEffect) to top level before conditional returns
+- [x] Ensure conditional logic only affects JSX return, not hook calls
+- [x] Test dashboard loads without errors for authenticated users
+- [x] Test OnboardingFlow renders correctly for unauthenticated users
+- [x] Verify no console errors or warnings
+
+### Success Criteria
+- ✅ Dashboard loads without hooks error
+- ✅ OnboardingFlow renders for unauthenticated users
+- ✅ No "more hooks" error in console
+- ✅ All hooks called in consistent order regardless of auth state

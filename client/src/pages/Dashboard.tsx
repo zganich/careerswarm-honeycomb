@@ -16,6 +16,14 @@ export default function Dashboard() {
   const { data: suggestions } = trpc.achievements.getSuggestions.useQuery();
   const { data: usageStats } = trpc.system.usageStats.useQuery();
 
+  // Show welcome wizard for new users (no achievements yet)
+  // MUST be called before any conditional returns to avoid hooks violation
+  useEffect(() => {
+    if (user && achievements && achievements.length === 0 && !localStorage.getItem('welcomeCompleted')) {
+      setShowWelcome(true);
+    }
+  }, [user, achievements]);
+
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -27,13 +35,6 @@ export default function Dashboard() {
   if (!user) {
     return <Redirect to="/" />;
   }
-
-  // Show welcome wizard for new users (no achievements yet)
-  useEffect(() => {
-    if (user && achievements && achievements.length === 0 && !localStorage.getItem('welcomeCompleted')) {
-      setShowWelcome(true);
-    }
-  }, [user, achievements]);
 
   const stats = [
     {
