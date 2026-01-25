@@ -7,13 +7,16 @@ import { OnboardingFlow } from "@/components/OnboardingFlow";
 import { CareerScoreCalculator } from "@/components/CareerScoreCalculator";
 import { PricingTiers } from "@/components/PricingTiers";
 import { RiskReversal } from "@/components/RiskReversal";
+import { StickyCtaBar } from "@/components/StickyCtaBar";
 import { Link } from "wouter";
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
 
   return (
-    <div className="min-h-screen">
+    <>
+      <StickyCtaBar />
+      <div className="min-h-screen">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-gray-200/50 bg-white/70 backdrop-blur-md">
         <div className="container flex h-16 items-center justify-between">
@@ -388,5 +391,6 @@ export default function Home() {
         </div>
       </footer>
     </div>
+    </>
   );
 }

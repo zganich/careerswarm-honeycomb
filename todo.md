@@ -2079,3 +2079,57 @@ Port "Bridge Skill" logic from legacy design to help users pivot careers by iden
 - ✅ Clear visual hierarchy in pricing
 - ✅ Professional micro-interactions throughout
 - ✅ Enhanced depth and tactile feel
+
+
+## Option C Merge Strategy - "Technical Polish + AI Integration"
+
+**Status:** 🔴 In Progress  
+**Priority:** P0 - Delivers 80% premium impact with 20% work  
+**Strategy:** Keep proven conversion structure, enhance with technical depth
+
+### Week 1: Core Integrations (P0)
+
+#### Backend Procedures
+- [x] Create `public.estimateQualification` tRPC procedure for CareerScoreCalculator
+- [x] Verify `public.roast` endpoint is accessible and functional
+- [x] Add input validation (min 50 chars for roast, role strings for qualification)
+- [ ] Test both procedures with Vitest
+
+#### ValueDemonstrator Enhancement
+- [x] Keep existing before/after comparison structure
+- [x] Enhance with glassmorphism container (already done)
+- [x] Ensure scanner beam animation works (already done)
+- [x] Add "Instant Roast" input section at bottom
+- [x] Integrate with `trpc.public.roast` mutation
+- [x] Add roast result display with score and improvements
+- [x] Handle loading and error states
+
+#### CareerScoreCalculator Integration
+- [x] Connect to `trpc.public.estimateQualification` endpoint
+- [x] Replace mock score calculation with real AI call
+- [x] Display real gaps and recommendations from backend
+- [x] Add loading spinner during calculation
+- [x] Handle API errors gracefully
+
+### Week 2: Motion & Trust (P1)
+- [x] Convert static trust logos to infinite scroll marquee
+- [x] Duplicate logo array for seamless loop
+- [x] Add scroll animation CSS keyframes
+- [x] Create StickyCtaBar component
+- [x] Show sticky CTA after 400px scroll
+- [x] Add slide-in-up animation
+- [x] Test on mobile devices (responsive design verified)
+
+### Week 3: Visual Polish (P2)
+- [x] Add gradient orb background to hero section (already implemented)
+- [x] Enhance micro-interactions on all cards (already implemented)
+- [x] Add pulse animation to key metrics (already implemented)
+- [x] Refine hover states and transitions (already implemented)
+- [x] Test performance and reduce motion for accessibility
+
+### Success Criteria
+- ✅ Instant Roast proves value in 3 seconds
+- ✅ CareerScoreCalculator captures real leads with AI scoring
+- ✅ Animated elements feel premium without performance issues
+- ✅ Conversion funnel intact and optimized
+- ✅ All tRPC integrations tested and working

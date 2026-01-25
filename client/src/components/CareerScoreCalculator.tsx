@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { TrendingUp, AlertCircle, ArrowRight } from "lucide-react";
 import { Button } from "./ui/button";
+import { trpc } from "@/lib/trpc";
 
 /**
  * CareerScoreCalculator - Interactive tool that creates value perception and drives conversion
@@ -37,35 +38,36 @@ export function CareerScoreCalculator({ onSignup }: { onSignup: () => void }) {
   const [currentRole, setCurrentRole] = useState("");
   const [targetRole, setTargetRole] = useState("");
   const [result, setResult] = useState<ScoreResult | null>(null);
-  const [isCalculating, setIsCalculating] = useState(false);
+  const qualifyMutation = trpc.public.estimateQualification.useMutation();
 
-  const calculateScore = () => {
+  const calculateScore = async () => {
     if (!currentRole || !targetRole) return;
 
-    setIsCalculating(true);
-
-    // Simulate calculation
-    setTimeout(() => {
+    try {
+      const data = await qualifyMutation.mutateAsync({ currentRole, targetRole });
+      
+      // Transform AI response into ScoreResult format
       const score: ScoreResult = {
-        overall: Math.floor(Math.random() * 20) + 65, // 65-85
-        rating: "Good foundation, needs optimization",
+        overall: data.score,
+        rating: data.reasoning,
         keywordMatch: {
-          current: Math.floor(Math.random() * 20) + 60,
+          current: Math.max(30, data.score - 25),
           potential: 95,
         },
         impactQuant: {
-          current: Math.floor(Math.random() * 4) + 3,
+          current: Math.max(3, Math.floor(data.score / 15)),
           potential: 9,
         },
         starFormat: {
-          current: Math.floor(Math.random() * 5) + 3,
+          current: Math.max(3, Math.floor(data.score / 12)),
           potential: 10,
         },
       };
 
       setResult(score);
-      setIsCalculating(false);
-    }, 1500);
+    } catch (error) {
+      console.error("Failed to calculate score:", error);
+    }
   };
 
   return (
@@ -132,10 +134,10 @@ export function CareerScoreCalculator({ onSignup }: { onSignup: () => void }) {
 
           <Button
             onClick={calculateScore}
-            disabled={!currentRole || !targetRole || isCalculating}
+            disabled={!currentRole || !targetRole || qualifyMutation.isPending}
             className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-6 rounded-xl shadow-lg shadow-orange-500/20 hover:shadow-xl hover:shadow-orange-500/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
           >
-            {isCalculating ? "Analyzing..." : "Calculate My Score"}
+            {qualifyMutation.isPending ? "Analyzing with AI..." : "Calculate My Score"}
           </Button>
 
           {/* Result Section */}

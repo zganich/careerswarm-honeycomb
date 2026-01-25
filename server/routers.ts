@@ -150,6 +150,98 @@ ${input.resumeText}`;
           throw new Error("Failed to roast resume. Please try again or contact support if the issue persists.");
         }
       }),
+    
+    estimateQualification: publicProcedure
+      .input(z.object({
+        currentRole: z.string().min(2, "Current role must be at least 2 characters"),
+        targetRole: z.string().min(2, "Target role must be at least 2 characters"),
+      }))
+      .mutation(async ({ input }) => {
+        const { invokeLLM } = await import("./_core/llm");
+        
+        // Use AI to estimate career pivot potential
+        const systemPrompt = `You are a career transition expert who analyzes skill transferability between roles. 
+You provide honest, data-driven assessments of career pivot potential.
+
+Provide:
+- A score from 0-100 (higher = easier transition)
+- 3-5 specific skill gaps that need to be addressed
+- Brief reasoning for the score`;
+        
+        const userPrompt = `Analyze this career transition:
+Current Role: ${input.currentRole}
+Target Role: ${input.targetRole}
+
+Provide a realistic assessment of pivot potential.`;
+        
+        try {
+          const response = await invokeLLM({
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: userPrompt }
+            ],
+            response_format: {
+              type: "json_schema",
+              json_schema: {
+                name: "qualification_estimate",
+                strict: true,
+                schema: {
+                  type: "object",
+                  properties: {
+                    score: {
+                      type: "number",
+                      description: "Score from 0-100 indicating transition difficulty"
+                    },
+                    gaps: {
+                      type: "array",
+                      description: "Specific skills or experience gaps to address",
+                      items: {
+                        type: "object",
+                        properties: {
+                          skill: { type: "string" },
+                          importance: { type: "string", enum: ["critical", "important", "helpful"] },
+                          suggestion: { type: "string" }
+                        },
+                        required: ["skill", "importance", "suggestion"],
+                        additionalProperties: false
+                      },
+                      minItems: 3,
+                      maxItems: 5
+                    },
+                    reasoning: {
+                      type: "string",
+                      description: "Brief explanation of the score"
+                    }
+                  },
+                  required: ["score", "gaps", "reasoning"],
+                  additionalProperties: false
+                }
+              }
+            }
+          });
+          
+          const content = String(response.choices[0]?.message?.content || "{}");
+          const parsed = JSON.parse(content);
+          
+          return {
+            score: parsed.score || 50,
+            gaps: parsed.gaps || [],
+            reasoning: parsed.reasoning || "Unable to analyze transition"
+          };
+        } catch (error) {
+          console.error("Qualification estimate error:", error);
+          // Return fallback data instead of throwing
+          return {
+            score: 50,
+            gaps: [
+              { skill: "Domain Knowledge", importance: "critical" as const, suggestion: "Research industry trends and terminology" },
+              { skill: "Technical Skills", importance: "important" as const, suggestion: "Take relevant courses or certifications" },
+              { skill: "Network", importance: "helpful" as const, suggestion: "Connect with professionals in target role" }
+            ],
+            reasoning: "Unable to perform detailed analysis. These are general recommendations for career transitions."
+          };
+        }
+      }),
   }),
   
   pastEmployerJobs: router({

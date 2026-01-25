@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, TrendingUp } from "lucide-react";
+import { Check, TrendingUp, Sparkles } from "lucide-react";
+import { trpc } from "@/lib/trpc";
 
 /**
  * ValueDemonstrator - Shows OUTCOMES with premium visual polish
@@ -44,6 +45,8 @@ const transformations: Transformation[] = [
 export function ValueDemonstrator() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showAnalysis, setShowAnalysis] = useState(false);
+  const [roastInput, setRoastInput] = useState("");
+  const roastMutation = trpc.public.roast.useMutation();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -212,6 +215,92 @@ export function ValueDemonstrator() {
               }`}
             />
           ))}
+        </div>
+
+        {/* Instant Roast Section */}
+        <div className="pt-6 border-t border-white/40 relative z-20">
+          <div className="flex items-center gap-2 mb-3">
+            <Sparkles className="w-4 h-4 text-orange-500" />
+            <h4 className="text-sm font-semibold text-slate-700 uppercase tracking-wider">
+              Test the Swarm Instantly
+            </h4>
+          </div>
+          
+          <form 
+            onSubmit={async (e) => {
+              e.preventDefault();
+              if (roastInput.trim().length < 50) return;
+              roastMutation.mutate({ resumeText: roastInput });
+            }}
+            className="space-y-3"
+          >
+            <input
+              type="text"
+              value={roastInput}
+              onChange={(e) => setRoastInput(e.target.value)}
+              placeholder="Paste a resume bullet to roast... (min 50 chars)"
+              className="w-full px-4 py-3 rounded-lg bg-white/60 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-sm"
+              disabled={roastMutation.isPending}
+            />
+            <button
+              type="submit"
+              disabled={roastInput.trim().length < 50 || roastMutation.isPending}
+              className="w-full px-6 py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.98] text-sm"
+            >
+              {roastMutation.isPending ? "Roasting..." : "Get Brutal AI Roast"}
+            </button>
+          </form>
+          
+          {/* Roast Result Display */}
+          <AnimatePresence>
+            {roastMutation.data && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="mt-4 p-4 bg-amber-50/80 border border-amber-200 rounded-lg backdrop-blur-sm"
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <span className="text-xs font-semibold text-amber-700 uppercase tracking-wider">
+                    Roast Result
+                  </span>
+                  <span className="text-sm font-bold text-amber-900">
+                    Score: {roastMutation.data.score}/100
+                  </span>
+                </div>
+                <p className="text-sm text-amber-800 mb-3">{roastMutation.data.verdict}</p>
+                {roastMutation.data.mistakes && roastMutation.data.mistakes.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-xs font-semibold text-amber-700">Top Mistakes:</p>
+                    {roastMutation.data.mistakes.slice(0, 2).map((mistake: any, idx: number) => (
+                      <div key={idx} className="text-xs text-amber-700">
+                        <span className="font-medium">{mistake.title}:</span> {mistake.explanation}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <a
+                  href="/dashboard"
+                  className="inline-block mt-3 text-xs font-semibold text-orange-600 hover:text-orange-700 hover:underline"
+                >
+                  Fix these issues in your Master Profile →
+                </a>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          
+          {/* Error Display */}
+          {roastMutation.error && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg"
+            >
+              <p className="text-sm text-red-700">
+                {roastMutation.error.message || "Failed to roast. Please try again."}
+              </p>
+            </motion.div>
+          )}
         </div>
       </motion.div>
     </div>

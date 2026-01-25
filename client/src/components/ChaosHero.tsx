@@ -93,12 +93,25 @@ export function ChaosHero({ onStart }: ChaosHeroProps) {
               <p className="text-xs text-slate-400 uppercase tracking-wider mb-4">
                 Trusted by candidates at
               </p>
-              <div className="flex items-center gap-8 flex-wrap opacity-60 grayscale hover:grayscale-0 transition-all">
-                <div className="text-xl font-bold text-slate-700">Google</div>
-                <div className="text-xl font-bold text-slate-700">Meta</div>
-                <div className="text-xl font-bold text-slate-700">Stripe</div>
-                <div className="text-xl font-bold text-slate-700">OpenAI</div>
-                <div className="text-xl font-bold text-slate-700">Amazon</div>
+              <div className="relative overflow-hidden">
+                <div className="flex items-center gap-8 animate-marquee whitespace-nowrap">
+                  {/* First set */}
+                  <div className="text-xl font-bold text-slate-700 opacity-60 hover:opacity-100 transition-opacity">Google</div>
+                  <div className="text-xl font-bold text-slate-700 opacity-60 hover:opacity-100 transition-opacity">Meta</div>
+                  <div className="text-xl font-bold text-slate-700 opacity-60 hover:opacity-100 transition-opacity">Stripe</div>
+                  <div className="text-xl font-bold text-slate-700 opacity-60 hover:opacity-100 transition-opacity">OpenAI</div>
+                  <div className="text-xl font-bold text-slate-700 opacity-60 hover:opacity-100 transition-opacity">Amazon</div>
+                  <div className="text-xl font-bold text-slate-700 opacity-60 hover:opacity-100 transition-opacity">Microsoft</div>
+                  <div className="text-xl font-bold text-slate-700 opacity-60 hover:opacity-100 transition-opacity">Netflix</div>
+                  {/* Duplicate for seamless loop */}
+                  <div className="text-xl font-bold text-slate-700 opacity-60 hover:opacity-100 transition-opacity">Google</div>
+                  <div className="text-xl font-bold text-slate-700 opacity-60 hover:opacity-100 transition-opacity">Meta</div>
+                  <div className="text-xl font-bold text-slate-700 opacity-60 hover:opacity-100 transition-opacity">Stripe</div>
+                  <div className="text-xl font-bold text-slate-700 opacity-60 hover:opacity-100 transition-opacity">OpenAI</div>
+                  <div className="text-xl font-bold text-slate-700 opacity-60 hover:opacity-100 transition-opacity">Amazon</div>
+                  <div className="text-xl font-bold text-slate-700 opacity-60 hover:opacity-100 transition-opacity">Microsoft</div>
+                  <div className="text-xl font-bold text-slate-700 opacity-60 hover:opacity-100 transition-opacity">Netflix</div>
+                </div>
               </div>
               <p className="text-sm text-slate-600 mt-3 font-medium">
                 <span className="text-orange-500">2,341 candidates</span> landed roles this month
