@@ -1803,7 +1803,7 @@ Port "Bridge Skill" logic from legacy design to help users pivot careers by iden
 - [x] Add contextual headers to nested pages (EditAchievement, NewAchievement)
 - [x] Ensure sidebar remains visible on all authenticated pages
 - [x] Test navigation flow across all routes
-- [ ] Commit and push changes
+- [x] Commit and push changes
 
 ### Success Criteria
 - ✅ Current page highlighted in sidebar
