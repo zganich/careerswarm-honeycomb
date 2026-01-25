@@ -7,11 +7,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { trpc } from "@/lib/trpc";
-import { Award, ArrowLeft, Check, Sparkles, Loader2 } from "lucide-react";
+import { Award, Check, Sparkles, Loader2 } from "lucide-react";
 import { Link, useLocation, useRoute, Redirect } from "wouter";
 import { toast } from "sonner";
 
 import DashboardLayout from "@/components/DashboardLayout";
+import { PageHeader } from "@/components/PageHeader";
 const POWER_VERBS = [
   "Generated", "Engineered", "Reduced", "Accelerated", "Scaled", "Optimized",
   "Launched", "Architected", "Transformed", "Drove", "Increased", "Improved",
@@ -138,19 +139,12 @@ function EditAchievementContent() {
   };
 
   return (
-    <div className="py-8 max-w-4xl mx-auto">
-      <div className="mb-6">
-        <Link href="/achievements">
-          <Button variant="ghost" className="mb-4">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Achievements
-          </Button>
-        </Link>
-      </div>
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Edit Achievement</h1>
-          <p className="text-muted-foreground">Update your career evidence</p>
-        </div>
+    <div className="max-w-4xl mx-auto">
+      <PageHeader
+        title="Edit Achievement"
+        description="Update your career evidence"
+        backTo={{ label: "Back to Achievements", path: "/achievements" }}
+      />
 
         <div className="space-y-6">
           <Card>

@@ -12,6 +12,7 @@ import { Link, useLocation, Redirect } from "wouter";
 import { toast } from "sonner";
 
 import DashboardLayout from "@/components/DashboardLayout";
+import { PageHeader } from "@/components/PageHeader";
 const POWER_VERBS = [
   "Generated", "Engineered", "Reduced", "Accelerated", "Scaled", "Optimized",
   "Launched", "Architected", "Transformed", "Drove", "Increased", "Improved",
@@ -128,19 +129,12 @@ function NewAchievementContent() {
   const isLastStep = step === 5;
 
   return (
-    <div className="py-8 max-w-4xl mx-auto">
-      <div className="mb-6">
-        <Link href="/achievements">
-          <Button variant="ghost" className="mb-4">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Achievements
-          </Button>
-        </Link>
-      </div>
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Add New Achievement</h1>
-          <p className="text-muted-foreground">Use the STAR method to capture your career evidence</p>
-        </div>
+    <div className="max-w-4xl mx-auto">
+      <PageHeader
+        title="Add New Achievement"
+        description="Use the STAR method to capture your career evidence"
+        backTo={{ label: "Back to Achievements", path: "/achievements" }}
+      />
 
         {/* Progress Steps */}
         <div className="flex items-center justify-between mb-8">

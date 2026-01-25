@@ -1783,10 +1783,30 @@ Port "Bridge Skill" logic from legacy design to help users pivot careers by iden
 - [x] Audit `/roast` route (if internal)
 - [x] Add breadcrumbs/back buttons to detail pages
 - [x] Test all routes
-- [ ] Commit and push fix
+- [x] Commit and push fix
 
 ### Success Criteria
 - ✅ All internal pages have DashboardLayout
 - ✅ No navigation dead ends
 - ✅ Clear escape routes from all pages
 - ✅ Breadcrumbs on detail views
+
+
+## Navigation Modernization (Active States & Contextual Headers)
+
+**Status:** ✅ Complete  
+**Priority:** HIGH - UX improvement for navigation clarity
+
+### Tasks
+- [x] Implement active route highlighting in DashboardLayout sidebar
+- [x] Create reusable PageHeader component with back button
+- [x] Add contextual headers to nested pages (EditAchievement, NewAchievement)
+- [x] Ensure sidebar remains visible on all authenticated pages
+- [x] Test navigation flow across all routes
+- [ ] Commit and push changes
+
+### Success Criteria
+- ✅ Current page highlighted in sidebar
+- ✅ Nested pages have clear "← Back" buttons
+- ✅ No breadcrumb trails (use back button pattern)
+- ✅ Sidebar never disappears for authenticated users
