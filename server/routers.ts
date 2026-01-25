@@ -21,6 +21,13 @@ export const appRouter = router({
       }))
       .mutation(async ({ input }) => {
         const { invokeLLM } = await import("./_core/llm");
+        const { ENV } = await import("./_core/env");
+        
+        // Verify API key is configured
+        if (!ENV.forgeApiKey) {
+          console.error("Roast error: BUILT_IN_FORGE_API_KEY is not configured");
+          throw new Error("Server misconfigured: Missing API key. Please contact support.");
+        }
         
         // Cynical VC Recruiter system prompt from legacy resume_roaster.py
         const systemPrompt = `You are a cynical VC recruiter who has reviewed 10,000+ resumes this week alone. You've funded companies, fired executives, and seen every resume trick in the book. You are BRUTALLY honest.
@@ -122,8 +129,25 @@ ${input.resumeText}`;
             wordCount: input.resumeText.split(/\s+/).length,
           };
         } catch (error) {
-          console.error("Resume roast failed:", error);
-          throw new Error("Failed to roast resume. Try again.");
+          // Enhanced error logging for debugging
+          console.error("Roast error:", error);
+          console.error("Error details:", {
+            message: error instanceof Error ? error.message : String(error),
+            stack: error instanceof Error ? error.stack : undefined,
+            resumeLength: input.resumeText.length,
+            timestamp: new Date().toISOString(),
+          });
+          
+          // Provide user-friendly error messages
+          if (error instanceof Error && error.message.includes("timeout")) {
+            throw new Error("Resume analysis timed out. Please try again with a shorter resume.");
+          }
+          
+          if (error instanceof Error && error.message.includes("API key")) {
+            throw new Error("Server misconfigured: Invalid API credentials. Please contact support.");
+          }
+          
+          throw new Error("Failed to roast resume. Please try again or contact support if the issue persists.");
         }
       }),
   }),

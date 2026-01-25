@@ -122,30 +122,15 @@ function ResumesListContent() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-background/95 backdrop-blur sticky top-0 z-50">
-        <div className="container flex h-16 items-center justify-between">
-          <Link href="/dashboard">
-            <div className="flex items-center gap-2 cursor-pointer">
-              <Award className="h-6 w-6 text-primary" />
-              <span className="font-bold text-xl">Careerswarm</span>
-            </div>
-          </Link>
-          <Link href="/dashboard">
-            <Button variant="ghost">Dashboard</Button>
-          </Link>
-        </div>
-      </header>
-
-      <main className="container py-8">
-        <div className="flex items-center justify-between mb-8">
+    <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold mb-2">My Resumes</h1>
             <p className="text-muted-foreground">Generated tailored resumes</p>
           </div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button>
+              <Button className="w-full sm:w-auto h-12 sm:h-10">
                 <Plus className="h-4 w-4 mr-2" />
                 Generate Resume
               </Button>
@@ -366,14 +351,13 @@ function ResumesListContent() {
               <p className="text-muted-foreground mb-4">
                 Generate your first tailored resume
               </p>
-              <Button onClick={() => setIsDialogOpen(true)}>
+              <Button onClick={() => setIsDialogOpen(true)} className="w-full sm:w-auto h-12 sm:h-10">
                 <Plus className="h-4 w-4 mr-2" />
                 Generate Your First Resume
               </Button>
             </CardContent>
           </Card>
         )}
-      </main>
     </div>
   );
 }

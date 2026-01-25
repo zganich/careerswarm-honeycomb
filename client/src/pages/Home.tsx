@@ -12,7 +12,7 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+      <header className="sticky top-0 z-50 border-b border-gray-200/50 bg-white/70 backdrop-blur-md">
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-2">
             <Award className="h-6 w-6 text-primary" />
@@ -52,7 +52,7 @@ export default function Home() {
       {!isAuthenticated ? (
         <OnboardingFlow />
       ) : (
-        <section className="container py-24 md:py-32 text-center">
+        <section className="container py-16 md:py-20 text-center">
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
             Welcome back, {user?.name}!
           </h1>

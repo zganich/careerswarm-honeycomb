@@ -1901,3 +1901,45 @@ Port "Bridge Skill" logic from legacy design to help users pivot careers by iden
 - ✅ Outdated information archived
 - ✅ Clear changelog for version tracking
 - ✅ Easy onboarding for new developers
+
+
+## Production Hotfixes (Critical)
+
+**Status:** ✅ Complete  
+**Priority:** CRITICAL - Production bugs affecting users
+
+### Tasks
+- [x] Fix "Invalid URL" crash in getLoginUrl (wrap in try/catch with fallback)
+- [x] Fix "Roasting Failed" error (add error logging, verify timeout, check API key)
+- [x] Test both fixes
+- [x] Commit and push to GitHub
+
+### Success Criteria
+- ✅ No crashes when VITE_OAUTH_PORTAL_URL is missing/invalid
+- ✅ Clear error messages in Resume Roaster logs
+- ✅ Roaster handles LLM timeouts gracefully
+- ✅ Changes deployed to production
+
+
+## Landing Page Redesign - "Modern Structure"
+
+**Status:** ✅ Complete  
+**Priority:** HIGH - Improve landing page visual appeal and brand consistency
+
+### Tasks
+- [x] Implement dot grid background with radial gradient mask (replace hexagon pattern)
+- [x] Update headline typography (remove highlight box, add orange accent to "Structured Success")
+- [x] Tighten line-height and spacing for cohesive typography
+- [x] Add glassmorphism sticky navbar (backdrop-blur-md, bg-white/70, border-b)
+- [x] Reduce hero section vertical padding by 30-40%
+- [x] Add shadow to CTA button (shadow-lg, shadow-orange-500/20)
+- [x] Test design across breakpoints
+- [x] Commit and push to GitHub
+
+### Success Criteria
+- ✅ Dot grid background visible in center, fades to white at edges
+- ✅ Typography feels tight and cohesive (reduced line-height)
+- ✅ Orange accent on "Structured Success" matches brand
+- ✅ Glassmorphism navbar anchors the page
+- ✅ Hero section feels denser (less floating whitespace)
+- ✅ CTA button has subtle lift with shadow

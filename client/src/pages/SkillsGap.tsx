@@ -25,24 +25,7 @@ function SkillsGapContent() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-background/95 backdrop-blur sticky top-0 z-50">
-        <div className="container flex h-16 items-center justify-between">
-          <Link href="/dashboard">
-            <div className="flex items-center gap-2 cursor-pointer">
-              <Award className="h-6 w-6 text-primary" />
-              <span className="font-bold text-xl">Careerswarm</span>
-            </div>
-          </Link>
-          <nav className="flex gap-4">
-            <Link href="/dashboard">
-              <Button variant="ghost">Dashboard</Button>
-            </Link>
-          </nav>
-        </div>
-      </header>
-
-      <main className="container py-8">
+    <div className="space-y-6">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Skills Gap Analysis</h1>
           <p className="text-muted-foreground">
@@ -88,7 +71,7 @@ function SkillsGapContent() {
                     </div>
                     <Progress value={gapAnalysis?.coveragePercent || 0} className="h-3" />
                   </div>
-                  <div className="grid grid-cols-3 gap-4 text-center">
+                  <div className="grid grid-cols-3 gap-2 md:gap-4 text-center">
                     <div>
                       <div className="text-2xl font-bold">{gapAnalysis?.totalExpectedSkills || 0}</div>
                       <div className="text-xs text-muted-foreground">Total Skills</div>
@@ -214,7 +197,6 @@ function SkillsGapContent() {
             )}
           </div>
         )}
-      </main>
     </div>
   );
 }

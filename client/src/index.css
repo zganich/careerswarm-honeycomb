@@ -156,6 +156,14 @@
   --sidebar-ring: #E8D399;
 }
 
+/* Dot Grid Background Utility */
+.dot-grid-bg {
+  background-image: radial-gradient(circle, rgba(0, 0, 0, 0.15) 1px, transparent 1px);
+  background-size: 24px 24px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 40%, transparent 100%);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

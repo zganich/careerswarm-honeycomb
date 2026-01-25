@@ -91,62 +91,14 @@ function DashboardContent() {
           }}
         />
       )}
-      <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-6">
-            <Link href="/">
-              <div className="flex items-center gap-2 cursor-pointer">
-                <Award className="h-6 w-6 text-primary" />
-                <span className="font-bold text-xl">Careerswarm</span>
-              </div>
-            </Link>
-            <nav className="hidden md:flex gap-6">
-              <Link href="/dashboard">
-                <Button variant="ghost">Dashboard</Button>
-              </Link>
-              <Link href="/achievements">
-                <Button variant="ghost">Achievements</Button>
-              </Link>
-              <Link href="/jobs">
-                <Button variant="ghost">Jobs</Button>
-              </Link>
-              <Link href="/resumes">
-                <Button variant="ghost">Resumes</Button>
-              </Link>
-              <Link href="/applications">
-                <Button variant="ghost">Applications</Button>
-              </Link>
-              <Link href="/past-jobs">
-                <Button variant="ghost">Past Jobs</Button>
-              </Link>
-              <Link href="/interview-prep">
-                <Button variant="ghost">Interview Prep</Button>
-              </Link>
-              <Link href="/resumes/templates">
-                <Button variant="ghost">Templates</Button>
-              </Link>
-              <Link href="/skills-gap">
-                <Button variant="ghost">Skills Gap</Button>
-              </Link>
-            </nav>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">{user.name || user.email}</span>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="container py-8">
+      <div className="space-y-6">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Welcome back, {user.name?.split(" ")[0] || "there"}!</h1>
           <p className="text-muted-foreground">Here's your career evidence dashboard.</p>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
           {stats.map((stat) => (
             <Link key={stat.title} href={stat.href}>
               <Card className="glass-card hover:glass-card-active cursor-pointer transition-all duration-300">
@@ -167,7 +119,7 @@ function DashboardContent() {
 
         {/* Usage Stats */}
         {usageStats && (
-          <Card className="glass-card mb-8">
+          <Card className="glass-card">
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <span>Usage & Limits</span>
@@ -233,7 +185,7 @@ function DashboardContent() {
 
         {/* Average Impact Score */}
         {achievements && achievements.length > 0 && (
-          <Card className="glass-card mb-8">
+          <Card className="glass-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="h-5 w-5 text-primary" />
@@ -256,7 +208,7 @@ function DashboardContent() {
 
         {/* AI Suggestions */}
         {suggestions && suggestions.length > 0 && (
-          <Card className="glass-card mb-6 border-primary/50">
+          <Card className="glass-card border-primary/50">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Lightbulb className="h-5 w-5 text-yellow-500" />
@@ -284,7 +236,7 @@ function DashboardContent() {
         )}
 
         {/* Source Material Uploader */}
-        <Card className="glass-card mb-8">
+        <Card className="glass-card">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5 text-primary" />
@@ -309,7 +261,7 @@ function DashboardContent() {
         </Card>
 
         {/* Quick Actions */}
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           <Card>
             <CardHeader>
               <CardTitle>Add Achievement</CardTitle>
@@ -448,8 +400,7 @@ function DashboardContent() {
             )}
           </DialogContent>
         </Dialog>
-      </main>
-    </div>
+      </div>
     </>
   );
 }
