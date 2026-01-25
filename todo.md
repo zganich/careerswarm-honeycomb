@@ -1874,7 +1874,7 @@ Port "Bridge Skill" logic from legacy design to help users pivot careers by iden
 - [x] Update `tests/auth.spec.ts` to use auth bypass
 - [x] Update `tests/achievements.spec.ts` to use auth bypass
 - [x] Run full test suite and verify 22/22 passing (20 passed, 2 skipped)
-- [ ] Commit auth bypass implementation
+- [x] Commit auth bypass implementation
 
 ### Success Criteria
 - ✅ 20/22 Playwright tests passing (2 skipped for external dependencies)
