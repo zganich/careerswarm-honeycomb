@@ -1826,7 +1826,7 @@ Port "Bridge Skill" logic from legacy design to help users pivot careers by iden
 - [x] Fix achievement button test (improved selector and wait logic)
 - [x] Wait for full test suite completion
 - [x] Review all test results (34 passed, 0 failures, 76 skipped)
-- [ ] Commit fixes
+- [x] Commit fixes
 
 ### Success Criteria
 - ✅ All 110 E2E tests passing
