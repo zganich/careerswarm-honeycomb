@@ -2,7 +2,7 @@
 
 **AI-Powered Career Evidence Platform**
 
-Version: 8ee11914  
+Version: c2bc14ad  
 GitHub: https://github.com/zganich/careerswarm-honeycomb  
 Stack: React 19, Tailwind 4, Express 4, tRPC 11, Drizzle ORM, MySQL/TiDB
 
@@ -57,8 +57,10 @@ CareerSwarm transforms the job application process from "career chaos to order" 
 - Context-aware prompts for each agent
 
 **Testing:**
-- Vitest for backend unit tests (123 passing)
-- Playwright for E2E testing (configured)
+- Vitest for backend unit tests (127 passing)
+- Playwright for E2E testing (20 passing, 2 skipped)
+- Auth bypass utility for reliable E2E tests
+- Video recording enabled for all test runs
 
 ---
 
@@ -881,21 +883,34 @@ describe("Pivot Analyzer", () => {
 
 **Configuration:** `playwright.config.ts`
 - Base URL: http://localhost:3000
-- Browsers: Chromium, Firefox, WebKit, Mobile Chrome, Mobile Safari
+- Browsers: Chromium only (webkit/mobile browsers commented out)
 - Reporters: HTML report
 - Screenshots: On failure only
-- Video: Retain on failure
+- Video: Record all tests (`video: 'on'`)
+- Auth bypass: Mock session cookies to skip OAuth flow
 
 **Test Files:**
 - `tests/auth.spec.ts` - Authentication flows (login, logout, session persistence)
 - `tests/achievements.spec.ts` - STAR wizard, achievement CRUD, Impact Meter
+- `tests/utils/auth-bypass.ts` - Auth bypass utility for reliable E2E tests
 
 **Running Tests:**
 ```bash
 npx playwright install chromium  # Install browser
-npx playwright test              # Run all tests
+npx playwright test              # Run all tests (20 passing, 2 skipped)
 npx playwright test --ui         # Interactive mode
 npx playwright show-report       # View HTML report
+```
+
+**Auth Bypass Utility:**
+```typescript
+import { bypassLogin } from './utils/auth-bypass';
+
+test('protected route test', async ({ page }) => {
+  await bypassLogin(page);  // Inject mock session cookie
+  await page.goto('/dashboard');
+  // Test authenticated functionality
+});
 ```
 
 **Test Example:**
