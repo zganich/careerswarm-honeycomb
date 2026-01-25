@@ -24,12 +24,11 @@ test.describe('Achievement Creation (STAR Wizard)', () => {
   });
 
   test('should display "Add Achievement" button on dashboard', async ({ page }) => {
-    // Look for the add achievement button
-    const addButton = page.getByRole('button', { name: /add achievement|new achievement|create achievement|\+/i });
+    // Look for the add achievement button (there are multiple, so use .first())
+    const addButton = page.getByRole('button', { name: /add achievement|new achievement/i }).first();
     
-    // Should be visible (might need to wait for dashboard to load)
-    const isVisible = await addButton.first().isVisible({ timeout: 5000 }).catch(() => false);
-    expect(isVisible).toBeTruthy();
+    // Wait for button to be visible
+    await expect(addButton).toBeVisible({ timeout: 10000 });
   });
 
   test('should open STAR wizard when clicking add achievement', async ({ page }) => {

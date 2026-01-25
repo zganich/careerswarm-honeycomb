@@ -13,7 +13,7 @@ test.describe('Authentication', () => {
 
   test('should display login button on home page', async ({ page }) => {
     // Check that the login/signup option is visible
-    const loginButton = page.getByRole('link', { name: /sign in|login|get started/i });
+    const loginButton = page.getByRole('link', { name: /sign in|login|get started/i }).first();
     await expect(loginButton).toBeVisible();
   });
 
