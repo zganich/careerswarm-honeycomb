@@ -1762,3 +1762,31 @@ Port "Bridge Skill" logic from legacy design to help users pivot careers by iden
 - ✅ No fluff words in output
 - ✅ Career Path tab functional
 - ✅ All tests passing
+
+
+## Navigation Audit Hotfix
+
+**Status:** ✅ Complete  
+**Priority:** CRITICAL - User reported dead end on /jobs page
+
+### Issue
+- User reported `/jobs` page has no navigation (sidebar/header)
+- Forces use of browser back button
+- Potential issue on other routes
+
+### Tasks
+- [x] Audit App.tsx routing structure
+- [x] Fix `/jobs` page - wrap in DashboardLayout
+- [x] Audit `/achievements` route
+- [x] Audit `/profile` route
+- [x] Audit `/applications` and detail views
+- [x] Audit `/roast` route (if internal)
+- [x] Add breadcrumbs/back buttons to detail pages
+- [x] Test all routes
+- [ ] Commit and push fix
+
+### Success Criteria
+- ✅ All internal pages have DashboardLayout
+- ✅ No navigation dead ends
+- ✅ Clear escape routes from all pages
+- ✅ Breadcrumbs on detail views

@@ -9,7 +9,8 @@ import { Link, Redirect } from "wouter";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export default function AchievementsList() {
+import DashboardLayout from "@/components/DashboardLayout";
+function AchievementsListContent() {
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const { data: achievements, isLoading } = trpc.achievements.list.useQuery();
@@ -179,5 +180,13 @@ export default function AchievementsList() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function AchievementsList() {
+  return (
+    <DashboardLayout>
+      <AchievementsListContent />
+    </DashboardLayout>
   );
 }

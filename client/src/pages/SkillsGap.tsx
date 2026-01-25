@@ -6,7 +6,8 @@ import { trpc } from "@/lib/trpc";
 import { Award, AlertCircle, CheckCircle, TrendingUp } from "lucide-react";
 import { Link, Redirect } from "wouter";
 
-export default function SkillsGap() {
+import DashboardLayout from "@/components/DashboardLayout";
+function SkillsGapContent() {
   const { user } = useAuth();
   const { data: gapAnalysis, isLoading } = trpc.pastEmployerJobs.getGapAnalysis.useQuery();
   const { data: pastJobs } = trpc.pastEmployerJobs.list.useQuery();
@@ -215,5 +216,13 @@ export default function SkillsGap() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function SkillsGap() {
+  return (
+    <DashboardLayout>
+      <SkillsGapContent />
+    </DashboardLayout>
   );
 }

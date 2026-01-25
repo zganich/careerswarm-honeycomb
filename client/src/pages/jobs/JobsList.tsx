@@ -12,7 +12,8 @@ import { Link, Redirect } from "wouter";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export default function JobsList() {
+import DashboardLayout from "@/components/DashboardLayout";
+function JobsListContent() {
   const { user } = useAuth();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -276,5 +277,13 @@ export default function JobsList() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function JobsList() {
+  return (
+    <DashboardLayout>
+      <JobsListContent />
+    </DashboardLayout>
   );
 }

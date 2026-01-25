@@ -11,6 +11,7 @@ import { Award, ArrowLeft, Check, Sparkles, Loader2 } from "lucide-react";
 import { Link, useLocation, useRoute, Redirect } from "wouter";
 import { toast } from "sonner";
 
+import DashboardLayout from "@/components/DashboardLayout";
 const POWER_VERBS = [
   "Generated", "Engineered", "Reduced", "Accelerated", "Scaled", "Optimized",
   "Launched", "Architected", "Transformed", "Drove", "Increased", "Improved",
@@ -31,7 +32,7 @@ function calculateImpactScore(text: string): { score: number; hasVerb: boolean; 
   return { score, hasVerb, hasMetric, hasMethodology };
 }
 
-export default function EditAchievement() {
+function EditAchievementContent() {
   const { user } = useAuth();
   const [, params] = useRoute("/achievements/:id/edit");
   const [, setLocation] = useLocation();
@@ -137,25 +138,15 @@ export default function EditAchievement() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-background/95 backdrop-blur sticky top-0 z-50">
-        <div className="container flex h-16 items-center justify-between">
-          <Link href="/dashboard">
-            <div className="flex items-center gap-2 cursor-pointer">
-              <Award className="h-6 w-6 text-primary" />
-              <span className="font-bold text-xl">Careerswarm</span>
-            </div>
-          </Link>
-          <Link href="/achievements">
-            <Button variant="ghost">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Achievements
-            </Button>
-          </Link>
-        </div>
-      </header>
-
-      <main className="container py-8 max-w-4xl">
+    <div className="py-8 max-w-4xl mx-auto">
+      <div className="mb-6">
+        <Link href="/achievements">
+          <Button variant="ghost" className="mb-4">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Achievements
+          </Button>
+        </Link>
+      </div>
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Edit Achievement</h1>
           <p className="text-muted-foreground">Update your career evidence</p>
@@ -326,7 +317,14 @@ export default function EditAchievement() {
             )}
           </Button>
         </div>
-      </main>
     </div>
+  );
+}
+
+export default function EditAchievement() {
+  return (
+    <DashboardLayout>
+      <EditAchievementContent />
+    </DashboardLayout>
   );
 }

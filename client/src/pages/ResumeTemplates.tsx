@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Check, Download, Eye } from "lucide-react";
 import { toast } from "sonner";
 
+import DashboardLayout from "@/components/DashboardLayout";
 // Sample resume data for preview
 const SAMPLE_RESUME_DATA = {
   personalInfo: {
@@ -81,7 +82,7 @@ const SAMPLE_RESUME_DATA = {
   ]
 };
 
-export default function ResumeTemplates() {
+function ResumeTemplatesContent() {
   const [selectedTemplate, setSelectedTemplate] = useState<ResumeTemplate>("modern");
   const [showPreview, setShowPreview] = useState(false);
 
@@ -222,5 +223,13 @@ export default function ResumeTemplates() {
         </>
       )}
     </div>
+  );
+}
+
+export default function ResumeTemplates() {
+  return (
+    <DashboardLayout>
+      <ResumeTemplatesContent />
+    </DashboardLayout>
   );
 }

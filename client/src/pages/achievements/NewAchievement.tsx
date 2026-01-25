@@ -11,6 +11,7 @@ import { Award, ArrowLeft, ArrowRight, Check, Sparkles, Loader2 } from "lucide-r
 import { Link, useLocation, Redirect } from "wouter";
 import { toast } from "sonner";
 
+import DashboardLayout from "@/components/DashboardLayout";
 const POWER_VERBS = [
   "Generated", "Engineered", "Reduced", "Accelerated", "Scaled", "Optimized",
   "Launched", "Architected", "Transformed", "Drove", "Increased", "Improved",
@@ -37,7 +38,7 @@ function calculateImpactScore(text: string): { score: number; hasVerb: boolean; 
   return { score, hasVerb, hasMetric, hasMethodology };
 }
 
-export default function NewAchievement() {
+function NewAchievementContent() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
   const [step, setStep] = useState(1);
@@ -127,25 +128,15 @@ export default function NewAchievement() {
   const isLastStep = step === 5;
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-background/95 backdrop-blur sticky top-0 z-50">
-        <div className="container flex h-16 items-center justify-between">
-          <Link href="/dashboard">
-            <div className="flex items-center gap-2 cursor-pointer">
-              <Award className="h-6 w-6 text-primary" />
-              <span className="font-bold text-xl">Careerswarm</span>
-            </div>
-          </Link>
-          <Link href="/achievements">
-            <Button variant="ghost">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Achievements
-            </Button>
-          </Link>
-        </div>
-      </header>
-
-      <main className="container py-8 max-w-4xl">
+    <div className="py-8 max-w-4xl mx-auto">
+      <div className="mb-6">
+        <Link href="/achievements">
+          <Button variant="ghost" className="mb-4">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Achievements
+          </Button>
+        </Link>
+      </div>
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Add New Achievement</h1>
           <p className="text-muted-foreground">Use the STAR method to capture your career evidence</p>
@@ -318,7 +309,14 @@ export default function NewAchievement() {
             </Button>
           )}
         </div>
-      </main>
     </div>
+  );
+}
+
+export default function NewAchievement() {
+  return (
+    <DashboardLayout>
+      <NewAchievementContent />
+    </DashboardLayout>
   );
 }

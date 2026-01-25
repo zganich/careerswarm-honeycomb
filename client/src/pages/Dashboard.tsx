@@ -13,7 +13,8 @@ import { Award, FileText, Target, TrendingUp, Plus, Loader2, Lightbulb, Briefcas
 import { Link, Redirect, useLocation } from "wouter";
 import { toast } from "sonner";
 
-export default function Dashboard() {
+import DashboardLayout from "@/components/DashboardLayout";
+function DashboardContent() {
   const { user, loading: authLoading } = useAuth();
   const [, setLocation] = useLocation();
   const [showWelcome, setShowWelcome] = useState(false);
@@ -450,5 +451,13 @@ export default function Dashboard() {
       </main>
     </div>
     </>
+  );
+}
+
+export default function Dashboard() {
+  return (
+    <DashboardLayout>
+      <DashboardContent />
+    </DashboardLayout>
   );
 }

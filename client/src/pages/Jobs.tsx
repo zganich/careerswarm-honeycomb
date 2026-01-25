@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
+import DashboardLayout from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, Search, Bookmark, BookmarkCheck, MapPin, Building2, DollarSign, TrendingUp, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 
-export default function Jobs() {
+function JobsContent() {
   // Using sonner toast
   const [keywords, setKeywords] = useState("");
   const [location, setLocation] = useState("");
@@ -85,7 +86,7 @@ export default function Jobs() {
   };
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-7xl">
+    <div className="py-8 px-4 max-w-7xl mx-auto">
       <div className="mb-8">
         <h1 className="text-4xl font-bold mb-2">Job Search</h1>
         <p className="text-muted-foreground">
@@ -319,5 +320,13 @@ export default function Jobs() {
         </Card>
       )}
     </div>
+  );
+}
+
+export default function Jobs() {
+  return (
+    <DashboardLayout>
+      <JobsContent />
+    </DashboardLayout>
   );
 }

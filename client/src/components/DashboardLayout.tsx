@@ -21,15 +21,21 @@ import {
 } from "@/components/ui/sidebar";
 import { getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { LayoutDashboard, LogOut, PanelLeft, Users } from "lucide-react";
+import { LayoutDashboard, LogOut, PanelLeft, Users, Award, Target, FileText, Briefcase, Search, GraduationCap, TrendingUp, Briefcase as BriefcaseIcon } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
 import { Button } from "./ui/button";
 
 const menuItems = [
-  { icon: LayoutDashboard, label: "Page 1", path: "/" },
-  { icon: Users, label: "Page 2", path: "/some-path" },
+  { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
+  { icon: Award, label: "Achievements", path: "/achievements" },
+  { icon: Search, label: "Job Search", path: "/jobs" },
+  { icon: Briefcase, label: "Applications", path: "/applications" },
+  { icon: FileText, label: "Resumes", path: "/resumes" },
+  { icon: GraduationCap, label: "Interview Prep", path: "/interview-prep" },
+  { icon: TrendingUp, label: "Skills Gap", path: "/skills-gap" },
+  { icon: BriefcaseIcon, label: "Past Jobs", path: "/past-jobs" },
 ];
 
 const SIDEBAR_WIDTH_KEY = "sidebar-width";

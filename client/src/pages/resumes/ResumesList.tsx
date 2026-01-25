@@ -12,7 +12,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Streamdown } from "streamdown";
 
-export default function ResumesList() {
+import DashboardLayout from "@/components/DashboardLayout";
+function ResumesListContent() {
   const { user } = useAuth();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedJobId, setSelectedJobId] = useState<string>("");
@@ -374,5 +375,13 @@ export default function ResumesList() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function ResumesList() {
+  return (
+    <DashboardLayout>
+      <ResumesListContent />
+    </DashboardLayout>
   );
 }

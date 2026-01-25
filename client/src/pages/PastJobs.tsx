@@ -11,7 +11,8 @@ import { useState } from "react";
 import { Link, Redirect } from "wouter";
 import { toast } from "sonner";
 
-export default function PastJobs() {
+import DashboardLayout from "@/components/DashboardLayout";
+function PastJobsContent() {
   const { user } = useAuth();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -249,5 +250,13 @@ export default function PastJobs() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function PastJobs() {
+  return (
+    <DashboardLayout>
+      <PastJobsContent />
+    </DashboardLayout>
   );
 }

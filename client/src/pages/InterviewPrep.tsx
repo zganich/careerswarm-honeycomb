@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Loader2, Sparkles, CheckCircle, XCircle, Lightbulb } from "lucide-react";
 import { toast } from "sonner";
 
+import DashboardLayout from "@/components/DashboardLayout";
 interface InterviewQuestion {
   question: string;
   category: "behavioral" | "technical" | "situational" | "company-specific";
@@ -16,7 +17,7 @@ interface InterviewQuestion {
   relevantAchievements?: string[];
 }
 
-export default function InterviewPrep() {
+function InterviewPrepContent() {
   const [selectedJobId, setSelectedJobId] = useState<number | null>(null);
   const [questions, setQuestions] = useState<InterviewQuestion[]>([]);
   const [preparationTips, setPreparationTips] = useState<string[]>([]);
@@ -380,5 +381,13 @@ export default function InterviewPrep() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function InterviewPrep() {
+  return (
+    <DashboardLayout>
+      <InterviewPrepContent />
+    </DashboardLayout>
   );
 }

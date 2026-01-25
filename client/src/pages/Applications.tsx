@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
+import DashboardLayout from "@/components/DashboardLayout";
 import { ApplicationBoard } from "@/components/ApplicationBoard";
 import { ApplicationDetailModal } from "@/components/ApplicationDetailModal";
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Plus, Loader2, Target } from "lucide-react";
 import { ScoutMissionModal } from "@/components/ScoutMissionModal";
 
-export default function Applications() {
+function ApplicationsContent() {
   const [selectedApplicationId, setSelectedApplicationId] = useState<number | null>(null);
   const [scoutModalOpen, setScoutModalOpen] = useState(false);
   const { data: applications, isLoading } = trpc.applications.list.useQuery();
@@ -22,8 +23,8 @@ export default function Applications() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-amber-50/30">
-      <div className="container mx-auto py-8 space-y-6">
+    <div className="bg-gradient-to-br from-slate-50 via-white to-amber-50/30 min-h-full">
+      <div className="py-8 space-y-6 max-w-[1800px] mx-auto px-4">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -118,5 +119,14 @@ export default function Applications() {
         onOpenChange={setScoutModalOpen}
       />
     </div>
+  );
+}
+
+
+export default function Applications() {
+  return (
+    <DashboardLayout>
+      <ApplicationsContent />
+    </DashboardLayout>
   );
 }
