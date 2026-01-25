@@ -3,14 +3,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Check, TrendingUp } from "lucide-react";
 
 /**
- * ValueDemonstrator - Shows OUTCOMES not processing
+ * ValueDemonstrator - Shows OUTCOMES with premium visual polish
  * 
- * Features:
- * - Cycles through 3 real career transformations every 4 seconds
- * - Top: Messy LinkedIn bullet point
- * - Middle: Real-time analysis bars (Match: 32% → 94%)
- * - Bottom: Clean, tailored version with checkmarks
- * - Focuses on RESULTS users will achieve
+ * Enhanced Features:
+ * - Glassmorphism effect (backdrop-blur-xl, bg-white/70)
+ * - 3D tilt on hover (perspective-1000, rotateY)
+ * - Scanner beam animation (vertical gradient line)
+ * - Metric pulse animation on badges
+ * - Smooth transitions and micro-interactions
  */
 
 interface Transformation {
@@ -63,15 +63,31 @@ export function ValueDemonstrator() {
   const current = transformations[currentIndex];
 
   return (
-    <div className="w-full max-w-md mx-auto">
+    <div className="w-full max-w-md mx-auto perspective-1000">
       <motion.div
-        className="bg-white/80 backdrop-blur-sm border border-slate-200 rounded-2xl shadow-xl p-6 space-y-6"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
+        className="relative bg-gradient-to-br from-white/70 to-white/50 backdrop-blur-xl rounded-2xl shadow-2xl p-6 space-y-6 border border-white/30 transition-all duration-500"
+        style={{
+          transformStyle: "preserve-3d",
+        }}
+        initial={{ opacity: 0, y: 20, rotateY: -8, rotateX: 3 }}
+        animate={{ opacity: 1, y: 0, rotateY: -5, rotateX: 2 }}
+        whileHover={{ rotateY: -3, rotateX: 1, scale: 1.02 }}
+        transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
       >
+        {/* Scanner Beam Animation */}
+        <div 
+          className="absolute inset-x-4 top-0 h-[2px] rounded-full z-10 pointer-events-none"
+          style={{
+            background: "linear-gradient(90deg, transparent 0%, rgba(249, 115, 22, 0.7) 50%, transparent 100%)",
+            animation: "scan 4s linear infinite",
+          }}
+        />
+
+        {/* Subtle Inner Glow */}
+        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-orange-50/30 to-transparent pointer-events-none" />
+
         {/* Before Section */}
-        <div className="space-y-2">
+        <div className="space-y-2 relative z-20">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
               Your Original
@@ -84,7 +100,7 @@ export function ValueDemonstrator() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
-              className="p-3 bg-red-50/50 border border-red-200/50 rounded-lg"
+              className="p-3 bg-red-50/50 border border-red-200/50 rounded-lg backdrop-blur-sm"
             >
               <p className="text-sm text-slate-600 italic">{current.before}</p>
             </motion.div>
@@ -99,7 +115,7 @@ export function ValueDemonstrator() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="space-y-3"
+              className="space-y-3 relative z-20"
             >
               <div className="flex items-center gap-2">
                 <TrendingUp className="w-4 h-4 text-orange-500" />
@@ -131,27 +147,39 @@ export function ValueDemonstrator() {
                 </div>
               </div>
 
-              {/* Impact Metrics */}
+              {/* Impact Metrics with Pulse Animation */}
               <div className="grid grid-cols-3 gap-2 text-center">
-                <div className="p-2 bg-emerald-50 rounded-lg">
+                <motion.div 
+                  className="p-2 bg-emerald-50 rounded-lg"
+                  animate={{ opacity: [1, 0.7, 1] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                >
                   <div className="text-lg font-bold text-emerald-600">+62%</div>
                   <div className="text-xs text-slate-500">Match</div>
-                </div>
-                <div className="p-2 bg-emerald-50 rounded-lg">
+                </motion.div>
+                <motion.div 
+                  className="p-2 bg-emerald-50 rounded-lg"
+                  animate={{ opacity: [1, 0.7, 1] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.2 }}
+                >
                   <div className="text-lg font-bold text-emerald-600">4x</div>
                   <div className="text-xs text-slate-500">Impact</div>
-                </div>
-                <div className="p-2 bg-emerald-50 rounded-lg">
+                </motion.div>
+                <motion.div 
+                  className="p-2 bg-emerald-50 rounded-lg"
+                  animate={{ opacity: [1, 0.7, 1] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.4 }}
+                >
                   <div className="text-lg font-bold text-emerald-600">98%</div>
                   <div className="text-xs text-slate-500">ATS</div>
-                </div>
+                </motion.div>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
         {/* After Section */}
-        <div className="space-y-2">
+        <div className="space-y-2 relative z-20">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-emerald-600 uppercase tracking-wider">
               AI-Optimized Version
@@ -164,7 +192,7 @@ export function ValueDemonstrator() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
-              className="p-3 bg-emerald-50/50 border border-emerald-200/50 rounded-lg"
+              className="p-3 bg-emerald-50/50 border border-emerald-200/50 rounded-lg backdrop-blur-sm"
             >
               <div className="flex items-start gap-2">
                 <Check className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
@@ -175,7 +203,7 @@ export function ValueDemonstrator() {
         </div>
 
         {/* Progress Indicator */}
-        <div className="flex items-center justify-center gap-1.5">
+        <div className="flex items-center justify-center gap-1.5 relative z-20">
           {transformations.map((_, index) => (
             <div
               key={index}

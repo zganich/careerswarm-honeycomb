@@ -115,19 +115,23 @@ export function PricingTiers({ onSelectPlan }: { onSelectPlan: (plan: string) =>
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className={`relative bg-white border-2 rounded-2xl p-8 transition-all ${
+              className={`relative bg-white border-2 rounded-2xl p-8 transition-all duration-300 ${
                 tier.highlighted
-                  ? "border-orange-500 shadow-2xl shadow-orange-500/20 scale-105"
-                  : "border-slate-200 hover:border-slate-300 hover:shadow-lg"
+                  ? "border-orange-500 shadow-2xl shadow-orange-500/30 scale-105 ring-2 ring-orange-500/20 ring-offset-2"
+                  : "border-slate-200 hover:border-slate-300 hover:shadow-xl hover:scale-[1.02]"
               }`}
             >
-              {/* Badge */}
+              {/* Badge with Float Animation */}
               {tier.badge && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                <motion.div 
+                  className="absolute -top-4 left-1/2 -translate-x-1/2"
+                  animate={{ y: [-2, 2, -2] }}
+                  transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                >
                   <div className="px-4 py-1 bg-orange-500 text-white text-sm font-semibold rounded-full shadow-lg">
                     {tier.badge}
                   </div>
-                </div>
+                </motion.div>
               )}
 
               {/* Header */}
@@ -156,10 +160,10 @@ export function PricingTiers({ onSelectPlan }: { onSelectPlan: (plan: string) =>
               {/* CTA */}
               <Button
                 onClick={() => onSelectPlan(tier.name.toLowerCase())}
-                className={`w-full py-6 rounded-xl font-semibold mb-6 ${
+                className={`w-full py-6 rounded-xl font-semibold mb-6 transition-all ${
                   tier.highlighted
-                    ? "bg-orange-500 hover:bg-orange-600 text-white shadow-lg shadow-orange-500/20"
-                    : "bg-slate-100 hover:bg-slate-200 text-slate-900"
+                    ? "bg-orange-500 hover:bg-orange-600 text-white shadow-lg shadow-orange-500/20 hover:shadow-xl hover:shadow-orange-500/30 hover:scale-[1.02] active:scale-[0.98]"
+                    : "bg-slate-100 hover:bg-slate-200 text-slate-900 hover:scale-[1.02] active:scale-[0.98]"
                 }`}
               >
                 {tier.cta}

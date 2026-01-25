@@ -61,7 +61,7 @@ export function RiskReversal({ onStart }: RiskReversalProps) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="p-6 bg-white border border-slate-200 rounded-2xl hover:border-orange-300 hover:shadow-lg transition-all"
+                className="p-6 bg-white border border-slate-200 rounded-2xl hover:border-orange-300 hover:shadow-xl transition-all hover:scale-[1.03] duration-300"
               >
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-50 rounded-full mb-4">
                   <div className="text-orange-500">{guarantee.icon}</div>
@@ -83,7 +83,7 @@ export function RiskReversal({ onStart }: RiskReversalProps) {
             <Button
               onClick={onStart}
               size="lg"
-              className="bg-orange-500 hover:bg-orange-600 text-white px-12 py-8 text-xl font-bold rounded-2xl shadow-2xl shadow-orange-500/30 hover:shadow-orange-500/40 transition-all group"
+              className="bg-orange-500 hover:bg-orange-600 text-white px-12 py-8 text-xl font-bold rounded-2xl shadow-2xl shadow-orange-500/30 hover:shadow-orange-500/40 transition-all hover:scale-[1.05] active:scale-[0.98] group"
             >
               Start Building Your Master Profile
               <ArrowRight className="w-6 h-6 ml-3 group-hover:translate-x-2 transition-transform" />

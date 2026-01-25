@@ -101,7 +101,7 @@ export function CareerScoreCalculator({ onSignup }: { onSignup: () => void }) {
               <select
                 value={currentRole}
                 onChange={(e) => setCurrentRole(e.target.value)}
-                className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
+                className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all hover:border-orange-400 hover:shadow-sm"
               >
                 <option value="">Select your role...</option>
                 {roles.map((role) => (
@@ -118,7 +118,7 @@ export function CareerScoreCalculator({ onSignup }: { onSignup: () => void }) {
               <select
                 value={targetRole}
                 onChange={(e) => setTargetRole(e.target.value)}
-                className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
+                className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all hover:border-orange-400 hover:shadow-sm"
               >
                 <option value="">Select target role...</option>
                 {roles.map((role) => (
@@ -133,7 +133,7 @@ export function CareerScoreCalculator({ onSignup }: { onSignup: () => void }) {
           <Button
             onClick={calculateScore}
             disabled={!currentRole || !targetRole || isCalculating}
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-6 rounded-xl shadow-lg shadow-orange-500/20 hover:shadow-xl hover:shadow-orange-500/30 transition-all"
+            className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-6 rounded-xl shadow-lg shadow-orange-500/20 hover:shadow-xl hover:shadow-orange-500/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
           >
             {isCalculating ? "Analyzing..." : "Calculate My Score"}
           </Button>
@@ -173,7 +173,7 @@ export function CareerScoreCalculator({ onSignup }: { onSignup: () => void }) {
                   </div>
 
                   {/* Keyword Match */}
-                  <div className="p-4 bg-slate-50 rounded-xl">
+                  <div className="p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition-all hover:scale-[1.01]">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm font-medium text-slate-700">Keyword Match</span>
                       <span className="text-sm font-bold text-orange-600">
@@ -193,7 +193,7 @@ export function CareerScoreCalculator({ onSignup }: { onSignup: () => void }) {
                   </div>
 
                   {/* Impact Quantification */}
-                  <div className="p-4 bg-slate-50 rounded-xl">
+                  <div className="p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition-all hover:scale-[1.01]">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm font-medium text-slate-700">
                         Impact Quantification
@@ -215,7 +215,7 @@ export function CareerScoreCalculator({ onSignup }: { onSignup: () => void }) {
                   </div>
 
                   {/* STAR Format */}
-                  <div className="p-4 bg-slate-50 rounded-xl">
+                  <div className="p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition-all hover:scale-[1.01]">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm font-medium text-slate-700">STAR Format</span>
                       <span className="text-sm font-bold text-orange-600">
@@ -238,7 +238,7 @@ export function CareerScoreCalculator({ onSignup }: { onSignup: () => void }) {
                 {/* CTA */}
                 <Button
                   onClick={onSignup}
-                  className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-6 rounded-xl shadow-lg shadow-emerald-500/20 hover:shadow-xl hover:shadow-emerald-500/30 transition-all group"
+                  className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-6 rounded-xl shadow-lg shadow-emerald-500/20 hover:shadow-xl hover:shadow-emerald-500/30 transition-all hover:scale-[1.02] active:scale-[0.98] group"
                 >
                   Fix These Gaps Now
                   <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />

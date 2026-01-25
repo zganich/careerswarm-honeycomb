@@ -55,6 +55,38 @@
   --color-soft-lavender: #E8E3F5;
   --color-light-mint: #E3F5F0;
   --color-soft-coral: #F5E3E0;
+  
+  /* Extended Color Palette for Visual Depth */
+  --color-slate-850: #1a2332;
+  --color-slate-900: #0f172a;
+  --color-primary-50: #fff7ed;
+  --color-primary-100: #ffedd5;
+  --color-primary-500: #f97316;
+  --color-primary-600: #ea580c;
+  --color-primary-900: #7c2d12;
+  
+  /* Animation Keyframes */
+  @keyframes scan {
+    0% { top: 0%; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  @keyframes pulse-slow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+  
+  /* Animation Utilities */
+  --animate-scan: scan 4s linear infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-pulse-slow: pulse-slow 3s ease-in-out infinite;
 }
 
 :root {
@@ -240,6 +272,20 @@
       padding-right: 2rem;
       max-width: 1280px;
     }
+  }
+  
+  /* Dot Grid Background with Radial Fade */
+  .dot-grid-bg {
+    background-image: radial-gradient(circle, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+    background-size: 24px 24px;
+    mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+  }
+  
+  /* 3D Perspective Container */
+  .perspective-1000 {
+    perspective: 1000px;
+    transform-style: preserve-3d;
   }
   
   /* Swarm Pattern Background - Light yellow dots */
