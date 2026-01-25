@@ -4,6 +4,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { getLoginUrl } from "@/const";
 import { Target, Zap, TrendingUp, FileText, Sparkles, Award } from "lucide-react";
 import { OnboardingFlow } from "@/components/OnboardingFlow";
+import { CareerScoreCalculator } from "@/components/CareerScoreCalculator";
+import { PricingTiers } from "@/components/PricingTiers";
+import { RiskReversal } from "@/components/RiskReversal";
 import { Link } from "wouter";
 
 export default function Home() {
@@ -66,6 +69,9 @@ export default function Home() {
           </Link>
         </section>
       )}
+
+      {/* Career Score Calculator - Only for unauthenticated users */}
+      {!isAuthenticated && <CareerScoreCalculator onSignup={() => window.location.href = getLoginUrl()} />}
 
       {/* How It Works Section */}
       <section className="py-20 md:py-32 relative" style={{
@@ -353,6 +359,12 @@ export default function Home() {
           )}
         </div>
       </section>
+
+      {/* Pricing Tiers - Only for unauthenticated users */}
+      {!isAuthenticated && <PricingTiers onSelectPlan={(plan) => window.location.href = getLoginUrl()} />}
+
+      {/* Risk Reversal - Only for unauthenticated users */}
+      {!isAuthenticated && <RiskReversal onStart={() => window.location.href = getLoginUrl()} />}
 
       {/* Footer */}
       <footer className="border-t border-border bg-card/50 py-12">

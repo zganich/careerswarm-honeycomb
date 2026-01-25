@@ -1970,3 +1970,59 @@ Port "Bridge Skill" logic from legacy design to help users pivot careers by iden
 - ✅ Interactive input proves value in 3 seconds
 - ✅ Social proof adds trust and density
 - ✅ Overall aesthetic matches Stripe/Linear tier
+
+
+## Conversion-Focused Redesign - "The Interview Multiplier"
+
+**Status:** ✅ Complete  
+**Priority:** CRITICAL - Shift from aesthetic to conversion focus
+
+### Phase 1: Hero Section Conversion Zone
+- [x] Update headline to "Increase Your Interview Rate by 87%"
+- [x] Add outcome-focused subheadline with clear value prop
+- [x] Create primary CTA: "Build Your Master Profile - Free Forever"
+- [x] Add microcopy: "No credit card • 2-minute setup"
+- [x] Embed social proof bar in hero (FAANG logos + "2,341 candidates landed roles")
+- [x] Add trust signals (lock icon, clock icon)
+
+### Phase 2: ValueDemonstrator Component
+- [x] Create ValueDemonstrator.tsx showing OUTCOMES not processing
+- [x] Top third: Messy LinkedIn bullet point fading in
+- [x] Middle third: Real-time analysis bars (Match: 32% → 94%)
+- [x] Bottom third: Clean version with green checkmarks
+- [x] Add 4-second cycle through 3 career transformations
+
+### Phase 3: CareerScoreCalculator
+- [x] Create CareerScoreCalculator.tsx below hero
+- [x] Add headline: "See your untapped potential in 30 seconds"
+- [x] Build dropdowns: Current Role, Target Role
+- [x] Implement score calculation (72/100 with breakdown)
+- [x] Show gaps: Keyword Match, Impact Quantification, STAR Format
+- [x] Add CTA: "Fix These Gaps →" leading to signup
+
+### Phase 4: Conversion Funnel Flow
+- [x] Section 1: "How Top Candidates Get 5x More Interviews" (pain focus)
+- [x] Section 2: "The Three Swarm Advantages" (benefits not features)
+- [x] Section 3: "From Chaos to Confidence" (testimonials with metrics)
+
+### Phase 5: Pricing Architecture
+- [x] Create PricingTiers.tsx with three tiers
+- [x] Free tier: 5 analyses/month (gateway)
+- [x] Pro tier: $29/month UNLIMITED (highlighted)
+- [x] Teams tier: $99/month (collaboration)
+- [x] Add money-back guarantee badge
+- [x] Show annual discount (2 months free)
+
+### Phase 6: Risk Reversal Zone
+- [x] Create RiskReversal.tsx above footer
+- [x] Three-column grid: 30-day guarantee, cancel anytime, data export
+- [x] Large CTA: "Start Building → Free Forever Tier Available"
+- [x] Add microcopy: "Join 14,327 candidates who optimized this week"
+
+### Success Criteria
+- ✅ Clear conversion funnel: Hero → Tool → Pain → Pricing → Risk reversal
+- ✅ Every section has clear next action
+- ✅ Focus on outcomes (87% interview rate) not process
+- ✅ Interactive tools drive to signup
+- ✅ Pricing positioned for conversion
+- ✅ Risk reversal removes friction
