@@ -1943,3 +1943,30 @@ Port "Bridge Skill" logic from legacy design to help users pivot careers by iden
 - ✅ Glassmorphism navbar anchors the page
 - ✅ Hero section feels denser (less floating whitespace)
 - ✅ CTA button has subtle lift with shadow
+
+
+## Landing Page Overhaul - "The Machine" (High-End SaaS Aesthetic)
+
+**Status:** 🔴 In Progress  
+**Priority:** CRITICAL - Elevate to Stripe/Linear tier design
+
+### Tasks
+- [x] Add gradient orb background (blur-3xl, opacity-30, bg-orange-500) for depth
+- [x] Update typography to tracking-tight, massive H1 (text-7xl), darker text (text-slate-900)
+- [x] Create HeroProcessor.tsx component with 3D glass effect
+- [x] Implement perspective-1000 container with rotated glass panel
+- [x] Add vertical scanner beam animation (orange gradient, loops top-to-bottom)
+- [x] Build "Test the Swarm" interactive input with typewriter effect
+- [x] Create two-column hero layout (left: interactive hook, right: 3D processor)
+- [x] Add social proof strip below hero (grayscale logos, opacity-50)
+- [ ] Test interactions and animations
+- [ ] Commit and push to GitHub
+
+### Success Criteria
+- ✅ Gradient orb creates depth and atmosphere
+- ✅ Typography feels massive and premium (tracking-tight)
+- ✅ 3D glass processor shows transformation visually
+- ✅ Scanner beam animation loops smoothly
+- ✅ Interactive input proves value in 3 seconds
+- ✅ Social proof adds trust and density
+- ✅ Overall aesthetic matches Stripe/Linear tier
