@@ -2233,3 +2233,131 @@ Port "Bridge Skill" logic from legacy design to help users pivot careers by iden
 - [x] Stripe webhook hardened (graceful error handling)
 - [x] Error handling standardized (user-friendly messages)
 - [x] Production validation script created
+
+
+## E2E Testing & Monitoring Setup (Final Phase)
+
+**Status:** 🔴 In Progress
+
+### Playwright E2E Test Suite
+
+#### Phase 1: Foundation & Test Architecture
+- [ ] Enhance playwright.config.ts (timeouts: 60s, retries: 1 on CI)
+- [ ] Configure 3 projects: Chromium Desktop, Chromium Mobile, Firefox Desktop
+- [ ] Set fullyParallel: false for shared state
+- [ ] Create tests/utils/auth.setup.ts (freeUser, proUser, admin roles)
+- [ ] Create tests/utils/api.helpers.ts (tRPC direct calls for test data)
+- [ ] Create tests/utils/ui.helpers.ts (Page Object Model helpers)
+- [ ] Create tests/utils/test.data.ts (sample STAR, job descriptions)
+
+#### Phase 2: Critical Path Test Suites
+- [ ] Create tests/critical_signup_purchase.spec.ts
+  - [ ] Test: Free user signup and dashboard access
+  - [ ] Test: Free user upgrades to Pro (mock Stripe)
+  - [ ] Test: Pro user cancels subscription (mock Stripe portal)
+- [ ] Create tests/core_ai_workflow.spec.ts
+  - [ ] Test: Create achievement with STAR wizard
+  - [ ] Test: Resume Roaster provides feedback
+  - [ ] Test: Generate tailored resume for job
+  - [ ] Test: Full application workflow with AI agents
+- [ ] Create tests/landing_page.spec.ts
+  - [ ] Test: All hero CTAs work
+  - [ ] Test: Career Score Calculator submits and shows results
+  - [ ] Test: Trust bar logos visible (accessibility)
+
+#### Phase 3: CI Integration & Reporting
+- [ ] Create .github/workflows/e2e.yml
+- [ ] Configure Playwright GitHub Actions reporter
+- [ ] Upload test artifacts on failure (videos, traces, screenshots)
+- [ ] Add test:e2e:ui, test:e2e:headed, test:e2e scripts to package.json
+- [ ] Create tests/README.md documentation
+- [ ] Verify full suite runs in < 8 minutes on CI
+
+### Phase A: Final Pre-Launch Smoke Test
+
+#### A.1 Validation Suite
+- [ ] Run `pnpm validate` and confirm all checks pass
+- [ ] Report any failures (DB, Stripe, tRPC, env vars)
+
+#### A.2 Manual Test Plan (5 Critical Flows)
+- [ ] Flow 1: Sign up for Free Tier account
+- [ ] Flow 2: Upgrade to Pro (Stripe test card: 4242 4242 4242 4242)
+- [ ] Flow 3: Use core AI features (Resume Roaster, Tailored Resume, Job Application)
+- [ ] Flow 4: Cancel Pro subscription via Stripe Customer Portal
+- [ ] Flow 5: Export all data feature
+- [ ] Monitor Developer Console Network tab for 4xx/5xx errors on /api/trpc/* calls
+
+#### A.3 Performance & Security Baseline
+- [ ] Run Lighthouse audit via command line on dev server URL
+- [ ] Report scores (Performance, Accessibility, Best Practices, SEO)
+- [ ] Document any critical/performance issues
+
+### Phase B: Monitoring & Observability
+
+#### B.1 Sentry Error Tracking
+- [ ] Create Sentry account/project
+- [ ] Install @sentry/react and @sentry/node packages
+- [ ] Integrate Sentry SDK in React frontend (client/src/main.tsx)
+- [ ] Integrate Sentry SDK in Express backend (server/_core/index.ts)
+- [ ] Configure to capture unhandled exceptions, tRPC errors, console errors
+- [ ] Set environment to development for testing
+- [ ] Create alert rule for production errors (email/Slack)
+- [ ] Test error capture by triggering intentional error
+- [ ] Add SENTRY_DSN to .env.example
+
+#### B.2 PostHog Analytics
+- [ ] Create PostHog account/project
+- [ ] Install posthog-js package
+- [ ] Integrate PostHog JavaScript SDK in React app
+- [ ] Set up autocapture
+- [ ] Create custom event: user_signed_up
+- [ ] Create custom event: user_upgraded_to_pro
+- [ ] Create custom event: resume_generated
+- [ ] Test event tracking
+- [ ] Add VITE_POSTHOG_KEY and VITE_POSTHOG_HOST to .env.example
+
+#### B.3 Structured Logging
+- [ ] Install pino logging library
+- [ ] Configure pino for JSON output
+- [ ] Add correlation ID middleware for request tracking
+- [ ] Log critical actions: user signup, payment, AI agent calls
+- [ ] Ensure all logs include correlation ID
+- [ ] Test log output format
+
+### Phase C: Automation & Quality
+
+#### C.1 GitHub Actions CI/CD Pipeline
+- [ ] Create .github/workflows/ci.yml
+- [ ] Add job: Install dependencies (pnpm install)
+- [ ] Add job: TypeScript check (pnpm exec tsc --noEmit)
+- [ ] Add job: Run tests (pnpm test)
+- [ ] Add job: Validate production (pnpm validate)
+- [ ] Add job: Build (pnpm build)
+- [ ] Create manual "Deploy to Production" trigger job
+- [ ] Add db:push to deployment job
+- [ ] Test pipeline on push to main branch
+
+#### C.2 Database Backup Strategy
+- [ ] Create scripts/backup-db.mjs using mysqldump
+- [ ] Add timestamped backup file naming
+- [ ] Test backup script execution
+- [ ] Create GitHub Actions schedule for daily backups
+- [ ] Add "backup" script to package.json
+- [ ] Document backup restoration process
+
+#### C.3 Environment Documentation
+- [ ] Update .env.example with all required variables
+- [ ] Add Sentry DSN variables
+- [ ] Add PostHog variables
+- [ ] Document optional vs required variables
+- [ ] Add comments explaining each variable's purpose
+
+### Deliverables
+
+- [ ] Smoke test report (5 flows with pass/fail status and API errors)
+- [ ] Sentry dashboard access instructions
+- [ ] PostHog dashboard access instructions
+- [ ] Working CI/CD pipeline (verified on GitHub)
+- [ ] Database backup script (tested)
+- [ ] Updated .env.example
+- [ ] Final checkpoint with all operations setup complete

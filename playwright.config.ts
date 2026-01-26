@@ -2,25 +2,33 @@ import { defineConfig, devices } from '@playwright/test';
 
 /**
  * Playwright E2E Test Configuration
- * Tests run against local dev server at http://localhost:3000
+ * Optimized for reliability with AI agent latency handling
  */
 export default defineConfig({
   testDir: './tests',
   
-  /* Run tests in files in parallel */
-  fullyParallel: true,
+  /* Increased timeouts to handle AI agent latency */
+  timeout: 60000, // 60s per test
+  expect: {
+    timeout: 15000, // 15s for assertions
+  },
+  
+  /* Run tests in files sequentially due to shared state */
+  fullyParallel: false,
   
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   
-  /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
+  /* Retry on CI only to avoid masking flaky tests */
+  retries: process.env.CI ? 1 : 0,
   
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  /* Reporter to use */
+  reporter: process.env.CI
+    ? [['github'], ['html']]
+    : [['list'], ['html']],
   
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
@@ -33,42 +41,55 @@ export default defineConfig({
     /* Screenshot on failure */
     screenshot: 'only-on-failure',
     
-    /* Video recording - record all tests */
-    video: 'on',
+    /* Video on first retry */
+    video: 'retain-on-failure',
   },
 
-  /* Configure projects for major browsers */
+  /* Configure projects for major browsers and devices */
   projects: [
+    /* Setup project for authentication */
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      name: 'setup',
+      testMatch: /.*\.setup\.ts/,
     },
 
-    // Disabled: Firefox, WebKit, and Mobile browsers not installed
-    // Uncomment after running: npx playwright install firefox webkit
-    // {
-    //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'] },
-    // },
-    // {
-    //   name: 'webkit',
-    //   use: { ...devices['Desktop Safari'] },
-    // },
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
+    /* Chromium Desktop - Primary test environment */
+    {
+      name: 'chromium-desktop',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: 'playwright/.auth/user.json',
+      },
+      dependencies: ['setup'],
+    },
+
+    /* Chromium Mobile - Mobile responsive testing */
+    {
+      name: 'chromium-mobile',
+      use: {
+        ...devices['Pixel 5'],
+        storageState: 'playwright/.auth/user.json',
+      },
+      dependencies: ['setup'],
+    },
+
+    /* Firefox Desktop - Critical flows only */
+    {
+      name: 'firefox-desktop',
+      use: {
+        ...devices['Desktop Firefox'],
+        storageState: 'playwright/.auth/user.json',
+      },
+      dependencies: ['setup'],
+      testMatch: /critical_.*\.spec\.ts/,
+    },
   ],
 
   /* Run your local dev server before starting the tests */
-  webServer: {
+  webServer: process.env.CI ? undefined : {
     command: 'pnpm dev',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
+    timeout: 120000, // 2 minutes for server startup
   },
 });

@@ -1,11 +1,8 @@
-#!/usr/bin/env node
+#!/usr/bin/env tsx
 /**
  * Production validation script for CareerSwarm
  * Tests critical systems before deployment
  */
-
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
 
 console.log("🔍 Running production validation checks...\n");
 

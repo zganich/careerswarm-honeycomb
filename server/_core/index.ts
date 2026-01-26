@@ -1,4 +1,5 @@
-import "dotenv/config";
+#!/usr/bin/env node
+import * as Sentry from "@sentry/node";
 import express from "express";
 import { createServer } from "http";
 import net from "net";
@@ -7,6 +8,16 @@ import { registerOAuthRoutes } from "./oauth";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
+
+// Initialize Sentry for backend error tracking
+if (process.env.SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    environment: process.env.NODE_ENV || 'development',
+    tracesSampleRate: 0.1,
+    debug: false,
+  });
+}
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -30,6 +41,11 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 async function startServer() {
   const app = express();
   const server = createServer(app);
+  
+  // Sentry error handler setup (must be called before routes)
+  if (process.env.SENTRY_DSN) {
+    Sentry.setupExpressErrorHandler(app);
+  }
   
   // Stripe webhook MUST come before express.json() for signature verification
   app.post(
@@ -65,6 +81,8 @@ async function startServer() {
       createContext,
     })
   );
+  
+  // Sentry error handler is already set up via setupExpressErrorHandler above
   // development mode uses Vite, production mode uses static files
   if (process.env.NODE_ENV === "development") {
     await setupVite(app, server);

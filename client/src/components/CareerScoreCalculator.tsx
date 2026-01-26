@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { TrendingUp, AlertCircle, ArrowRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { trpc } from "@/lib/trpc";
+import { trackEvent, EVENTS } from "@/lib/posthog";
 
 /**
  * CareerScoreCalculator - Interactive tool that creates value perception and drives conversion
@@ -65,6 +66,13 @@ export function CareerScoreCalculator({ onSignup }: { onSignup: () => void }) {
       };
 
       setResult(score);
+      
+      // Track career score calculation event
+      trackEvent(EVENTS.CAREER_SCORE_CALCULATED, {
+        score: data.score,
+        currentRole,
+        targetRole,
+      });
     } catch (error) {
       console.error("Failed to calculate score:", error);
     }
