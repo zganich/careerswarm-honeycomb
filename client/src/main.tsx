@@ -6,9 +6,21 @@ import { createRoot } from "react-dom/client";
 import superjson from "superjson";
 import App from "./App";
 import { getLoginUrl } from "./const";
+import { formatTRPCError } from "./lib/error-formatting";
+import { toast } from "sonner";
 import "./index.css";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1, // Retry failed queries once
+      refetchOnWindowFocus: false,
+    },
+    mutations: {
+      retry: false, // Don't retry mutations automatically
+    },
+  },
+});
 
 const redirectToLoginIfUnauthorized = (error: unknown) => {
   if (!(error instanceof TRPCClientError)) return;
@@ -25,7 +37,14 @@ queryClient.getQueryCache().subscribe(event => {
   if (event.type === "updated" && event.action.type === "error") {
     const error = event.query.state.error;
     redirectToLoginIfUnauthorized(error);
-    console.error("[API Query Error]", error);
+    
+    const formatted = formatTRPCError(error);
+    console.error("[API Query Error]", { formatted, raw: error });
+    
+    // Show toast for user-friendly errors
+    if (formatted.isUserFriendly && formatted.code !== "UNAUTHORIZED") {
+      toast.error(formatted.message);
+    }
   }
 });
 

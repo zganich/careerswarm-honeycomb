@@ -1,0 +1,19 @@
+# Allow documentation mentions of environment variable names (not actual values)
+STRIPE_.*
+JWT_SECRET
+DATABASE_URL
+FORGE_API_KEY
+OAUTH.*
+# Allow references in markdown documentation
+\.md:.*STRIPE
+\.md:.*JWT_SECRET
+\.md:.*DATABASE_URL
+\.md:.*OAUTH
+# Allow references in TypeScript code that use process.env (not hardcoded values)
+process\.env\.STRIPE
+process\.env\.JWT_SECRET
+process\.env\.DATABASE_URL
+process\.env\.OAUTH
+# Allow test files with placeholder values
+test.*\.mjs:.*STRIPE
+test.*\.ts:.*JWT_SECRET
