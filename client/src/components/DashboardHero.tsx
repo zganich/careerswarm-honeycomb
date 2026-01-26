@@ -1,0 +1,213 @@
+import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { Upload, CheckCircle, Plus } from 'lucide-react';
+
+interface DashboardHeroProps {
+  swarmScore: number; // 0-100
+  profileStatus: 'empty' | 'imported' | 'verified';
+  onAction: () => void;
+}
+
+export function DashboardHero({ swarmScore, profileStatus, onAction }: DashboardHeroProps) {
+  const [displayScore, setDisplayScore] = useState(0);
+
+  // Animate score counting up
+  useEffect(() => {
+    let start = 0;
+    const end = swarmScore;
+    const duration = 2000; // 2 seconds
+    const increment = end / (duration / 16); // 60fps
+
+    const timer = setInterval(() => {
+      start += increment;
+      if (start >= end) {
+        setDisplayScore(end);
+        clearInterval(timer);
+      } else {
+        setDisplayScore(Math.floor(start));
+      }
+    }, 16);
+
+    return () => clearInterval(timer);
+  }, [swarmScore]);
+
+  // Determine score color
+  const getScoreColor = (score: number) => {
+    if (score >= 71) return 'text-emerald-400';
+    if (score >= 31) return 'text-amber-400';
+    return 'text-red-400';
+  };
+
+  const getScoreStroke = (score: number) => {
+    if (score >= 71) return '#34d399'; // emerald-400
+    if (score >= 31) return '#fbbf24'; // amber-400
+    return '#f87171'; // red-400
+  };
+
+  // Dynamic button configuration
+  const getButtonConfig = () => {
+    switch (profileStatus) {
+      case 'empty':
+        return {
+          text: 'Import LinkedIn PDF',
+          icon: Upload,
+          gradient: 'from-cyan-500 to-blue-600',
+        };
+      case 'imported':
+        return {
+          text: 'Verify Employment',
+          icon: CheckCircle,
+          gradient: 'from-amber-500 to-orange-600',
+        };
+      case 'verified':
+        return {
+          text: 'Add Project Evidence',
+          icon: Plus,
+          gradient: 'from-emerald-500 to-green-600',
+        };
+    }
+  };
+
+  const buttonConfig = getButtonConfig();
+  const ButtonIcon = buttonConfig.icon;
+
+  // SVG circle parameters
+  const radius = 120;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (displayScore / 100) * circumference;
+
+  return (
+    <div className="relative py-16 px-6">
+      {/* Swarm Score Gauge */}
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.6 }}
+        className="flex flex-col items-center mb-12"
+      >
+        <h2 className="text-slate-400 text-lg mb-6 tracking-wide uppercase">
+          Swarm Score
+        </h2>
+
+        {/* Circular Gauge */}
+        <div className="relative w-64 h-64">
+          <svg className="w-full h-full transform -rotate-90">
+            {/* Background circle */}
+            <circle
+              cx="128"
+              cy="128"
+              r={radius}
+              stroke="#1e293b"
+              strokeWidth="20"
+              fill="none"
+            />
+            {/* Progress circle */}
+            <motion.circle
+              cx="128"
+              cy="128"
+              r={radius}
+              stroke={getScoreStroke(swarmScore)}
+              strokeWidth="20"
+              fill="none"
+              strokeLinecap="round"
+              strokeDasharray={circumference}
+              initial={{ strokeDashoffset: circumference }}
+              animate={{ strokeDashoffset }}
+              transition={{ duration: 2, ease: "easeInOut" }}
+              style={{
+                filter: 'drop-shadow(0 0 10px currentColor)',
+              }}
+            />
+          </svg>
+
+          {/* Score number in center */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
+              className={`text-7xl font-black ${getScoreColor(swarmScore)}`}
+              style={{ fontFamily: 'Cabinet Grotesk, sans-serif' }}
+            >
+              {displayScore}
+            </motion.div>
+            <div className="text-slate-500 text-sm mt-2">out of 100</div>
+          </div>
+        </div>
+
+        {/* Score description */}
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1 }}
+          className="text-slate-400 mt-6 text-center max-w-md"
+        >
+          {swarmScore >= 71 && "Excellent! Your career evidence is strong and comprehensive."}
+          {swarmScore >= 31 && swarmScore < 71 && "Good progress. Keep adding evidence to strengthen your profile."}
+          {swarmScore < 31 && "Let's build your career evidence library. Start by importing your resume."}
+        </motion.p>
+      </motion.div>
+
+      {/* The One Big Button */}
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.2 }}
+        className="flex justify-center"
+      >
+        <motion.button
+          onClick={onAction}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className={`
+            relative px-12 py-6 rounded-2xl
+            bg-gradient-to-r ${buttonConfig.gradient}
+            text-white font-bold text-2xl
+            shadow-2xl
+            flex items-center gap-4
+            overflow-hidden
+            group
+          `}
+          style={{ fontFamily: 'Cabinet Grotesk, sans-serif' }}
+        >
+          {/* Animated background glow */}
+          <motion.div
+            animate={{
+              opacity: [0.5, 0.8, 0.5],
+              scale: [1, 1.1, 1],
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            className="absolute inset-0 bg-white/20 blur-xl"
+          />
+
+          {/* Button content */}
+          <ButtonIcon className="h-8 w-8 relative z-10" />
+          <span className="relative z-10">{buttonConfig.text}</span>
+
+          {/* Hover effect */}
+          <motion.div
+            className="absolute inset-0 bg-white/10"
+            initial={{ x: '-100%' }}
+            whileHover={{ x: '100%' }}
+            transition={{ duration: 0.5 }}
+          />
+        </motion.button>
+      </motion.div>
+
+      {/* Decorative grid pattern */}
+      <div className="absolute inset-0 opacity-5 pointer-events-none">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `
+            linear-gradient(to right, #06b6d4 1px, transparent 1px),
+            linear-gradient(to bottom, #06b6d4 1px, transparent 1px)
+          `,
+          backgroundSize: '40px 40px',
+        }} />
+      </div>
+    </div>
+  );
+}

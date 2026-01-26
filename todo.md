@@ -2467,3 +2467,38 @@ Port "Bridge Skill" logic from legacy design to help users pivot careers by iden
 - ✨ **Auto-advance** - Step 1 automatically advances to Step 2 after parsing
 
 **Completed:** January 26, 2026 (3 hours)
+
+
+---
+
+## Cyber-Professional Redesign (Mad Libs + Trophy Case)
+
+- [ ] Install framer-motion for animations
+- [ ] Add Cabinet Grotesk font from Google Fonts
+- [ ] Update theme to dark mode (Slate-900 bg, Electric Blue/Gold accents)
+- [ ] Build OnboardingSentence.tsx (Mad Libs component)
+- [ ] Implement taxonomy engine for job title auto-suggest
+- [ ] Build DashboardHero.tsx (Swarm Score gauge + dynamic button)
+- [ ] Build EvidenceGrid.tsx (glassmorphism cards)
+- [ ] Integrate dynamic button logic (Import → Verify → Add Evidence)
+- [ ] Add "Constructing Career Graph..." animation
+- [ ] Test dark mode theme across all pages
+- [ ] Test framer-motion animations (score gauge, transitions)
+- [ ] Save checkpoint with Cyber-Professional design
+
+
+---
+
+## Cyber-Professional Redesign (COMPLETED)
+
+- [x] Install framer-motion and add Cabinet Grotesk font
+- [x] Build OnboardingSentence.tsx - Mad Libs component
+- [x] Build DashboardHero.tsx - Swarm Score gauge and dynamic button
+- [x] Build EvidenceGrid.tsx - Glassmorphism cards
+- [x] Integrate dynamic action button logic (Import LinkedIn PDF → Add Evidence → Verify)
+- [x] Test dark mode theme and animations
+- [x] Test full onboarding → dashboard flow
+- [x] Verify Cabinet Grotesk typography
+- [x] Verify electric blue/gold accents
+- [x] Verify glassmorphism cards with semi-transparent backgrounds
+- [x] Verify animated Swarm Score gauge (50/100 with color-coded progress)

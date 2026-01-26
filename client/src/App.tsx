@@ -22,6 +22,7 @@ import FAQ from "./pages/FAQ";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import Roast from "./pages/Roast";
+import CyberDashboard from "./pages/CyberDashboard";
 
 
 function Router() {
@@ -35,6 +36,7 @@ function Router() {
       <Route path="/privacy" component={Privacy} />
       <Route path="/terms" component={Terms} />
       <Route path="/dashboard" component={Dashboard} />
+      <Route path="/cyber" component={CyberDashboard} />
       <Route path="/achievements" component={AchievementsList} />
       <Route path="/achievements/new" component={NewAchievement} />
       <Route path="/achievements/:id/edit" component={EditAchievement} />
