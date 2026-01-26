@@ -2525,3 +2525,17 @@ Port "Bridge Skill" logic from legacy design to help users pivot careers by iden
 - [x] Integrate fallback into DashboardHero dynamic button
 - [x] Wire up achievement creation to database
 - [x] Test parsing failure → manual entry flow (Ready for user testing)
+
+
+---
+
+## Mobile File Upload Testing
+
+- [x] Audit current file upload implementation for mobile compatibility
+- [x] Add mobile-specific file input attributes (capture, accept)
+- [x] Enable camera roll access for iOS Safari (accept="image/*")
+- [x] Enable camera access for Android Chrome (capture="environment")
+- [x] Implement file size validation (16MB limit)
+- [x] Add mobile-friendly error messages (toast notifications)
+- [x] Test responsive design at mobile dimensions (375px tested)
+- [x] Verify touch targets are at least 44x44px (button is properly sized)

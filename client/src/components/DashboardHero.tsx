@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Upload, CheckCircle, Plus } from 'lucide-react';
 import { ManualAchievementEntry } from './ManualAchievementEntry';
 import { toast } from 'sonner';
@@ -15,6 +15,7 @@ export function DashboardHero({ swarmScore, profileStatus, onAction, onManualEnt
   const [displayScore, setDisplayScore] = useState(0);
   const [showManualEntry, setShowManualEntry] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Animate score counting up
   useEffect(() => {
@@ -76,35 +77,66 @@ export function DashboardHero({ swarmScore, profileStatus, onAction, onManualEnt
   const buttonConfig = getButtonConfig();
   const ButtonIcon = buttonConfig.icon;
 
+  // Handle file upload
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file size (16MB limit)
+    const maxSize = 16 * 1024 * 1024; // 16MB
+    if (file.size > maxSize) {
+      toast.error('File too large', {
+        description: 'Please upload a file smaller than 16MB',
+      });
+      return;
+    }
+
+    // Validate file type
+    const validTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/heic'];
+    if (!validTypes.includes(file.type)) {
+      toast.error('Invalid file type', {
+        description: 'Please upload a PDF or image file',
+      });
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      // TODO: Replace with actual parsing logic
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Simulate parsing failure (50% chance for demo)
+      const parseFailed = Math.random() > 0.5;
+      
+      if (parseFailed) {
+        toast.error('Unable to parse file', {
+          description: 'Let\'s add your achievements manually instead',
+        });
+        setShowManualEntry(true);
+      } else {
+        // Success - call original action
+        onAction();
+        toast.success('Resume imported successfully!');
+      }
+    } catch (error) {
+      toast.error('Import failed', {
+        description: 'Let\'s add your achievements manually',
+      });
+      setShowManualEntry(true);
+    } finally {
+      setIsProcessing(false);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
   // Handle Import LinkedIn PDF with fallback
   const handleAction = async () => {
     if (profileStatus === 'empty') {
-      setIsProcessing(true);
-      try {
-        // Simulate PDF parsing (replace with actual parsing logic)
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        // Simulate parsing failure (50% chance for demo)
-        const parseFailed = Math.random() > 0.5;
-        
-        if (parseFailed) {
-          toast.error('Unable to parse PDF', {
-            description: 'Let\'s add your achievements manually instead',
-          });
-          setShowManualEntry(true);
-        } else {
-          // Success - call original action
-          onAction();
-          toast.success('Resume imported successfully!');
-        }
-      } catch (error) {
-        toast.error('Import failed', {
-          description: 'Let\'s add your achievements manually',
-        });
-        setShowManualEntry(true);
-      } finally {
-        setIsProcessing(false);
-      }
+      // Trigger file input
+      fileInputRef.current?.click();
     } else {
       onAction();
     }
@@ -259,6 +291,17 @@ export function DashboardHero({ swarmScore, profileStatus, onAction, onManualEnt
           backgroundSize: '40px 40px',
         }} />
       </div>
+
+      {/* Hidden file input for mobile-optimized upload */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".pdf,image/*"
+        capture="environment"
+        onChange={handleFileChange}
+        className="hidden"
+        aria-label="Upload resume file"
+      />
 
       {/* Manual Entry Modal */}
       {showManualEntry && (
