@@ -105,9 +105,8 @@ ${input.resumeText}`;
                         },
                         required: ["title", "explanation", "fix"],
                         additionalProperties: false
-                      },
-                      minItems: 3,
-                      maxItems: 3
+                      }
+                      // minItems and maxItems removed - not supported by API
                     },
                     brutalTruth: {
                       type: "string",
@@ -122,7 +121,24 @@ ${input.resumeText}`;
             // Note: temperature not configurable in invokeLLM wrapper
           });
 
-          const content = response.choices[0].message.content;
+          // Enhanced error handling for LLM response
+          if (!response || !response.choices || !Array.isArray(response.choices) || response.choices.length === 0) {
+            console.error("Invalid LLM response structure:", JSON.stringify(response, null, 2));
+            throw new Error("Invalid response from AI service. Please try again.");
+          }
+
+          const choice = response.choices[0];
+          if (!choice || !choice.message) {
+            console.error("Invalid choice structure:", JSON.stringify(choice, null, 2));
+            throw new Error("Invalid response format from AI service. Please try again.");
+          }
+
+          const content = choice.message.content;
+          if (!content) {
+            console.error("Empty content in LLM response");
+            throw new Error("AI service returned empty response. Please try again.");
+          }
+
           const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
           const result = JSON.parse(contentStr || "{}");
 

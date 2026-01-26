@@ -2361,3 +2361,28 @@ Port "Bridge Skill" logic from legacy design to help users pivot careers by iden
 - [ ] Database backup script (tested)
 - [ ] Updated .env.example
 - [ ] Final checkpoint with all operations setup complete
+
+
+---
+
+## Resume Roast Feature Bugs (URGENT - Added Jan 26, 2026)
+- [ ] Check Sentry dashboard for exact error details
+- [ ] Debug Promise.all error in Resume Roast pipeline
+- [ ] Fix tRPC persistence error
+- [ ] Review and fix 7-stage AI pipeline
+- [ ] Add error handling and logging to each pipeline stage
+- [ ] Test Resume Roast with sample resume
+
+
+---
+
+## Resume Roast Feature Debugging (COMPLETED)
+
+- [x] Check Sentry dashboard for exact error details
+- [x] Debug LLM API errors in Resume Roast procedure
+- [x] Fix JSON schema compatibility (removed minItems/maxItems - not supported by Manus LLM API)
+- [x] Remove problematic thinking parameter from LLM invocation
+- [x] Test Resume Roast feature end-to-end (Working! 3/100 score for buzzword-filled resume)
+- [x] Integrate Sentry (frontend + backend) for error tracking
+- [x] Integrate PostHog for product analytics
+- [x] Create dynamic monitoring config endpoint (workaround for VITE_ env var limitation)
