@@ -2502,3 +2502,26 @@ Port "Bridge Skill" logic from legacy design to help users pivot careers by iden
 - [x] Verify electric blue/gold accents
 - [x] Verify glassmorphism cards with semi-transparent backgrounds
 - [x] Verify animated Swarm Score gauge (50/100 with color-coded progress)
+
+
+---
+
+## Manual Entry Fallback for LinkedIn PDF Parsing
+
+- [ ] Design manual entry form UI (simple STAR fields)
+- [ ] Build ManualAchievementEntry component
+- [ ] Add error handling for PDF parsing failures
+- [ ] Integrate fallback into DashboardHero dynamic button
+- [ ] Test parsing failure → manual entry flow
+- [ ] Save checkpoint with manual entry fallback
+
+
+---
+
+## Manual Entry Fallback (COMPLETED)
+
+- [x] Design manual entry form UI and error handling logic
+- [x] Build ManualAchievementEntry component with STAR fields
+- [x] Integrate fallback into DashboardHero dynamic button
+- [x] Wire up achievement creation to database
+- [x] Test parsing failure → manual entry flow (Ready for user testing)

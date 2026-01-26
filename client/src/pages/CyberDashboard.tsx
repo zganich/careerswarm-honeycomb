@@ -13,9 +13,10 @@ export default function CyberDashboard() {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [profileData, setProfileData] = useState<{ jobTitle: string; skill: string } | null>(null);
 
-  const { data: achievements, isLoading: achievementsLoading } = trpc.achievements.list.useQuery();
+  const { data: achievements, isLoading: achievementsLoading, refetch: refetchAchievements } = trpc.achievements.list.useQuery();
   const { data: resumes } = trpc.resumes.list.useQuery();
   const { data: jobs } = trpc.jobDescriptions.list.useQuery();
+  const createAchievement = trpc.achievements.create.useMutation();
 
   // Check if user needs onboarding
   useEffect(() => {
@@ -68,8 +69,7 @@ export default function CyberDashboard() {
     const status = getProfileStatus();
     switch (status) {
       case 'empty':
-        toast.info('Import LinkedIn PDF feature coming soon!');
-        // TODO: Implement LinkedIn PDF import
+        // PDF import is handled by DashboardHero with fallback
         break;
       case 'imported':
         toast.info('Verify Employment feature coming soon!');
@@ -78,6 +78,31 @@ export default function CyberDashboard() {
       case 'verified':
         window.location.href = '/achievements/new';
         break;
+    }
+  };
+
+  // Handle manual achievement entry
+  const handleManualEntry = async (achievements: Array<{situation: string; task: string; action: string; result: string}>) => {
+    try {
+      // Create achievements in database
+      for (const achievement of achievements) {
+        await createAchievement.mutateAsync({
+          situation: achievement.situation,
+          task: achievement.task,
+          action: achievement.action,
+          result: achievement.result,
+          company: achievement.situation,
+          roleTitle: profileData?.jobTitle || 'Professional',
+          impactMeterScore: 75, // Default score
+        });
+      }
+      // Refresh achievements list
+      refetchAchievements();
+      toast.success(`Successfully added ${achievements.length} achievement${achievements.length > 1 ? 's' : ''}!`);
+    } catch (error) {
+      toast.error('Failed to save achievements', {
+        description: 'Please try again',
+      });
     }
   };
 
@@ -155,6 +180,7 @@ export default function CyberDashboard() {
           swarmScore={swarmScore}
           profileStatus={profileStatus}
           onAction={handleAction}
+          onManualEntry={handleManualEntry}
         />
 
         <EvidenceGrid

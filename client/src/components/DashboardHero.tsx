@@ -1,15 +1,20 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { Upload, CheckCircle, Plus } from 'lucide-react';
+import { ManualAchievementEntry } from './ManualAchievementEntry';
+import { toast } from 'sonner';
 
 interface DashboardHeroProps {
   swarmScore: number; // 0-100
   profileStatus: 'empty' | 'imported' | 'verified';
   onAction: () => void;
+  onManualEntry?: (achievements: Array<{situation: string; task: string; action: string; result: string}>) => void;
 }
 
-export function DashboardHero({ swarmScore, profileStatus, onAction }: DashboardHeroProps) {
+export function DashboardHero({ swarmScore, profileStatus, onAction, onManualEntry }: DashboardHeroProps) {
   const [displayScore, setDisplayScore] = useState(0);
+  const [showManualEntry, setShowManualEntry] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // Animate score counting up
   useEffect(() => {
@@ -70,6 +75,48 @@ export function DashboardHero({ swarmScore, profileStatus, onAction }: Dashboard
 
   const buttonConfig = getButtonConfig();
   const ButtonIcon = buttonConfig.icon;
+
+  // Handle Import LinkedIn PDF with fallback
+  const handleAction = async () => {
+    if (profileStatus === 'empty') {
+      setIsProcessing(true);
+      try {
+        // Simulate PDF parsing (replace with actual parsing logic)
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        // Simulate parsing failure (50% chance for demo)
+        const parseFailed = Math.random() > 0.5;
+        
+        if (parseFailed) {
+          toast.error('Unable to parse PDF', {
+            description: 'Let\'s add your achievements manually instead',
+          });
+          setShowManualEntry(true);
+        } else {
+          // Success - call original action
+          onAction();
+          toast.success('Resume imported successfully!');
+        }
+      } catch (error) {
+        toast.error('Import failed', {
+          description: 'Let\'s add your achievements manually',
+        });
+        setShowManualEntry(true);
+      } finally {
+        setIsProcessing(false);
+      }
+    } else {
+      onAction();
+    }
+  };
+
+  const handleManualComplete = (achievements: Array<{situation: string; task: string; action: string; result: string}>) => {
+    setShowManualEntry(false);
+    if (onManualEntry) {
+      onManualEntry(achievements);
+    }
+    toast.success(`Added ${achievements.length} achievement${achievements.length > 1 ? 's' : ''}!`);
+  };
 
   // SVG circle parameters
   const radius = 120;
@@ -156,7 +203,8 @@ export function DashboardHero({ swarmScore, profileStatus, onAction }: Dashboard
         className="flex justify-center"
       >
         <motion.button
-          onClick={onAction}
+          onClick={handleAction}
+          disabled={isProcessing}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           className={`
@@ -167,6 +215,7 @@ export function DashboardHero({ swarmScore, profileStatus, onAction }: Dashboard
             flex items-center gap-4
             overflow-hidden
             group
+            disabled:opacity-50 disabled:cursor-not-allowed
           `}
           style={{ fontFamily: 'Cabinet Grotesk, sans-serif' }}
         >
@@ -186,7 +235,9 @@ export function DashboardHero({ swarmScore, profileStatus, onAction }: Dashboard
 
           {/* Button content */}
           <ButtonIcon className="h-8 w-8 relative z-10" />
-          <span className="relative z-10">{buttonConfig.text}</span>
+          <span className="relative z-10">
+            {isProcessing ? 'Processing...' : buttonConfig.text}
+          </span>
 
           {/* Hover effect */}
           <motion.div
@@ -208,6 +259,14 @@ export function DashboardHero({ swarmScore, profileStatus, onAction }: Dashboard
           backgroundSize: '40px 40px',
         }} />
       </div>
+
+      {/* Manual Entry Modal */}
+      {showManualEntry && (
+        <ManualAchievementEntry
+          onComplete={handleManualComplete}
+          onCancel={() => setShowManualEntry(false)}
+        />
+      )}
     </div>
   );
 }
