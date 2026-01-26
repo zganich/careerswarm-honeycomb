@@ -15,6 +15,15 @@ export const appRouter = router({
   system: systemRouter,
   
   public: router({
+    // Monitoring configuration endpoint - returns DSNs from server env vars
+    getMonitoringConfig: publicProcedure
+      .query(async () => {
+        return {
+          sentryDsn: process.env.VITE_SENTRY_DSN || null,
+          posthogKey: process.env.VITE_POSTHOG_KEY || null,
+          posthogHost: process.env.VITE_POSTHOG_HOST || 'https://us.posthog.com',
+        };
+      }),
     roast: publicProcedure
       .input(z.object({
         resumeText: z.string().min(50, "Resume must be at least 50 characters"),

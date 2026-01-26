@@ -12,36 +12,55 @@ import { formatTRPCError } from "./lib/error-formatting";
 import { toast } from "sonner";
 import "./index.css";
 
-// Initialize Sentry for error tracking
-if (import.meta.env.VITE_SENTRY_DSN) {
-  Sentry.init({
-    dsn: import.meta.env.VITE_SENTRY_DSN,
-    environment: import.meta.env.MODE,
-    integrations: [
-      Sentry.browserTracingIntegration(),
-      Sentry.replayIntegration(),
-    ],
-    tracesSampleRate: 0.1, // 10% of transactions for performance monitoring
-    replaysSessionSampleRate: 0, // Disable session replay by default
-    replaysOnErrorSampleRate: 1.0, // Capture replay on error
-    debug: false,
-  });
+// Initialize monitoring (Sentry + PostHog) dynamically from backend config
+// This workaround is needed because custom VITE_ env vars aren't injected by Manus platform
+async function initializeMonitoring() {
+  try {
+    const response = await fetch('/api/trpc/public.getMonitoringConfig');
+    const result = await response.json();
+    const config = result.result?.data?.json;
+    
+    if (!config) return;
+    
+    // Initialize Sentry
+    if (config.sentryDsn) {
+      Sentry.init({
+        dsn: config.sentryDsn,
+        environment: import.meta.env.MODE,
+        integrations: [
+          Sentry.browserTracingIntegration(),
+          Sentry.replayIntegration(),
+        ],
+        tracesSampleRate: 0.1,
+        replaysSessionSampleRate: 0,
+        replaysOnErrorSampleRate: 1.0,
+        debug: false,
+      });
+      console.log('[Monitoring] Sentry initialized');
+    }
+    
+    // Initialize PostHog
+    if (config.posthogKey) {
+      posthog.init(config.posthogKey, {
+        api_host: config.posthogHost || 'https://us.posthog.com',
+        capture_pageview: true,
+        autocapture: true,
+        disable_session_recording: true,
+        loaded: (posthog) => {
+          if (import.meta.env.MODE === 'development') {
+            posthog.opt_out_capturing();
+          }
+        },
+      });
+      console.log('[Monitoring] PostHog initialized');
+    }
+  } catch (error) {
+    console.error('[Monitoring] Failed to initialize:', error);
+  }
 }
 
-// Initialize PostHog for product analytics
-if (import.meta.env.VITE_POSTHOG_KEY) {
-  posthog.init(import.meta.env.VITE_POSTHOG_KEY, {
-    api_host: import.meta.env.VITE_POSTHOG_HOST || 'https://us.posthog.com',
-    capture_pageview: true,
-    autocapture: true,
-    disable_session_recording: true, // Respect user privacy
-    loaded: (posthog) => {
-      if (import.meta.env.MODE === 'development') {
-        posthog.opt_out_capturing(); // Opt out in development
-      }
-    },
-  });
-}
+// Initialize monitoring asynchronously
+initializeMonitoring();
 
 const queryClient = new QueryClient({
   defaultOptions: {
