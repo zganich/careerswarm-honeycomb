@@ -1,6 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { WelcomeWizard } from "@/components/WelcomeWizard";
+import { MagicOnboardingWizard } from "@/components/MagicOnboardingWizard";
 import { SourceMaterialUploader } from "@/components/SourceMaterialUploader";
 import { SourceMaterialList } from "@/components/SourceMaterialList";
 import { JobTailorWizard } from "@/components/JobTailorWizard";
@@ -17,7 +17,7 @@ import DashboardLayout from "@/components/DashboardLayout";
 function DashboardContent() {
   const { user, loading: authLoading } = useAuth();
   const [, setLocation] = useLocation();
-  const [showWelcome, setShowWelcome] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const [showTailorWizard, setShowTailorWizard] = useState(false);
   const [tailorResult, setTailorResult] = useState<any>(null);
   const [jobData, setJobData] = useState<{title: string; company: string; description: string} | null>(null);
@@ -33,11 +33,11 @@ function DashboardContent() {
   const { data: suggestions } = trpc.achievements.getSuggestions.useQuery();
   const { data: usageStats } = trpc.system.usageStats.useQuery();
 
-  // Show welcome wizard for new users (no achievements yet)
+  // Show magic onboarding for new users (no achievements yet)
   // MUST be called before any conditional returns to avoid hooks violation
   useEffect(() => {
-    if (user && achievements && achievements.length === 0 && !localStorage.getItem('welcomeCompleted')) {
-      setShowWelcome(true);
+    if (user && achievements && achievements.length === 0 && !localStorage.getItem('onboardingCompleted')) {
+      setShowOnboarding(true);
     }
   }, [user, achievements]);
 
@@ -83,11 +83,12 @@ function DashboardContent() {
 
   return (
     <>
-      {showWelcome && (
-        <WelcomeWizard
+      {showOnboarding && (
+        <MagicOnboardingWizard
           onComplete={() => {
-            setShowWelcome(false);
-            localStorage.setItem('welcomeCompleted', 'true');
+            setShowOnboarding(false);
+            localStorage.setItem('onboardingCompleted', 'true');
+            toast.success('🎉 Welcome to CareerSwarm! Your career evidence engine is ready.');
           }}
         />
       )}
