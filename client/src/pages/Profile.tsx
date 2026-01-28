@@ -26,6 +26,7 @@ export default function Profile() {
 
   const { data: profile, isLoading } = trpc.profile.get.useQuery();
   const { data: achievementStats } = trpc.profile.getAchievementStats.useQuery();
+  const { data: completeness } = trpc.profile.getCompleteness.useQuery();
 
   // Helper to get stats for an achievement
   const getAchievementStat = (achievementId: number) => {
@@ -53,18 +54,8 @@ export default function Profile() {
     );
   }
 
-  // Calculate profile completeness
-  const calculateCompleteness = () => {
-    let score = 0;
-    if (profile.profile) score += 10;
-    if (profile.workExperiences?.length > 0) score += 30;
-    if (profile.achievements?.length > 0) score += 25;
-    if (profile.skills?.length > 0) score += 15;
-    if (profile.superpowers?.length > 0) score += 20;
-    return score;
-  };
-
-  const completeness = calculateCompleteness();
+  const completenessScore = completeness?.score || 0;
+  const completenessColor = completenessScore >= 80 ? "text-green-600" : completenessScore >= 60 ? "text-yellow-600" : "text-red-600";
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
@@ -111,13 +102,24 @@ export default function Profile() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium">Profile Completeness</span>
-                <span className="text-sm font-bold">{completeness}%</span>
+                <span className="text-sm font-bold">{completenessScore}%</span>
               </div>
-              <Progress value={completeness} className="h-2" />
-              {completeness < 100 && (
-                <p className="text-xs text-muted-foreground mt-2">
-                  Add more achievements and skills to reach 100%
-                </p>
+              <Progress value={completenessScore} className="h-2" />
+              {completenessScore < 100 && completeness && completeness.missing.length > 0 && (
+                <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+                  <p className="text-xs font-medium text-yellow-900 mb-1">Missing fields:</p>
+                  <ul className="text-xs text-yellow-800 space-y-0.5">
+                    {completeness.missing.slice(0, 3).map((item, idx) => (
+                      <li key={idx}>• {item}</li>
+                    ))}
+                    {completeness.missing.length > 3 && (
+                      <li>• and {completeness.missing.length - 3} more...</li>
+                    )}
+                  </ul>
+                  <Button variant="link" size="sm" className="h-auto p-0 mt-2 text-xs text-yellow-900">
+                    Complete Your Profile →
+                  </Button>
+                </div>
               )}
             </CardContent>
           </Card>

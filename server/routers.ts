@@ -798,6 +798,95 @@ Each superpower should:
 
       return stats;
     }),
+
+    // Get profile completeness score
+    getCompleteness: protectedProcedure.query(async ({ ctx }) => {
+      const user = await db.getUserByOpenId(ctx.user.openId);
+      if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
+      const [userProfile, workExperiences, achievements, skills, preferences] = await Promise.all([
+        db.getUserProfile(user.id),
+        db.getWorkExperiences(user.id),
+        db.getAchievements(user.id),
+        db.getSkills(user.id),
+        db.getTargetPreferences(user.id),
+      ]);
+
+      // Calculate completeness score (0-100)
+      let score = 0;
+      const missing: string[] = [];
+
+      // Contact info (20 points)
+      if (user.email) score += 5;
+      else missing.push("Email address");
+      
+      if (userProfile?.phone) score += 5;
+      else missing.push("Phone number");
+      
+      if (userProfile?.linkedinUrl) score += 5;
+      else missing.push("LinkedIn profile");
+      
+      if (userProfile?.locationCity && userProfile?.locationState) score += 5;
+      else missing.push("Location");
+
+      // Work experience (20 points)
+      if (workExperiences.length >= 2) score += 20;
+      else if (workExperiences.length === 1) {
+        score += 10;
+        missing.push("At least 2 work experiences (only " + workExperiences.length + " added)");
+      } else {
+        missing.push("Work experience");
+      }
+
+      // Achievements (30 points)
+      if (achievements.length >= 10) score += 30;
+      else if (achievements.length >= 5) {
+        score += 20;
+        missing.push("At least 10 achievements (only " + achievements.length + " added)");
+      } else if (achievements.length >= 1) {
+        score += 10;
+        missing.push("At least 10 achievements (only " + achievements.length + " added)");
+      } else {
+        missing.push("Achievements");
+      }
+
+      // Skills (15 points)
+      if (skills.length >= 20) score += 15;
+      else if (skills.length >= 10) {
+        score += 10;
+        missing.push("At least 20 skills (only " + skills.length + " added)");
+      } else if (skills.length >= 1) {
+        score += 5;
+        missing.push("At least 20 skills (only " + skills.length + " added)");
+      } else {
+        missing.push("Skills");
+      }
+
+      // Target preferences (15 points)
+      if (preferences) {
+        if (preferences.roleTitles && preferences.roleTitles.length > 0) score += 5;
+        else missing.push("Target job titles");
+        
+        if (preferences.industries && preferences.industries.length > 0) score += 5;
+        else missing.push("Target industries");
+        
+        if (preferences.minimumBaseSalary) score += 5;
+        else missing.push("Minimum salary expectations");
+      } else {
+        missing.push("Target preferences");
+      }
+
+      return {
+        score,
+        isComplete: score === 100,
+        missing,
+        counts: {
+          workExperiences: workExperiences.length,
+          achievements: achievements.length,
+          skills: skills.length,
+        },
+      };
+    }),
   }),
 
   // ================================================================

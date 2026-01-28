@@ -222,3 +222,59 @@
 **Total Tables:** 14
 **Total tRPC Procedures:** 50+
 **Total Pages:** 12
+
+
+---
+
+## 🎯 MISSING FEATURES FROM ORIGINAL DESIGN DOCUMENTS
+
+### Profile Completeness Indicator (Dashboard Design Doc - Line 120)
+- [ ] Add "Profile Completeness" progress bar to Profile page header
+- [ ] Calculate percentage based on: contact info, work experience (min 2), achievements (min 10), skills (min 20), preferences
+- [ ] Show "Complete Your Profile →" button when < 100%
+- [ ] Highlight specific missing fields with prompts
+- [ ] Create profile.getCompleteness tRPC procedure
+
+### Achievement Detail Modal (Dashboard Design Doc - Line 177-230)
+- [ ] Create AchievementDetailModal component
+- [ ] Show full achievement description with inline edit
+- [ ] Display structured metrics (Type, Value, Timeframe, Context)
+- [ ] Display extracted keywords/tags
+- [ ] Show usage statistics section (times used, success rate, applications list)
+- [ ] Show linked superpowers
+- [ ] Add Edit and Delete buttons
+- [ ] Trigger modal from achievement cards on Profile page (click to expand)
+
+### Activity Feed Page (Dashboard Design Doc - Line 75)
+- [ ] Create /activity route in App.tsx
+- [ ] Create Activity.tsx page component
+- [ ] Display all notifications and activity in chronological order
+- [ ] Show notification types with icons (follow-ups, responses, new matches, notes)
+- [ ] Add filter dropdown (All, Follow-ups, Responses, New Matches)
+- [ ] Add pagination for long lists (20 items per page)
+- [ ] Link from Dashboard "View All Activity →" button
+- [ ] Mark notifications as read when viewed
+
+### Superpower Editing UI (Dashboard Design Doc - Line 139)
+- [ ] Add "Edit Superpowers" button to Profile page
+- [ ] Create SuperpowerEditor modal/page
+- [ ] Allow editing superpower titles
+- [ ] Allow selecting evidence achievements for each superpower
+- [ ] Show achievement picker with checkboxes
+- [ ] Update superpowers.upsert tRPC procedure
+- [ ] Save evidenceAchievementIds array to database
+
+### Quality Score Display (Dashboard Design Doc - Line 120)
+- [ ] Calculate profile quality score (0-100)
+- [ ] Factors: completeness, achievement quality, metrics presence, skill diversity
+- [ ] Display score with color coding (red < 60, yellow 60-80, green > 80)
+- [ ] Show improvement suggestions
+- [ ] Create profile.getQualityScore tRPC procedure
+
+
+### Profile Completeness Indicator ✅ COMPLETE
+- [x] Add "Profile Completeness" progress bar to Profile page header
+- [x] Calculate percentage based on: contact info, work experience (min 2), achievements (min 10), skills (min 20), preferences
+- [x] Show "Complete Your Profile →" button when < 100%
+- [x] Highlight specific missing fields with prompts
+- [x] Create profile.getCompleteness tRPC procedure
