@@ -20,6 +20,7 @@ import OnboardingReview from "./pages/onboarding/Review";
 import OnboardingPreferences from "./pages/onboarding/Preferences";
 
 // Master Profile Dashboard
+import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import ProfileEdit from "./pages/ProfileEdit";
 
@@ -48,6 +49,9 @@ function Router() {
       <Route path="/onboarding/extraction" component={OnboardingExtraction} />
       <Route path="/onboarding/review" component={OnboardingReview} />
       <Route path="/onboarding/preferences" component={OnboardingPreferences} />
+
+      {/* Dashboard */}
+      <Route path="/dashboard" component={Dashboard} />
 
       {/* Master Profile */}
       <Route path="/profile" component={Profile} />
