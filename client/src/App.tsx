@@ -20,12 +20,10 @@ import OnboardingReview from "./pages/onboarding/Review";
 import OnboardingPreferences from "./pages/onboarding/Preferences";
 
 // Master Profile Dashboard
-import MasterProfile from "./pages/MasterProfile";
-import WorkHistory from "./pages/WorkHistory";
-import Achievements from "./pages/Achievements";
+import Profile from "./pages/Profile";
 
 // Jobs & Applications
-import Opportunities from "./pages/Opportunities";
+import Jobs from "./pages/Jobs";
 import OpportunityDetail from "./pages/OpportunityDetail";
 import Applications from "./pages/Applications";
 import ApplicationDetail from "./pages/ApplicationDetail";
@@ -51,12 +49,10 @@ function Router() {
       <Route path="/onboarding/preferences" component={OnboardingPreferences} />
 
       {/* Master Profile */}
-      <Route path="/profile" component={MasterProfile} />
-      <Route path="/profile/work-history" component={WorkHistory} />
-      <Route path="/profile/achievements" component={Achievements} />
+      <Route path="/profile" component={Profile} />
 
       {/* Jobs & Applications */}
-      <Route path="/opportunities" component={Opportunities} />
+      <Route path="/jobs" component={Jobs} />
       <Route path="/opportunities/:id" component={OpportunityDetail} />
       <Route path="/applications" component={Applications} />
       <Route path="/applications/:id" component={ApplicationDetail} />

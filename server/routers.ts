@@ -525,19 +525,20 @@ Each superpower should:
           throw new TRPCError({ code: "BAD_REQUEST", message: "Please complete onboarding first" });
         }
 
-        // TODO: Implement actual Scout agent logic
-        // For now, return mock data
-        const opportunities = [
-          {
-            companyName: "Example AI Corp",
-            roleTitle: "Head of Partnerships",
-            companyStage: "Series B",
-            locationCity: "Remote",
-            baseSalaryMin: 150000,
-            baseSalaryMax: 200000,
-            jobUrl: "https://example.com/jobs/123",
-          }
-        ];
+        // Import and run Scout agent
+        const { ScoutAgent } = await import("./agents/scout");
+        const scout = new ScoutAgent(user.id);
+        
+        const searchParams = {
+          roleTitles: preferences.roleTitles || [],
+          industries: preferences.industries || [],
+          companyStages: preferences.companyStages || [],
+          locationType: preferences.locationType || "remote",
+          allowedCities: preferences.allowedCities || [],
+          numResults: input.limit,
+        };
+        
+        const opportunities = await scout.execute(searchParams);
 
         // Log agent execution
         await db.logAgentExecution({
@@ -633,6 +634,116 @@ Each superpower should:
 
         await db.updateApplication(input.id, user.id, { status: input.status });
         return { success: true };
+      }),
+
+    // Quick Apply - Orchestrate all 7 agents
+    quickApply: protectedProcedure
+      .input(z.object({
+        opportunityId: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const user = await db.getUserByOpenId(ctx.user.openId);
+        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
+        const startTime = Date.now();
+
+        // Get opportunity
+        const opportunity = await db.getOpportunityById(input.opportunityId);
+        if (!opportunity) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Opportunity not found" });
+        }
+
+        // Get user profile and preferences
+        const [profile, workExperiences, achievements, skills, superpowers, preferences] = await Promise.all([
+          db.getUserProfile(user.id),
+          db.getWorkExperiences(user.id),
+          db.getAchievements(user.id),
+          db.getSkills(user.id),
+          db.getSuperpowers(user.id),
+          db.getTargetPreferences(user.id),
+        ]);
+
+        const userProfile = {
+          user,
+          profile,
+          workExperiences,
+          achievements,
+          skills,
+          superpowers,
+        };
+
+        // Import all agents
+        const { ProfilerAgent } = await import("./agents/profiler");
+        const { QualifierAgent, HunterAgent, TailorAgent, ScribeAgent, AssemblerAgent } = await import("./agents/remaining");
+
+        // AGENT 2: Profiler - Analyze company
+        const profiler = new ProfilerAgent(user.id, userProfile);
+        const analysis = await profiler.execute(opportunity);
+
+        // AGENT 3: Qualifier - Verify fit
+        const qualifier = new QualifierAgent(user.id, preferences);
+        const qualification = await qualifier.execute(opportunity);
+
+        if (!qualification.qualified) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: `Opportunity not qualified: ${qualification.reasons.join(", ")}`,
+          });
+        }
+
+        // AGENT 4: Hunter - Find contacts
+        const hunter = new HunterAgent(user.id);
+        const contacts = await hunter.execute(opportunity);
+
+        // AGENT 5: Tailor - Generate resume
+        const tailor = new TailorAgent(user.id, userProfile);
+        const resume = await tailor.execute(opportunity, analysis);
+
+        // AGENT 6: Scribe - Write outreach
+        const scribe = new ScribeAgent(user.id, userProfile);
+        const outreach = await scribe.execute(opportunity, analysis, contacts);
+
+        // AGENT 7: Assembler - Package everything
+        const assembler = new AssemblerAgent(user.id);
+        const applicationPackage = await assembler.execute({
+          opportunity,
+          analysis,
+          qualification,
+          contacts,
+          resume,
+          outreach,
+        });
+
+        // Create application record
+        const application = await db.createApplication({
+          userId: user.id,
+          opportunityId: opportunity.id,
+          status: "draft",
+          tailoredResumeText: resume,
+          coverLetterText: outreach.coverLetter,
+          linkedinMessage: outreach.linkedinMessage,
+          emailTemplate: outreach.emailOutreach,
+          matchScore: qualification.matchScore,
+        });
+
+        // Log agent execution
+        await db.logAgentExecution({
+          userId: user.id,
+          agentName: "QuickApply",
+          executionType: "full_pipeline",
+          inputData: JSON.stringify({ opportunityId: input.opportunityId }),
+          outputData: JSON.stringify({ applicationId: application.id }),
+          executionTimeMs: Date.now() - startTime,
+          status: "success",
+        });
+
+        return {
+          applicationId: application.id,
+          matchScore: qualification.matchScore,
+          checklist: applicationPackage.checklist,
+          nextSteps: applicationPackage.nextSteps,
+          estimatedTime: applicationPackage.estimatedTimeToApply,
+        };
       }),
   }),
 
