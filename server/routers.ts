@@ -768,6 +768,36 @@ Each superpower should:
 
         return { success: true };
       }),
+
+    // Get achievement usage statistics
+    getAchievementStats: protectedProcedure.query(async ({ ctx }) => {
+      const user = await db.getUserByOpenId(ctx.user.openId);
+      if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
+      const achievements = await db.getAchievements(user.id);
+      const applications = await db.getApplications(user.id);
+
+      // Calculate stats for each achievement
+      const stats = achievements.map((achievement) => {
+        const usageCount = achievement.timesUsed || 0;
+        const applicationsWithThis = achievement.applicationsWithAchievement || 0;
+        const responsesWithThis = achievement.responsesWithAchievement || 0;
+        
+        // Calculate success rate (responses / applications)
+        const successRate = applicationsWithThis > 0 
+          ? Math.round((responsesWithThis / applicationsWithThis) * 100)
+          : 0;
+
+        return {
+          achievementId: achievement.id,
+          usageCount,
+          successRate,
+          lastUsed: achievement.lastUsedAt,
+        };
+      });
+
+      return stats;
+    }),
   }),
 
   // ================================================================

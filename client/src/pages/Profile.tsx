@@ -25,6 +25,12 @@ export default function Profile() {
   const [expandedJob, setExpandedJob] = useState<number | null>(null);
 
   const { data: profile, isLoading } = trpc.profile.get.useQuery();
+  const { data: achievementStats } = trpc.profile.getAchievementStats.useQuery();
+
+  // Helper to get stats for an achievement
+  const getAchievementStat = (achievementId: number) => {
+    return achievementStats?.find((s: any) => s.achievementId === achievementId);
+  };
 
   if (isLoading) {
     return (
@@ -255,17 +261,40 @@ export default function Profile() {
                                     className="p-3 bg-gray-50 rounded-lg text-sm"
                                   >
                                     <p>{achievement.description}</p>
-                                    {achievement.metricValue && (
-                                      <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                                        <span>
+                                    <div className="flex items-center gap-2 mt-2 flex-wrap">
+                                      {achievement.metricValue && (
+                                        <Badge variant="secondary" className="text-xs">
                                           📊 {achievement.metricType}: {achievement.metricValue}{" "}
                                           {achievement.metricUnit}
-                                        </span>
-                                        {achievement.usageCount > 0 && (
-                                          <span>Used in {achievement.usageCount} applications</span>
-                                        )}
-                                      </div>
-                                    )}
+                                        </Badge>
+                                      )}
+                                      {(() => {
+                                        const stats = getAchievementStat(achievement.id);
+                                        if (stats && stats.usageCount > 0) {
+                                          return (
+                                            <>
+                                              <Badge variant="outline" className="text-xs">
+                                                📝 Used in {stats.usageCount} applications
+                                              </Badge>
+                                              {stats.successRate > 0 && (
+                                                <Badge 
+                                                  variant={stats.successRate >= 50 ? "default" : "secondary"}
+                                                  className="text-xs"
+                                                >
+                                                  ✨ {stats.successRate}% success rate
+                                                </Badge>
+                                              )}
+                                              {stats.successRate >= 70 && (
+                                                <Badge variant="default" className="text-xs bg-green-600">
+                                                  🏆 Top Performer
+                                                </Badge>
+                                              )}
+                                            </>
+                                          );
+                                        }
+                                        return null;
+                                      })()}
+                                    </div>
                                   </div>
                                 ))}
                             </div>
