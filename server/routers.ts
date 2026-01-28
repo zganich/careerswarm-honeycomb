@@ -4,7 +4,8 @@ import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import * as db from "./db";
 import { invokeLLM } from "./_core/llm";
-import { storagePut } from "./storage";
+import { storagePut, storageGet } from "./storage";
+import { extractTextFromResume, parseResumeWithLLM, consolidateResumes, generateSuperpowers } from "./resumeParser";
 
 // ================================================================
 // CAREERSWARM - MASTER PROFILE & 7-AGENT SYSTEM
@@ -106,12 +107,17 @@ export const appRouter = router({
         try {
           await db.updateResumeProcessingStatus(resume.id, 'processing');
 
-          // TODO: Extract text from PDF/DOCX (use pdf-parse or similar)
-          // For now, simulate extraction
-          const extractedText = `[Extracted text from ${resume.filename}]`;
+          // Download file from S3
+          const { url } = await storageGet(resume.fileKey);
+          const response = await fetch(url);
+          const buffer = Buffer.from(await response.arrayBuffer());
+
+          // Extract text based on file type
+          const extractedText = await extractTextFromResume(buffer, resume.mimeType || 'application/pdf');
           
           await db.updateResumeProcessingStatus(resume.id, 'completed', extractedText);
         } catch (error: any) {
+          console.error(`[Resume Parser] Failed to process ${resume.filename}:`, error);
           await db.updateResumeProcessingStatus(resume.id, 'failed', undefined, error.message);
         }
       }
@@ -121,6 +127,130 @@ export const appRouter = router({
 
     // Parse resumes and extract Master Profile data
     parseResumes: protectedProcedure.mutation(async ({ ctx }) => {
+      const user = await db.getUserByOpenId(ctx.user.openId);
+      if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
+      const resumes = await db.getUploadedResumes(user.id);
+      const completedResumes = resumes.filter(r => r.processingStatus === 'completed' && r.extractedText);
+
+      if (completedResumes.length === 0) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "No processed resumes found" });
+      }
+
+      // Parse each resume with LLM
+      const parsedResumes = [];
+      for (const resume of completedResumes) {
+        const parsed = await parseResumeWithLLM(resume.extractedText!);
+        parsedResumes.push(parsed);
+      }
+
+      // Consolidate multiple resumes
+      const consolidated = consolidateResumes(parsedResumes);
+
+      // Save work experiences and achievements
+      for (const we of consolidated.workExperiences) {
+        const workExpId = await db.createWorkExperience({
+          userId: user.id,
+          companyName: we.companyName,
+          jobTitle: we.jobTitle,
+          startDate: new Date(we.startDate),
+          endDate: we.endDate ? new Date(we.endDate) : null,
+          location: we.location || null,
+          isCurrent: we.isCurrent,
+          roleOverview: we.roleOverview || null,
+          companyStage: we.companyStage || null,
+          companyFunding: we.companyFunding || null,
+          companyIndustry: we.companyIndustry || null,
+          companySizeEmployees: we.companySizeEmployees || null,
+        });
+
+        // Save achievements for this work experience
+        for (const ach of we.achievements || []) {
+          await db.createAchievement({
+            userId: user.id,
+            workExperienceId: workExpId,
+            description: ach.description,
+            context: ach.context,
+            metricType: ach.metricType,
+            metricValue: ach.metricValue ? ach.metricValue.toString() : null,
+            metricUnit: ach.metricUnit,
+            metricTimeframe: ach.metricTimeframe,
+            keywords: ach.keywords as any,
+            importanceScore: ach.importanceScore,
+            sourceResumeFilename: completedResumes[0].filename,
+          });
+        }
+      }
+
+      // Save skills
+      for (const skill of consolidated.skills) {
+        await db.createSkill({
+          userId: user.id,
+          skillName: skill.skillName,
+          skillCategory: skill.skillCategory || null,
+          proficiencyLevel: skill.proficiencyLevel as any || null,
+          yearsExperience: skill.yearsExperience ? skill.yearsExperience.toString() : null,
+        });
+      }
+
+      // Save certifications
+      for (const cert of consolidated.certifications) {
+        await db.createCertification({
+          userId: user.id,
+          certificationName: cert.name,
+          issuingOrganization: cert.organization || null,
+          issueYear: cert.year || null,
+        });
+      }
+
+      // Save education
+      for (const edu of consolidated.education) {
+        await db.createEducation({
+          userId: user.id,
+          institution: edu.institution,
+          degreeType: edu.degree || null,
+          fieldOfStudy: edu.field || null,
+          graduationYear: edu.graduationYear || null,
+        });
+      }
+
+      // Save awards
+      for (const award of consolidated.awards) {
+        await db.createAward({
+          userId: user.id,
+          awardName: award.name,
+          organization: award.organization || null,
+          year: award.year || null,
+          context: award.context || null,
+        });
+      }
+
+      // Generate superpowers
+      const allAchievements = consolidated.workExperiences.flatMap(we => we.achievements);
+      const superpowers = await generateSuperpowers(allAchievements);
+
+      // Save superpowers
+      const superpowersData = superpowers.map((sp, i) => ({
+        title: sp.title,
+        evidenceAchievementIds: [], // Will be populated later when user selects achievements
+        rank: i + 1,
+      }));
+      await db.upsertSuperpowers(user.id, superpowersData);
+
+      // Update onboarding step
+      await db.updateUserOnboardingStep(user.id, 3, false);
+
+      return { 
+        success: true, 
+        workExperiences: consolidated.workExperiences.length,
+        achievements: allAchievements.length,
+        skills: consolidated.skills.length,
+        superpowers: superpowers,
+      };
+    }),
+
+    // Legacy code - keep for backward compatibility
+    _oldParseResumes: protectedProcedure.mutation(async ({ ctx }) => {
       const user = await db.getUserByOpenId(ctx.user.openId);
       if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 

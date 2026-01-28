@@ -5,9 +5,11 @@ import {
   workExperiences, userProfiles, superpowers,
   uploadedResumes, targetPreferences,
   opportunities, applications, agentExecutionLogs, notifications,
+  certifications, education, awards,
   type Achievement, type Skill, type WorkExperience, type UserProfile,
   type Superpower, type UploadedResume, type TargetPreferences,
-  type Opportunity, type Application, type AgentExecutionLog, type Notification
+  type Opportunity, type Application, type AgentExecutionLog, type Notification,
+  type Certification, type Education, type Award
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -407,3 +409,62 @@ export async function markNotificationAsRead(id: number, userId: number) {
     .set({ isRead: true, readAt: new Date() })
     .where(and(eq(notifications.id, id), eq(notifications.userId, userId)));
 }
+
+// ================================================================
+// CERTIFICATION OPERATIONS
+// ================================================================
+
+export async function createCertification(data: Partial<Certification>) {
+  const db = await getDb();
+  if (!db) return null;
+  const result: any = await db.insert(certifications).values(data as any);
+  return result.insertId;
+}
+
+export async function getCertifications(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(certifications)
+    .where(eq(certifications.userId, userId))
+    .orderBy(desc(certifications.issueYear));
+}
+
+// ================================================================
+// EDUCATION OPERATIONS
+// ================================================================
+
+export async function createEducation(data: Partial<Education>) {
+  const db = await getDb();
+  if (!db) return null;
+  const result: any = await db.insert(education).values(data as any);
+  return result.insertId;
+}
+
+export async function getEducation(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(education)
+    .where(eq(education.userId, userId))
+    .orderBy(desc(education.graduationYear));
+}
+
+// ================================================================
+// AWARD OPERATIONS
+// ================================================================
+
+export async function createAward(data: Partial<Award>) {
+  const db = await getDb();
+  if (!db) return null;
+  const result: any = await db.insert(awards).values(data as any);
+  return result.insertId;
+}
+
+export async function getAwards(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(awards)
+    .where(eq(awards.userId, userId))
+    .orderBy(desc(awards.year));
+}
+
+// Note: Superpower operations are already defined earlier in this file
