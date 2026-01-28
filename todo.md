@@ -242,3 +242,14 @@ Completing remaining Priority 2 & 3 features:
 - [x] Show checkmarks for completed stages
 - [x] Handle special statuses (accepted, rejected, withdrawn, ghosted)
 - [x] Integrated into ApplicationDetail Timeline tab
+
+
+### Saved Opportunities ✅ COMPLETE
+- [x] Added savedOpportunities table to database schema
+- [x] Added SavedOpportunity type export
+- [x] Created database helper functions (saveOpportunity, unsaveOpportunity, getSavedOpportunities, isOpportunitySaved)
+- [x] Added tRPC procedures (opportunities.save, opportunities.unsave, opportunities.getSaved, opportunities.isSaved)
+- [x] Created SaveOpportunityButton component with bookmark icon
+- [x] Integrated SaveOpportunityButton into Jobs page opportunity cards
+- [x] Toggle between Bookmark and BookmarkCheck icons based on saved status
+- [x] Show toast notifications on save/unsave

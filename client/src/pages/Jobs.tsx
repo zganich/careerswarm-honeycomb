@@ -18,6 +18,7 @@ import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { toast } from "sonner";
 import { OpportunityDetailModal } from "@/components/OpportunityDetailModal";
+import SaveOpportunityButton from "@/components/SaveOpportunityButton";
 import {
   Select,
   SelectContent,
@@ -282,7 +283,8 @@ export default function Jobs() {
                             </a>
                           </Button>
                         )}
-                  <Button
+                        <SaveOpportunityButton opportunityId={opp.id} />
+                        <Button
                     size="sm"
                     variant="outline"
                     onClick={() => setSelectedOpportunityId(opp.id)}

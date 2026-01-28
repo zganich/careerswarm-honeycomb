@@ -890,6 +890,54 @@ Each superpower should:
         }
         return opportunity;
       }),
+
+    // Save opportunity for later
+    save: protectedProcedure
+      .input(z.object({ opportunityId: z.number(), notes: z.string().optional() }))
+      .mutation(async ({ ctx, input }) => {
+        const user = await db.getUserByOpenId(ctx.user.openId);
+        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
+        await db.saveOpportunity(user.id, input.opportunityId, input.notes);
+        return { success: true };
+      }),
+
+    // Unsave opportunity
+    unsave: protectedProcedure
+      .input(z.object({ opportunityId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const user = await db.getUserByOpenId(ctx.user.openId);
+        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
+        await db.unsaveOpportunity(user.id, input.opportunityId);
+        return { success: true };
+      }),
+
+    // Get saved opportunities
+    getSaved: protectedProcedure.query(async ({ ctx }) => {
+      const user = await db.getUserByOpenId(ctx.user.openId);
+      if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
+      const saved = await db.getSavedOpportunities(user.id);
+      // Fetch full opportunity details for each saved item
+      const opportunities = await Promise.all(
+        saved.map(async (s) => {
+          const opp = await db.getOpportunityById(s.opportunityId);
+          return { ...opp, savedAt: s.createdAt, savedNotes: s.notes };
+        })
+      );
+      return opportunities.filter(Boolean);
+    }),
+
+    // Check if opportunity is saved
+    isSaved: protectedProcedure
+      .input(z.object({ opportunityId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const user = await db.getUserByOpenId(ctx.user.openId);
+        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
+        return db.isOpportunitySaved(user.id, input.opportunityId);
+      }),
   }),
 
   applications: router({

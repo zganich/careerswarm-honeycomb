@@ -5,11 +5,11 @@ import {
   workExperiences, userProfiles, superpowers,
   uploadedResumes, targetPreferences,
   opportunities, applications, agentExecutionLogs, notifications,
-  certifications, education, awards,
+  certifications, education, awards, savedOpportunities,
   type Achievement, type Skill, type WorkExperience, type UserProfile,
   type Superpower, type UploadedResume, type TargetPreferences,
   type Opportunity, type Application, type AgentExecutionLog, type Notification,
-  type Certification, type Education, type Award
+  type Certification, type Education, type Award, type SavedOpportunity
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -476,3 +476,53 @@ export async function getAwards(userId: number) {
 
 // Note: Superpower operations are already defined earlier in this file
 // Note: Update/Delete operations for work experiences, achievements, and skills are already defined earlier in this file
+
+
+// ================================================================
+// SAVED OPPORTUNITIES OPERATIONS
+// ================================================================
+
+export async function saveOpportunity(userId: number, opportunityId: number, notes?: string) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  // Check if already saved
+  const existing = await db.select().from(savedOpportunities)
+    .where(and(eq(savedOpportunities.userId, userId), eq(savedOpportunities.opportunityId, opportunityId)))
+    .limit(1);
+  
+  if (existing.length > 0) {
+    return existing[0];
+  }
+  
+  const result: any = await db.insert(savedOpportunities).values({
+    userId,
+    opportunityId,
+    notes: notes || null,
+  });
+  return result.insertId;
+}
+
+export async function unsaveOpportunity(userId: number, opportunityId: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db.delete(savedOpportunities)
+    .where(and(eq(savedOpportunities.userId, userId), eq(savedOpportunities.opportunityId, opportunityId)));
+}
+
+export async function getSavedOpportunities(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(savedOpportunities)
+    .where(eq(savedOpportunities.userId, userId))
+    .orderBy(desc(savedOpportunities.createdAt));
+}
+
+export async function isOpportunitySaved(userId: number, opportunityId: number): Promise<boolean> {
+  const db = await getDb();
+  if (!db) return false;
+  const result = await db.select().from(savedOpportunities)
+    .where(and(eq(savedOpportunities.userId, userId), eq(savedOpportunities.opportunityId, opportunityId)))
+    .limit(1);
+  return result.length > 0;
+}

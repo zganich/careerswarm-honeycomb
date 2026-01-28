@@ -410,6 +410,21 @@ export const notifications = mysqlTable("notifications", {
 });
 
 // ================================================================
+// SAVED OPPORTUNITIES
+// ================================================================
+
+export const savedOpportunities = mysqlTable("savedOpportunities", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  opportunityId: int("opportunityId").notNull(),
+  
+  // Optional notes
+  notes: text("notes"),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+// ================================================================
 // TYPE EXPORTS
 // ================================================================
 
@@ -430,3 +445,4 @@ export type Opportunity = typeof opportunities.$inferSelect;
 export type Application = typeof applications.$inferSelect;
 export type AgentExecutionLog = typeof agentExecutionLogs.$inferSelect;
 export type Notification = typeof notifications.$inferSelect;
+export type SavedOpportunity = typeof savedOpportunities.$inferSelect;
