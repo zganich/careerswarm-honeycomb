@@ -21,6 +21,7 @@ import OnboardingPreferences from "./pages/onboarding/Preferences";
 
 // Master Profile Dashboard
 import Profile from "./pages/Profile";
+import ProfileEdit from "./pages/ProfileEdit";
 
 // Jobs & Applications
 import Jobs from "./pages/Jobs";
@@ -50,6 +51,7 @@ function Router() {
 
       {/* Master Profile */}
       <Route path="/profile" component={Profile} />
+      <Route path="/profile/edit" component={ProfileEdit} />
 
       {/* Jobs & Applications */}
       <Route path="/jobs" component={Jobs} />

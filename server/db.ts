@@ -192,6 +192,13 @@ export async function createSkill(data: Partial<Skill>) {
   return result.insertId;
 }
 
+export async function deleteSkill(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db.delete(skills)
+    .where(and(eq(skills.id, id), eq(skills.userId, userId)));
+}
+
 // ================================================================
 // UPLOADED RESUME OPERATIONS
 // ================================================================
@@ -468,3 +475,4 @@ export async function getAwards(userId: number) {
 }
 
 // Note: Superpower operations are already defined earlier in this file
+// Note: Update/Delete operations for work experiences, achievements, and skills are already defined earlier in this file

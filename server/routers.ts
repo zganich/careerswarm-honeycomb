@@ -606,6 +606,97 @@ Each superpower should:
       return workHistoryWithAchievements;
     }),
 
+    // Add work experience
+    addWorkExperience: protectedProcedure
+      .input(z.object({
+        companyName: z.string(),
+        jobTitle: z.string(),
+        startDate: z.string(),
+        endDate: z.string().nullable(),
+        location: z.string().nullable(),
+        isCurrent: z.boolean(),
+        roleOverview: z.string().nullable(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const user = await db.getUserByOpenId(ctx.user.openId);
+        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
+        const workExperienceId = await db.createWorkExperience({
+          userId: user.id,
+          companyName: input.companyName,
+          jobTitle: input.jobTitle,
+          startDate: new Date(input.startDate),
+          endDate: input.endDate ? new Date(input.endDate) : null,
+          location: input.location,
+          isCurrent: input.isCurrent,
+          roleOverview: input.roleOverview,
+        });
+
+        return { success: true, id: workExperienceId };
+      }),
+
+    // Update work experience
+    updateWorkExperience: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        companyName: z.string().optional(),
+        jobTitle: z.string().optional(),
+        startDate: z.string().optional(),
+        endDate: z.string().nullable().optional(),
+        location: z.string().nullable().optional(),
+        isCurrent: z.boolean().optional(),
+        roleOverview: z.string().nullable().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const user = await db.getUserByOpenId(ctx.user.openId);
+        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
+        const { id, ...data } = input;
+        // Convert string dates to Date objects
+        const updateData: any = { ...data };
+        if (data.startDate) updateData.startDate = new Date(data.startDate);
+        if (data.endDate) updateData.endDate = new Date(data.endDate);
+        await db.updateWorkExperience(id, user.id, updateData);
+
+        return { success: true };
+      }),
+
+    // Delete work experience
+    deleteWorkExperience: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const user = await db.getUserByOpenId(ctx.user.openId);
+        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
+        await db.deleteWorkExperience(input.id, user.id);
+
+        return { success: true };
+      }),
+
+    // Add achievement
+    addAchievement: protectedProcedure
+      .input(z.object({
+        workExperienceId: z.number(),
+        description: z.string(),
+        context: z.string().nullable(),
+        metricType: z.string().nullable(),
+        metricValue: z.number().nullable(),
+        metricUnit: z.string().nullable(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const user = await db.getUserByOpenId(ctx.user.openId);
+        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
+        const achievementData: any = { ...input };
+        if (input.metricValue !== null) {
+          achievementData.metricValue = input.metricValue.toString();
+        }
+
+        const achievementId = await db.createAchievement(achievementData);
+
+        return { success: true, id: achievementId };
+      }),
+
     // Update achievement
     updateAchievement: protectedProcedure
       .input(z.object({
@@ -628,6 +719,52 @@ Each superpower should:
           updateData.metricValue = data.metricValue.toString();
         }
         await db.updateAchievement(id, user.id, updateData);
+
+        return { success: true };
+      }),
+
+    // Delete achievement
+    deleteAchievement: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const user = await db.getUserByOpenId(ctx.user.openId);
+        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
+        await db.deleteAchievement(input.id, user.id);
+
+        return { success: true };
+      }),
+
+    // Add skill
+    addSkill: protectedProcedure
+      .input(z.object({
+        skillName: z.string(),
+        skillCategory: z.string(),
+        proficiencyLevel: z.string(),
+        yearsExperience: z.number().nullable(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const user = await db.getUserByOpenId(ctx.user.openId);
+        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
+        const skillData: any = { userId: user.id, ...input };
+        if (input.yearsExperience !== null) {
+          skillData.yearsExperience = input.yearsExperience.toString();
+        }
+
+        const skillId = await db.createSkill(skillData);
+
+        return { success: true, id: skillId };
+      }),
+
+    // Delete skill
+    deleteSkill: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const user = await db.getUserByOpenId(ctx.user.openId);
+        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
+        await db.deleteSkill(input.id, user.id);
 
         return { success: true };
       }),
