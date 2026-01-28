@@ -599,3 +599,52 @@ export async function createSuperpower(data: {
   });
   return result.insertId;
 }
+
+
+// ================================================================
+// TARGET PREFERENCES OPERATIONS
+// ================================================================
+
+export async function updateTargetPreferences(
+  userId: number,
+  data: {
+    roleTitles?: string[];
+    industries?: string[];
+    companyStages?: string[];
+    locationType?: "remote" | "hybrid" | "onsite" | "flexible";
+    allowedCities?: string[];
+    minimumBaseSalary?: number | null;
+    dealBreakers?: string[];
+  }
+) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  // Get existing preferences
+  const existing = await db.select().from(targetPreferences).where(eq(targetPreferences.userId, userId)).limit(1);
+  
+  if (existing.length === 0) {
+    // Create new preferences if they don't exist
+    const insertData: any = {
+      userId,
+      roleTitles: data.roleTitles || [],
+      industries: data.industries || [],
+      companyStages: data.companyStages || [],
+      locationType: data.locationType || "remote",
+      allowedCities: data.allowedCities || [],
+      minimumBaseSalary: data.minimumBaseSalary,
+      dealBreakers: data.dealBreakers || [],
+    };
+    await db.insert(targetPreferences).values(insertData);
+  } else {
+    // Update existing preferences
+    await db.update(targetPreferences)
+      .set({
+        ...data,
+        updatedAt: new Date(),
+      })
+      .where(eq(targetPreferences.userId, userId));
+  }
+  
+  return userId;
+}

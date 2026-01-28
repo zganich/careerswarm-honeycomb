@@ -922,6 +922,26 @@ Each superpower should:
 
         return { success: true };
       }),
+
+    // Update target preferences
+    updatePreferences: protectedProcedure
+      .input(z.object({
+        roleTitles: z.array(z.string()).optional(),
+        industries: z.array(z.string()).optional(),
+        companyStages: z.array(z.string()).optional(),
+        locationType: z.enum(["remote", "hybrid", "onsite", "flexible"]).optional(),
+        allowedCities: z.array(z.string()).optional(),
+        minimumBaseSalary: z.number().nullable().optional(),
+        dealBreakers: z.array(z.string()).optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const user = await db.getUserByOpenId(ctx.user.openId);
+        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
+        await db.updateTargetPreferences(user.id, input);
+
+        return { success: true };
+      }),
   }),
 
   // ================================================================

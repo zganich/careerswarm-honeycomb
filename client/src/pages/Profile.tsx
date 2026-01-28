@@ -20,6 +20,7 @@ import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { AchievementDetailModal } from "@/components/AchievementDetailModal";
 import { SuperpowerEditModal } from "@/components/SuperpowerEditModal";
+import { PreferencesEditModal } from "@/components/PreferencesEditModal";
 
 export default function Profile() {
   const [, setLocation] = useLocation();
@@ -28,6 +29,7 @@ export default function Profile() {
   const [selectedAchievement, setSelectedAchievement] = useState<any | null>(null);
   const [achievementModalOpen, setAchievementModalOpen] = useState(false);
   const [superpowerModalOpen, setSuperpowerModalOpen] = useState(false);
+  const [preferencesModalOpen, setPreferencesModalOpen] = useState(false);
 
   const { data: profile, isLoading } = trpc.profile.get.useQuery();
   const { data: achievementStats } = trpc.profile.getAchievementStats.useQuery();
@@ -384,6 +386,55 @@ export default function Profile() {
 
         {/* Skills & Education Row */}
         <div className="grid md:grid-cols-2 gap-8">
+          {/* Target Preferences */}
+          <Card className="mb-8">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-primary" />
+                  Target Preferences
+                </CardTitle>
+                <Button variant="ghost" size="sm" onClick={() => setPreferencesModalOpen(true)}>
+                  <Edit className="h-4 w-4" />
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {profile?.preferences ? (
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-sm font-medium mb-2">Target Roles</p>
+                    <div className="flex flex-wrap gap-2">
+                      {profile.preferences.roleTitles?.map((role: string, i: number) => (
+                        <Badge key={i} variant="secondary">{role}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium mb-2">Industries</p>
+                    <div className="flex flex-wrap gap-2">
+                      {profile.preferences.industries?.map((industry: string, i: number) => (
+                        <Badge key={i} variant="secondary">{industry}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium mb-2">Location Preference</p>
+                    <Badge variant="outline">{profile.preferences.locationType}</Badge>
+                  </div>
+                  {profile.preferences.minimumBaseSalary && (
+                    <div>
+                      <p className="text-sm font-medium mb-2">Minimum Salary</p>
+                      <p className="text-sm">${profile.preferences.minimumBaseSalary.toLocaleString()}</p>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">No preferences set yet</p>
+              )}
+            </CardContent>
+          </Card>
+
           {/* Skills */}
           <Card>
             <CardHeader>
@@ -447,6 +498,21 @@ export default function Profile() {
           // Refetch profile data
           window.location.reload();
         }}
+      />
+
+      {/* Preferences Edit Modal */}
+      <PreferencesEditModal
+        open={preferencesModalOpen}
+        onClose={() => setPreferencesModalOpen(false)}
+        preferences={profile?.preferences ? {
+          roleTitles: profile.preferences.roleTitles || [],
+          industries: profile.preferences.industries || [],
+          companyStages: profile.preferences.companyStages || [],
+          locationType: (profile.preferences.locationType as "remote" | "hybrid" | "onsite" | "flexible") || "remote",
+          allowedCities: profile.preferences.allowedCities || [],
+          minimumBaseSalary: profile.preferences.minimumBaseSalary,
+          dealBreakers: profile.preferences.dealBreakers || [],
+        } : null}
       />
     </div>
   );

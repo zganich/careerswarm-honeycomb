@@ -311,3 +311,11 @@
 - [x] Create updateSuperpower and createSuperpower db functions
 - [x] Add profile.updateSuperpower tRPC procedure
 - [x] Wire Edit button on Profile page to open modal
+
+
+### Target Preferences Editing ✅ COMPLETE (Jan 28, 2026)
+- [x] Added updatePreferences tRPC procedure
+- [x] Added updateTargetPreferences function to db.ts
+- [x] Created PreferencesEditModal component
+- [x] Added preferences section to Profile page
+- [x] Users can now edit role titles, industries, company stages, location type, cities, salary, and deal breakers
