@@ -225,3 +225,20 @@ Completing remaining Priority 2 & 3 features:
 - [x] Added "Follow-up Due" badge to Applications page
 - [x] Badge shows when nextFollowUpDue is past current date
 - [x] Orange color for visibility
+
+
+### Application Timeline View ✅ COMPLETE
+- [x] Created Timeline tab in ApplicationDetail page
+- [x] Display all timeline events (created, applied, response, phone screen, interview, offer, follow-ups)
+- [x] Show timestamps for each event
+- [x] Visual timeline with colored dots and connecting line
+- [x] Display next follow-up due date if applicable
+- [x] Set Timeline as default tab
+
+### Status Pipeline View ✅ COMPLETE
+- [x] Created StatusPipeline component
+- [x] Visual pipeline showing 7 stages (Draft → Applied → Response → Phone Screen → Interview → Final → Offer)
+- [x] Highlight current stage and completed stages
+- [x] Show checkmarks for completed stages
+- [x] Handle special statuses (accepted, rejected, withdrawn, ghosted)
+- [x] Integrated into ApplicationDetail Timeline tab
