@@ -300,3 +300,14 @@
 - [x] Add pagination placeholder for long lists (20 items per page)
 - [x] Link from Dashboard "View All Activity →" button
 - [x] Mark notifications as read when viewed
+
+
+### Superpower Editing UI ✅ COMPLETE
+- [x] Create SuperpowerEditModal component
+- [x] Edit all 3 superpowers (title, description)
+- [x] Select evidence achievements with checkboxes
+- [x] Show selected achievement count
+- [x] Add superpowers.description and superpowers.evidence fields to schema
+- [x] Create updateSuperpower and createSuperpower db functions
+- [x] Add profile.updateSuperpower tRPC procedure
+- [x] Wire Edit button on Profile page to open modal

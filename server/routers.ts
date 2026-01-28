@@ -887,6 +887,41 @@ Each superpower should:
         },
       };
     }),
+
+    // Update superpower
+    updateSuperpower: protectedProcedure
+      .input(z.object({
+        id: z.number().nullable(),
+        title: z.string(),
+        description: z.string(),
+        evidence: z.string(),
+        evidenceAchievementIds: z.array(z.number()),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const user = await db.getUserByOpenId(ctx.user.openId);
+        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
+        if (input.id) {
+          // Update existing superpower
+          await db.updateSuperpower(input.id, {
+            title: input.title,
+            description: input.description,
+            evidence: input.evidence,
+            evidenceAchievementIds: input.evidenceAchievementIds,
+          });
+        } else {
+          // Create new superpower
+          await db.createSuperpower({
+            userId: user.id,
+            title: input.title,
+            description: input.description,
+            evidence: input.evidence,
+            evidenceAchievementIds: input.evidenceAchievementIds,
+          });
+        }
+
+        return { success: true };
+      }),
   }),
 
   // ================================================================

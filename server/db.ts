@@ -552,3 +552,50 @@ export async function deleteApplicationNote(noteId: number, userId: number) {
   await db.delete(applicationNotes)
     .where(and(eq(applicationNotes.id, noteId), eq(applicationNotes.userId, userId)));
 }
+
+
+// ================================================================
+// SUPERPOWER OPERATIONS
+// ================================================================
+
+export async function updateSuperpower(
+  id: number,
+  data: {
+    title: string;
+    description: string;
+    evidence: string;
+    evidenceAchievementIds: number[];
+  }
+) {
+  const db = await getDb();
+  if (!db) return null;
+  await db.update(superpowers)
+    .set({
+      title: data.title,
+      description: data.description,
+      evidence: data.evidence,
+      evidenceAchievementIds: data.evidenceAchievementIds,
+      updatedAt: new Date(),
+    })
+    .where(eq(superpowers.id, id));
+  return id;
+}
+
+export async function createSuperpower(data: {
+  userId: number;
+  title: string;
+  description: string;
+  evidence: string;
+  evidenceAchievementIds: number[];
+}) {
+  const db = await getDb();
+  if (!db) return null;
+  const result: any = await db.insert(superpowers).values({
+    userId: data.userId,
+    title: data.title,
+    description: data.description,
+    evidence: data.evidence,
+    evidenceAchievementIds: data.evidenceAchievementIds,
+  });
+  return result.insertId;
+}

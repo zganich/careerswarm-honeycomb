@@ -19,6 +19,7 @@ import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { AchievementDetailModal } from "@/components/AchievementDetailModal";
+import { SuperpowerEditModal } from "@/components/SuperpowerEditModal";
 
 export default function Profile() {
   const [, setLocation] = useLocation();
@@ -26,6 +27,7 @@ export default function Profile() {
   const [expandedJob, setExpandedJob] = useState<number | null>(null);
   const [selectedAchievement, setSelectedAchievement] = useState<any | null>(null);
   const [achievementModalOpen, setAchievementModalOpen] = useState(false);
+  const [superpowerModalOpen, setSuperpowerModalOpen] = useState(false);
 
   const { data: profile, isLoading } = trpc.profile.get.useQuery();
   const { data: achievementStats } = trpc.profile.getAchievementStats.useQuery();
@@ -136,7 +138,7 @@ export default function Profile() {
                 <Sparkles className="h-5 w-5 text-primary" />
                 Your Top 3 Superpowers
               </CardTitle>
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" onClick={() => setSuperpowerModalOpen(true)}>
                 <Edit className="h-4 w-4" />
               </Button>
             </div>
@@ -432,6 +434,18 @@ export default function Profile() {
         onDelete={() => {
           // TODO: Implement delete functionality
           console.log("Delete achievement:", selectedAchievement);
+        }}
+      />
+
+      {/* Superpower Edit Modal */}
+      <SuperpowerEditModal
+        open={superpowerModalOpen}
+        onOpenChange={setSuperpowerModalOpen}
+        superpowers={profile?.superpowers || []}
+        achievements={profile?.achievements || []}
+        onSuccess={() => {
+          // Refetch profile data
+          window.location.reload();
         }}
       />
     </div>

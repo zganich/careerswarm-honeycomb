@@ -180,6 +180,8 @@ export const superpowers = mysqlTable("superpowers", {
   userId: int("userId").notNull(),
   
   title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  evidence: text("evidence"),
   evidenceAchievementIds: json("evidenceAchievementIds").$type<number[]>(),
   rank: int("rank"), // 1, 2, 3 (top 3 superpowers)
   
