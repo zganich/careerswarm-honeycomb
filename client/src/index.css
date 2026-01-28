@@ -63,6 +63,14 @@
   --color-primary-600: #ea580c;
   --color-primary-900: #7c2d12;
   
+  /* Career Archaeology Theme Colors */
+  --color-trust-blue: #2563EB;
+  --color-trust-blue-light: #EFF6FF;
+  --color-trust-blue-lighter: #DBEAFE;
+  --color-action-orange: #F97316;
+  --color-soft-gray: #F9FAFB;
+  --color-border-gray: #D1D5DB;
+  
   /* Animation Keyframes */
   @keyframes scan {
     0% { top: 0%; opacity: 0; }
@@ -86,11 +94,36 @@
     100% { transform: translateX(-50%); }
   }
   
+  @keyframes gentle-pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.02); opacity: 0.9; }
+  }
+  
+  @keyframes count-up {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  
+  @keyframes checkmark-bounce {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+  
+  @keyframes progress-glow {
+    0%, 100% { box-shadow: 0 0 0 rgba(37, 99, 235, 0); }
+    50% { box-shadow: 0 0 20px rgba(37, 99, 235, 0.4); }
+  }
+  
   /* Animation Utilities */
   --animate-scan: scan 4s linear infinite;
   --animate-float: float 6s ease-in-out infinite;
   --animate-pulse-slow: pulse-slow 3s ease-in-out infinite;
   --animate-marquee: marquee 30s linear infinite;
+  --animate-gentle-pulse: gentle-pulse 2s ease-in-out infinite;
+  --animate-count-up: count-up 0.3s ease-out;
+  --animate-checkmark-bounce: checkmark-bounce 0.4s ease-out;
+  --animate-progress-glow: progress-glow 2s ease-in-out infinite;
 }
 
 :root {

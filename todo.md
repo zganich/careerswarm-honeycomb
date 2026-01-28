@@ -319,3 +319,197 @@
 - [x] Created PreferencesEditModal component
 - [x] Added preferences section to Profile page
 - [x] Users can now edit role titles, industries, company stages, location type, cities, salary, and deal breakers
+
+
+---
+
+## 🐛 URGENT: Design Not Showing on Live Site (Jan 28, 2026)
+- [ ] Investigate why design is not rendering on live site
+- [ ] Check CSS loading and compilation
+- [ ] Verify Tailwind configuration
+- [ ] Check for JavaScript errors blocking rendering
+- [ ] Test on actual deployed URL
+- [ ] Fix any asset loading issues
+
+
+---
+
+## 🚀 CONVERSION-OPTIMIZED ONBOARDING REDESIGN (Jan 28, 2026)
+
+### Goal: Transform 5-step (8-12 min) → 3-step (≤3 min) with ≥85% completion
+
+### Step 1: Magic Capture (60s)
+- [ ] Camera-first mobile upload (prioritize camera on mobile devices)
+- [ ] File upload fallback (PDF)
+- [ ] Text paste option
+- [ ] Instant parsing feedback (<3s processing)
+- [ ] Endowed progress bar (start at 70% complete)
+- [ ] Privacy & security badges
+- [ ] Offline-first resume saving (localStorage + IndexedDB)
+
+### Step 2: Instant Score (45s)
+- [ ] Career score calculation (integrate Resume Roast)
+- [ ] Social proof display ("Beats 78% of professionals")
+- [ ] Strength highlighting (top skills/achievements)
+- [ ] Auto-fix suggestions (+1.2 pts: Add 3 metrics)
+- [ ] One-click auto-fix button
+- [ ] Score count-up animation
+- [ ] Trust badges ("No AI hallucination")
+
+### Step 3: Quick Apply (75s)
+- [ ] Pre-computed job matches (during parsing)
+- [ ] Match score display (94% match)
+- [ ] One-click apply button
+- [ ] Pre-filled application forms
+- [ ] Application time estimate ("Takes 45 seconds")
+- [ ] Confetti animation on submit
+- [ ] Auto-create application tracking
+
+### Conversion Psychology
+- [ ] Endowed progress (start at 70% complete)
+- [ ] Social proof ("Beats 78% of professionals")
+- [ ] Scarcity ("Limited: 5 free optimizations")
+- [ ] Urgency ("Takes 45 seconds")
+- [ ] One primary action per screen (single green CTA)
+
+### Mobile-First Design
+- [ ] 44px minimum touch targets
+- [ ] Camera-first upload on mobile
+- [ ] Thumb-zone optimized CTAs
+- [ ] Swipe gestures for navigation
+- [ ] Responsive breakpoints (mobile/tablet/desktop)
+
+### Micro-Interactions & Animations
+- [ ] Progress pulse after each step
+- [ ] Score count-up animation
+- [ ] Confetti burst on application submit
+- [ ] Streak counter for daily engagement
+- [ ] Social proof toast notifications
+- [ ] 150ms micro-interactions
+- [ ] 250ms UI transitions
+- [ ] 400ms page transitions
+
+### Analytics & Conversion Tracking
+- [ ] Visitor → Signup (Target: 35%)
+- [ ] Signup → Upload (Target: 85%)
+- [ ] Upload → Score (Target: 90%)
+- [ ] Score → Application (Target: 45%)
+- [ ] Application → Day 1 Return (Target: 60%)
+- [ ] A/B testing framework
+- [ ] Drop-off point tracking
+
+### Performance Targets
+- [ ] Page load: <1 second
+- [ ] Parsing time: <3 seconds
+- [ ] Score calculation: <1 second
+- [ ] Job matching: <2 seconds
+- [ ] Mobile load time: <3 seconds
+- [ ] PWA score: >90/100
+
+### Technical Implementation
+- [ ] Add Framer Motion for animations
+- [ ] Service Workers for offline-first
+- [ ] PWA capabilities
+- [ ] Integrate with existing tRPC endpoints
+- [ ] Maintain Manus OAuth integration
+- [ ] Support camera/file/text upload
+
+### Success Criteria
+- [ ] Onboarding completion: ≥85% (from ~60%)
+- [ ] Time to first application: ≤10 minutes
+- [ ] User satisfaction: >4.5/5 rating
+- [ ] Day 1 retention: ≥60%
+- [ ] Applications per user: ≥3 in first week
+
+
+---
+
+## 🎨 MASTER PROFILE BUILDER UI/UX (Career Archaeology Theme)
+
+### Goal: 4-step builder with ≥75% completion rate, ≤4 minutes to first job match
+
+### Step 1: Bulk Upload Interface
+- [ ] Hero section: "Upload Every Resume Version You've Ever Created"
+- [ ] Drag-and-drop zone with visual states (default, hover, dragging, uploading, success)
+- [ ] File browser fallback button
+- [ ] Support PDF, DOCX, TXT (max 20 files)
+- [ ] Trust indicators: "Processed securely", "Never stored in original form"
+- [ ] Progress indicator: "Step 1 of 4 • 25% Complete"
+- [ ] Upload states with animations (border pulse, scale, checkmarks)
+
+### Step 2: Live Merging Progress
+- [ ] Headline: "Building Your Complete Career Timeline"
+- [ ] Real-time progress display with file-by-file breakdown
+- [ ] Time saved counter (animated count-up)
+- [ ] Per-file status: roles found, skills identified, duplicates merged
+- [ ] "What We're Finding" section (patterns, skill evolution, themes)
+- [ ] Progress bar with glow effect
+- [ ] Sequential fade-in animations for file processing
+- [ ] Checkmarks with subtle bounce
+
+### Step 3: Master Profile Reveal
+- [ ] Headline: "Your Complete Career Evidence: Ready for Action"
+- [ ] Profile summary card with key metrics
+- [ ] Career timeline: years, unique roles, verified skills, achievements, themes
+- [ ] Confidence score: 96% (cross-referenced evidence)
+- [ ] Competitive advantage: "More evidence than 92% of candidates"
+- [ ] Gap analysis section with auto-fill suggestions
+- [ ] Timeline visualization (horizontal bar with role markers)
+- [ ] Skill cloud (weighted by frequency)
+- [ ] Achievement categories (color-coded by type)
+
+### Step 4: Targeted Application Ready
+- [ ] Headline: "Your Career Evidence is Ready for Any Opportunity"
+- [ ] Job description paste area
+- [ ] Quick actions: Search LinkedIn, Browse matches
+- [ ] Match percentage display (94%)
+- [ ] Perfect matches section (experience, scaling, revenue)
+- [ ] AI tailoring strategy preview
+- [ ] Action buttons: See tailored resume, Generate cover letter
+- [ ] Time estimate: "Ready in 45 seconds"
+- [ ] Primary CTA: "SEND APPLICATION NOW"
+
+### Micro-Interactions & Animations
+- [ ] Step completion: Scale-up + checkmark animation
+- [ ] Progress bar: Smooth fill with particle trail
+- [ ] Slide transitions: 300ms ease-out between steps
+- [ ] Verification badges: Slide-in with rotation
+- [ ] Confidence scores: Count-up animation
+- [ ] Security indicators: Shield icon pulse
+- [ ] Time saved counter: Animated increment
+- [ ] Evidence count: Number roll-up
+- [ ] Match percentage: Smooth increase
+- [ ] Primary CTA: Gentle glow pulse (2s interval)
+- [ ] Hover effects: Scale 1.02 + shadow elevation
+- [ ] Success states: Confetti burst on completion
+
+### Responsive Design
+- [ ] Mobile (<768px): Full-width, simplified copy, stacked cards, 44px buttons
+- [ ] Tablet (768px-1024px): Two-column layout, medium touch targets
+- [ ] Desktop (≥1024px): Multi-pane view, hover states, advanced animations
+
+### Trust & Security Elements
+- [ ] Encryption badge: "End-to-end encrypted processing"
+- [ ] File handling: "Original files discarded after parsing"
+- [ ] Verification: "96% confidence via cross-referencing"
+- [ ] Privacy: "Your data never sold or shared"
+- [ ] Show exactly what's being parsed
+- [ ] Display confidence scores for each data point
+- [ ] Explain merging logic in simple terms
+
+### Conversion-Optimized Copy
+- [ ] Value headlines: "15 fragments → One complete story"
+- [ ] Benefit CTAs: "Build Your Master Profile", "See Complete Timeline"
+- [ ] Social proof: "Join 12,847 professionals", "94% better interviews"
+- [ ] "More evidence than 92% of candidates"
+- [ ] "Apply with 10x more career evidence"
+
+### Success Metrics
+- [ ] Upload completion: ≥85%
+- [ ] Profile completion: ≥75%
+- [ ] Time to value: ≤4 minutes
+- [ ] Application rate: ≥40% during onboarding
+- [ ] Time per step: ≤60 seconds
+- [ ] Error rate: <2%
+- [ ] Mobile completion: ≥80% of desktop
+- [ ] Day 1 retention: ≥65%
