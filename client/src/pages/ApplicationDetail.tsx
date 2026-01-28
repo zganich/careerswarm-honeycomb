@@ -9,6 +9,7 @@ import {
   FileText, Mail, MessageSquare, Briefcase 
 } from "lucide-react";
 import StatusPipeline from "@/components/StatusPipeline";
+import NotesSection from "@/components/NotesSection";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -115,7 +116,7 @@ export default function ApplicationDetail() {
 
       {/* Generated Materials Tabs */}
       <Tabs defaultValue="timeline" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="timeline">
             <Briefcase className="w-4 h-4 mr-2" />
             Timeline
@@ -135,6 +136,10 @@ export default function ApplicationDetail() {
           <TabsTrigger value="email">
             <Mail className="w-4 h-4 mr-2" />
             Email Outreach
+          </TabsTrigger>
+          <TabsTrigger value="notes">
+            <MessageSquare className="w-4 h-4 mr-2" />
+            Notes
           </TabsTrigger>
         </TabsList>
 
@@ -418,17 +423,12 @@ export default function ApplicationDetail() {
             )}
           </Card>
         </TabsContent>
-      </Tabs>
 
-      {/* Application Notes */}
-      {application.outcomeNotes && (
-        <Card className="p-6 mt-6">
-          <h3 className="text-lg font-semibold mb-3">Notes</h3>
-          <p className="text-sm whitespace-pre-wrap text-muted-foreground">
-            {application.outcomeNotes}
-          </p>
-        </Card>
-      )}
+        {/* Notes Tab */}
+        <TabsContent value="notes">
+          <NotesSection applicationId={application.id!} />
+        </TabsContent>
+      </Tabs>
 
       {/* Next Steps */}
       <Card className="p-6 mt-6 bg-primary/5 border-primary/20">

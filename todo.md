@@ -316,3 +316,16 @@ Completing remaining Priority 2 & 3 features:
 - [x] Add Remove button to unsave opportunities
 - [x] Show "Saved X time ago" timestamp
 - [x] Empty state with link to Jobs page
+
+
+### Application Notes ✅ COMPLETE
+- [x] Create applicationNotes table in schema
+- [x] Add ApplicationNote type exports
+- [x] Add application notes helper functions to db.ts (getApplicationNotes, createApplicationNote, deleteApplicationNote)
+- [x] Add getNotes, addNote, deleteNote procedures to applications router
+- [x] Create NotesSection component with textarea input
+- [x] Display notes chronologically with timestamps
+- [x] Add delete button for each note
+- [x] Add Notes tab to ApplicationDetail page
+- [x] Show empty state when no notes exist
+- [x] Use date-fns for "X time ago" formatting

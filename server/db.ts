@@ -5,11 +5,11 @@ import {
   workExperiences, userProfiles, superpowers,
   uploadedResumes, targetPreferences,
   opportunities, applications, agentExecutionLogs, notifications,
-  certifications, education, awards, savedOpportunities,
+  certifications, education, awards, savedOpportunities, applicationNotes,
   type Achievement, type Skill, type WorkExperience, type UserProfile,
   type Superpower, type UploadedResume, type TargetPreferences,
   type Opportunity, type Application, type AgentExecutionLog, type Notification,
-  type Certification, type Education, type Award, type SavedOpportunity
+  type Certification, type Education, type Award, type SavedOpportunity, type ApplicationNote
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -525,4 +525,30 @@ export async function isOpportunitySaved(userId: number, opportunityId: number):
     .where(and(eq(savedOpportunities.userId, userId), eq(savedOpportunities.opportunityId, opportunityId)))
     .limit(1);
   return result.length > 0;
+}
+
+// ================================================================
+// APPLICATION NOTES OPERATIONS
+// ================================================================
+
+export async function getApplicationNotes(applicationId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(applicationNotes)
+    .where(eq(applicationNotes.applicationId, applicationId))
+    .orderBy(desc(applicationNotes.createdAt));
+}
+
+export async function createApplicationNote(applicationId: number, userId: number, noteText: string) {
+  const db = await getDb();
+  if (!db) return null;
+  const result: any = await db.insert(applicationNotes).values({ applicationId, userId, noteText });
+  return result.insertId;
+}
+
+export async function deleteApplicationNote(noteId: number, userId: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db.delete(applicationNotes)
+    .where(and(eq(applicationNotes.id, noteId), eq(applicationNotes.userId, userId)));
 }

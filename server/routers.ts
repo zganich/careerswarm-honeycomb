@@ -1090,6 +1090,53 @@ Each superpower should:
           estimatedTime: applicationPackage.estimatedTimeToApply,
         };
       }),
+
+    // Get application notes
+    getNotes: protectedProcedure
+      .input(z.object({ applicationId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const user = await db.getUserByOpenId(ctx.user.openId);
+        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
+        // Verify application belongs to user
+        const application = await db.getApplicationById(input.applicationId, user.id);
+        if (!application) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Application not found" });
+        }
+
+        return db.getApplicationNotes(input.applicationId);
+      }),
+
+    // Add application note
+    addNote: protectedProcedure
+      .input(z.object({
+        applicationId: z.number(),
+        noteText: z.string().min(1),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const user = await db.getUserByOpenId(ctx.user.openId);
+        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
+        // Verify application belongs to user
+        const application = await db.getApplicationById(input.applicationId, user.id);
+        if (!application) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Application not found" });
+        }
+
+        const noteId = await db.createApplicationNote(input.applicationId, user.id, input.noteText);
+        return { success: true, noteId };
+      }),
+
+    // Delete application note
+    deleteNote: protectedProcedure
+      .input(z.object({ noteId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const user = await db.getUserByOpenId(ctx.user.openId);
+        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
+        await db.deleteApplicationNote(input.noteId, user.id);
+        return { success: true };
+      }),
   }),
 
   // ================================================================

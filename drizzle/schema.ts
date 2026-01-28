@@ -425,6 +425,21 @@ export const savedOpportunities = mysqlTable("savedOpportunities", {
 });
 
 // ================================================================
+// APPLICATION NOTES
+// ================================================================
+
+export const applicationNotes = mysqlTable("applicationNotes", {
+  id: int("id").autoincrement().primaryKey(),
+  applicationId: int("applicationId").notNull(),
+  userId: int("userId").notNull(),
+  
+  // Note content
+  noteText: text("noteText").notNull(),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+// ================================================================
 // TYPE EXPORTS
 // ================================================================
 
@@ -446,3 +461,5 @@ export type Application = typeof applications.$inferSelect;
 export type AgentExecutionLog = typeof agentExecutionLogs.$inferSelect;
 export type Notification = typeof notifications.$inferSelect;
 export type SavedOpportunity = typeof savedOpportunities.$inferSelect;
+export type ApplicationNote = typeof applicationNotes.$inferSelect;
+export type InsertApplicationNote = typeof applicationNotes.$inferInsert;
