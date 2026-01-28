@@ -27,6 +27,7 @@ import ProfileEdit from "./pages/ProfileEdit";
 // Jobs & Applications
 import Jobs from "./pages/Jobs";
 import OpportunityDetail from "./pages/OpportunityDetail";
+import SavedOpportunities from "./pages/SavedOpportunities";
 import Applications from "./pages/Applications";
 import ApplicationDetail from "./pages/ApplicationDetail";
 
@@ -56,9 +57,9 @@ function Router() {
       {/* Master Profile */}
       <Route path="/profile" component={Profile} />
       <Route path="/profile/edit" component={ProfileEdit} />
-
-      {/* Jobs & Applications */}
+      {/* Jobs & Opportunities */}
       <Route path="/jobs" component={Jobs} />
+      <Route path="/saved" component={SavedOpportunities} />
       <Route path="/opportunities/:id" component={OpportunityDetail} />
       <Route path="/applications" component={Applications} />
       <Route path="/applications/:id" component={ApplicationDetail} />

@@ -253,3 +253,66 @@ Completing remaining Priority 2 & 3 features:
 - [x] Integrated SaveOpportunityButton into Jobs page opportunity cards
 - [x] Toggle between Bookmark and BookmarkCheck icons based on saved status
 - [x] Show toast notifications on save/unsave
+
+
+---
+
+## 🎯 ORIGINAL DESIGN DOCUMENT FEATURES (Still Missing)
+
+### Saved Opportunities Page
+- [ ] Create /saved route in App.tsx
+- [ ] Create SavedOpportunities.tsx page component
+- [ ] Display all bookmarked jobs in grid/list view
+- [ ] Add filter by company stage
+- [ ] Add filter by location
+- [ ] Add filter by date saved
+- [ ] Add sort by match score, date saved, company name
+- [ ] Add bulk actions (remove multiple, apply to multiple)
+- [ ] Show "View All →" link from Dashboard Recent Activity section
+
+### Application Notes & Activity
+- [ ] Add "Add Note" button to ApplicationDetail page
+- [ ] Create notes input form with timestamp
+- [ ] Display notes chronologically in "Notes & Activity" section
+- [ ] Save notes to database (add notes field to applications table or create notes table)
+- [ ] Create applications.addNote tRPC procedure
+
+### Profile Completeness Indicator
+- [ ] Add "Profile Completeness" progress bar to Profile page
+- [ ] Calculate completeness percentage (contact info, work experience, achievements, skills, preferences)
+- [ ] Show "Complete Your Profile →" button when < 100%
+- [ ] Create profile.getCompleteness tRPC procedure
+
+### Achievement Detail Modal
+- [ ] Create AchievementDetailModal component
+- [ ] Show full achievement description with edit capability
+- [ ] Display metrics (type, value, timeframe, context)
+- [ ] Display keywords/tags
+- [ ] Show usage statistics (times used, success rate, applications list)
+- [ ] Show linked superpowers
+- [ ] Add "Edit" and "Delete" buttons
+- [ ] Trigger modal from achievement cards on Profile page
+
+### Dashboard "View All Activity" Page
+- [ ] Create /activity route in App.tsx
+- [ ] Create Activity.tsx page component
+- [ ] Display all notifications and activity in chronological order
+- [ ] Filter by type (follow-ups, responses, new matches, notes)
+- [ ] Pagination for long activity lists
+- [ ] Link from Dashboard "View All Activity →" button
+
+
+### Saved Opportunities Page ✅ COMPLETE
+- [x] Create /saved route in App.tsx
+- [x] Create SavedOpportunities.tsx page component
+- [x] Display all bookmarked jobs in grid/list view
+- [x] Add filter by company stage
+- [x] Add filter by location
+- [x] Add filter by date saved
+- [x] Add sort by match score, date saved, company name
+- [x] Show opportunity details (company, role, location, salary, match score)
+- [x] Add Quick Apply button for each opportunity
+- [x] Add View Details button to open modal
+- [x] Add Remove button to unsave opportunities
+- [x] Show "Saved X time ago" timestamp
+- [x] Empty state with link to Jobs page
