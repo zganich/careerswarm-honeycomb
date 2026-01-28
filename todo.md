@@ -513,3 +513,51 @@
 - [ ] Error rate: <2%
 - [ ] Mobile completion: ≥80% of desktop
 - [ ] Day 1 retention: ≥65%
+
+
+---
+
+## 🎨 CAREER ARCHAEOLOGY UI/UX - EXACT IMPLEMENTATION
+
+### Step 1: Bulk Upload Interface
+- [ ] Hero: "🗂️ Upload Every Resume Version You've Ever Created"
+- [ ] Upload zone with file icon grid (8x2 = 16 file icons)
+- [ ] Drag & drop with exact states (default, hover, dragging, uploading, success)
+- [ ] Trust indicators: "🔒 Your files are processed securely"
+- [ ] Progress: "Step 1 of 4 • 25% Complete"
+
+### Step 2: Live Merging Progress
+- [ ] Headline: "🔍 Building Your Complete Career Timeline"
+- [ ] Time saved counter: "⏱️ Time Saved: Already saved you 2 hours"
+- [ ] File processing cards with checkmarks and findings
+- [ ] "What We're Finding" section with bullet points
+- [ ] Sequential fade-in animations for file processing
+
+### Step 3: Master Profile Reveal
+- [ ] Headline: "🎯 Your Complete Career Evidence: Ready for Action"
+- [ ] Profile summary card with stats (timeline, roles, skills, achievements)
+- [ ] Confidence score: "🔍 Confidence Score: 96%"
+- [ ] Competitive advantage: "More evidence than 92% of candidates"
+- [ ] Gap analysis with auto-fill suggestions
+
+### Step 4: Targeted Application Ready
+- [ ] Headline: "🚀 Your Career Evidence is Ready for Any Opportunity"
+- [ ] Job description input area
+- [ ] Match percentage: "⚡ YOUR MASTER PROFILE MATCH: 94%"
+- [ ] Perfect matches section with checkmarks
+- [ ] AI tailoring strategy explanation
+- [ ] "Ready in 45 seconds" action section
+
+### Micro-Interactions
+- [ ] Progress bar with particle trail
+- [ ] Confidence score count-up animation
+- [ ] Time saved counter animated increment
+- [ ] Checkmark bounce on completion
+- [ ] Primary CTA gentle glow pulse (2s)
+- [ ] Confetti burst on final completion
+
+### Trust & Security
+- [ ] "End-to-end encrypted processing"
+- [ ] "Original files discarded after parsing"
+- [ ] "96% confidence via cross-referencing"
+- [ ] "Your data never sold or shared"
