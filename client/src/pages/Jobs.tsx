@@ -17,11 +17,13 @@ import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { toast } from "sonner";
+import { OpportunityDetailModal } from "@/components/OpportunityDetailModal";
 
 export default function Jobs() {
   const [, setLocation] = useLocation();
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedOpportunityId, setSelectedOpportunityId] = useState<number | null>(null);
 
   const { data: opportunities, isLoading, refetch } = trpc.opportunities.list.useQuery({});
   
@@ -187,20 +189,27 @@ export default function Jobs() {
                             </a>
                           </Button>
                         )}
-                        <Button
-                          size="sm"
-                          onClick={() => quickApply.mutate({ opportunityId: opp.id })}
-                          disabled={quickApply.isPending}
-                        >
-                          {quickApply.isPending ? (
-                            <>
-                              <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                              Applying...
-                            </>
-                          ) : (
-                            "Quick Apply"
-                          )}
-                        </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setSelectedOpportunityId(opp.id)}
+                  >
+                    View Details
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => quickApply.mutate({ opportunityId: opp.id })}
+                    disabled={quickApply.isPending}
+                  >
+                    {quickApply.isPending ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Applying...
+                      </>
+                    ) : (
+                      "🚀 Quick Apply"
+                    )}
+                  </Button>
                       </div>
                     </div>
 
@@ -247,6 +256,13 @@ export default function Jobs() {
           </Card>
         )}
       </div>
+
+      {/* Opportunity Detail Modal */}
+      <OpportunityDetailModal
+        opportunityId={selectedOpportunityId}
+        open={selectedOpportunityId !== null}
+        onClose={() => setSelectedOpportunityId(null)}
+      />
     </div>
   );
 }

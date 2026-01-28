@@ -51,16 +51,16 @@
 - [ ] Create applications.getById tRPC procedure
 - [ ] Create applications.getMaterials tRPC procedure
 
-### Opportunity Detail Modal
-- [ ] Create OpportunityDetailModal.tsx component
-- [ ] Show full job description
-- [ ] Display strategic analysis from Profiler agent
-- [ ] Show hiring manager name, title, LinkedIn
-- [ ] Show recruiter name, email
-- [ ] Display match score breakdown
-- [ ] Add "Quick Apply" button in modal
-- [ ] Add "Save for Later" button
-- [ ] Create opportunities.getById tRPC procedure
+### Opportunity### Opportunity Detail Modal ✅ COMPLETE
+- [x] Create OpportunityDetailModal component
+- [x] Show full job description
+- [x] Display strategic analysis (whyNow from Profiler agent)
+- [x] Show hiring manager and recruiter contacts from Hunter agent
+- [x] Display match score with visual progress bar
+- [x] Add "Quick Apply" button in modal
+- [x] Integrate modal into Jobs page with "View Details" button
+- [x] opportunities.getById tRPC procedure already existed
+- [ ] Add "Save for Later" button (deferred)ById tRPC procedure
 
 ### Achievement Usage Tracking Display ✅ COMPLETE
 - [x] Add usage stats to achievement cards on Profile page
@@ -188,7 +188,7 @@ Completing remaining Priority 2 & 3 features:
 3. ✅ Application detail page (COMPLETE)
 4. ✅ Profile editing UI (COMPLETE)
 5. ✅ Achievement usage tracking display (COMPLETE)
-6. ⏳ Opportunity detail modal
+6. ✅ Opportunity detail modal (COMPLETE)
 7. ⏳ Analytics dashboard
 8. ⏳ Real-time progress updates
 9. ⏳ Sort/filter improvements
