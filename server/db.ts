@@ -1,13 +1,13 @@
 import { eq, and, desc, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { 
-  InsertUser, users, pastEmployerJobs, achievements, skills, achievementSkills,
-  jobDescriptions, generatedResumes, powerVerbs,
-  jobs, applications, companies, contacts,
-  sourceMaterials, type InsertSourceMaterial,
-  type Achievement, type Skill, type JobDescription, type GeneratedResume,
-  type Job, type InsertJob, type Application, type InsertApplication,
-  type Company, type InsertCompany, type Contact, type InsertContact
+  InsertUser, users, achievements, skills,
+  workExperiences, userProfiles, superpowers,
+  uploadedResumes, targetPreferences,
+  opportunities, applications, agentExecutionLogs, notifications,
+  type Achievement, type Skill, type WorkExperience, type UserProfile,
+  type Superpower, type UploadedResume, type TargetPreferences,
+  type Opportunity, type Application, type AgentExecutionLog, type Notification
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -25,6 +25,10 @@ export async function getDb() {
   return _db;
 }
 
+// ================================================================
+// USER OPERATIONS
+// ================================================================
+
 export async function upsertUser(user: InsertUser): Promise<void> {
   if (!user.openId) throw new Error("User openId is required");
   const db = await getDb();
@@ -33,7 +37,7 @@ export async function upsertUser(user: InsertUser): Promise<void> {
   const values: InsertUser = { openId: user.openId };
   const updateSet: Record<string, unknown> = {};
 
-  const fields = ["name", "email", "loginMethod", "currentRole", "currentCompany"] as const;
+  const fields = ["name", "email", "loginMethod"] as const;
   fields.forEach(field => {
     if (user[field] !== undefined) {
       values[field] = user[field] ?? null;
@@ -41,426 +45,365 @@ export async function upsertUser(user: InsertUser): Promise<void> {
     }
   });
 
-  if (user.yearsOfExperience !== undefined) {
-    values.yearsOfExperience = user.yearsOfExperience;
-    updateSet.yearsOfExperience = user.yearsOfExperience;
-  }
-
-  if (user.targetRoles !== undefined) {
-    values.targetRoles = user.targetRoles;
-    updateSet.targetRoles = user.targetRoles;
-  }
-
-  if (user.lastSignedIn !== undefined) {
-    values.lastSignedIn = user.lastSignedIn;
-    updateSet.lastSignedIn = user.lastSignedIn;
-  }
-
-  if (user.role !== undefined) {
-    values.role = user.role;
-    updateSet.role = user.role;
-  } else if (user.openId === ENV.ownerOpenId) {
-    values.role = 'admin';
-    updateSet.role = 'admin';
-  }
-
-  if (!values.lastSignedIn) values.lastSignedIn = new Date();
-  if (Object.keys(updateSet).length === 0) updateSet.lastSignedIn = new Date();
-
   await db.insert(users).values(values).onDuplicateKeyUpdate({ set: updateSet });
 }
 
 export async function getUserByOpenId(openId: string) {
   const db = await getDb();
-  if (!db) return undefined;
+  if (!db) return null;
   const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
-  return result[0];
+  return result[0] || null;
 }
 
-export async function updateUserProfile(userId: number, data: Partial<InsertUser>) {
+export async function updateUserOnboardingStep(userId: number, step: number, completed: boolean = false) {
   const db = await getDb();
   if (!db) return;
-  await db.update(users).set(data).where(eq(users.id, userId));
+  await db.update(users)
+    .set({ onboardingStep: step, onboardingCompleted: completed })
+    .where(eq(users.id, userId));
 }
 
-// Achievements
-export async function createAchievement(data: Omit<Achievement, 'id' | 'createdAt' | 'updatedAt'>) {
+// ================================================================
+// USER PROFILE OPERATIONS
+// ================================================================
+
+export async function getUserProfile(userId: number) {
   const db = await getDb();
   if (!db) return null;
-  const result = await db.insert(achievements).values(data);
-  return Number(result[0].insertId);
+  const result = await db.select().from(userProfiles).where(eq(userProfiles.userId, userId)).limit(1);
+  return result[0] || null;
 }
 
-export async function getUserAchievements(userId: number) {
+export async function upsertUserProfile(userId: number, data: Partial<UserProfile>) {
+  const db = await getDb();
+  if (!db) return;
+  
+  const existing = await getUserProfile(userId);
+  if (existing) {
+    await db.update(userProfiles).set(data).where(eq(userProfiles.userId, userId));
+  } else {
+    await db.insert(userProfiles).values({ userId, ...data } as any);
+  }
+}
+
+// ================================================================
+// WORK EXPERIENCE OPERATIONS
+// ================================================================
+
+export async function getWorkExperiences(userId: number) {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(achievements).where(eq(achievements.userId, userId)).orderBy(desc(achievements.createdAt));
+  return db.select().from(workExperiences)
+    .where(eq(workExperiences.userId, userId))
+    .orderBy(desc(workExperiences.startDate));
 }
 
-export async function getAchievementById(id: number, userId: number) {
+export async function createWorkExperience(data: Partial<WorkExperience>) {
   const db = await getDb();
   if (!db) return null;
-  const result = await db.select().from(achievements).where(and(eq(achievements.id, id), eq(achievements.userId, userId))).limit(1);
-  return result[0] || null;
+  const result: any = await db.insert(workExperiences).values(data as any);
+  return result.insertId;
+}
+
+export async function updateWorkExperience(id: number, userId: number, data: Partial<WorkExperience>) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(workExperiences)
+    .set(data)
+    .where(and(eq(workExperiences.id, id), eq(workExperiences.userId, userId)));
+}
+
+export async function deleteWorkExperience(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db.delete(workExperiences)
+    .where(and(eq(workExperiences.id, id), eq(workExperiences.userId, userId)));
+}
+
+// ================================================================
+// ACHIEVEMENT OPERATIONS
+// ================================================================
+
+export async function getAchievements(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(achievements)
+    .where(eq(achievements.userId, userId))
+    .orderBy(desc(achievements.importanceScore));
+}
+
+export async function getAchievementsByWorkExperience(workExperienceId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(achievements)
+    .where(eq(achievements.workExperienceId, workExperienceId))
+    .orderBy(desc(achievements.importanceScore));
+}
+
+export async function createAchievement(data: Partial<Achievement>) {
+  const db = await getDb();
+  if (!db) return null;
+  const result: any = await db.insert(achievements).values(data as any);
+  return result.insertId;
 }
 
 export async function updateAchievement(id: number, userId: number, data: Partial<Achievement>) {
   const db = await getDb();
   if (!db) return;
-  await db.update(achievements).set(data).where(and(eq(achievements.id, id), eq(achievements.userId, userId)));
+  await db.update(achievements)
+    .set(data)
+    .where(and(eq(achievements.id, id), eq(achievements.userId, userId)));
 }
 
 export async function deleteAchievement(id: number, userId: number) {
   const db = await getDb();
   if (!db) return;
-  await db.delete(achievements).where(and(eq(achievements.id, id), eq(achievements.userId, userId)));
+  await db.delete(achievements)
+    .where(and(eq(achievements.id, id), eq(achievements.userId, userId)));
 }
 
-export async function searchAchievements(userId: number, query: string) {
-  const db = await getDb();
-  if (!db) return [];
-  return db.select().from(achievements).where(
-    and(
-      eq(achievements.userId, userId),
-      sql`(${achievements.situation} LIKE ${`%${query}%`} OR ${achievements.task} LIKE ${`%${query}%`} OR ${achievements.action} LIKE ${`%${query}%`} OR ${achievements.result} LIKE ${`%${query}%`})`
-    )
-  ).orderBy(desc(achievements.impactMeterScore));
-}
-
-// Skills
-export async function createSkill(data: Omit<Skill, 'id' | 'createdAt' | 'updatedAt'>) {
-  const db = await getDb();
-  if (!db) return null;
-  const result = await db.insert(skills).values(data);
-  return Number(result[0].insertId);
-}
-
-export async function getUserSkills(userId: number) {
-  const db = await getDb();
-  if (!db) return [];
-  return db.select().from(skills).where(eq(skills.userId, userId)).orderBy(desc(skills.isProven));
-}
-
-export async function linkSkillToAchievement(achievementId: number, skillId: number) {
+export async function incrementAchievementUsage(achievementId: number) {
   const db = await getDb();
   if (!db) return;
-  await db.insert(achievementSkills).values({ achievementId, skillId });
+  await db.update(achievements)
+    .set({ 
+      timesUsed: sql`${achievements.timesUsed} + 1`,
+      lastUsedAt: new Date()
+    })
+    .where(eq(achievements.id, achievementId));
 }
 
-// Job Descriptions
-export async function createJobDescription(data: Omit<JobDescription, 'id' | 'createdAt' | 'updatedAt'>) {
-  const db = await getDb();
-  if (!db) return null;
-  const result = await db.insert(jobDescriptions).values(data);
-  return Number(result[0].insertId);
-}
+// ================================================================
+// SKILL OPERATIONS
+// ================================================================
 
-export async function getUserJobDescriptions(userId: number) {
+export async function getSkills(userId: number) {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(jobDescriptions).where(eq(jobDescriptions.userId, userId)).orderBy(desc(jobDescriptions.createdAt));
+  return db.select().from(skills).where(eq(skills.userId, userId));
 }
 
-export async function getJobDescriptionById(id: number, userId: number) {
+export async function createSkill(data: Partial<Skill>) {
   const db = await getDb();
   if (!db) return null;
-  const result = await db.select().from(jobDescriptions).where(and(eq(jobDescriptions.id, id), eq(jobDescriptions.userId, userId))).limit(1);
-  return result[0] || null;
+  const result: any = await db.insert(skills).values(data as any);
+  return result.insertId;
 }
 
-export async function updateJobDescription(id: number, userId: number, data: Partial<JobDescription>) {
+// ================================================================
+// UPLOADED RESUME OPERATIONS
+// ================================================================
+
+export async function getUploadedResumes(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(uploadedResumes)
+    .where(eq(uploadedResumes.userId, userId))
+    .orderBy(desc(uploadedResumes.uploadedAt));
+}
+
+export async function createUploadedResume(data: Partial<UploadedResume>) {
+  const db = await getDb();
+  if (!db) return null;
+  const result: any = await db.insert(uploadedResumes).values(data as any);
+  return result.insertId;
+}
+
+export async function updateResumeProcessingStatus(
+  id: number, 
+  status: 'pending' | 'processing' | 'completed' | 'failed',
+  extractedText?: string,
+  error?: string
+) {
   const db = await getDb();
   if (!db) return;
-  await db.update(jobDescriptions).set(data).where(and(eq(jobDescriptions.id, id), eq(jobDescriptions.userId, userId)));
+  await db.update(uploadedResumes).set({ 
+    processingStatus: status,
+    extractedText,
+    processingError: error,
+    processedAt: status === 'completed' || status === 'failed' ? new Date() : undefined
+  }).where(eq(uploadedResumes.id, id));
 }
 
-// Generated Resumes
-export async function createGeneratedResume(data: Omit<GeneratedResume, 'id' | 'createdAt' | 'updatedAt'>) {
-  const db = await getDb();
-  if (!db) return null;
-  const result = await db.insert(generatedResumes).values(data);
-  return Number(result[0].insertId);
-}
+// ================================================================
+// SUPERPOWER OPERATIONS
+// ================================================================
 
-export async function getUserResumes(userId: number) {
-  const db = await getDb();
-  if (!db) return [];
-  return db.select().from(generatedResumes).where(eq(generatedResumes.userId, userId)).orderBy(desc(generatedResumes.createdAt));
-}
-
-export async function getResumeById(id: number, userId: number) {
-  const db = await getDb();
-  if (!db) return null;
-  const result = await db.select().from(generatedResumes).where(and(eq(generatedResumes.id, id), eq(generatedResumes.userId, userId))).limit(1);
-  return result[0] || null;
-}
-
-export async function updateGeneratedResume(id: number, userId: number, data: Partial<Omit<GeneratedResume, 'id' | 'userId' | 'createdAt' | 'updatedAt'>>) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-  await db.update(generatedResumes)
-    .set(data)
-    .where(and(eq(generatedResumes.id, id), eq(generatedResumes.userId, userId)));
-}
-
-// Power Verbs
-export async function getPowerVerbs() {
+export async function getSuperpowers(userId: number) {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(powerVerbs);
+  return db.select().from(superpowers)
+    .where(eq(superpowers.userId, userId))
+    .orderBy(superpowers.rank);
 }
 
-export async function seedPowerVerbs() {
+export async function upsertSuperpowers(userId: number, superpowersData: Array<{ title: string; evidenceAchievementIds: number[]; rank: number }>) {
   const db = await getDb();
   if (!db) return;
   
-  const verbs = [
-    { verb: "Generated", category: "Results", strengthScore: 9 },
-    { verb: "Engineered", category: "Technical", strengthScore: 9 },
-    { verb: "Reduced", category: "Efficiency", strengthScore: 8 },
-    { verb: "Accelerated", category: "Speed", strengthScore: 8 },
-    { verb: "Scaled", category: "Growth", strengthScore: 9 },
-    { verb: "Optimized", category: "Efficiency", strengthScore: 8 },
-    { verb: "Launched", category: "Initiative", strengthScore: 8 },
-    { verb: "Architected", category: "Technical", strengthScore: 9 },
-    { verb: "Transformed", category: "Change", strengthScore: 9 },
-    { verb: "Drove", category: "Leadership", strengthScore: 7 },
-    { verb: "Increased", category: "Growth", strengthScore: 7 },
-    { verb: "Improved", category: "Enhancement", strengthScore: 6 },
-    { verb: "Led", category: "Leadership", strengthScore: 7 },
-    { verb: "Managed", category: "Leadership", strengthScore: 5 },
-    { verb: "Developed", category: "Creation", strengthScore: 6 },
-    { verb: "Created", category: "Creation", strengthScore: 6 },
-    { verb: "Designed", category: "Creation", strengthScore: 7 },
-    { verb: "Implemented", category: "Execution", strengthScore: 7 },
-    { verb: "Established", category: "Foundation", strengthScore: 7 },
-    { verb: "Spearheaded", category: "Leadership", strengthScore: 8 },
-  ];
-
-  for (const verb of verbs) {
-    try {
-      await db.insert(powerVerbs).values(verb);
-    } catch (e) {
-      // Ignore duplicates
-    }
+  // Delete existing superpowers
+  await db.delete(superpowers).where(eq(superpowers.userId, userId));
+  
+  // Insert new superpowers
+  for (const sp of superpowersData) {
+    await db.insert(superpowers).values({ userId, ...sp } as any);
   }
 }
 
-// Past Employer Jobs
-export async function createPastEmployerJob(data: any) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-  const result: any = await db.insert(pastEmployerJobs).values(data);
-  const insertId = result[0]?.insertId || result.insertId;
-  if (!insertId) throw new Error("Failed to get insert ID");
-  return { id: Number(insertId) };
-}
+// ================================================================
+// TARGET PREFERENCES OPERATIONS
+// ================================================================
 
-export async function getUserPastJobs(userId: number) {
+export async function getTargetPreferences(userId: number) {
   const db = await getDb();
-  if (!db) return [];
-  return db.select().from(pastEmployerJobs).where(eq(pastEmployerJobs.userId, userId)).orderBy(desc(pastEmployerJobs.startDate));
-}
-
-export async function getPastJobById(id: number, userId: number) {
-  const db = await getDb();
-  if (!db) return undefined;
-  const result = await db.select().from(pastEmployerJobs)
-    .where(and(eq(pastEmployerJobs.id, id), eq(pastEmployerJobs.userId, userId)))
+  if (!db) return null;
+  const result = await db.select().from(targetPreferences)
+    .where(eq(targetPreferences.userId, userId))
     .limit(1);
-  return result[0];
+  return result[0] || null;
 }
 
-export async function deletePastJob(id: number, userId: number) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-  await db.delete(pastEmployerJobs).where(
-    and(eq(pastEmployerJobs.id, id), eq(pastEmployerJobs.userId, userId))
-  );
-}
-
-// ===== Job Automation Functions =====
-
-export async function createJob(data: Omit<InsertJob, "id">): Promise<number> {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-  const result: any = await db.insert(jobs).values(data);
-  const insertId = result[0]?.insertId || result.insertId;
-  if (!insertId) throw new Error("Failed to get insert ID");
-  return Number(insertId);
-}
-
-export async function getUserJobs(userId: number): Promise<Job[]> {
-  const db = await getDb();
-  if (!db) return [];
-  return db.select().from(jobs).where(eq(jobs.userId, userId)).orderBy(desc(jobs.createdAt));
-}
-
-export async function getJobById(id: number, userId: number): Promise<Job | undefined> {
-  const db = await getDb();
-  if (!db) return undefined;
-  const result = await db.select().from(jobs).where(and(eq(jobs.id, id), eq(jobs.userId, userId))).limit(1);
-  return result[0];
-}
-
-export async function updateJob(id: number, userId: number, data: Partial<Job>): Promise<void> {
+export async function upsertTargetPreferences(userId: number, data: Partial<TargetPreferences>) {
   const db = await getDb();
   if (!db) return;
-  await db.update(jobs).set(data).where(and(eq(jobs.id, id), eq(jobs.userId, userId)));
-}
-
-export async function deleteJob(id: number, userId: number): Promise<void> {
-  const db = await getDb();
-  if (!db) return;
-  await db.delete(jobs).where(and(eq(jobs.id, id), eq(jobs.userId, userId)));
-}
-
-export async function bulkCreateJobs(jobsData: Omit<InsertJob, "id">[]): Promise<number[]> {
-  const db = await getDb();
-  if (!db) return [];
-  const result: any = await db.insert(jobs).values(jobsData);
-  const insertId = result[0]?.insertId || result.insertId;
-  if (!insertId) throw new Error("Failed to get insert ID");
-  const firstId = Number(insertId);
-  return Array.from({ length: jobsData.length }, (_, i) => firstId + i);
-}
-
-export async function createApplication(data: Omit<InsertApplication, "id">): Promise<number> {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-  const result: any = await db.insert(applications).values(data);
-  const insertId = result[0]?.insertId || result.insertId;
-  if (!insertId) throw new Error("Failed to get insert ID");
-  return Number(insertId);
-}
-
-export async function getUserApplications(userId: number) {
-  const db = await getDb();
-  if (!db) return [];
-  const result = await db
-    .select({
-      application: applications,
-      job: jobs,
-    })
-    .from(applications)
-    .leftJoin(jobs, eq(applications.jobId, jobs.id))
-    .where(eq(applications.userId, userId))
-    .orderBy(desc(applications.createdAt));
   
-  return result.map(r => ({
-    ...r.application,
-    job: r.job || undefined,
-  }));
+  const existing = await getTargetPreferences(userId);
+  if (existing) {
+    await db.update(targetPreferences).set(data).where(eq(targetPreferences.userId, userId));
+  } else {
+    await db.insert(targetPreferences).values({ userId, ...data } as any);
+  }
+}
+
+// ================================================================
+// OPPORTUNITY OPERATIONS
+// ================================================================
+
+export async function getOpportunities(filters?: { isActive?: boolean; companyStage?: string }) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  let query = db.select().from(opportunities);
+  
+  if (filters?.isActive !== undefined) {
+    query = query.where(eq(opportunities.isActive, filters.isActive)) as any;
+  }
+  
+  return query.orderBy(desc(opportunities.discoveredAt));
+}
+
+export async function getOpportunityById(id: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(opportunities).where(eq(opportunities.id, id)).limit(1);
+  return result[0] || null;
+}
+
+export async function createOpportunity(data: Partial<Opportunity>) {
+  const db = await getDb();
+  if (!db) return null;
+  const result: any = await db.insert(opportunities).values(data as any);
+  return result.insertId;
+}
+
+// ================================================================
+// APPLICATION OPERATIONS
+// ================================================================
+
+export async function getApplications(userId: number, filters?: { status?: string }) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  let conditions = [eq(applications.userId, userId)];
+  if (filters?.status) {
+    conditions.push(eq(applications.status, filters.status as any));
+  }
+  
+  return db.select().from(applications)
+    .where(and(...conditions))
+    .orderBy(desc(applications.createdAt));
 }
 
 export async function getApplicationById(id: number, userId: number) {
   const db = await getDb();
-  if (!db) return undefined;
-  const result = await db
-    .select({
-      application: applications,
-      job: jobs,
-    })
-    .from(applications)
-    .leftJoin(jobs, eq(applications.jobId, jobs.id))
+  if (!db) return null;
+  const result = await db.select().from(applications)
     .where(and(eq(applications.id, id), eq(applications.userId, userId)))
     .limit(1);
-  
-  if (!result[0]) return undefined;
-  
-  return {
-    ...result[0].application,
-    job: result[0].job || undefined,
-  };
+  return result[0] || null;
 }
 
-export async function updateApplication(id: number, userId: number, data: Partial<Application>): Promise<void> {
-  const db = await getDb();
-  if (!db) return;
-  await db.update(applications).set(data).where(and(eq(applications.id, id), eq(applications.userId, userId)));
-}
-
-export async function deleteApplication(id: number, userId: number): Promise<void> {
-  const db = await getDb();
-  if (!db) return;
-  await db.delete(applications).where(and(eq(applications.id, id), eq(applications.userId, userId)));
-}
-
-export async function createCompany(data: Omit<InsertCompany, "id">): Promise<number> {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-  const result: any = await db.insert(companies).values(data);
-  const insertId = result[0]?.insertId || result.insertId;
-  if (!insertId) throw new Error("Failed to get insert ID");
-  return Number(insertId);
-}
-
-export async function getCompanyByName(name: string): Promise<Company | undefined> {
-  const db = await getDb();
-  if (!db) return undefined;
-  const result = await db.select().from(companies).where(eq(companies.name, name)).limit(1);
-  return result[0];
-}
-
-export async function getOrCreateCompany(name: string): Promise<number> {
-  const existing = await getCompanyByName(name);
-  if (existing) return existing.id;
-
-  return createCompany({
-    name,
-    domain: null,
-    logoUrl: null,
-    industry: null,
-    size: null,
-    founded: null,
-    headquarters: null,
-    description: null,
-    mission: null,
-    values: null,
-    culture: null,
-    techStack: null,
-    recentNews: null,
-    fundingRounds: null,
-    isHiring: false,
-    openPositions: 0,
-    lastResearchedAt: null,
-  });
-}
-
-// ============================================================================
-// Source Materials
-// ============================================================================
-
-export async function createSourceMaterial(data: InsertSourceMaterial): Promise<number> {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-  const result: any = await db.insert(sourceMaterials).values(data);
-  const insertId = result[0]?.insertId || result.insertId;
-  if (!insertId) throw new Error("Failed to get insert ID");
-  return Number(insertId);
-}
-
-export async function getSourceMaterialsByUserId(userId: number) {
-  const db = await getDb();
-  if (!db) return [];
-  return db.select().from(sourceMaterials).where(eq(sourceMaterials.userId, userId)).orderBy(desc(sourceMaterials.createdAt));
-}
-
-export async function getSourceMaterialById(id: number, userId: number) {
+export async function createApplication(data: Partial<Application>) {
   const db = await getDb();
   if (!db) return null;
-  const results = await db.select().from(sourceMaterials).where(and(eq(sourceMaterials.id, id), eq(sourceMaterials.userId, userId))).limit(1);
-  return results[0] || null;
+  const result: any = await db.insert(applications).values(data as any);
+  return result.insertId;
 }
 
-export async function deleteSourceMaterial(id: number, userId: number) {
+export async function updateApplication(id: number, userId: number, data: Partial<Application>) {
   const db = await getDb();
   if (!db) return;
-  await db.delete(sourceMaterials).where(and(eq(sourceMaterials.id, id), eq(sourceMaterials.userId, userId)));
+  await db.update(applications)
+    .set(data)
+    .where(and(eq(applications.id, id), eq(applications.userId, userId)));
 }
 
-export async function updateSourceMaterialStatus(id: number, status: "PENDING" | "PROCESSED" | "FAILED", errorMessage: string | null) {
+// ================================================================
+// AGENT EXECUTION LOG OPERATIONS
+// ================================================================
+
+export async function logAgentExecution(data: Partial<AgentExecutionLog>) {
+  const db = await getDb();
+  if (!db) return null;
+  const result: any = await db.insert(agentExecutionLogs).values(data as any);
+  return result.insertId;
+}
+
+export async function getAgentExecutionLogs(userId: number, agentName?: string) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  let conditions = [eq(agentExecutionLogs.userId, userId)];
+  if (agentName) {
+    conditions.push(eq(agentExecutionLogs.agentName, agentName));
+  }
+  
+  return db.select().from(agentExecutionLogs)
+    .where(and(...conditions))
+    .orderBy(desc(agentExecutionLogs.executedAt))
+    .limit(100);
+}
+
+// ================================================================
+// NOTIFICATION OPERATIONS
+// ================================================================
+
+export async function getNotifications(userId: number, unreadOnly: boolean = false) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  let conditions = [eq(notifications.userId, userId)];
+  if (unreadOnly) {
+    conditions.push(eq(notifications.isRead, false));
+  }
+  
+  return db.select().from(notifications)
+    .where(and(...conditions))
+    .orderBy(desc(notifications.createdAt))
+    .limit(50);
+}
+
+export async function createNotification(data: Partial<Notification>) {
+  const db = await getDb();
+  if (!db) return null;
+  const result: any = await db.insert(notifications).values(data as any);
+  return result.insertId;
+}
+
+export async function markNotificationAsRead(id: number, userId: number) {
   const db = await getDb();
   if (!db) return;
-  await db.update(sourceMaterials).set({ status, errorMessage }).where(eq(sourceMaterials.id, id));
+  await db.update(notifications)
+    .set({ isRead: true, readAt: new Date() })
+    .where(and(eq(notifications.id, id), eq(notifications.userId, userId)));
 }

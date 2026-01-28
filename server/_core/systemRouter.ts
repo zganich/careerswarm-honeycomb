@@ -27,8 +27,8 @@ export const systemRouter = router({
       } as const;
     }),
   
-  usageStats: protectedProcedure.query(async ({ ctx }) => {
-    const { getUserUsageStats } = await import("../usageLimits");
-    return getUserUsageStats(ctx.user.id);
-  }),
+  // usageStats: protectedProcedure.query(async ({ ctx }) => {
+  //   const { getUserUsageStats } = await import("../usageLimits");
+  //   return getUserUsageStats(ctx.user.id);
+  // }),
 });

@@ -1,0 +1,13 @@
+DROP TABLE IF EXISTS achievementSkills;
+DROP TABLE IF EXISTS achievementVerifications;
+DROP TABLE IF EXISTS companies;
+DROP TABLE IF EXISTS contacts;
+DROP TABLE IF EXISTS generatedResumes;
+DROP TABLE IF EXISTS jobDescriptions;
+DROP TABLE IF EXISTS jobs;
+DROP TABLE IF EXISTS pastEmployerJobs;
+DROP TABLE IF EXISTS powerVerbs;
+DROP TABLE IF EXISTS sourceMaterials;
+DROP TABLE IF EXISTS applications;
+DROP TABLE IF EXISTS achievements;
+DROP TABLE IF EXISTS skills;
