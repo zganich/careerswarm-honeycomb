@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { getLoginUrl } from "@/const";
 import { Target, Zap, TrendingUp, FileText, Sparkles, Award } from "lucide-react";
 import { Link } from "wouter";
+import NotificationBell from "@/components/NotificationBell";
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
@@ -23,6 +24,7 @@ export default function Home() {
                 <Link href="/pricing">
                   <Button variant="ghost">Pricing</Button>
                 </Link>
+                <NotificationBell />
                 <Link href="/profile">
                   <Button variant="outline">Profile</Button>
                 </Link>

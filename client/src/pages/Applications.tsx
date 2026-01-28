@@ -236,6 +236,11 @@ export default function Applications() {
                         {app.priorityLevel && (
                           <Badge variant="outline">{app.priorityLevel} priority</Badge>
                         )}
+                        {app.nextFollowUpDue && new Date(app.nextFollowUpDue) <= new Date() && (
+                          <Badge className="bg-orange-500">
+                            Follow-up Due
+                          </Badge>
+                        )}
                       </div>
 
                       <div className="flex items-center gap-2">

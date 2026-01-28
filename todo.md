@@ -207,3 +207,21 @@ Completing remaining Priority 2 & 3 features:
 - [x] Add Performance Insights section with AI-generated tips
 - [x] Wire up analytics.getOverview tRPC procedure
 - [x] Add trend indicators (up/down arrows) for metrics
+
+
+### Notification System ✅ COMPLETE
+- [x] Database schema already exists (notifications table)
+- [x] Backend API already exists (notifications.list, notifications.markAsRead)
+- [x] Database helpers already exist (getNotifications, createNotification, markNotificationAsRead)
+- [x] Created NotificationBell component with popover UI
+- [x] Added notification bell to Home page header
+- [x] Display unread count badge
+- [x] Show notification types (follow_up_due, response_received, new_match)
+- [x] Mark notifications as read on click
+- [x] Link to related applications from notifications
+
+### Follow-Up Tracking ✅ COMPLETE
+- [x] Database schema already exists (lastFollowUpAt, nextFollowUpDue, followUpCount fields)
+- [x] Added "Follow-up Due" badge to Applications page
+- [x] Badge shows when nextFollowUpDue is past current date
+- [x] Orange color for visibility
