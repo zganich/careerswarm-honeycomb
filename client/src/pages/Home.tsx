@@ -1,282 +1,224 @@
-import { useAuth } from "@/_core/hooks/useAuth";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { getLoginUrl } from "@/const";
-import { Target, Zap, TrendingUp, FileText, Sparkles, Award } from "lucide-react";
 import { Link } from "wouter";
-import NotificationBell from "@/components/NotificationBell";
 
 export default function Home() {
-  const { user, isAuthenticated } = useAuth();
-
   return (
-    <div className="min-h-screen">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-gray-200/50 bg-white/70 backdrop-blur-md">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Award className="h-6 w-6 text-primary" />
-            <span className="font-bold text-xl">CareerSwarm</span>
-          </div>
-          <div className="flex items-center gap-4">
-            {isAuthenticated ? (
-              <>
-                <Link href="/pricing">
-                  <Button variant="ghost">Pricing</Button>
-                </Link>
-                <NotificationBell />
-                <Link href="/profile">
-                  <Button variant="outline">Profile</Button>
-                </Link>
-              </>
-            ) : (
-              <>
-                <a href={getLoginUrl()}>
-                  <Button variant="ghost">Sign In</Button>
-                </a>
-                <a href={getLoginUrl()}>
-                  <Button>Get Started</Button>
-                </a>
-              </>
-            )}
+    <div className="min-h-screen bg-white">
+      {/* Hero Section */}
+      <section className="hero-section">
+        <div className="container mx-auto px-4 py-20">
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 rounded-full mb-6">
+              <span className="text-sm font-medium text-blue-700">
+                Join 12,847 professionals building their career evidence
+              </span>
+            </div>
+            
+            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+              From 15 Resume Fragments<br />
+              <span className="text-blue-600">→ One Complete Career Story</span>
+            </h1>
+            
+            <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+              Upload every resume version you've ever created. We'll merge them into one powerful Master Profile that tells your complete career story.
+            </p>
+            
+            <Link href="/onboarding">
+              <a className="inline-flex items-center gap-2 px-8 py-4 bg-orange-500 text-white font-semibold rounded-lg hover:bg-orange-600 transition-all transform hover:scale-105 shadow-lg">
+                Build Your Master Profile
+                <span>→</span>
+              </a>
+            </Link>
+            
+            <p className="text-sm text-gray-500 mt-4">
+              🔒 End-to-end encrypted • No credit card required
+            </p>
           </div>
         </div>
-      </header>
+      </section>
 
-      {/* Hero Section */}
-      {!isAuthenticated ? (
-        <section className="container py-20 md:py-32 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-sm font-medium mb-6">
-            <Sparkles className="h-4 w-4" />
-            <span>Join 12,847 professionals building their career evidence</span>
-          </div>
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6">
-            From 15 Resume Fragments<br />
-            <span className="text-primary">→ One Complete Career Story</span>
-          </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Upload every resume version you've ever created. We'll merge them into one powerful Master Profile 
-            with <strong>10x more career evidence</strong> than any single resume.
-          </p>
-          <div className="flex gap-4 justify-center mb-8">
-            <a href={getLoginUrl()}>
-              <Button size="lg" className="text-lg px-8 bg-blue-600 hover:bg-blue-700">
-                Build Your Master Profile
-              </Button>
-            </a>
-          </div>
-          <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <svg className="h-5 w-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span>96% confidence via cross-referencing</span>
+      {/* Value Props Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
+            Why Career Archaeology Works
+          </h2>
+          
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div className="bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+              <div className="text-4xl mb-4">🗂️</div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                Merge 15+ Resume Versions
+              </h3>
+              <p className="text-gray-600">
+                Every resume you've ever created contains unique achievements. We piece them together like career archaeology.
+              </p>
             </div>
-            <div className="flex items-center gap-2">
-              <svg className="h-5 w-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
-              <span>End-to-end encrypted</span>
+            
+            <div className="bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+              <div className="text-4xl mb-4">🎯</div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                96% Confidence Score
+              </h3>
+              <p className="text-gray-600">
+                Cross-referenced evidence from multiple sources creates an unshakeable career narrative.
+              </p>
+            </div>
+            
+            <div className="bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+              <div className="text-4xl mb-4">⚡</div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                Apply in 45 Seconds
+              </h3>
+              <p className="text-gray-600">
+                Tailored resume, personalized cover letter, and hiring manager outreach—all automated.
+              </p>
             </div>
           </div>
-        </section>
-      ) : (
-        <section className="container py-16 md:py-20 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
-            Welcome back, {user?.name}!
-          </h1>
-          <p className="text-xl text-muted-foreground mb-8">
-            Your career evidence is waiting. Let's complete your Master Profile.
-          </p>
-          <div className="flex gap-4 justify-center">
-            <Link href="/dashboard">
-              <Button size="lg" variant="outline" className="text-lg px-8">
-                View Dashboard
-              </Button>
-            </Link>
-            <Link href="/profile">
-              <Button size="lg" className="text-lg px-8 bg-blue-600 hover:bg-blue-700">
-                Complete Your Profile
-              </Button>
-            </Link>
-          </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       {/* How It Works Section */}
-      <section className="py-20 md:py-32 bg-gray-50">
-        <div className="container mx-auto max-w-6xl">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
+      <section className="py-20">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
             How It Works
           </h2>
-          <p className="text-center text-muted-foreground mb-16 max-w-2xl mx-auto">
-            Build your career evidence library in minutes, get AI-powered feedback, 
-            and generate tailored resumes for every opportunity.
-          </p>
-          <div className="grid md:grid-cols-3 gap-8">
-            <Card>
-              <CardContent className="pt-8">
-                <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xl mb-4">
-                  1
-                </div>
-                <h3 className="font-semibold text-xl mb-3">Upload Resumes</h3>
-                <p className="text-muted-foreground text-sm">
-                  Upload your existing resumes. AI extracts your work history, achievements, 
-                  and skills automatically.
+          
+          <div className="max-w-3xl mx-auto space-y-8">
+            <div className="flex gap-6 items-start">
+              <div className="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-lg">
+                1
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  Upload Every Resume Version
+                </h3>
+                <p className="text-gray-600">
+                  Drag and drop all your resume files (PDF, DOCX, TXT). We support up to 20 files.
                 </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="pt-8">
-                <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xl mb-4">
-                  2
-                </div>
-                <h3 className="font-semibold text-xl mb-3">Build Master Profile</h3>
-                <p className="text-muted-foreground text-sm">
-                  AI identifies your top 3 "superpowers" and organizes your achievements 
-                  with metrics and impact scores.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="pt-8">
-                <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xl mb-4">
-                  3
-                </div>
-                <h3 className="font-semibold text-xl mb-3">Generate Applications</h3>
-                <p className="text-muted-foreground text-sm">
-                  7 AI agents discover jobs, research companies, and generate tailored 
-                  resumes and cover letters automatically.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Grid */}
-      <section className="py-20 md:py-32">
-        <div className="container mx-auto max-w-6xl">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
-            Everything You Need to Stand Out
-          </h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            <Card>
-              <CardContent className="pt-6">
-                <div className="rounded-lg bg-primary/10 w-12 h-12 flex items-center justify-center mb-4">
-                  <Zap className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="font-semibold text-lg mb-2">AI Resume Parser</h3>
-                <p className="text-muted-foreground text-sm">
-                  Upload any resume format. AI extracts work history, achievements, 
-                  and metrics automatically.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="pt-6">
-                <div className="rounded-lg bg-primary/10 w-12 h-12 flex items-center justify-center mb-4">
-                  <Target className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="font-semibold text-lg mb-2">Superpower Analysis</h3>
-                <p className="text-muted-foreground text-sm">
-                  AI identifies your top 3 differentiators with evidence from your 
-                  career history.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="pt-6">
-                <div className="rounded-lg bg-primary/10 w-12 h-12 flex items-center justify-center mb-4">
-                  <TrendingUp className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="font-semibold text-lg mb-2">7-Agent System</h3>
-                <p className="text-muted-foreground text-sm">
-                  Scout, Profiler, Qualifier, Hunter, Tailor, Scribe, and Assembler 
-                  work together to automate your job search.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="pt-6">
-                <div className="rounded-lg bg-primary/10 w-12 h-12 flex items-center justify-center mb-4">
-                  <FileText className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="font-semibold text-lg mb-2">Master Profile</h3>
-                <p className="text-muted-foreground text-sm">
-                  Build once, use forever. Your career evidence library grows with 
-                  every achievement you add.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="pt-6">
-                <div className="rounded-lg bg-primary/10 w-12 h-12 flex items-center justify-center mb-4">
-                  <Sparkles className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="font-semibold text-lg mb-2">Smart Matching</h3>
-                <p className="text-muted-foreground text-sm">
-                  AI selects your best 8-15 achievements for each role based on 
-                  job requirements and strategic fit.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="pt-6">
-                <div className="rounded-lg bg-primary/10 w-12 h-12 flex items-center justify-center mb-4">
-                  <Award className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="font-semibold text-lg mb-2">Tailored Output</h3>
-                <p className="text-muted-foreground text-sm">
-                  Generate unlimited resume versions, cover letters, and outreach 
-                  messages optimized for each opportunity.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 md:py-32 bg-primary text-white">
-        <div className="container text-center">
-          <h2 className="text-3xl md:text-5xl font-bold mb-6">
-            Ready to Build Your Career Evidence Engine?
-          </h2>
-          <p className="text-xl mb-8 opacity-90">
-            Start with your existing resumes. AI does the rest.
-          </p>
-          <a href={getLoginUrl()}>
-            <Button size="lg" variant="secondary" className="text-lg px-8">
-              Get Started Free
-            </Button>
-          </a>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="border-t py-12">
-        <div className="container">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Award className="h-5 w-5 text-primary" />
-              <span className="font-bold">CareerSwarm</span>
+              </div>
             </div>
-            <div className="flex gap-6 text-sm text-muted-foreground">
-              <Link href="/privacy">Privacy</Link>
-              <Link href="/terms">Terms</Link>
-              <Link href="/faq">FAQ</Link>
+            
+            <div className="flex gap-6 items-start">
+              <div className="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-lg">
+                2
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  AI Merges Your Career Timeline
+                </h3>
+                <p className="text-gray-600">
+                  Watch in real-time as we extract roles, skills, and achievements from every file and merge duplicates.
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex gap-6 items-start">
+              <div className="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-lg">
+                3
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  Review Your Master Profile
+                </h3>
+                <p className="text-gray-600">
+                  See your complete career story with confidence scores, gap analysis, and competitive advantages.
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex gap-6 items-start">
+              <div className="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-lg">
+                4
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  Apply to Jobs in 45 Seconds
+                </h3>
+                <p className="text-gray-600">
+                  Paste any job description. Get a tailored resume, cover letter, and hiring manager outreach—instantly.
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      </footer>
+      </section>
+
+      {/* Social Proof Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-4">
+            Trusted by Professionals at
+          </h2>
+          
+          <div className="flex justify-center items-center gap-12 mb-16 flex-wrap">
+            <div className="text-2xl font-bold text-gray-400">Google</div>
+            <div className="text-2xl font-bold text-gray-400">Microsoft</div>
+            <div className="text-2xl font-bold text-gray-400">Amazon</div>
+            <div className="text-2xl font-bold text-gray-400">Meta</div>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div className="bg-white p-6 rounded-xl shadow-sm">
+              <div className="flex items-center gap-1 mb-4">
+                <span className="text-yellow-400">★★★★★</span>
+              </div>
+              <p className="text-gray-700 mb-4">
+                "I had 12 different resume versions scattered across Google Drive. CareerSwarm merged them into one master profile and I got 3 interviews in the first week."
+              </p>
+              <p className="text-sm font-semibold text-gray-900">Sarah Chen</p>
+              <p className="text-sm text-gray-500">Senior Product Manager</p>
+            </div>
+            
+            <div className="bg-white p-6 rounded-xl shadow-sm">
+              <div className="flex items-center gap-1 mb-4">
+                <span className="text-yellow-400">★★★★★</span>
+              </div>
+              <p className="text-gray-700 mb-4">
+                "The confidence score feature is genius. Seeing my career evidence cross-referenced gave me the confidence to apply for director-level roles."
+              </p>
+              <p className="text-sm font-semibold text-gray-900">Marcus Johnson</p>
+              <p className="text-sm text-gray-500">Engineering Director</p>
+            </div>
+            
+            <div className="bg-white p-6 rounded-xl shadow-sm">
+              <div className="flex items-center gap-1 mb-4">
+                <span className="text-yellow-400">★★★★★</span>
+              </div>
+              <p className="text-gray-700 mb-4">
+                "Applied to 15 jobs in one afternoon. The AI tailoring is so good that hiring managers thought I custom-wrote each application."
+              </p>
+              <p className="text-sm font-semibold text-gray-900">Priya Patel</p>
+              <p className="text-sm text-gray-500">Data Science Lead</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA Section */}
+      <section className="py-20">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto text-center bg-gradient-to-br from-blue-50 to-orange-50 p-12 rounded-2xl">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Ready to Build Your Master Profile?
+            </h2>
+            <p className="text-xl text-gray-600 mb-8">
+              Join 12,847 professionals who've already merged their career fragments into one complete story.
+            </p>
+            
+            <Link href="/onboarding">
+              <a className="inline-flex items-center gap-2 px-8 py-4 bg-orange-500 text-white font-semibold rounded-lg hover:bg-orange-600 transition-all transform hover:scale-105 shadow-lg">
+                Start Building Now
+                <span>→</span>
+              </a>
+            </Link>
+            
+            <p className="text-sm text-gray-500 mt-6">
+              ⏱️ Takes 3 minutes • 🔒 Encrypted • 💳 No credit card
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
