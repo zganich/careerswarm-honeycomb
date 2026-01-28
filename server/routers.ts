@@ -14,6 +14,23 @@ export const appRouter = router({
   system: systemRouter,
 
   // ================================================================
+  // AUTH ROUTES
+  // ================================================================
+  auth: router({
+    me: publicProcedure.query(async ({ ctx }) => {
+      if (!ctx.user) return null;
+      const user = await db.getUserByOpenId(ctx.user.openId);
+      return user;
+    }),
+
+    logout: protectedProcedure.mutation(async ({ ctx }) => {
+      // Logout is handled by clearing the session cookie
+      // This is just a placeholder procedure
+      return { success: true };
+    }),
+  }),
+
+  // ================================================================
   // ONBOARDING ROUTES
   // ================================================================
   onboarding: router({

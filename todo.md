@@ -44,75 +44,72 @@
 
 ---
 
-## Phase 3: Onboarding Flow - Step 1 (Welcome) 📋 TODO
+## Phase 3: Onboarding Flow - Step 1 (Welcome) ✅ COMPLETE
 
-- [ ] Create `client/src/pages/Onboarding.tsx` (main container)
-- [ ] Create `client/src/components/onboarding/WelcomeStep.tsx`
-- [ ] Add CareerSwarm logo and tagline
-- [ ] Add value proposition bullets (Extract achievements, Build database, Find opportunities, Generate applications)
-- [ ] Add "Let's Build Your Profile →" CTA button
-- [ ] Add "Takes about 10 minutes" subtitle
-- [ ] Route new users (onboarding_progress.current_step = 0) to /onboarding
-
----
-
-## Phase 4: Onboarding Flow - Step 2 (Upload Resumes) 📋 TODO
-
-- [ ] Create `client/src/components/onboarding/UploadStep.tsx`
-- [ ] Add progress indicator "Step 1 of 5 [────○○○○○] 20%"
-- [ ] Implement drag-and-drop file upload area
-- [ ] Add file type validation (PDF, DOCX, TXT)
-- [ ] Add file size validation (max 10MB per file)
-- [ ] Show uploaded files list with remove option
-- [ ] Add "Continue with X Files →" button
-- [ ] Upload files to S3 on submit
-- [ ] Store file references in `uploaded_resumes` table
-- [ ] Update `onboarding_progress.current_step = 1`
+- [x] Create `client/src/pages/onboarding/Welcome.tsx`
+- [x] Add CareerSwarm logo and tagline
+- [x] Add value proposition bullets (Extract achievements, Build database, Find opportunities, Generate applications)
+- [x] Add "Let's Build Your Profile →" CTA button
+- [x] Add "Takes about 10 minutes" subtitle
+- [x] Add progress stepper showing all 5 steps
+- [x] Route to /onboarding/upload on continue
 
 ---
 
-## Phase 5: Onboarding Flow - Step 3 (AI Extraction) 📋 TODO
+## Phase 4: Onboarding Flow - Step 2 (Upload Resumes) ✅ COMPLETE
 
-- [ ] Create `client/src/components/onboarding/ExtractionStep.tsx`
-- [ ] Add progress indicator "Step 2 of 5 [██──○○○○○] 40%"
-- [ ] Show "🤖 AI is Building Your Profile..." heading
-- [ ] Add real-time progress checklist (Extracting work history, Finding achievements, Identifying skills, Analyzing metrics, Consolidating data)
-- [ ] Implement Server-Sent Events (SSE) for live updates
-- [ ] Create tRPC subscription `resume.parseProgress` for SSE
-- [ ] Show live preview box (X jobs, Y achievements, Z skills)
-- [ ] Highlight "Standout Achievement" as it's found
-- [ ] Auto-advance to Step 4 when parsing complete
-- [ ] Update `onboarding_progress.current_step = 2`
-
----
-
-## Phase 6: Onboarding Flow - Step 4 (Profile Review) 📋 TODO
-
-- [ ] Create `client/src/components/onboarding/ProfileReviewStep.tsx`
-- [ ] Add progress indicator "Step 3 of 5 [████○○○○○] 60%"
-- [ ] Show Profile Summary card (X roles, Y achievements, Z skills, Quality Score)
-- [ ] Show "Your Superpowers" section (top 3 with evidence)
-- [ ] Add "View Detailed Profile →" button (opens modal)
-- [ ] Create detailed profile modal with expandable work history
-- [ ] Allow inline editing of achievements
-- [ ] Add "Looks Good, Continue →" button
-- [ ] Update `onboarding_progress.current_step = 3`
+- [x] Create `client/src/pages/onboarding/Upload.tsx`
+- [x] Add progress indicator "Step 2 of 5" with 40% progress bar
+- [x] Implement drag-and-drop file upload area
+- [x] Add file type validation (PDF, DOCX, TXT)
+- [x] Add file size validation (max 10MB per file)
+- [x] Show uploaded files list with remove option
+- [x] Add "Continue with X Files →" button
+- [x] Upload files to S3 on submit via tRPC
+- [x] Store file references in `uploaded_resumes` table
+- [x] Route to /onboarding/extraction on continue
 
 ---
 
-## Phase 7: Onboarding Flow - Step 5 (Set Preferences) 📋 TODO
+## Phase 5: Onboarding Flow - Step 3 (AI Extraction) ✅ COMPLETE
 
-- [ ] Create `client/src/components/onboarding/PreferencesStep.tsx`
-- [ ] Add progress indicator "Step 4 of 5 [██████○○○] 80%"
-- [ ] Add target role input (multi-select with suggestions)
-- [ ] Add industries input (multi-select: AI, SaaS, Fintech, etc.)
-- [ ] Add location preference (Remote, Hybrid, Specific cities)
-- [ ] Add salary range slider
-- [ ] Add company stage checkboxes (Seed, Series A/B/C, Public)
-- [ ] Add "Start Finding Jobs →" button
-- [ ] Save preferences to `user_preferences` table
-- [ ] Update `onboarding_progress.current_step = 4`
-- [ ] Redirect to dashboard on completion
+- [x] Create `client/src/pages/onboarding/Extraction.tsx`
+- [x] Add progress indicator "Step 3 of 5" with 60% progress bar
+- [x] Show "AI is Analyzing Your Resumes" heading
+- [x] Add real-time progress checklist (Parsing resume text, Extracting work history, Identifying achievements, Analyzing metrics, Discovering superpowers, Building Master Profile)
+- [x] Show animated progress with checkmarks for completed steps
+- [x] Show completion state with "Extraction Complete!"
+- [x] Add "Review Your Profile →" button
+- [x] Route to /onboarding/review on continue
+
+---
+
+## Phase 6: Onboarding Flow - Step 4 (Profile Review) ✅ COMPLETE
+
+- [x] Create `client/src/pages/onboarding/Review.tsx`
+- [x] Add progress indicator "Step 4 of 5" with 80% progress bar
+- [x] Show "Your Top 3 Superpowers" section with evidence
+- [x] Show Work History section with expandable cards
+- [x] Show Key Achievements section with metrics
+- [x] Fetch profile data via tRPC `profile.get`
+- [x] Add "Looks Good, Continue →" button
+- [x] Route to /onboarding/preferences on continue
+
+---
+
+## Phase 7: Onboarding Flow - Step 5 (Set Preferences) ✅ COMPLETE
+
+- [x] Create `client/src/pages/onboarding/Preferences.tsx`
+- [x] Add progress indicator "Step 5 of 5" with 100% progress bar
+- [x] Add target roles input (comma-separated)
+- [x] Add industries input (comma-separated)
+- [x] Add company stages input (comma-separated)
+- [x] Add salary range inputs (min/target)
+- [x] Add location preference input
+- [x] Add work arrangement buttons (Remote, Hybrid, On-site)
+- [x] Add "Complete Onboarding →" button
+- [x] Save preferences via tRPC `onboarding.savePreferences`
+- [x] Redirect to /profile on completion
 
 ---
 

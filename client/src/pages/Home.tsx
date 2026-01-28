@@ -3,38 +3,25 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { getLoginUrl } from "@/const";
 import { Target, Zap, TrendingUp, FileText, Sparkles, Award } from "lucide-react";
-import { OnboardingFlow } from "@/components/OnboardingFlow";
-import { CareerScoreCalculator } from "@/components/CareerScoreCalculator";
-import { PricingTiers } from "@/components/PricingTiers";
-import { RiskReversal } from "@/components/RiskReversal";
-import { StickyCtaBar } from "@/components/StickyCtaBar";
 import { Link } from "wouter";
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
 
   return (
-    <>
-      <StickyCtaBar />
-      <div className="min-h-screen">
+    <div className="min-h-screen">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-gray-200/50 bg-white/70 backdrop-blur-md">
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-2">
             <Award className="h-6 w-6 text-primary" />
-            <span className="font-bold text-xl">Careerswarm</span>
+            <span className="font-bold text-xl">CareerSwarm</span>
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/roast">
-              <Button variant="ghost">Resume Roast</Button>
-            </Link>
             {isAuthenticated ? (
               <>
                 <Link href="/pricing">
                   <Button variant="ghost">Pricing</Button>
-                </Link>
-                <Link href="/dashboard">
-                  <Button variant="ghost">Dashboard</Button>
                 </Link>
                 <Link href="/profile">
                   <Button variant="outline">Profile</Button>
@@ -54,9 +41,24 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Hero Section - Replaced with Adaptive Onboarding Flow */}
+      {/* Hero Section */}
       {!isAuthenticated ? (
-        <OnboardingFlow />
+        <section className="container py-20 md:py-32 text-center">
+          <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6">
+            Your AI-Powered<br />Career Evidence Engine
+          </h1>
+          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+            Upload your resumes. AI extracts your achievements, builds your Master Profile, 
+            and generates tailored applications for every opportunity.
+          </p>
+          <div className="flex gap-4 justify-center">
+            <a href={getLoginUrl()}>
+              <Button size="lg" className="text-lg px-8">
+                Start Building Your Profile
+              </Button>
+            </a>
+          </div>
+        </section>
       ) : (
         <section className="container py-16 md:py-20 text-center">
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
@@ -65,67 +67,60 @@ export default function Home() {
           <p className="text-xl text-muted-foreground mb-8">
             Continue building your career evidence.
           </p>
-          <Link href="/dashboard">
+          <Link href="/onboarding">
             <Button size="lg" className="text-lg px-8">
-              Go to Dashboard
+              Complete Onboarding
             </Button>
           </Link>
         </section>
       )}
 
-      {/* Career Score Calculator - Only for unauthenticated users */}
-      {!isAuthenticated && <CareerScoreCalculator onSignup={() => window.location.href = getLoginUrl()} />}
-
       {/* How It Works Section */}
-      <section className="py-20 md:py-32 relative" style={{
-        background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, #FFFFFF 15%, #FFFFFF 85%, rgba(255, 255, 255, 0) 100%)'
-      }}>
+      <section className="py-20 md:py-32 bg-gray-50">
         <div className="container mx-auto max-w-6xl">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <div className="w-4 h-4 rounded bg-primary/20 flex items-center justify-center">
-              <div className="w-2 h-2 rounded bg-primary"></div>
-            </div>
-            <span className="text-xs uppercase tracking-wider text-muted-foreground font-medium">How It Works</span>
-          </div>
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
-            Easy as one, two, three.
+            How It Works
           </h2>
           <p className="text-center text-muted-foreground mb-16 max-w-2xl mx-auto">
-            Build your career evidence library in minutes, get AI-powered feedback, and generate tailored resumes for every opportunity.
+            Build your career evidence library in minutes, get AI-powered feedback, 
+            and generate tailored resumes for every opportunity.
           </p>
           <div className="grid md:grid-cols-3 gap-8">
-            <Card className="glass-card hover:glass-card-active tilt-on-hover transition-all duration-300 relative overflow-visible">
-              <div className="absolute -top-4 -left-4 w-12 h-12 rounded-full bg-[#9B87D9] text-white flex items-center justify-center font-bold text-xl shadow-lg">
-                1
-              </div>
+            <Card>
               <CardContent className="pt-8">
-                <h3 className="font-semibold text-xl mb-3">Build Your Master Profile</h3>
+                <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xl mb-4">
+                  1
+                </div>
+                <h3 className="font-semibold text-xl mb-3">Upload Resumes</h3>
                 <p className="text-muted-foreground text-sm">
-                  Capture your achievements using our STAR methodology wizard. Add metrics, context, and impact for each accomplishment.
+                  Upload your existing resumes. AI extracts your work history, achievements, 
+                  and skills automatically.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="glass-card hover:glass-card-active tilt-on-hover transition-all duration-300 relative overflow-visible">
-              <div className="absolute -top-4 -left-4 w-12 h-12 rounded-full bg-[#E8D399] text-[#2A2D34] flex items-center justify-center font-bold text-xl shadow-lg">
-                2
-              </div>
+            <Card>
               <CardContent className="pt-8">
-                <h3 className="font-semibold text-xl mb-3">Get Real-Time Feedback</h3>
+                <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xl mb-4">
+                  2
+                </div>
+                <h3 className="font-semibold text-xl mb-3">Build Master Profile</h3>
                 <p className="text-muted-foreground text-sm">
-                  Watch your Impact Meter score rise as you add strong verbs, quantifiable results, and methodology. AI guides you to excellence.
+                  AI identifies your top 3 "superpowers" and organizes your achievements 
+                  with metrics and impact scores.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="glass-card hover:glass-card-active tilt-on-hover transition-all duration-300 relative overflow-visible">
-              <div className="absolute -top-4 -left-4 w-12 h-12 rounded-full bg-[#5BA88D] text-white flex items-center justify-center font-bold text-xl shadow-lg">
-                3
-              </div>
+            <Card>
               <CardContent className="pt-8">
-                <h3 className="font-semibold text-xl mb-3">Generate Tailored Resumes</h3>
+                <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xl mb-4">
+                  3
+                </div>
+                <h3 className="font-semibold text-xl mb-3">Generate Applications</h3>
                 <p className="text-muted-foreground text-sm">
-                  Paste any job description. Our AI matches your best achievements and generates optimized resumes in seconds.
+                  7 AI agents discover jobs, research companies, and generate tailored 
+                  resumes and cover letters automatically.
                 </p>
               </CardContent>
             </Card>
@@ -134,204 +129,87 @@ export default function Home() {
       </section>
 
       {/* Features Grid */}
-      <section className="py-20 md:py-32 relative" style={{
-        background: 'linear-gradient(to bottom, rgba(255, 248, 231, 0) 0%, #FFF8E7 15%, #FFF8E7 85%, rgba(255, 248, 231, 0) 100%)'
-      }}>
+      <section className="py-20 md:py-32">
         <div className="container mx-auto max-w-6xl">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <div className="w-4 h-4 rounded bg-primary/20 flex items-center justify-center">
-              <div className="w-2 h-2 rounded bg-primary"></div>
-            </div>
-            <span className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Features</span>
-          </div>
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
             Everything You Need to Stand Out
           </h2>
           <div className="grid md:grid-cols-3 gap-6">
-            <Card className="glass-card hover:glass-card-active tilt-on-hover transition-all duration-300">
+            <Card>
               <CardContent className="pt-6">
-                <div className="rounded-lg bg-[#E8D399]/20 w-12 h-12 flex items-center justify-center mb-4">
-                  <Zap className="h-6 w-6 text-[#D4A55B]" />
+                <div className="rounded-lg bg-primary/10 w-12 h-12 flex items-center justify-center mb-4">
+                  <Zap className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="font-semibold text-lg mb-2">Impact Meter</h3>
+                <h3 className="font-semibold text-lg mb-2">AI Resume Parser</h3>
                 <p className="text-muted-foreground text-sm">
-                  Get instant feedback on achievement quality. See your score rise as you add metrics,
-                  strong verbs, and methodology.
+                  Upload any resume format. AI extracts work history, achievements, 
+                  and metrics automatically.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="glass-card hover:glass-card-active tilt-on-hover transition-all duration-300">
+            <Card>
               <CardContent className="pt-6">
-                <div className="rounded-lg bg-[#E8E3F5]/40 w-12 h-12 flex items-center justify-center mb-4">
-                  <Target className="h-6 w-6 text-[#9B87D9]" />
+                <div className="rounded-lg bg-primary/10 w-12 h-12 flex items-center justify-center mb-4">
+                  <Target className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="font-semibold text-lg mb-2">Google XYZ Format</h3>
+                <h3 className="font-semibold text-lg mb-2">Superpower Analysis</h3>
                 <p className="text-muted-foreground text-sm">
-                  AI transforms your achievements into the proven "Accomplished [X] by doing [Z], measured by [Y]" format.
+                  AI identifies your top 3 differentiators with evidence from your 
+                  career history.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="glass-card hover:glass-card-active tilt-on-hover transition-all duration-300">
+            <Card>
               <CardContent className="pt-6">
-                <div className="rounded-lg bg-[#E3F5F0]/60 w-12 h-12 flex items-center justify-center mb-4">
-                  <TrendingUp className="h-6 w-6 text-[#5BA88D]" />
+                <div className="rounded-lg bg-primary/10 w-12 h-12 flex items-center justify-center mb-4">
+                  <TrendingUp className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="font-semibold text-lg mb-2">Smart Matching</h3>
+                <h3 className="font-semibold text-lg mb-2">7-Agent System</h3>
                 <p className="text-muted-foreground text-sm">
-                  Paste any job description. We extract requirements and match your best achievements automatically.
+                  Scout, Profiler, Qualifier, Hunter, Tailor, Scribe, and Assembler 
+                  work together to automate your job search.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="glass-card hover:glass-card-active tilt-on-hover transition-all duration-300">
+            <Card>
               <CardContent className="pt-6">
-                <div className="rounded-lg bg-[#F5E3E0]/60 w-12 h-12 flex items-center justify-center mb-4">
-                  <FileText className="h-6 w-6 text-[#D4A574]" />
-                </div>
-                <h3 className="font-semibold text-lg mb-2">STAR Methodology</h3>
-                <p className="text-muted-foreground text-sm">
-                  Guided wizard walks you through Situation, Task, Action, Result to capture complete stories.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="glass-card hover:glass-card-active tilt-on-hover transition-all duration-300">
-              <CardContent className="pt-6">
-                <div className="rounded-lg bg-[#BAE6FD]/40 w-12 h-12 flex items-center justify-center mb-4">
-                  <Sparkles className="h-6 w-6 text-[#0EA5E9]" />
+                <div className="rounded-lg bg-primary/10 w-12 h-12 flex items-center justify-center mb-4">
+                  <FileText className="h-6 w-6 text-primary" />
                 </div>
                 <h3 className="font-semibold text-lg mb-2">Master Profile</h3>
                 <p className="text-muted-foreground text-sm">
-                  Build once, use forever. Your career evidence library grows with every achievement you add.
+                  Build once, use forever. Your career evidence library grows with 
+                  every achievement you add.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="glass-card hover:glass-card-active tilt-on-hover transition-all duration-300">
+            <Card>
               <CardContent className="pt-6">
-                <div className="rounded-lg bg-[#FED7AA]/40 w-12 h-12 flex items-center justify-center mb-4">
-                  <Award className="h-6 w-6 text-[#F97316]" />
+                <div className="rounded-lg bg-primary/10 w-12 h-12 flex items-center justify-center mb-4">
+                  <Sparkles className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-semibold text-lg mb-2">Smart Matching</h3>
+                <p className="text-muted-foreground text-sm">
+                  AI selects your best 8-15 achievements for each role based on 
+                  job requirements and strategic fit.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="pt-6">
+                <div className="rounded-lg bg-primary/10 w-12 h-12 flex items-center justify-center mb-4">
+                  <Award className="h-6 w-6 text-primary" />
                 </div>
                 <h3 className="font-semibold text-lg mb-2">Tailored Output</h3>
                 <p className="text-muted-foreground text-sm">
-                  Generate unlimited resume versions, each optimized for specific roles and companies.
+                  Generate unlimited resume versions, cover letters, and outreach 
+                  messages optimized for each opportunity.
                 </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Social Proof Section */}
-      <section className="py-20 md:py-32 relative" style={{
-        background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, #FFFFFF 15%, #FFFFFF 85%, rgba(255, 255, 255, 0) 100%)'
-      }}>
-        <div className="container mx-auto max-w-6xl">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <div className="w-4 h-4 rounded bg-primary/20 flex items-center justify-center">
-              <div className="w-2 h-2 rounded bg-primary"></div>
-            </div>
-            <span className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Trusted by Professionals</span>
-          </div>
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
-            Real Results, Real Impact
-          </h2>
-          
-          {/* Success Metrics */}
-          <div className="grid md:grid-cols-3 gap-8 mb-16">
-            <Card className="glass-card tilt-on-hover text-center">
-              <CardContent className="pt-8">
-                <div className="text-5xl font-bold text-primary mb-2">5,000+</div>
-                <p className="text-muted-foreground">Resumes Generated</p>
-              </CardContent>
-            </Card>
-            <Card className="glass-card tilt-on-hover text-center">
-              <CardContent className="pt-8">
-                <div className="text-5xl font-bold text-primary mb-2">87%</div>
-                <p className="text-muted-foreground">Interview Rate Increase</p>
-              </CardContent>
-            </Card>
-            <Card className="glass-card tilt-on-hover text-center">
-              <CardContent className="pt-8">
-                <div className="text-5xl font-bold text-primary mb-2">4.9/5</div>
-                <p className="text-muted-foreground">Average User Rating</p>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Testimonials */}
-          <div className="grid md:grid-cols-3 gap-8">
-            <Card className="glass-card hover:glass-card-active tilt-on-hover transition-all duration-300">
-              <CardContent className="pt-6">
-                <div className="mb-4">
-                  <div className="flex items-center gap-1 mb-2">
-                    {[...Array(5)].map((_, i) => (
-                      <span key={i} className="text-primary text-lg">★</span>
-                    ))}
-                  </div>
-                  <p className="text-sm text-muted-foreground italic mb-4">
-                    "The Impact Meter changed how I write about my work. I landed 3 interviews in 2 weeks after using Careerswarm."
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center font-semibold text-primary">
-                    SJ
-                  </div>
-                  <div>
-                    <p className="font-semibold text-sm">Sarah Johnson</p>
-                    <p className="text-xs text-muted-foreground">Product Manager</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="glass-card hover:glass-card-active tilt-on-hover transition-all duration-300">
-              <CardContent className="pt-6">
-                <div className="mb-4">
-                  <div className="flex items-center gap-1 mb-2">
-                    {[...Array(5)].map((_, i) => (
-                      <span key={i} className="text-primary text-lg">★</span>
-                    ))}
-                  </div>
-                  <p className="text-sm text-muted-foreground italic mb-4">
-                    "Finally, a tool that understands the difference between tasks and achievements. My resume went from generic to compelling."
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center font-semibold text-primary">
-                    MC
-                  </div>
-                  <div>
-                    <p className="font-semibold text-sm">Michael Chen</p>
-                    <p className="text-xs text-muted-foreground">Software Engineer</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="glass-card hover:glass-card-active tilt-on-hover transition-all duration-300">
-              <CardContent className="pt-6">
-                <div className="mb-4">
-                  <div className="flex items-center gap-1 mb-2">
-                    {[...Array(5)].map((_, i) => (
-                      <span key={i} className="text-primary text-lg">★</span>
-                    ))}
-                  </div>
-                  <p className="text-sm text-muted-foreground italic mb-4">
-                    "The AI matching is incredible. It pulls exactly the right achievements for each job. Saved me hours of manual editing."
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center font-semibold text-primary">
-                    EP
-                  </div>
-                  <div>
-                    <p className="font-semibold text-sm">Emily Parker</p>
-                    <p className="text-xs text-muted-foreground">Marketing Director</p>
-                  </div>
-                </div>
               </CardContent>
             </Card>
           </div>
@@ -339,58 +217,38 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 md:py-32 relative" style={{
-        background: 'linear-gradient(to bottom, rgba(245, 243, 255, 0) 0%, rgba(245, 243, 255, 1) 15%, rgba(232, 227, 245, 1) 100%)'
-      }}>
-        <div className="container mx-auto max-w-3xl text-center bg-white/60 backdrop-blur-sm rounded-2xl p-12 border border-[#E8E3F5]">
-          <h2 className="text-3xl font-bold mb-4">Ready to Transform Your Career Story?</h2>
-          <p className="text-muted-foreground mb-8 text-lg">
-            Join professionals who are landing interviews with evidence-based resumes.
+      <section className="py-20 md:py-32 bg-primary text-white">
+        <div className="container text-center">
+          <h2 className="text-3xl md:text-5xl font-bold mb-6">
+            Ready to Build Your Career Evidence Engine?
+          </h2>
+          <p className="text-xl mb-8 opacity-90">
+            Start with your existing resumes. AI does the rest.
           </p>
-          {isAuthenticated ? (
-            <Link href="/dashboard">
-              <Button size="lg" className="text-lg px-8">
-                Go to Dashboard
-              </Button>
-            </Link>
-          ) : (
-            <a href={getLoginUrl()}>
-              <Button size="lg" className="text-lg px-8">
-                Start Free Today
-              </Button>
-            </a>
-          )}
+          <a href={getLoginUrl()}>
+            <Button size="lg" variant="secondary" className="text-lg px-8">
+              Get Started Free
+            </Button>
+          </a>
         </div>
       </section>
 
-      {/* Pricing Tiers - Only for unauthenticated users */}
-      {!isAuthenticated && <PricingTiers onSelectPlan={(plan) => window.location.href = getLoginUrl()} />}
-
-      {/* Risk Reversal - Only for unauthenticated users */}
-      {!isAuthenticated && <RiskReversal onStart={() => window.location.href = getLoginUrl()} />}
-
       {/* Footer */}
-      <footer className="border-t border-border bg-card/50 py-12">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+      <footer className="border-t py-12">
+        <div className="container">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-2">
-              <span className="text-2xl">🐝</span>
-              <span className="text-lg font-bold text-foreground">Careerswarm</span>
+              <Award className="h-5 w-5 text-primary" />
+              <span className="font-bold">CareerSwarm</span>
             </div>
-            <nav className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
-              <a href="/" className="hover:text-foreground transition-colors">Home</a>
-              <a href="/pricing" className="hover:text-foreground transition-colors">Pricing</a>
-              <a href="/faq" className="hover:text-foreground transition-colors">FAQ</a>
-              <a href="/privacy" className="hover:text-foreground transition-colors">Privacy</a>
-              <a href="/terms" className="hover:text-foreground transition-colors">Terms</a>
-            </nav>
-            <p className="text-sm text-muted-foreground">
-              © 2026 Careerswarm. All rights reserved.
-            </p>
+            <div className="flex gap-6 text-sm text-muted-foreground">
+              <Link href="/privacy">Privacy</Link>
+              <Link href="/terms">Terms</Link>
+              <Link href="/faq">FAQ</Link>
+            </div>
           </div>
         </div>
       </footer>
     </div>
-    </>
   );
 }
