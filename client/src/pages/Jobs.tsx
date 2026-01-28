@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -18,14 +18,59 @@ import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { toast } from "sonner";
 import { OpportunityDetailModal } from "@/components/OpportunityDetailModal";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function Jobs() {
   const [, setLocation] = useLocation();
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedOpportunityId, setSelectedOpportunityId] = useState<number | null>(null);
+  const [sortBy, setSortBy] = useState<"matchScore" | "postedDate" | "company">("matchScore");
+  const [filterStage, setFilterStage] = useState<string>("all");
+  const [filterLocation, setFilterLocation] = useState<string>("all");
 
   const { data: opportunities, isLoading, refetch } = trpc.opportunities.list.useQuery({});
+  
+  // Filter and sort opportunities
+  const filteredAndSortedOpportunities = useMemo(() => {
+    if (!opportunities) return [];
+    
+    let filtered = [...opportunities];
+    
+    // Apply filters
+    if (filterStage !== "all") {
+      filtered = filtered.filter(opp => opp.companyStage === filterStage);
+    }
+    if (filterLocation !== "all") {
+      filtered = filtered.filter(opp => {
+        const location = (opp as any).location?.toLowerCase() || "";
+        if (filterLocation === "remote") return location.includes("remote");
+        if (filterLocation === "hybrid") return location.includes("hybrid");
+        if (filterLocation === "onsite") return !location.includes("remote") && !location.includes("hybrid");
+        return true;
+      });
+    }
+    
+    // Apply sorting
+    filtered.sort((a, b) => {
+      if (sortBy === "matchScore") {
+        return ((b as any).matchScore || 0) - ((a as any).matchScore || 0);
+      } else if (sortBy === "postedDate") {
+        return new Date(b.postedDate || b.createdAt).getTime() - new Date(a.postedDate || a.createdAt).getTime();
+      } else if (sortBy === "company") {
+        return (a.companyName || "").localeCompare(b.companyName || "");
+      }
+      return 0;
+    });
+    
+    return filtered;
+  }, [opportunities, filterStage, filterLocation, sortBy]);
   
   const runScout = trpc.agents.runScout.useMutation({
     onSuccess: (data) => {
@@ -126,6 +171,54 @@ export default function Jobs() {
           </CardContent>
         </Card>
 
+        {/* Filter and Sort Controls */}
+        {opportunities && opportunities.length > 0 && (
+          <div className="flex gap-4 mb-6">
+            <div className="flex-1">
+              <label className="text-sm font-medium mb-2 block">Sort By</label>
+              <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="matchScore">Match Score (High to Low)</SelectItem>
+                  <SelectItem value="postedDate">Posted Date (Newest)</SelectItem>
+                  <SelectItem value="company">Company Name (A-Z)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex-1">
+              <label className="text-sm font-medium mb-2 block">Company Stage</label>
+              <Select value={filterStage} onValueChange={setFilterStage}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Stages</SelectItem>
+                  <SelectItem value="seed">Seed</SelectItem>
+                  <SelectItem value="series_a">Series A</SelectItem>
+                  <SelectItem value="series_b">Series B</SelectItem>
+                  <SelectItem value="series_c">Series C+</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex-1">
+              <label className="text-sm font-medium mb-2 block">Location</label>
+              <Select value={filterLocation} onValueChange={setFilterLocation}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Locations</SelectItem>
+                  <SelectItem value="remote">Remote</SelectItem>
+                  <SelectItem value="hybrid">Hybrid</SelectItem>
+                  <SelectItem value="onsite">On-site</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        )}
+
         {/* Opportunities List */}
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
@@ -135,15 +228,15 @@ export default function Jobs() {
           <div className="space-y-4">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold">
-                {opportunities.length} Opportunities Found
+                {filteredAndSortedOpportunities.length} Opportunities Found
               </h2>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <TrendingUp className="h-4 w-4" />
-                Sorted by match score
+                Sorted by {sortBy === "matchScore" ? "match score" : sortBy === "postedDate" ? "posted date" : "company name"}
               </div>
             </div>
 
-            {opportunities.map((opp: any) => (
+            {filteredAndSortedOpportunities.map((opp: any) => (
               <Card key={opp.id} className="hover:shadow-md transition-shadow">
                 <CardContent className="pt-6">
                   <div className="flex justify-between items-start">

@@ -190,5 +190,5 @@ Completing remaining Priority 2 & 3 features:
 5. ✅ Achievement usage tracking display (COMPLETE)
 6. ✅ Opportunity detail modal (COMPLETE)
 7. ✅ Analytics dashboard (COMPLETE)
-8. ⏳ Real-time progress updates
-9. ⏳ Sort/filter improvements
+8. ⚠️ Real-time progress updates (DEFERRED - requires WebSocket infrastructure)
+9. ✅ Sort/filter improvements (COMPLETE)

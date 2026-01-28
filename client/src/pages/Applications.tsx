@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -16,15 +16,46 @@ import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { toast } from "sonner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function Applications() {
   const [, setLocation] = useLocation();
   const { user } = useAuth();
-  const [statusFilter, setStatusFilter] = useState<string | undefined>();
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<"appliedDate" | "status" | "company">("appliedDate");
 
   const { data: applications, isLoading, refetch } = trpc.applications.list.useQuery({
-    status: statusFilter,
+    status: statusFilter === "all" ? undefined : statusFilter,
   });
+  
+  // Sort applications
+  const sortedApplications = useMemo(() => {
+    if (!applications) return [];
+    
+    const sorted = [...applications];
+    sorted.sort((a, b) => {
+      if (sortBy === "appliedDate") {
+        const dateA = a.appliedAt ? new Date(a.appliedAt).getTime() : 0;
+        const dateB = b.appliedAt ? new Date(b.appliedAt).getTime() : 0;
+        return dateB - dateA; // Newest first
+      } else if (sortBy === "status") {
+        return (a.status || "").localeCompare(b.status || "");
+      } else if (sortBy === "company") {
+        const companyA = (a as any).opportunity?.companyName || "";
+        const companyB = (b as any).opportunity?.companyName || "";
+        return companyA.localeCompare(companyB);
+      }
+      return 0;
+    });
+    
+    return sorted;
+  }, [applications, sortBy]);
 
   const updateStatus = trpc.applications.updateStatus.useMutation({
     onSuccess: () => {
@@ -98,9 +129,9 @@ export default function Applications() {
           <CardContent className="pt-6">
             <div className="flex flex-wrap gap-2">
               <Button
-                variant={statusFilter === undefined ? "default" : "outline"}
+                variant={statusFilter === "all" ? "default" : "outline"}
                 size="sm"
-                onClick={() => setStatusFilter(undefined)}
+                onClick={() => setStatusFilter("all")}
               >
                 All
               </Button>
@@ -126,6 +157,23 @@ export default function Applications() {
           </CardContent>
         </Card>
 
+        {/* Sort Control */}
+        {applications && applications.length > 0 && (
+          <div className="mb-6">
+            <label className="text-sm font-medium mb-2 block">Sort By</label>
+            <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
+              <SelectTrigger className="w-64">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="appliedDate">Applied Date (Newest)</SelectItem>
+                <SelectItem value="status">Status</SelectItem>
+                <SelectItem value="company">Company Name (A-Z)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
         {/* Applications List */}
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
@@ -135,11 +183,15 @@ export default function Applications() {
           <div className="space-y-4">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold">
-                {applications.length} Application{applications.length !== 1 ? "s" : ""}
+                {sortedApplications.length} Application{sortedApplications.length !== 1 ? "s" : ""}
               </h2>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <TrendingUp className="h-4 w-4" />
+                Sorted by {sortBy === "appliedDate" ? "applied date" : sortBy === "status" ? "status" : "company name"}
+              </div>
             </div>
 
-            {applications.map((app: any) => (
+            {sortedApplications.map((app: any) => (
               <Card key={app.id} className="hover:shadow-md transition-shadow">
                 <CardContent className="pt-6">
                   <div className="flex justify-between items-start">
