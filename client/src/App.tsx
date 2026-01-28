@@ -34,6 +34,9 @@ import ApplicationDetail from "./pages/ApplicationDetail";
 // Analytics
 import Analytics from "./pages/Analytics";
 
+// Activity Feed
+import Activity from "./pages/Activity";
+
 function Router() {
   return (
     <Switch>
@@ -43,6 +46,9 @@ function Router() {
       <Route path="/faq" component={FAQ} />
       <Route path="/privacy" component={Privacy} />
       <Route path="/terms" component={Terms} />
+
+      {/* Activity Feed */}
+      <Route path="/activity" component={Activity} />
 
       {/* Onboarding Flow */}
       <Route path="/onboarding" component={OnboardingWelcome} />

@@ -289,3 +289,14 @@
 - [x] Show linked superpowers
 - [x] Add Edit and Delete buttons
 - [x] Trigger modal from achievement cards on Profile page (click to expand)
+
+
+### Activity Feed Page ✅ COMPLETE
+- [x] Create /activity route in App.tsx
+- [x] Create Activity.tsx page component
+- [x] Display all notifications and activity in chronological order
+- [x] Show notification types with icons (follow-ups, responses, new matches, notes)
+- [x] Add filter dropdown (All, Follow-ups, Responses, New Matches)
+- [x] Add pagination placeholder for long lists (20 items per page)
+- [x] Link from Dashboard "View All Activity →" button
+- [x] Mark notifications as read when viewed

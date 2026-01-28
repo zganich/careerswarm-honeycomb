@@ -222,7 +222,7 @@ export default function Dashboard() {
             ))
           )}
 
-          <Link href="/applications">
+          <Link href="/activity">
             <Button variant="link" className="w-full">
               View All Activity →
             </Button>
