@@ -1045,6 +1045,94 @@ Each superpower should:
   }),
 
   // ================================================================
+  // ANALYTICS
+  // ================================================================
+  analytics: router({  
+    // Get analytics overview
+    getOverview: protectedProcedure.query(async ({ ctx }) => {
+      const user = await db.getUserByOpenId(ctx.user.openId);
+      if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
+      const applications = await db.getApplications(user.id, {});
+      const achievements = await db.getAchievements(user.id);
+
+      // Calculate metrics
+      const totalApplications = applications.length;
+      const thisWeekApplications = applications.filter(
+        (app) => app.appliedAt && new Date(app.appliedAt).getTime() > Date.now() - 7 * 24 * 60 * 60 * 1000
+      ).length;
+
+      const respondedApplications = applications.filter(
+        (app) => app.status !== "applied" && app.status !== "draft"
+      );
+      const responseRate = totalApplications > 0
+        ? Math.round((respondedApplications.length / totalApplications) * 100)
+        : 0;
+
+      const interviewingCount = applications.filter(
+        (app) => app.status === "interview" || app.status === "phone_screen" || app.status === "final_interview"
+      ).length;
+      const offerCount = applications.filter(
+        (app) => app.status === "offer"
+      ).length;
+      const rejectedCount = applications.filter(
+        (app) => app.status === "rejected"
+      ).length;
+
+      const interviewRate = totalApplications > 0
+        ? Math.round((interviewingCount / totalApplications) * 100)
+        : 0;
+
+      // Calculate average response time (using updatedAt as proxy since respondedAt doesn't exist)
+      const responseTimes = respondedApplications
+        .map((app) => {
+          if (!app.appliedAt) return null;
+          return Math.floor(
+            (new Date(app.updatedAt).getTime() - new Date(app.appliedAt).getTime()) /
+              (24 * 60 * 60 * 1000)
+          );
+        })
+        .filter((time): time is number => time !== null);
+
+      const avgResponseTime = responseTimes.length > 0
+        ? Math.round(
+            responseTimes.reduce((sum, time) => sum + time, 0) / responseTimes.length
+          )
+        : 0;
+
+      // Get top achievements
+      const topAchievements = achievements
+        .filter((a) => (a.timesUsed || 0) > 0)
+        .map((a) => ({
+          title: a.description, // achievements use 'description' not 'title'
+          timesUsed: a.timesUsed,
+          successRate:
+            (a.applicationsWithAchievement || 0) > 0
+              ? Math.round(
+                  ((a.responsesWithAchievement || 0) / (a.applicationsWithAchievement || 1)) * 100
+                )
+              : 0,
+        }))
+        .sort((a, b) => b.successRate - a.successRate)
+        .slice(0, 5);
+
+      return {
+        totalApplications,
+        thisWeekApplications,
+        responseRate,
+        responseRateChange: 0, // TODO: Calculate from historical data
+        avgResponseTime,
+        interviewRate,
+        interviewingCount,
+        offerCount,
+        rejectedCount,
+        topAchievements,
+        insights: [], // TODO: Generate AI insights
+      };
+    }),
+  }),
+
+  // ================================================================
   // NOTIFICATIONS
   // ================================================================
   notifications: router({
