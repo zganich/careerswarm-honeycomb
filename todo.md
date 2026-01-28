@@ -278,3 +278,14 @@
 - [x] Show "Complete Your Profile →" button when < 100%
 - [x] Highlight specific missing fields with prompts
 - [x] Create profile.getCompleteness tRPC procedure
+
+
+### Achievement Detail Modal ✅ COMPLETE
+- [x] Create AchievementDetailModal component
+- [x] Show full achievement description with inline edit
+- [x] Display structured metrics (Type, Value, Timeframe, Context)
+- [x] Display extracted keywords/tags
+- [x] Show usage statistics section (times used, success rate, last used)
+- [x] Show linked superpowers
+- [x] Add Edit and Delete buttons
+- [x] Trigger modal from achievement cards on Profile page (click to expand)

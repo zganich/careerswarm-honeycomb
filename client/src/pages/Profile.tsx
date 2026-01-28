@@ -18,11 +18,14 @@ import {
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { AchievementDetailModal } from "@/components/AchievementDetailModal";
 
 export default function Profile() {
   const [, setLocation] = useLocation();
   const { user } = useAuth();
   const [expandedJob, setExpandedJob] = useState<number | null>(null);
+  const [selectedAchievement, setSelectedAchievement] = useState<any | null>(null);
+  const [achievementModalOpen, setAchievementModalOpen] = useState(false);
 
   const { data: profile, isLoading } = trpc.profile.get.useQuery();
   const { data: achievementStats } = trpc.profile.getAchievementStats.useQuery();
@@ -340,7 +343,14 @@ export default function Profile() {
             {profile.achievements && profile.achievements.length > 0 ? (
               <div className="space-y-3">
                 {profile.achievements.slice(0, 10).map((achievement: any, index: number) => (
-                  <div key={index} className="p-3 bg-gray-50 rounded-lg border">
+                  <div
+                    key={index}
+                    className="p-3 bg-gray-50 rounded-lg border cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => {
+                      setSelectedAchievement(achievement);
+                      setAchievementModalOpen(true);
+                    }}
+                  >
                     <p className="text-sm mb-2">{achievement.description}</p>
                     <div className="flex items-center gap-4 text-xs text-muted-foreground">
                       {achievement.metricValue && (
@@ -409,6 +419,21 @@ export default function Profile() {
           </Card>
         </div>
       </div>
+
+      {/* Achievement Detail Modal */}
+      <AchievementDetailModal
+        achievement={selectedAchievement}
+        open={achievementModalOpen}
+        onOpenChange={setAchievementModalOpen}
+        onEdit={() => {
+          // TODO: Implement edit functionality
+          console.log("Edit achievement:", selectedAchievement);
+        }}
+        onDelete={() => {
+          // TODO: Implement delete functionality
+          console.log("Delete achievement:", selectedAchievement);
+        }}
+      />
     </div>
   );
 }
