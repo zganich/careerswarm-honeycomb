@@ -280,7 +280,7 @@ export function OpportunityDetailModal({
                 className="flex-1"
                 size="lg"
               >
-                {isApplying ? "Generating Application..." : "🚀 Quick Apply"}
+                {isApplying ? "Generating Application..." : "🚀 1-Click Apply"}
               </Button>
               <Button variant="outline" size="lg" onClick={onClose}>
                 Close

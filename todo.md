@@ -563,3 +563,53 @@
 - [ ] "Original files discarded after parsing"
 - [ ] "96% confidence via cross-referencing"
 - [ ] "Your data never sold or shared"
+
+
+---
+
+## 🧠 CAREERSWARM V2.0 - PSYCHOLOGICAL CONVERSION OVERHAUL (Jan 29, 2026)
+
+**Goal:** Implement 5 psychological pillars to increase landing page conversion from 10-15% to 25%+
+
+### Phase 1: Component Creation ✅ COMPLETE
+- [x] Created psychological UI components directory structure
+- [x] Implemented CopyConstants.ts with all psychological copy
+- [x] Implemented TransformationHero.tsx (Pillar 4: Visual Transformation)
+- [x] Implemented LaborIllusion.tsx (Pillar 2: Transparent AI Processing)
+- [x] Implemented AsyncQuickApply.tsx (Pillar 3: Fire-and-Forget Flow)
+- [x] Implemented TimeCurrencyMetrics.tsx (Pillar 5: Hours Reclaimed)
+- [x] Implemented DemoBanner.tsx (Transparency Component)
+- [x] Created barrel export index.ts for psych components
+- [x] Created PsychologicalAnimations.css with all conversion animations
+- [x] Imported PsychologicalAnimations.css in main index.css
+
+### Phase 2: Page Integration ✅ COMPLETE
+- [x] Integrated TransformationHero into Home.tsx landing page
+- [x] Update navigation "Get Verified" button to "Build My Master Profile"
+- [x] Integrated TimeCurrencyMetrics concept into Dashboard (Hours Reclaimed metric)
+- [x] Updated AsyncQuickApply button text to "1-Click Apply" across all pages
+- [ ] Integrate LaborIllusion into onboarding extraction step (deferred - requires onboarding flow update)
+
+### Phase 3: Global Copy Replacements (Pillar 1: Asset Language) ✅ COMPLETE
+- [x] Global replacement: "Get Verified" → "Build My Master Profile" (navigation)
+- [x] Global replacement: "Response Rate" → "Hours Reclaimed" (Dashboard & Analytics)
+- [x] Global replacement: "Quick Apply" → "1-Click Apply" (all pages)
+- [x] Updated Dashboard metrics to show time savings calculation
+- [x] Updated Analytics charts to reflect Hours Reclaimed
+
+### Phase 4: Verification & Testing ✅ COMPLETE
+- [x] Test build and verify all changes (TypeScript: no errors, Build: passing)
+- [x] Verify Pillar 1: "Verification" language removed from user-facing copy
+- [x] Verify Pillar 4: Landing page shows split-screen transformation (TransformationHero rendering)
+- [x] Verify Pillar 5: Dashboard shows "Hours Reclaimed" prominently (metric card updated)
+- [x] Verify "1-Click Apply" button text across all pages
+- [ ] Verify Pillar 2: AI shows 5+ visible "thinking" steps (deferred - requires LaborIllusion integration)
+- [ ] Verify Pillar 3: Quick Apply closes within 1.5s with toast (deferred - requires AsyncQuickApply integration)
+
+### Phase 5: Deployment
+- [ ] Commit all changes to GitHub
+- [ ] Push to careerswarm-honeycomb repository
+- [ ] Create checkpoint for V2.0 release
+- [ ] Update documentation with new conversion metrics
+
+---

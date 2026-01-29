@@ -236,7 +236,7 @@ export default function SavedOpportunities() {
                             Applying...
                           </>
                         ) : (
-                          "Quick Apply"
+                          "1-Click Apply"
                         )}
                       </Button>
                       <Button

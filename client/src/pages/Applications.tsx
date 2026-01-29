@@ -307,7 +307,7 @@ export default function Applications() {
                 <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-semibold mb-2">No applications yet</h3>
                 <p className="text-muted-foreground mb-4">
-                  Start by discovering jobs and using Quick Apply
+                  Start by discovering jobs and using 1-Click Apply
                 </p>
                 <Button onClick={() => setLocation("/jobs")}>
                   Discover Jobs

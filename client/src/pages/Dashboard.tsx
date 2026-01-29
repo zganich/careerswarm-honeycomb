@@ -84,14 +84,14 @@ export default function Dashboard() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Response Rate</CardTitle>
+            <CardTitle className="text-sm font-medium">Hours Reclaimed</CardTitle>
             <Mail className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{Math.round(responseRate)}%</div>
+            <div className="text-2xl font-bold">{((applications?.length || 0) * 4.5).toFixed(1)}</div>
             <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
               <TrendingUp className="h-3 w-3 text-green-500" />
-              <span>+8% vs last week</span>
+              <span>Time you'd spend manually applying</span>
             </p>
           </CardContent>
         </Card>
@@ -212,7 +212,7 @@ export default function Dashboard() {
                               View Details
                             </Button>
                           </Link>
-                          <Button size="sm">Quick Apply</Button>
+                          <Button size="sm">1-Click Apply</Button>
                         </div>
                       </div>
                     </div>

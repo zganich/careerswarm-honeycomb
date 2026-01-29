@@ -89,7 +89,7 @@ export default function Jobs() {
       setLocation("/applications");
     },
     onError: (error) => {
-      toast.error(`Quick Apply failed: ${error.message}`);
+      toast.error(`1-Click Apply failed: ${error.message}`);
     },
   });
 
@@ -302,7 +302,7 @@ export default function Jobs() {
                         Applying...
                       </>
                     ) : (
-                      "🚀 Quick Apply"
+                      "🚀 1-Click Apply"
                     )}
                   </Button>
                       </div>

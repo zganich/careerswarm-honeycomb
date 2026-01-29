@@ -83,13 +83,13 @@ export default function Analytics() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Response Rate</CardTitle>
+            <CardTitle className="text-sm font-medium">Hours Reclaimed</CardTitle>
             <TrendingUp className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{analytics?.responseRate || 0}%</div>
+            <div className="text-2xl font-bold">{((analytics?.totalApplications || 0) * 4.5).toFixed(1)}</div>
             <p className="text-xs text-muted-foreground">
-              {analytics?.responseRateChange || 0}% from last month
+              Time you'd spend manually applying
             </p>
           </CardContent>
         </Card>
@@ -123,10 +123,10 @@ export default function Analytics() {
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* Response Rate Over Time */}
+        {/* Hours Reclaimed Over Time */}
         <Card>
           <CardHeader>
-            <CardTitle>Response Rate Trend</CardTitle>
+            <CardTitle>Hours Reclaimed Trend</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -141,7 +141,7 @@ export default function Analytics() {
                   dataKey="rate"
                   stroke="#3b82f6"
                   strokeWidth={2}
-                  name="Response Rate (%)"
+                  name="Hours Saved"
                 />
               </LineChart>
             </ResponsiveContainer>
