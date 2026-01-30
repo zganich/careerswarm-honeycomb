@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "wouter";
 import { DashboardMetrics } from "@/components/DashboardMetrics";
+import { FirstTimeHelp } from '@/components/ui/FirstTimeHelp';
 import {
   TrendingUp,
   TrendingDown,
@@ -227,6 +228,9 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       )}
+      
+      {/* FirstTimeHelp Overlay */}
+      <FirstTimeHelp />
     </div>
   );
 }

@@ -17,14 +17,14 @@ import { PSYCH_COPY } from "./CopyConstants";
 
 export function TransformationHero() {
   return (
-    <section className="relative min-h-[80vh] flex items-center justify-center px-4 py-16 overflow-hidden bg-gradient-to-b from-slate-50 to-white">
+    <section className="relative min-h-[80vh] flex items-center justify-center px-4 pt-32 md:pt-40 pb-16 overflow-hidden bg-gradient-to-b from-slate-50 to-white">
       
       {/* Main Content */}
       <div className="max-w-6xl mx-auto text-center">
         
         {/* Headline */}
         <motion.h1 
-          className="text-5xl md:text-7xl font-bold text-slate-900 mb-4"
+          className="text-5xl md:text-7xl font-bold text-slate-900 mb-4 mt-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
