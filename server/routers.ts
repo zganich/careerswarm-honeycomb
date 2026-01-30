@@ -1281,6 +1281,134 @@ Each superpower should:
         await db.deleteApplicationNote(input.noteId, user.id);
         return { success: true };
       }),
+
+    // Generate application package (async)
+    generatePackage: protectedProcedure
+      .input(z.object({ applicationId: z.number() }))
+      .mutation(async ({ ctx, input }) => {        const user = await db.getUserByOpenId(ctx.user.openId);
+        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
+        // Verify application belongs to user
+        const application = await db.getApplicationById(input.applicationId, user.id);
+        if (!application) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Application not found" });
+        }
+
+        // Start async generation (fire and forget)
+        (async () => {
+          try {
+            // Import agents
+            const { tailorResume } = await import("./agents/tailor");
+            const { generateOutreach } = await import("./agents/scribe");
+            const { assemblePackage } = await import("./agents/assembler");
+
+            // Get user profile for generation
+            const [profile, workExperiences, achievements] = await Promise.all([
+              db.getUserProfile(user.id),
+              db.getWorkExperiences(user.id),
+              db.getAchievements(user.id),
+            ]);
+
+            const userProfile = {
+              fullName: user.name || "User",
+              email: user.email || "",
+              profile: profile || {},
+              workExperiences,
+              achievements,
+            };
+
+            // Get opportunity details
+            const opportunity = await db.getOpportunityById(application.opportunityId);
+            if (!opportunity) {
+              throw new Error("Opportunity not found");
+            }
+
+            // Generate resume
+            const resumeResult = await tailorResume({
+              userProfile,
+              jobDescription: opportunity.jobDescription || "",
+              companyName: opportunity.companyName,
+              roleTitle: opportunity.roleTitle,
+            });
+
+            // Generate cover letter and LinkedIn message
+            const outreachResult = await generateOutreach({
+              userProfile,
+              jobDescription: opportunity.jobDescription || "",
+              companyName: opportunity.companyName,
+              roleTitle: opportunity.roleTitle,
+              companyDescription: "", // opportunities table doesn't have companyDescription
+            });
+
+            // Assemble package
+            const packageResult = await assemblePackage({
+              applicationId: application.id.toString(),
+              resumeMarkdown: resumeResult.resume,
+              coverLetter: outreachResult.coverLetter,
+              linkedInMessage: outreachResult.linkedInMessage,
+              userFullName: userProfile.fullName,
+              companyName: opportunity.companyName,
+              roleTitle: opportunity.roleTitle,
+            });
+
+            // Update application with package URLs
+            await db.updateApplication(application.id, user.id, {
+              packageZipUrl: packageResult.packageUrl,
+              resumePdfUrl: packageResult.files.resumePDF,
+              resumeDocxUrl: packageResult.files.resumeDOCX,
+              tailoredResumeText: resumeResult.resume,
+              coverLetterText: outreachResult.coverLetter,
+              linkedinMessage: outreachResult.linkedInMessage,
+            });
+
+            // Send notification
+            await db.createNotification({
+              userId: user.id,
+              type: "application_package_ready",
+              title: "Application Package Ready",
+              message: `Your application package for ${opportunity.companyName} - ${opportunity.roleTitle} is ready to download.`,
+              applicationId: application.id,
+            });
+          } catch (error) {
+            console.error("Package generation failed:", error);
+            // Send error notification
+            await db.createNotification({
+              userId: user.id,
+              type: "application_package_error",
+              title: "Package Generation Failed",
+              message: "There was an error generating your application package. Please try again.",
+              applicationId: input.applicationId,
+            });
+          }
+        })();
+
+        return { success: true, message: "Package generation started" };
+      }),
+
+    // Get package status
+    getPackageStatus: protectedProcedure
+      .input(z.object({ applicationId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const user = await db.getUserByOpenId(ctx.user.openId);
+        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
+        const application = await db.getApplicationById(input.applicationId, user.id);
+        if (!application) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Application not found" });
+        }
+
+        return {
+          ready: !!application.packageZipUrl,
+          packageUrl: application.packageZipUrl || null,
+          files: {
+            resumePDF: application.resumePdfUrl || null,
+            resumeDOCX: application.resumeDocxUrl || null,
+            resumeTXT: application.resumeTxtUrl || null,
+            coverLetterTXT: application.coverLetterTxtUrl || null,
+            linkedInMessageTXT: application.linkedinMessageTxtUrl || null,
+          },
+        };
+      }),
   }),
 
   // ================================================================

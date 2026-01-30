@@ -335,6 +335,14 @@ export const applications = mysqlTable("applications", {
   linkedinMessage: text("linkedinMessage"),
   emailTemplate: text("emailTemplate"),
   
+  // Application Package URLs
+  packageZipUrl: text("packageZipUrl"),
+  resumePdfUrl: text("resumePdfUrl"),
+  resumeDocxUrl: text("resumeDocxUrl"),
+  resumeTxtUrl: text("resumeTxtUrl"),
+  coverLetterTxtUrl: text("coverLetterTxtUrl"),
+  linkedinMessageTxtUrl: text("linkedinMessageTxtUrl"),
+  
   // Achievements Used
   achievementsUsed: json("achievementsUsed").$type<number[]>(), // Array of achievement IDs
   
