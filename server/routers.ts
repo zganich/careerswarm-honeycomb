@@ -1300,7 +1300,7 @@ Each superpower should:
             // Import agents
             const { tailorResume } = await import("./agents/tailor");
             const { generateOutreach } = await import("./agents/scribe");
-            const { assemblePackage } = await import("./agents/assembler");
+            const { assembleApplicationPackage } = await import("./agents/assembler");
 
             // Get user profile for generation
             const [profile, workExperiences, achievements] = await Promise.all([
@@ -1309,23 +1309,42 @@ Each superpower should:
               db.getAchievements(user.id),
             ]);
 
-            const userProfile = {
-              fullName: user.name || "User",
-              email: user.email || "",
-              profile: profile || {},
-              workExperiences,
-              achievements,
-            };
-
             // Get opportunity details
             const opportunity = await db.getOpportunityById(application.opportunityId);
             if (!opportunity) {
               throw new Error("Opportunity not found");
             }
 
+            // Transform userProfile for Tailor agent
+            const tailorUserProfile = {
+              fullName: user.name || "User",
+              email: user.email || "",
+              phone: (profile as any)?.phone || "",
+              location: (profile as any)?.locationCity || "",
+              linkedIn: (profile as any)?.linkedinUrl || "",
+              workExperience: workExperiences.map(exp => ({
+                company: exp.companyName,
+                title: exp.jobTitle,
+                startDate: exp.startDate.toISOString().split('T')[0],
+                endDate: exp.endDate ? exp.endDate.toISOString().split('T')[0] : "Present",
+                achievements: achievements
+                  .filter(ach => ach.workExperienceId === exp.id)
+                  .map(ach => ach.description)
+              })),
+              skills: [],
+              education: []
+            };
+
+            // Transform userProfile for Scribe agent
+            const scribeUserProfile = {
+              fullName: user.name || "User",
+              currentTitle: workExperiences[0]?.jobTitle || "Professional",
+              topAchievements: achievements.slice(0, 3).map(ach => ach.description)
+            };
+
             // Generate resume
             const resumeResult = await tailorResume({
-              userProfile,
+              userProfile: tailorUserProfile,
               jobDescription: opportunity.jobDescription || "",
               companyName: opportunity.companyName,
               roleTitle: opportunity.roleTitle,
@@ -1333,20 +1352,20 @@ Each superpower should:
 
             // Generate cover letter and LinkedIn message
             const outreachResult = await generateOutreach({
-              userProfile,
+              userProfile: scribeUserProfile,
               jobDescription: opportunity.jobDescription || "",
               companyName: opportunity.companyName,
               roleTitle: opportunity.roleTitle,
-              companyDescription: "", // opportunities table doesn't have companyDescription
+              strategicMemo: "", // TODO: Add Profiler agent integration
             });
 
             // Assemble package
-            const packageResult = await assemblePackage({
+            const packageResult = await assembleApplicationPackage({
               applicationId: application.id.toString(),
-              resumeMarkdown: resumeResult.resume,
+              resumeMarkdown: resumeResult.resumeMarkdown,
               coverLetter: outreachResult.coverLetter,
               linkedInMessage: outreachResult.linkedInMessage,
-              userFullName: userProfile.fullName,
+              userFullName: user.name || "User",
               companyName: opportunity.companyName,
               roleTitle: opportunity.roleTitle,
             });
@@ -1356,7 +1375,7 @@ Each superpower should:
               packageZipUrl: packageResult.packageUrl,
               resumePdfUrl: packageResult.files.resumePDF,
               resumeDocxUrl: packageResult.files.resumeDOCX,
-              tailoredResumeText: resumeResult.resume,
+              tailoredResumeText: resumeResult.resumeMarkdown,
               coverLetterText: outreachResult.coverLetter,
               linkedinMessage: outreachResult.linkedInMessage,
             });
