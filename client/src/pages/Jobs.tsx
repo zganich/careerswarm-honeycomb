@@ -19,6 +19,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { toast } from "sonner";
 import { OpportunityDetailModal } from "@/components/OpportunityDetailModal";
 import SaveOpportunityButton from "@/components/SaveOpportunityButton";
+import { AsyncQuickApply } from "@/components/ui/psych/AsyncQuickApply";
 import {
   Select,
   SelectContent,
@@ -291,20 +292,15 @@ export default function Jobs() {
                   >
                     View Details
                   </Button>
-                  <Button
-                    size="sm"
-                    onClick={() => quickApply.mutate({ opportunityId: opp.id })}
+                  <AsyncQuickApply
+                    jobId={opp.id.toString()}
+                    companyName={opp.companyName || "Company"}
+                    roleTitle={opp.title}
+                    onApplyStart={async (jobId) => {
+                      await quickApply.mutateAsync({ opportunityId: parseInt(jobId) });
+                    }}
                     disabled={quickApply.isPending}
-                  >
-                    {quickApply.isPending ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Applying...
-                      </>
-                    ) : (
-                      "🚀 1-Click Apply"
-                    )}
-                  </Button>
+                  />
                       </div>
                     </div>
 

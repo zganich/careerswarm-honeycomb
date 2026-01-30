@@ -657,4 +657,35 @@
 - [x] Dashboard Hours Reclaimed hero metric with animated counter visible
 - [x] Feature cards updated with benefit-driven copy
 - [x] LaborIllusion component integrated in onboarding extraction
+- [x] Push to GitHub careerswarm-honeycomb (commit 7b57ffc2)
+
+---
+
+## 🚀 CAREERSWARM V2.0 - DEPLOYMENT FIXES (Jan 30, 2026)
+
+### Fix #1: TransformationHero Icons & Checkmarks ✅ ALREADY COMPLETE
+- [x] Add platform icons to "chaos" side (LinkedIn, GitHub, FileSpreadsheet, FolderOpen) - lines 92-105
+- [x] Update "order" side with proper checkmarks and icon structure - lines 139, 155, 171
+- [x] Verify visual polish on landing page - component fully implemented
+
+### Fix #4: LaborIllusion Integration ✅ ALREADY COMPLETE
+- [x] Verify LaborIllusion component exists at client/src/components/ui/psych/LaborIllusion.tsx
+- [x] Check onboarding extraction step uses LaborIllusion - line 100 in Extraction.tsx
+- [x] Component shows 5-step AI processing with progress bar and details
+
+### Fix #5: AsyncQuickApply Implementation ✅ COMPLETE
+- [x] AsyncQuickApply component exists at client/src/components/ui/psych/AsyncQuickApply.tsx
+- [x] Updated component to use sonner toast instead of placeholder
+- [x] Integrated into Jobs.tsx (lines 295-303)
+- [x] Replaced blocking Quick Apply with fire-and-forget async flow
+- [x] Toast notifications show "Application Started" with "View Progress" action
+
+### Deployment Checklist ✅ COMPLETE
+- [x] All fixes tested and verified (LSP: No errors, TypeScript: No errors)
+- [x] TypeScript compilation passes
+- [x] Build successful (dev server running)
+- [x] TransformationHero with platform icons rendering correctly
+- [x] LaborIllusion integrated in onboarding extraction
+- [x] AsyncQuickApply integrated in Jobs.tsx
+- [ ] Commit with descriptive message (next step)
 - [ ] Push to GitHub careerswarm-honeycomb (next step)

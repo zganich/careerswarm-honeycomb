@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Rocket, Check, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { PSYCH_COPY } from "./CopyConstants";
 
 interface AsyncQuickApplyProps {
@@ -39,15 +40,12 @@ export function AsyncQuickApply({
     setTimeout(() => {
       setState("processing");
       
-      // Show toast notification (integrate with your toast system)
-      showToast({
-        type: "success",
-        title: PSYCH_COPY.quickApply.toastStarted.title,
-        message: PSYCH_COPY.quickApply.toastStarted.message(companyName, roleTitle),
+      // Show toast notification
+      toast.success(PSYCH_COPY.quickApply.toastStarted.title, {
+        description: PSYCH_COPY.quickApply.toastStarted.message(companyName, roleTitle),
         action: {
           label: PSYCH_COPY.quickApply.toastStarted.action,
           onClick: () => {
-            // Navigate to applications page or show progress
             window.location.href = "/applications";
           },
         },
@@ -122,17 +120,4 @@ export function AsyncQuickApply({
   );
 }
 
-// Toast helper (integrate with your existing toast system)
-function showToast(config: {
-  type: "success" | "error";
-  title: string;
-  message: string;
-  action?: { label: string; onClick: () => void };
-}) {
-  // This should integrate with your existing toast/notification system
-  // Example: using react-hot-toast, sonner, or custom implementation
-  console.log("Toast:", config);
-  
-  // Placeholder - replace with actual implementation:
-  // toast.success(config.title, { description: config.message });
-}
+
