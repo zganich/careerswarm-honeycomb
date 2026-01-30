@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Award, Loader2, CheckCircle, Sparkles } from "lucide-react";
+import { Award, CheckCircle, Sparkles } from "lucide-react";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
+import { LaborIllusion } from "@/components/ui/psych/LaborIllusion";
 
 export default function Extraction() {
   const [, setLocation] = useLocation();
@@ -95,40 +96,18 @@ export default function Extraction() {
           </p>
         </div>
 
-        {/* Progress Steps */}
-        <Card>
-          <CardContent className="pt-6">
-            <div className="space-y-4">
-              {steps.map((step, index) => (
-                <div
-                  key={index}
-                  className="flex items-center gap-4"
-                >
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    index < currentStep
-                      ? "bg-green-500 text-white"
-                      : index === currentStep
-                      ? "bg-primary text-white"
-                      : "bg-gray-200 text-gray-400"
-                  }`}>
-                    {index < currentStep ? (
-                      <CheckCircle className="h-5 w-5" />
-                    ) : index === currentStep ? (
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                    ) : (
-                      <span className="text-sm">{index + 1}</span>
-                    )}
-                  </div>
-                  <p className={`text-sm ${
-                    index <= currentStep ? "text-foreground font-medium" : "text-muted-foreground"
-                  }`}>
-                    {step}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        {/* Labor Illusion Component */}
+        {!isComplete && <LaborIllusion variant="extraction" onComplete={() => setIsComplete(true)} />}
+        
+        {isComplete && (
+          <Card>
+            <CardContent className="pt-6 text-center">
+              <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
+              <h3 className="text-xl font-bold mb-2">Master Profile Ready!</h3>
+              <p className="text-muted-foreground">Your career data has been analyzed and structured</p>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Continue Button */}
         {isComplete && (

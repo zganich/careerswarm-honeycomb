@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { ArrowRight, Hexagon, ShieldCheck, Zap, Database, Check } from 'lucide-react';
+import { ArrowRight, Hexagon, ShieldCheck, Zap, Database, Check, Upload, Sparkles, Shield } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { TransformationHero } from '@/components/ui/psych';
 
@@ -43,36 +43,35 @@ const Home = () => {
           <div className="grid md:grid-cols-3 gap-8">
             
             {/* Card 1 */}
-            <div className="group p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:border-orange-200 hover:shadow-2xl hover:shadow-orange-900/5 transition-all duration-300">
-              <div className="w-12 h-12 bg-white rounded-xl border border-slate-200 flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform">
-                <Database className="w-6 h-6 text-slate-700 group-hover:text-orange-600 transition-colors" />
+            <div className="group p-8 rounded-2xl bg-white border border-slate-200 hover:border-orange-200 hover:shadow-lg transition-all duration-300">
+              <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mb-5">
+                <Upload className="w-6 h-6 text-orange-600" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Data Ingestion</h3>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">Upload Once, Apply Forever</h3>
               <p className="text-slate-600 leading-relaxed">
-                Connect your GitHub, Jira, and Slack. We ingest raw metadata without touching sensitive IP, creating a secure baseline.
+                Connect your LinkedIn, resume, and work history. We extract and structure your achievements into a Master Profile that powers unlimited applications.
               </p>
             </div>
 
             {/* Card 2 */}
-            <div className="group p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:border-orange-200 hover:shadow-2xl hover:shadow-orange-900/5 transition-all duration-300 relative overflow-hidden">
-               <div className="absolute top-0 right-0 w-24 h-24 bg-orange-500/5 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-150 duration-500" />
-              <div className="w-12 h-12 bg-white rounded-xl border border-slate-200 flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform relative z-10">
-                <Zap className="w-6 h-6 text-slate-700 group-hover:text-orange-600 transition-colors" />
+            <div className="group p-8 rounded-2xl bg-white border border-slate-200 hover:border-orange-200 hover:shadow-lg transition-all duration-300">
+              <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mb-5">
+                <Sparkles className="w-6 h-6 text-orange-600" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Swarm Analysis</h3>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">AI Finds Your Hidden Strengths</h3>
               <p className="text-slate-600 leading-relaxed">
-                Our AI "swarms" your history, identifying patterns that prove expertise—like consistent high-impact commits or solved incidents.
+                Our AI analyzes your entire career history, identifying patterns and quantified achievements you may have overlooked—like that project that saved $500K.
               </p>
             </div>
 
             {/* Card 3 */}
-            <div className="group p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:border-orange-200 hover:shadow-2xl hover:shadow-orange-900/5 transition-all duration-300">
-              <div className="w-12 h-12 bg-white rounded-xl border border-slate-200 flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform">
-                <ShieldCheck className="w-6 h-6 text-slate-700 group-hover:text-orange-600 transition-colors" />
+            <div className="group p-8 rounded-2xl bg-white border border-slate-200 hover:border-orange-200 hover:shadow-lg transition-all duration-300">
+              <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mb-5">
+                <Shield className="w-6 h-6 text-orange-600" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Immutable Proof</h3>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">Applications Recruiters Trust</h3>
               <p className="text-slate-600 leading-relaxed">
-                Generate a verified evidence graph. No more "trust me" resumes. Hand recruiters a link that proves your worth instantly.
+                Every application includes tailored resumes, personalized cover letters, and LinkedIn messages—all optimized for ATS and human reviewers.
               </p>
             </div>
 

@@ -606,10 +606,55 @@
 - [ ] Verify Pillar 2: AI shows 5+ visible "thinking" steps (deferred - requires LaborIllusion integration)
 - [ ] Verify Pillar 3: Quick Apply closes within 1.5s with toast (deferred - requires AsyncQuickApply integration)
 
-### Phase 5: Deployment
-- [ ] Commit all changes to GitHub
-- [ ] Push to careerswarm-honeycomb repository
-- [ ] Create checkpoint for V2.0 release
-- [ ] Update documentation with new conversion metrics
+### Phase 5: Deployment ✅ COMPLETE
+- [x] Commit all changes to GitHub (checkpoint 5bf25e8a)
+- [x] Push to careerswarm-honeycomb repository (successfully pushed)
+- [x] Create checkpoint for V2.0 release (version 5bf25e8a)
+- [x] Update documentation with new conversion metrics (todo.md updated)
 
 ---
+
+
+---
+
+## 🔧 CAREERSWARM V2.0 FIX PROMPT (Jan 29, 2026)
+
+### Fix #1: Landing Page Hero Enhancements ✅ COMPLETE
+- [x] Add platform icons (LinkedIn, GitHub, FileSpreadsheet, FolderOpen) to "chaos" side
+- [x] Add green checkmarks to all "after" package items (already present)
+- [x] Update TransformationHero component with new icons and styling
+
+### Fix #2: Dashboard Hours Reclaimed Upgrade ✅ COMPLETE
+- [x] Make Hours Reclaimed the HERO metric (2x width, orange gradient)
+- [x] Add animated counter for hours display
+- [x] Add calculation breakdown (X applications × 4.5h)
+- [x] Redesign secondary metrics (smaller, white background)
+
+### Fix #3: Feature Cards Copy Rewrite ✅ COMPLETE
+- [x] Replace "Data Ingestion" with "Upload Once, Apply Forever"
+- [x] Replace "Swarm Analysis" with "AI Finds Your Hidden Strengths"
+- [x] Replace "Immutable Proof" with "Applications Recruiters Trust"
+- [x] Update feature card descriptions to be benefit-driven
+- [x] Update icons to Upload, Sparkles, Shield with orange background
+
+### Fix #4: Verify Pillar 2 - Labor Illusion ✅ COMPLETE
+- [x] Check if onboarding extraction shows transparent AI processing
+- [x] Implement LaborIllusion component in Extraction.tsx (5 visible steps)
+- [x] Add progress bar and step-by-step updates with details
+- [x] Component shows: Read resume, Identify skills, Extract metrics, Build narrative, Complete
+
+### Fix #5: Verify Pillar 3 - Async Quick Apply ⚠️ DEFERRED
+- [x] AsyncQuickApply component already created in V2.0 SuperPrompt
+- [ ] Backend integration needed to implement fire-and-forget flow
+- [ ] Requires tRPC mutation update to return immediately and process async
+- [ ] Note: Component ready at client/src/components/ui/psych/AsyncQuickApply.tsx
+
+### Verification Checklist ✅ COMPLETE
+- [x] All fixes tested against implementation checklist
+- [x] Build passes with no errors (LSP: No errors, TypeScript: No errors)
+- [x] TypeScript compilation successful
+- [x] Landing page TransformationHero rendering correctly with platform icons
+- [x] Dashboard Hours Reclaimed hero metric with animated counter visible
+- [x] Feature cards updated with benefit-driven copy
+- [x] LaborIllusion component integrated in onboarding extraction
+- [ ] Push to GitHub careerswarm-honeycomb (next step)

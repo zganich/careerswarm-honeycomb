@@ -10,7 +10,8 @@ import {
   Mail,
   MessageSquare,
   CheckCircle,
-  ArrowRight
+  ArrowRight,
+  FolderOpen
 } from "lucide-react";
 import { PSYCH_COPY } from "./CopyConstants";
 
@@ -88,10 +89,19 @@ export function TransformationHero() {
             </div>
             
             {/* Scattered Platform Icons */}
-            <div className="flex justify-center gap-3 mt-4 opacity-50">
-              <Linkedin className="w-6 h-6 text-blue-600" />
-              <Github className="w-6 h-6 text-gray-800" />
-              <FileText className="w-6 h-6 text-green-600" />
+            <div className="flex justify-center gap-4 mt-4">
+              <div className="p-2 bg-white rounded-lg shadow-sm border border-slate-200 opacity-60 rotate-[-3deg]">
+                <Linkedin className="w-5 h-5 text-blue-600" />
+              </div>
+              <div className="p-2 bg-white rounded-lg shadow-sm border border-slate-200 opacity-60 rotate-[2deg]">
+                <Github className="w-5 h-5 text-gray-800" />
+              </div>
+              <div className="p-2 bg-white rounded-lg shadow-sm border border-slate-200 opacity-60 rotate-[-1deg]">
+                <FileSpreadsheet className="w-5 h-5 text-green-600" />
+              </div>
+              <div className="p-2 bg-white rounded-lg shadow-sm border border-slate-200 opacity-60 rotate-[4deg]">
+                <FolderOpen className="w-5 h-5 text-yellow-600" />
+              </div>
             </div>
           </div>
 
