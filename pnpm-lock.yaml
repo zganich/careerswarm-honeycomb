@@ -215,6 +215,9 @@ importers:
       pdf-parse:
         specifier: ^2.4.5
         version: 2.4.5
+      phantomjs-prebuilt:
+        specifier: ^2.1.16
+        version: 2.1.16
       posthog-js:
         specifier: ^1.335.2
         version: 1.335.2

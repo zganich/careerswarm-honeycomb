@@ -1,8 +1,10 @@
-// @ts-ignore - no types available for markdown-pdf
-import markdownpdf from 'markdown-pdf';
 import { promises as fs } from 'fs';
 import path from 'path';
 import os from 'os';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+
+const execAsync = promisify(exec);
 
 export interface PDFGeneratorOptions {
   markdown: string;
@@ -24,24 +26,24 @@ export async function generatePDF(options: PDFGeneratorOptions): Promise<string>
     const outputDir = path.dirname(outputPath);
     await fs.mkdir(outputDir, { recursive: true });
 
-    // Convert markdown to PDF
-    return new Promise((resolve, reject) => {
-      markdownpdf()
-        .from(tempMdPath)
-        .to(outputPath, (err: Error | null) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(outputPath);
-          }
-        });
-    });
-  } finally {
+    // Convert markdown to PDF using manus-md-to-pdf utility
+    await execAsync(`manus-md-to-pdf "${tempMdPath}" "${outputPath}"`);
+
     // Clean up temp file
     try {
       await fs.unlink(tempMdPath);
-    } catch (error) {
+    } catch (cleanupErr) {
+      console.warn('[PDF Generator] Failed to cleanup temp file:', cleanupErr);
+    }
+
+    return outputPath;
+  } catch (error) {
+    // Clean up on error
+    try {
+      await fs.unlink(tempMdPath);
+    } catch {
       // Ignore cleanup errors
     }
+    throw error;
   }
 }
