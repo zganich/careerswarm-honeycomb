@@ -93,6 +93,15 @@ interface ParsedResume {
   certifications: Array<{ name: string; organization?: string; year?: number }>;
   education: Array<{ degree?: string; field?: string; institution: string; graduationYear?: number }>;
   awards: Array<{ name: string; organization?: string; year?: number; context?: string }>;
+  professionalSummary?: string;
+  languages: Array<{ language: string; proficiency?: string; isNative?: boolean }>;
+  volunteerExperiences: Array<{ organization: string; role?: string; startDate?: string; endDate?: string; description?: string }>;
+  projects: Array<{ name: string; description?: string; url?: string; role?: string; startDate?: string; endDate?: string }>;
+  publications: Array<{ title: string; publisherOrVenue?: string; year?: number; url?: string; context?: string }>;
+  securityClearances: Array<{ clearanceType: string; level?: string; expiryDate?: string }>;
+  licenses: Array<{ name: string; organization?: string; year?: number }>;
+  portfolioUrls: Array<{ label: string; url: string }>;
+  parsedContact?: { fullName?: string; email?: string; phone?: string; city?: string; linkedIn?: string };
 }
 
 /**
@@ -116,8 +125,17 @@ CRITICAL RULES:
 8. Identify current vs past roles
 9. Extract skills with categories and proficiency
 10. Extract certifications, education, and awards
+11. When present: extract professional summary or objective (single string)
+12. When present: extract languages with proficiency (e.g. native, fluent, basic) and isNative
+13. When present: extract volunteer/community roles (organization, role, dates, description)
+14. When present: extract projects (name, description, url, role, dates)
+15. When present: extract publications or patents (title, publisher/venue, year, url, context)
+16. When present: extract security clearances (type, level, expiry)
+17. When present: extract professional licenses (same shape as certifications; separate from certs)
+18. When present: extract portfolio/personal URLs (label e.g. GitHub, Portfolio, and url)
+19. When present: extract contact from header (fullName, email, phone, city, linkedIn) for pre-fill only
 
-Return valid JSON matching the schema.`,
+Return valid JSON matching the schema. Use empty arrays for sections not found.`,
       },
       {
         role: 'user',
@@ -226,8 +244,117 @@ Return valid JSON matching the schema.`,
                 additionalProperties: false,
               },
             },
+            professionalSummary: { type: 'string' },
+            languages: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  language: { type: 'string' },
+                  proficiency: { type: 'string' },
+                  isNative: { type: 'boolean' },
+                },
+                required: ['language'],
+                additionalProperties: false,
+              },
+            },
+            volunteerExperiences: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  organization: { type: 'string' },
+                  role: { type: 'string' },
+                  startDate: { type: 'string' },
+                  endDate: { type: 'string' },
+                  description: { type: 'string' },
+                },
+                required: ['organization'],
+                additionalProperties: false,
+              },
+            },
+            projects: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  name: { type: 'string' },
+                  description: { type: 'string' },
+                  url: { type: 'string' },
+                  role: { type: 'string' },
+                  startDate: { type: 'string' },
+                  endDate: { type: 'string' },
+                },
+                required: ['name'],
+                additionalProperties: false,
+              },
+            },
+            publications: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  title: { type: 'string' },
+                  publisherOrVenue: { type: 'string' },
+                  year: { type: 'number' },
+                  url: { type: 'string' },
+                  context: { type: 'string' },
+                },
+                required: ['title'],
+                additionalProperties: false,
+              },
+            },
+            securityClearances: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  clearanceType: { type: 'string' },
+                  level: { type: 'string' },
+                  expiryDate: { type: 'string' },
+                },
+                required: ['clearanceType'],
+                additionalProperties: false,
+              },
+            },
+            licenses: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  name: { type: 'string' },
+                  organization: { type: 'string' },
+                  year: { type: 'number' },
+                },
+                required: ['name'],
+                additionalProperties: false,
+              },
+            },
+            portfolioUrls: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  label: { type: 'string' },
+                  url: { type: 'string' },
+                },
+                required: ['label', 'url'],
+                additionalProperties: false,
+              },
+            },
+            parsedContact: {
+              type: 'object',
+              properties: {
+                fullName: { type: 'string' },
+                email: { type: 'string' },
+                phone: { type: 'string' },
+                city: { type: 'string' },
+                linkedIn: { type: 'string' },
+              },
+              additionalProperties: false,
+            },
           },
-          required: ['workExperiences', 'skills', 'certifications', 'education', 'awards'],
+          required: ['workExperiences', 'skills', 'certifications', 'education', 'awards', 'professionalSummary', 'languages', 'volunteerExperiences', 'projects', 'publications', 'securityClearances', 'licenses', 'portfolioUrls', 'parsedContact'],
           additionalProperties: false,
         },
       },
@@ -239,7 +366,20 @@ Return valid JSON matching the schema.`,
     throw new Error('LLM returned empty response');
   }
 
-  return JSON.parse(content) as ParsedResume;
+  const raw = JSON.parse(content) as Record<string, unknown>;
+  // Normalize: ensure new fields exist (LLM may omit if schema not enforced)
+  return {
+    ...raw,
+    professionalSummary: raw.professionalSummary ?? undefined,
+    languages: Array.isArray(raw.languages) ? raw.languages : [],
+    volunteerExperiences: Array.isArray(raw.volunteerExperiences) ? raw.volunteerExperiences : [],
+    projects: Array.isArray(raw.projects) ? raw.projects : [],
+    publications: Array.isArray(raw.publications) ? raw.publications : [],
+    securityClearances: Array.isArray(raw.securityClearances) ? raw.securityClearances : [],
+    licenses: Array.isArray(raw.licenses) ? raw.licenses : [],
+    portfolioUrls: Array.isArray(raw.portfolioUrls) ? raw.portfolioUrls : [],
+    parsedContact: raw.parsedContact && typeof raw.parsedContact === 'object' ? raw.parsedContact : undefined,
+  } as ParsedResume;
 }
 
 /**
@@ -323,7 +463,17 @@ export function consolidateResumes(parsedResumes: ParsedResume[]): ParsedResume 
   }
 
   if (parsedResumes.length === 1) {
-    return parsedResumes[0];
+    const one = parsedResumes[0];
+    return {
+      ...one,
+      languages: one.languages ?? [],
+      volunteerExperiences: one.volunteerExperiences ?? [],
+      projects: one.projects ?? [],
+      publications: one.publications ?? [],
+      securityClearances: one.securityClearances ?? [],
+      licenses: one.licenses ?? [],
+      portfolioUrls: one.portfolioUrls ?? [],
+    };
   }
 
   // Merge work experiences (deduplicate by company + title + start date)
@@ -398,14 +548,109 @@ export function consolidateResumes(parsedResumes: ParsedResume[]): ParsedResume 
     }
   }
 
+  // Merge languages (dedupe by language name; prefer isNative or first)
+  const languagesMap = new Map<string, { language: string; proficiency?: string; isNative?: boolean }>();
+  for (const resume of parsedResumes) {
+    for (const lang of resume.languages ?? []) {
+      const key = lang.language.toLowerCase().trim();
+      if (!languagesMap.has(key) || (lang.isNative && !languagesMap.get(key)!.isNative)) {
+        languagesMap.set(key, lang);
+      }
+    }
+  }
+
+  // Merge volunteer experiences (by organization + role + startDate)
+  const volunteerMap = new Map<string, { organization: string; role?: string; startDate?: string; endDate?: string; description?: string }>();
+  for (const resume of parsedResumes) {
+    for (const v of resume.volunteerExperiences ?? []) {
+      const key = `${v.organization}|${v.role ?? ''}|${v.startDate ?? ''}`.toLowerCase();
+      if (!volunteerMap.has(key)) volunteerMap.set(key, v);
+    }
+  }
+
+  // Merge projects (by name + url)
+  const projectsMap = new Map<string, { name: string; description?: string; url?: string; role?: string; startDate?: string; endDate?: string }>();
+  for (const resume of parsedResumes) {
+    for (const p of resume.projects ?? []) {
+      const key = `${p.name}|${p.url ?? ''}`.toLowerCase();
+      if (!projectsMap.has(key)) projectsMap.set(key, p);
+    }
+  }
+
+  // Merge publications (by title + year)
+  const publicationsMap = new Map<string, { title: string; publisherOrVenue?: string; year?: number; url?: string; context?: string }>();
+  for (const resume of parsedResumes) {
+    for (const pub of resume.publications ?? []) {
+      const key = `${pub.title}|${pub.year ?? ''}`.toLowerCase();
+      if (!publicationsMap.has(key)) publicationsMap.set(key, pub);
+    }
+  }
+
+  // Merge security clearances (by clearanceType)
+  const clearancesMap = new Map<string, { clearanceType: string; level?: string; expiryDate?: string }>();
+  for (const resume of parsedResumes) {
+    for (const c of resume.securityClearances ?? []) {
+      const key = c.clearanceType.toLowerCase();
+      if (!clearancesMap.has(key)) clearancesMap.set(key, c);
+    }
+  }
+
+  // Merge licenses (dedupe by name)
+  const licensesMap = new Map<string, { name: string; organization?: string; year?: number }>();
+  for (const resume of parsedResumes) {
+    for (const lic of resume.licenses ?? []) {
+      const key = lic.name.toLowerCase();
+      if (!licensesMap.has(key)) licensesMap.set(key, lic);
+    }
+  }
+
+  // Merge portfolio URLs (dedupe by label)
+  const portfolioMap = new Map<string, { label: string; url: string }>();
+  for (const resume of parsedResumes) {
+    for (const u of resume.portfolioUrls ?? []) {
+      const key = (u.label || u.url).toLowerCase();
+      if (!portfolioMap.has(key)) portfolioMap.set(key, u);
+    }
+  }
+
+  // Professional summary: take longest non-empty
+  let professionalSummary: string | undefined;
+  for (const resume of parsedResumes) {
+    const s = resume.professionalSummary?.trim();
+    if (s && (!professionalSummary || s.length > professionalSummary.length)) {
+      professionalSummary = s;
+    }
+  }
+
+  // Parsed contact: first non-empty per field
+  let parsedContact: ParsedResume['parsedContact'];
+  for (const resume of parsedResumes) {
+    const pc = resume.parsedContact;
+    if (!pc || typeof pc !== 'object') continue;
+    if (!parsedContact) parsedContact = {};
+    if (pc.fullName?.trim() && !parsedContact.fullName) parsedContact.fullName = pc.fullName.trim();
+    if (pc.email?.trim() && !parsedContact.email) parsedContact.email = pc.email.trim();
+    if (pc.phone?.trim() && !parsedContact.phone) parsedContact.phone = pc.phone.trim();
+    if (pc.city?.trim() && !parsedContact.city) parsedContact.city = pc.city.trim();
+    if (pc.linkedIn?.trim() && !parsedContact.linkedIn) parsedContact.linkedIn = pc.linkedIn.trim();
+  }
+
   return {
     workExperiences: Array.from(workExpMap.values()).sort((a, b) => {
-      // Sort by start date descending (most recent first)
       return (b.startDate || '').localeCompare(a.startDate || '');
     }),
     skills: Array.from(skillsMap.values()),
     certifications: Array.from(certsMap.values()),
     education: Array.from(eduMap.values()),
     awards: Array.from(awardsMap.values()),
+    languages: Array.from(languagesMap.values()),
+    volunteerExperiences: Array.from(volunteerMap.values()),
+    projects: Array.from(projectsMap.values()),
+    publications: Array.from(publicationsMap.values()),
+    securityClearances: Array.from(clearancesMap.values()),
+    licenses: Array.from(licensesMap.values()),
+    portfolioUrls: Array.from(portfolioMap.values()),
+    professionalSummary,
+    parsedContact,
   };
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Award, CheckCircle, Sparkles } from "lucide-react";
@@ -11,8 +11,9 @@ export default function Extraction() {
   const [, setLocation] = useLocation();
   const [currentStep, setCurrentStep] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
-
-  // const extractMutation = trpc.onboarding.extractFromResumes.useMutation();
+  const [error, setError] = useState<string | null>(null);
+  const parseResumesMutation = trpc.onboarding.parseResumes.useMutation();
+  const stepIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const steps = [
     "Parsing resume text...",
@@ -24,27 +25,43 @@ export default function Extraction() {
   ];
 
   useEffect(() => {
-    // Start extraction
-    const runExtraction = async () => {
-      try {
-        // Simulate progress through steps
-        for (let i = 0; i < steps.length; i++) {
-          setCurrentStep(i);
-          await new Promise(resolve => setTimeout(resolve, 1500));
-        }
+    let cancelled = false;
 
-        // Actually call the API
-        // await extractMutation.mutateAsync();
-        
+    const runExtraction = async () => {
+      setError(null);
+      try {
+        // Advance steps every 1.5s while API runs
+        stepIntervalRef.current = setInterval(() => {
+          setCurrentStep((prev) => (prev < steps.length - 1 ? prev + 1 : prev));
+        }, 1500);
+
+        await parseResumesMutation.mutateAsync();
+
+        if (cancelled) return;
+        if (stepIntervalRef.current) {
+          clearInterval(stepIntervalRef.current);
+          stepIntervalRef.current = null;
+        }
+        setCurrentStep(steps.length - 1);
         setIsComplete(true);
         toast.success("Profile extracted successfully!");
-      } catch (error) {
+      } catch (err: any) {
+        if (cancelled) return;
+        if (stepIntervalRef.current) {
+          clearInterval(stepIntervalRef.current);
+          stepIntervalRef.current = null;
+        }
+        setError(err?.message || "Failed to extract profile. Please try again.");
         toast.error("Failed to extract profile. Please try again.");
-        console.error(error);
+        console.error(err);
       }
     };
 
     runExtraction();
+    return () => {
+      cancelled = true;
+      if (stepIntervalRef.current) clearInterval(stepIntervalRef.current);
+    };
   }, []);
 
   const handleContinue = () => {
@@ -97,7 +114,21 @@ export default function Extraction() {
         </div>
 
         {/* Labor Illusion Component */}
-        {!isComplete && <LaborIllusion variant="extraction" onComplete={() => setIsComplete(true)} />}
+        {!isComplete && !error && <LaborIllusion variant="extraction" onComplete={() => {}} />}
+
+        {error && (
+          <Card className="mb-6 border-destructive">
+            <CardContent className="pt-6">
+              <p className="text-destructive mb-4">{error}</p>
+              <Button
+                onClick={() => window.location.reload()}
+                variant="outline"
+              >
+                Retry
+              </Button>
+            </CardContent>
+          </Card>
+        )}
         
         {isComplete && (
           <Card>

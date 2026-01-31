@@ -48,6 +48,11 @@ export const userProfiles = mysqlTable("userProfiles", {
   // Work Preferences
   workPreference: json("workPreference").$type<string[]>(), // ['remote', 'hybrid', 'in-office']
   
+  // Master Profile extended (from resume parse)
+  professionalSummary: text("professionalSummary"),
+  portfolioUrls: json("portfolioUrls").$type<Array<{ label: string; url: string }>>(),
+  parsedContactFromResume: json("parsedContactFromResume").$type<{ fullName?: string; email?: string; phone?: string; city?: string; linkedIn?: string }>(),
+  
   // Profile Completeness
   profileCompleteness: int("profileCompleteness").default(0), // 0-100
   
@@ -147,6 +152,7 @@ export const certifications = mysqlTable("certifications", {
   issuingOrganization: varchar("issuingOrganization", { length: 255 }),
   issueYear: int("issueYear"),
   credentialId: varchar("credentialId", { length: 255 }),
+  type: mysqlEnum("type", ["certification", "license"]).default("certification"),
   
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
@@ -189,6 +195,59 @@ export const superpowers = mysqlTable("superpowers", {
   
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+// Master Profile extended sections (from resume parse)
+export const languages = mysqlTable("languages", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  language: varchar("language", { length: 100 }).notNull(),
+  proficiency: varchar("proficiency", { length: 50 }),
+  isNative: boolean("isNative").default(false),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export const volunteerExperiences = mysqlTable("volunteerExperiences", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  organization: varchar("organization", { length: 255 }).notNull(),
+  role: varchar("role", { length: 255 }),
+  startDate: varchar("startDate", { length: 20 }),
+  endDate: varchar("endDate", { length: 20 }),
+  description: text("description"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export const projects = mysqlTable("projects", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  url: text("url"),
+  role: varchar("role", { length: 255 }),
+  startDate: varchar("startDate", { length: 20 }),
+  endDate: varchar("endDate", { length: 20 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export const publications = mysqlTable("publications", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  title: varchar("title", { length: 500 }).notNull(),
+  publisherOrVenue: varchar("publisherOrVenue", { length: 255 }),
+  year: int("year"),
+  url: text("url"),
+  context: text("context"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export const securityClearances = mysqlTable("securityClearances", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  clearanceType: varchar("clearanceType", { length: 100 }).notNull(),
+  level: varchar("level", { length: 100 }),
+  expiryDate: varchar("expiryDate", { length: 20 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
 // ================================================================

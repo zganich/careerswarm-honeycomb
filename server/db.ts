@@ -6,6 +6,7 @@ import {
   uploadedResumes, targetPreferences,
   opportunities, applications, agentExecutionLogs, notifications,
   certifications, education, awards, savedOpportunities, applicationNotes,
+  languages, volunteerExperiences, projects, publications, securityClearances,
   b2bLeads, gtmRuns, gtmContent, outreachDrafts, jdDrafts, jdUsage, gtmJobRuns,
   type Achievement, type Skill, type WorkExperience, type UserProfile,
   type Superpower, type UploadedResume, type TargetPreferences,
@@ -502,6 +503,122 @@ export async function getAwards(userId: number) {
   return db.select().from(awards)
     .where(eq(awards.userId, userId))
     .orderBy(desc(awards.year));
+}
+
+// ================================================================
+// LANGUAGES
+// ================================================================
+
+export async function createLanguage(data: { userId: number; language: string; proficiency?: string; isNative?: boolean }) {
+  const db = await getDb();
+  if (!db) return null;
+  const result: any = await db.insert(languages).values(data as any);
+  return result.insertId;
+}
+
+export async function getLanguages(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(languages).where(eq(languages.userId, userId));
+}
+
+// ================================================================
+// VOLUNTEER EXPERIENCES
+// ================================================================
+
+export async function createVolunteerExperience(data: {
+  userId: number;
+  organization: string;
+  role?: string;
+  startDate?: string;
+  endDate?: string;
+  description?: string;
+}) {
+  const db = await getDb();
+  if (!db) return null;
+  const result: any = await db.insert(volunteerExperiences).values(data as any);
+  return result.insertId;
+}
+
+export async function getVolunteerExperiences(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(volunteerExperiences)
+    .where(eq(volunteerExperiences.userId, userId));
+}
+
+// ================================================================
+// PROJECTS
+// ================================================================
+
+export async function createProject(data: {
+  userId: number;
+  name: string;
+  description?: string;
+  url?: string;
+  role?: string;
+  startDate?: string;
+  endDate?: string;
+}) {
+  const db = await getDb();
+  if (!db) return null;
+  const result: any = await db.insert(projects).values(data as any);
+  return result.insertId;
+}
+
+export async function getProjects(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(projects).where(eq(projects.userId, userId));
+}
+
+// ================================================================
+// PUBLICATIONS
+// ================================================================
+
+export async function createPublication(data: {
+  userId: number;
+  title: string;
+  publisherOrVenue?: string;
+  year?: number;
+  url?: string;
+  context?: string;
+}) {
+  const db = await getDb();
+  if (!db) return null;
+  const result: any = await db.insert(publications).values(data as any);
+  return result.insertId;
+}
+
+export async function getPublications(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(publications)
+    .where(eq(publications.userId, userId))
+    .orderBy(desc(publications.year));
+}
+
+// ================================================================
+// SECURITY CLEARANCES
+// ================================================================
+
+export async function createSecurityClearance(data: {
+  userId: number;
+  clearanceType: string;
+  level?: string;
+  expiryDate?: string;
+}) {
+  const db = await getDb();
+  if (!db) return null;
+  const result: any = await db.insert(securityClearances).values(data as any);
+  return result.insertId;
+}
+
+export async function getSecurityClearances(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(securityClearances)
+    .where(eq(securityClearances.userId, userId));
 }
 
 // Note: Superpower operations are already defined earlier in this file

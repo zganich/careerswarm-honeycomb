@@ -376,6 +376,81 @@ export const appRouter = router({
         });
       }
 
+      // Save professional summary, portfolio URLs, parsed contact (pre-fill only)
+      await db.upsertUserProfile(user.id, {
+        professionalSummary: consolidated.professionalSummary || null,
+        portfolioUrls: (consolidated.portfolioUrls?.length ? consolidated.portfolioUrls : null) as any,
+        parsedContactFromResume: consolidated.parsedContact && Object.keys(consolidated.parsedContact).length ? consolidated.parsedContact as any : null,
+      });
+
+      // Save languages
+      for (const lang of consolidated.languages ?? []) {
+        await db.createLanguage({
+          userId: user.id,
+          language: lang.language,
+          proficiency: lang.proficiency ?? undefined,
+          isNative: lang.isNative ?? false,
+        });
+      }
+
+      // Save volunteer experiences
+      for (const v of consolidated.volunteerExperiences ?? []) {
+        await db.createVolunteerExperience({
+          userId: user.id,
+          organization: v.organization,
+          role: v.role ?? undefined,
+          startDate: v.startDate ?? undefined,
+          endDate: v.endDate ?? undefined,
+          description: v.description ?? undefined,
+        });
+      }
+
+      // Save projects
+      for (const p of consolidated.projects ?? []) {
+        await db.createProject({
+          userId: user.id,
+          name: p.name,
+          description: p.description ?? undefined,
+          url: p.url ?? undefined,
+          role: p.role ?? undefined,
+          startDate: p.startDate ?? undefined,
+          endDate: p.endDate ?? undefined,
+        });
+      }
+
+      // Save publications
+      for (const pub of consolidated.publications ?? []) {
+        await db.createPublication({
+          userId: user.id,
+          title: pub.title,
+          publisherOrVenue: pub.publisherOrVenue ?? undefined,
+          year: pub.year ?? undefined,
+          url: pub.url ?? undefined,
+          context: pub.context ?? undefined,
+        });
+      }
+
+      // Save security clearances
+      for (const c of consolidated.securityClearances ?? []) {
+        await db.createSecurityClearance({
+          userId: user.id,
+          clearanceType: c.clearanceType,
+          level: c.level ?? undefined,
+          expiryDate: c.expiryDate ?? undefined,
+        });
+      }
+
+      // Save licenses (as certifications with type 'license')
+      for (const lic of consolidated.licenses ?? []) {
+        await db.createCertification({
+          userId: user.id,
+          certificationName: lic.name,
+          issuingOrganization: lic.organization ?? null,
+          issueYear: lic.year ?? null,
+          type: "license",
+        } as any);
+      }
+
       // Generate superpowers
       const allAchievements = consolidated.workExperiences.flatMap(we => we.achievements);
       const superpowers = await generateSuperpowers(allAchievements);
@@ -691,13 +766,36 @@ Each superpower should:
       const user = await db.getUserByOpenId(ctx.user.openId);
       if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
-      const [userProfile, workExperiences, achievements, skills, superpowers, preferences] = await Promise.all([
+      const [
+        userProfile,
+        workExperiences,
+        achievements,
+        skills,
+        superpowers,
+        preferences,
+        education,
+        certifications,
+        awards,
+        languages,
+        volunteerExperiences,
+        projects,
+        publications,
+        securityClearances,
+      ] = await Promise.all([
         db.getUserProfile(user.id),
         db.getWorkExperiences(user.id),
         db.getAchievements(user.id),
         db.getSkills(user.id),
         db.getSuperpowers(user.id),
         db.getTargetPreferences(user.id),
+        db.getEducation(user.id),
+        db.getCertifications(user.id),
+        db.getAwards(user.id),
+        db.getLanguages(user.id),
+        db.getVolunteerExperiences(user.id),
+        db.getProjects(user.id),
+        db.getPublications(user.id),
+        db.getSecurityClearances(user.id),
       ]);
 
       return {
@@ -712,6 +810,14 @@ Each superpower should:
         skills,
         superpowers,
         preferences,
+        education,
+        certifications,
+        awards,
+        languages,
+        volunteerExperiences,
+        projects,
+        publications,
+        securityClearances,
       };
     }),
 
@@ -957,12 +1063,13 @@ Each superpower should:
       const user = await db.getUserByOpenId(ctx.user.openId);
       if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
-      const [userProfile, workExperiences, achievements, skills, preferences] = await Promise.all([
+      const [userProfile, workExperiences, achievements, skills, preferences, languages] = await Promise.all([
         db.getUserProfile(user.id),
         db.getWorkExperiences(user.id),
         db.getAchievements(user.id),
         db.getSkills(user.id),
         db.getTargetPreferences(user.id),
+        db.getLanguages(user.id),
       ]);
 
       // Calculate completeness score (0-100)
@@ -1028,6 +1135,13 @@ Each superpower should:
       } else {
         missing.push("Target preferences");
       }
+
+      // Profile richness (up to 5 bonus points; total capped at 100; optional, no penalty if missing)
+      let richness = 0;
+      if (userProfile?.professionalSummary?.trim()) richness += 2;
+      if (languages.length >= 1) richness += 2;
+      if (userProfile?.portfolioUrls && Array.isArray(userProfile.portfolioUrls) && userProfile.portfolioUrls.length > 0) richness += 1;
+      score = Math.min(100, score + richness);
 
       return {
         score,
