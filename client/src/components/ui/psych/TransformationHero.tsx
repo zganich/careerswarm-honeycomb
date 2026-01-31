@@ -15,7 +15,12 @@ import {
 } from "lucide-react";
 import { PSYCH_COPY } from "./CopyConstants";
 
-export function TransformationHero() {
+type TransformationHeroProps = {
+  onCtaPrimary?: () => void;
+  onCtaSecondary?: () => void;
+};
+
+export function TransformationHero({ onCtaPrimary, onCtaSecondary }: TransformationHeroProps = {}) {
   return (
     <section className="relative min-h-[80vh] flex items-center justify-center px-4 pt-32 md:pt-40 pb-16 overflow-hidden bg-gradient-to-b from-slate-50 to-white">
       
@@ -190,13 +195,21 @@ export function TransformationHero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.6 }}
         >
-          <button className="group relative px-8 py-4 bg-orange-500 hover:bg-orange-600 text-white text-lg font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+          <button
+            type="button"
+            onClick={onCtaPrimary}
+            className="group relative px-8 py-4 bg-orange-500 hover:bg-orange-600 text-white text-lg font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+          >
             <span className="relative z-10">{PSYCH_COPY.hero.ctaPrimary}</span>
             {/* Heartbeat Animation */}
             <span className="absolute inset-0 rounded-xl bg-orange-400 animate-ping opacity-20" />
           </button>
           
-          <button className="px-8 py-4 bg-white hover:bg-slate-50 text-slate-700 text-lg font-medium rounded-xl border-2 border-slate-200 transition-all duration-300">
+          <button
+            type="button"
+            onClick={onCtaSecondary}
+            className="px-8 py-4 bg-white hover:bg-slate-50 text-slate-700 text-lg font-medium rounded-xl border-2 border-slate-200 transition-all duration-300"
+          >
             {PSYCH_COPY.hero.ctaSecondary}
           </button>
         </motion.div>

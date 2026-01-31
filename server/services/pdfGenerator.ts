@@ -41,5 +41,12 @@ export async function generatePDF(options: PDFGeneratorOptions): Promise<string>
           }
         });
     });
+  } catch (e) {
+    try {
+      await fs.unlink(tempMdPath);
+    } catch {
+      // ignore
+    }
+    throw e;
   }
 }

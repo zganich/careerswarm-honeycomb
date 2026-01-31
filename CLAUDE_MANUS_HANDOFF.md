@@ -50,6 +50,34 @@ pnpm check  # ✅ PASSES with 0 errors
 3. ✅ **`SETUP_GUIDE.md`** - Comprehensive setup instructions
 4. ✅ **This handoff document** - Testing instructions for you
 
+### What was done (Resume Roast + build fix – do not redo)
+
+1. ✅ **Resume Roast API** (`server/routers.ts`)
+   - New **`public`** router with **`roast`** procedure (no auth).
+   - Input: `{ resumeText: string }` (min 50 characters).
+   - LLM: cynical VC recruiter persona; JSON schema for structured output.
+   - Output: `score` (0–100), `verdict`, `brutalTruth`, `mistakes` (3 items: title, explanation, fix), `characterCount`, `wordCount`.
+
+2. ✅ **Resume Roast page** (`client/src/pages/ResumeRoast.tsx`)
+   - Route: **`/roast`**.
+   - Textarea + "Get Roasted" calls `trpc.public.roast.useMutation()`; displays score, verdict, brutal truth, 3 mistakes.
+
+3. ✅ **Routing** – `client/src/App.tsx`: route `/roast` → `ResumeRoast`.
+
+4. ✅ **Build fix** – `server/services/pdfGenerator.ts`: outer `try` now has `catch` (esbuild was failing on "Expected 'finally' but found '}'").
+
+5. ✅ **Rules** – `.cursor/rules/roast.md` and `.claude/rules/roast.md` point to `server/routers.ts`; `.cursorrules` Resume Roast section updated.
+
+**Verification:** `pnpm run build` passes; `pnpm exec vitest run server/roaster.test.ts` passes (validation test; 2 LLM tests skipped).
+
+### Lead magnet UX (do not redo)
+
+6. ✅ **Home nav** – "Resume Roast" link in top nav → `/roast`.
+7. ✅ **Hero CTAs** – `TransformationHero` accepts `onCtaPrimary` / `onCtaSecondary`; primary → `/onboarding/welcome`, secondary → `/roast`. Copy: "Get free feedback (Resume Roast)" in `CopyConstants.ts`.
+8. ✅ **Conversion block on `/roast`** – After roast results, CTA block: "Turn these fixes into a resume that gets interviews" + "Build my Master Profile" → `/onboarding/welcome`.
+
+**Files:** `client/src/pages/Home.tsx`, `client/src/components/ui/psych/TransformationHero.tsx`, `client/src/components/ui/psych/CopyConstants.ts`, `client/src/pages/ResumeRoast.tsx`. See also `MANUS_UPDATE.md` for a short copy-paste update for Manus.
+
 ---
 
 ## 🎯 WHAT NEEDS TESTING (Your Task)
@@ -308,6 +336,11 @@ Use this checklist to track your testing progress:
 - [ ] Assembler agent uploads to S3
 - [ ] All agents handle errors gracefully
 
+### Resume Roast (optional)
+- [ ] Navigate to `/roast`, paste ≥50 chars of resume text, click "Get Roasted"
+- [ ] Score, verdict, brutal truth, and 3 mistakes display (requires LLM API key)
+- [ ] `pnpm exec vitest run server/roaster.test.ts` passes
+
 ### Automated Testing
 - [ ] Backend tests pass (127/127)
 - [ ] E2E tests pass (20/22)
@@ -383,7 +416,8 @@ Notes:
 
 ## 🔗 Related Files
 
-- `server/routers.ts` - TypeScript fixes applied here
+- `server/routers.ts` - TypeScript fixes applied here; **public.roast** procedure (Resume Roast)
+- `client/src/pages/ResumeRoast.tsx` - Resume Roast UI at `/roast`
 - `server/agents/tailor.ts` - Resume generation agent
 - `server/agents/scribe.ts` - Outreach generation agent
 - `server/agents/assembler.ts` - Package assembly agent

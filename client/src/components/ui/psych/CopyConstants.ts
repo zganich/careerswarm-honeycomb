@@ -6,7 +6,7 @@ export const PSYCH_COPY = {
     headline: "Stop Rewriting Your Resume.",
     subheadline: "Build One Master Profile. Auto-Apply to Hundreds of Jobs While You Sleep.",
     ctaPrimary: "Build My Master Profile",
-    ctaSecondary: "See a Sample Profile",
+    ctaSecondary: "Get free feedback (Resume Roast)",
   },
   
   // Onboarding

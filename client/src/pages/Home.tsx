@@ -24,6 +24,13 @@ const Home = () => {
             <a href="#features" className="hover:text-orange-600 transition-colors">Technology</a>
             <a href="#proof" className="hover:text-orange-600 transition-colors">Evidence Engine</a>
             <a href="#pricing" className="hover:text-orange-600 transition-colors">Enterprise</a>
+            <button
+              type="button"
+              onClick={() => setLocation("/roast")}
+              className="hover:text-orange-600 transition-colors"
+            >
+              Resume Roast
+            </button>
           </div>
           <button 
             onClick={() => setLocation('/onboarding/welcome')}
@@ -35,7 +42,10 @@ const Home = () => {
       </nav>
 
       {/* --- HERO: TRANSFORMATION (Pillar 4) --- */}
-      <TransformationHero />
+      <TransformationHero
+        onCtaPrimary={() => setLocation("/onboarding/welcome")}
+        onCtaSecondary={() => setLocation("/roast")}
+      />
 
       {/* --- FEATURE CARDS: LAB AESTHETIC --- */}
       <section id="features" className="py-24 bg-white relative">

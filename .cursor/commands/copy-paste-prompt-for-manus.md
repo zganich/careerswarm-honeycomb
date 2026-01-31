@@ -2,6 +2,8 @@
 
 **Copy everything below the line into a new Manus task.**
 
+For the **latest update** (Resume Roast + lead magnet UX), use **`MANUS_UPDATE.md`** in the project root instead—it summarizes everything since the last handoff.
+
 ---
 
 ## Repo and context

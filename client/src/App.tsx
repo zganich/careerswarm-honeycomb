@@ -11,6 +11,7 @@ import Pricing from "./pages/Pricing";
 import FAQ from "./pages/FAQ";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
+import ResumeRoast from "./pages/ResumeRoast";
 
 // Onboarding Flow (5 steps)
 import OnboardingWelcome from "./pages/onboarding/Welcome";
@@ -42,6 +43,7 @@ function Router() {
     <Switch>
       {/* Public Pages */}
       <Route path="/" component={Home} />
+      <Route path="/roast" component={ResumeRoast} />
       <Route path="/pricing" component={Pricing} />
       <Route path="/faq" component={FAQ} />
       <Route path="/privacy" component={Privacy} />

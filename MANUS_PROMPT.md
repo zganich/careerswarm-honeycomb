@@ -25,6 +25,9 @@
 - **TypeScript:** `pnpm check` passes (0 errors). Application package generation in `server/routers.ts` is fixed (assembleApplicationPackage, TailorInput/ScribeInput, resumeMarkdown, skills/education, Profiler).
 - **Package generation:** Fetches skills and education via `db.getSkills()` / `db.getEducation()`; integrates Profiler agent for Scribe `strategicMemo`; fallback to empty memo if Profiler fails.
 - **Download UI:** Applications list and Application detail page have Download (PDF/DOCX/ZIP) and “Generate package” with loading states.
+- **Resume Roast:** Public API `public.roast({ resumeText })` (min 50 chars) and page at **`/roast`**. Do not redo; see handoff.
+- **Build:** `pnpm run build` passes; `server/services/pdfGenerator.ts` fixed (try/catch).
+- **Lead magnet UX:** Home nav "Resume Roast" → `/roast`. Hero secondary CTA "Get free feedback (Resume Roast)" → `/roast`. After roast results, conversion block "Build my Master Profile" → `/onboarding/welcome`. See `MANUS_UPDATE.md`.
 
 ---
 
@@ -41,7 +44,9 @@
    - Phase 2: Application package generation (dev server, create application, trigger package, check DB/S3/notifications).
    - Phase 3+: Agent integration and E2E as described in the handoff.
 
-4. **Document findings** in something like `TEST_RESULTS.md` or the handoff’s suggested format (pass/fail, errors, screenshots if useful).
+4. **Optional – verify lead magnet:** Home → "Get free feedback" or "Resume Roast" → `/roast` → roast → conversion block "Build my Master Profile" → `/onboarding/welcome`. Do not redo implementation.
+
+5. **Document findings** in something like `TEST_RESULTS.md` or the handoff’s suggested format (pass/fail, errors, screenshots if useful).
 
 ---
 
@@ -53,4 +58,4 @@
 
 ---
 
-**Reply with:** (1) repo in use, (2) confirmation you read the handoff, (3) result of `pnpm validate`, and (4) what you will do next (e.g. Phase 1 then Phase 2 from the handoff).
+**Reply with:** (1) repo in use, (2) confirmation you read the handoff, (3) result of `pnpm validate`, and (4) what you will do next (e.g. Phase 1 then Phase 2 from the handoff; optionally verify `/roast`).
