@@ -1,0 +1,32 @@
+{
+  "autoApprove": {
+    "Edit": [
+      "**/*"
+    ],
+    "Read": [
+      "**/*"
+    ],
+    "Write": [
+      "**/*"
+    ],
+    "Bash": [
+      "git:*",
+      "pytest:*",
+      "python:*",
+      "pip:*",
+      "npm:*",
+      "celery:*",
+      "uvicorn:*",
+      "docker:*",
+      "ps:*",
+      "grep:*",
+      "kill:*",
+      "curl:*"
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(open:*)"
+    ]
+  }
+}

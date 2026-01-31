@@ -11,7 +11,15 @@ import {
   TrendingUp,
   Loader2,
   ExternalLink,
+  Download,
+  FileDown,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -65,6 +73,14 @@ export default function Applications() {
     onError: (error) => {
       toast.error(`Failed to update: ${error.message}`);
     },
+  });
+
+  const generatePackage = trpc.applications.generatePackage.useMutation({
+    onSuccess: () => {
+      toast.success("Package generation started. You'll be notified when it's ready.");
+      refetch();
+    },
+    onError: (error) => toast.error(error.message),
   });
 
   const getStatusColor = (status: string) => {
@@ -243,7 +259,7 @@ export default function Applications() {
                         )}
                       </div>
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
                         <Button
                           variant="outline"
                           size="sm"
@@ -252,6 +268,56 @@ export default function Applications() {
                           <FileText className="h-3 w-3 mr-1" />
                           View Details
                         </Button>
+                        {(app.resumePdfUrl || app.packageZipUrl) ? (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="outline" size="sm">
+                                <Download className="h-3 w-3 mr-1" />
+                                Download
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              {app.resumePdfUrl && (
+                                <DropdownMenuItem asChild>
+                                  <a href={app.resumePdfUrl} target="_blank" rel="noopener noreferrer">
+                                    <FileText className="h-3 w-3 mr-2" />
+                                    Resume (PDF)
+                                  </a>
+                                </DropdownMenuItem>
+                              )}
+                              {app.resumeDocxUrl && (
+                                <DropdownMenuItem asChild>
+                                  <a href={app.resumeDocxUrl} target="_blank" rel="noopener noreferrer">
+                                    <FileDown className="h-3 w-3 mr-2" />
+                                    Resume (DOCX)
+                                  </a>
+                                </DropdownMenuItem>
+                              )}
+                              {app.packageZipUrl && (
+                                <DropdownMenuItem asChild>
+                                  <a href={app.packageZipUrl} target="_blank" rel="noopener noreferrer">
+                                    <Download className="h-3 w-3 mr-2" />
+                                    Full package (ZIP)
+                                  </a>
+                                </DropdownMenuItem>
+                              )}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => generatePackage.mutate({ applicationId: app.id })}
+                            disabled={generatePackage.isPending}
+                          >
+                            {generatePackage.isPending ? (
+                              <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                            ) : (
+                              <Download className="h-3 w-3 mr-1" />
+                            )}
+                            Generate package
+                          </Button>
+                        )}
                         {app.opportunity?.jobUrl && (
                           <Button variant="outline" size="sm" asChild>
                             <a

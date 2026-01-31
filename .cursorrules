@@ -1,0 +1,211 @@
+# CareerSwarm - Cursor AI Rules
+
+## Project: Autonomous Job Application Agent System (V2.0)
+
+### Core Directive
+Build a multi-agent system that automates job searching by scraping opportunities, analyzing companies, rewriting resumes using CAR framework, and generating outreach content. **Always follow `careerswarm_spec_v2.md` exactly.**
+
+---
+
+## DEVELOPMENT WORKFLOW
+
+### Autonomy and Scope
+- **Allow all changes that work within the scope of the project** - Proceed autonomously with implementation, refactoring, file organization, and improvements as long as they align with the spec and project goals
+- No need to ask for permission before making changes within project scope
+- Automatically create necessary files, directories, and infrastructure to complete features
+- Apply fixes, improvements, and optimizations proactively
+
+---
+
+## CRITICAL RULES
+
+### 1. Agent Prompts Are Sacred
+The agent system prompts in spec section 5 are "The Gold Standard" and MUST be hard-coded exactly:
+
+**Tailor Agent:**
+- Use CAR Framework (Context → Action → Result)
+- Quantify ALL results (%, $, numbers)
+- FORBIDDEN words: orchestrated, spearheaded, visionary, synergy, leverage, utilize, facilitate, champion, holistic, paradigm, robust
+- Output: Markdown only
+
+**Profiler Agent:**
+- Output: JSON `{'pain_points': [], 'strategic_hook': ''}`
+- Focus: Churn, Expansion, Technical Debt
+
+**Scribe Agent:**
+- LinkedIn: 300 char max
+- Email: 150 word max
+- NO coffee chat requests
+- Ask strategic questions only
+
+### 2. Security Non-Negotiables
+- ALL PII (name, phone, address) encrypted with Fernet → BYTEA storage
+- SQLAlchemy properties for transparent en/decryption
+- ALL scraping through ZenRows/Bright Data proxies
+- Rate limit: 10 scrapes/minute max
+- Never log PII
+
+### 3. Database Schema Is Immutable
+Three tables only (don't modify without updating spec):
+- `users` (encrypted PII)
+- `opportunities` (job pipeline)
+- `application_assets` (generated content)
+
+---
+
+## Implementation Status
+
+✅ **PRODUCTION (V2.1):**
+- Database with encryption (8 models)
+- All 7 core pipeline agents (Ingestor, Scout, Qualifier, Profiler, Tailor, Scribe, Assembler)
+- 10 specialized agents (Master Profile, Resume Roaster, Pivot Analyzer, Success Predictor, etc.)
+- FastAPI backend (51 endpoints across 8 modular routers)
+- Celery task queue (5 modules)
+- Next.js frontend
+- 90+ passing tests
+- Resume Roast viral growth feature
+- Credits & referral system
+
+---
+
+## Code Patterns
+
+### New Agent Template:
+```python
+SYSTEM_PROMPT = """[COPY FROM SPEC SECTION 5]"""
+
+class AgentName:
+    def __init__(self, model="gpt-4o"):
+        self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    
+    def process(self, input_data):
+        response = self.client.chat.completions.create(
+            model=self.model,
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": input_data}
+            ]
+        )
+        return response.choices[0].message.content
+```
+
+### New API Endpoint:
+```python
+@app.post("/endpoint")
+async def endpoint(request: Model, db: Session = Depends(get_db)):
+    # 1. Validate → 2. Fetch → 3. Process → 4. Save → 5. Return
+```
+
+### Test Template:
+```python
+def test_feature():
+    agent = AgentName()
+    result = agent.process("input")
+    assert "expected" in result
+    print("✓ Test passed")
+```
+
+---
+
+## Anti-Patterns
+
+❌ **NEVER:**
+- Deviate from spec
+- Store plain PII
+- Use generic prompts
+- Scrape without proxies
+- Use fluff words in output
+- Skip quantification
+
+✅ **ALWAYS:**
+- Follow spec exactly
+- Encrypt PII
+- Hard-code spec prompts
+- Use proxies
+- Validate outputs
+- Quantify results
+
+---
+
+## Specialized Rules
+
+**IMPORTANT:** Context-specific rules stored in `.claude/rules/` apply to specific files/features:
+
+### Growth Flywheel (`.claude/rules/flywheel.md`)
+Applied to: `database.py`, `main.py`, `api/rewards.py`
+- Referrers get **30 days premium** when referred user completes first resume ingestion
+- Users earn **10 credits** for "Offer" outcomes, **5 credits** for "Rejection"
+- Update `UserCredits` atomically to prevent race conditions
+
+### Career Pivot Logic (`.claude/rules/pivot.md`)
+Applied to: `agents/profiler.py`, `agents/tailor.py`, `agents/pivot_analyzer.py`
+- Focus on **"Bridge Skills"** mapping (e.g., Sales → GTM Strategy)
+- Frame entrepreneurial experience as **"Applied R&D"** and "Technical Product Leadership"
+- Prioritize strategic scaling over tactical task management
+
+### Resume Roast Persona (`.claude/rules/roast.md`)
+Applied to: `agents/resume_roaster.py`, `api/resume_roast.py`
+- **Persona:** Cynical VC Recruiter
+- **Tone:** Brutal honesty, no AI fluff
+- **Output:** 0-100 score + 3 "Million-Dollar Mistakes"
+
+---
+
+## Quick Reference
+
+**Stack:** FastAPI + PostgreSQL + Celery/Redis + Next.js
+**Models:** GPT-4o (Ingestor, Qualifier, Profiler), Claude Sonnet 4 (Tailor, Scribe, Resume Roaster with prompt caching), Gemini-1.5-flash (Scout)
+**Security:** Fernet encryption, ZenRows proxies
+**Key Files:** `careerswarm_spec_v2.md`, `database.py`, `agents/tailor.py`, `main.py`
+
+**Before committing:**
+- [ ] Follows spec?
+- [ ] PII encrypted?
+- [ ] Prompts from spec section 5?
+- [ ] Tests written?
+- [ ] No fluff words?
+- [ ] Results quantified?
+
+---
+
+## Environment Variables Required
+```
+DATABASE_URL=postgresql://...
+ENCRYPTION_KEY=<fernet-32-byte>
+OPENAI_API_KEY=sk-...
+ANTHROPIC_API_KEY=sk-ant-...  # Required for Tailor, Resume Roaster, Scribe agents
+REDIS_URL=redis://...
+ZENROWS_API_KEY=...
+```
+
+**Generate encryption key:**
+```python
+from cryptography.fernet import Fernet
+print(Fernet.generate_key().decode())
+```
+
+---
+
+## Context Window Management
+
+**Monitor and manage chat context to maintain efficiency:**
+
+- **Notification threshold:** Alert user when context usage approaches **65%**
+- **Reset timing:**
+  - **After each component/feature completion** (required)
+  - **At 60% usage** (preferred proactive reset point)
+  - User should start a new chat to reset context window
+- **When resetting:** Save all changes, commit progress, and reference current state in new chat if needed
+
+**Rationale:** Prevents context degradation and maintains AI assistant performance throughout development cycles.
+
+---
+
+## When In Doubt
+
+1. Check `careerswarm_spec_v2.md`
+2. Match existing patterns in `agents/tailor.py`
+3. Validate against "Gold Standard" prompts
+4. Test with `tests/test_*.py`
+
+**This is spec-driven. The spec is law.** 🎯

@@ -1303,10 +1303,13 @@ Each superpower should:
             const { assembleApplicationPackage } = await import("./agents/assembler");
 
             // Get user profile for generation
-            const [profile, workExperiences, achievements] = await Promise.all([
+            const [profile, workExperiences, achievements, skillsList, educationList, superpowersList] = await Promise.all([
               db.getUserProfile(user.id),
               db.getWorkExperiences(user.id),
               db.getAchievements(user.id),
+              db.getSkills(user.id),
+              db.getEducation(user.id),
+              db.getSuperpowers(user.id),
             ]);
 
             // Get opportunity details
@@ -1331,8 +1334,13 @@ Each superpower should:
                   .filter(ach => ach.workExperienceId === exp.id)
                   .map(ach => ach.description)
               })),
-              skills: [],
-              education: []
+              skills: skillsList.map((s: { skillName: string }) => s.skillName),
+              education: educationList.map((e: { institution: string; degreeType?: string | null; fieldOfStudy?: string | null; graduationYear?: number | null }) => ({
+                institution: e.institution,
+                degree: e.degreeType || "",
+                field: e.fieldOfStudy || "",
+                graduationYear: String(e.graduationYear ?? ""),
+              })),
             };
 
             // Transform userProfile for Scribe agent
@@ -1350,13 +1358,25 @@ Each superpower should:
               roleTitle: opportunity.roleTitle,
             });
 
+            // Run Profiler for company insights (optional; fallback to empty if it fails)
+            let strategicMemo = "";
+            try {
+              const { ProfilerAgent } = await import("./agents/profiler");
+              const profilerUserProfile = { superpowers: superpowersList, achievements };
+              const profiler = new ProfilerAgent(user.id, profilerUserProfile);
+              const companyAnalysis = await profiler.execute(opportunity);
+              strategicMemo = companyAnalysis.compellingNarrative || "";
+            } catch (err) {
+              console.warn("[Package generation] Profiler skipped:", err);
+            }
+
             // Generate cover letter and LinkedIn message
             const outreachResult = await generateOutreach({
               userProfile: scribeUserProfile,
               jobDescription: opportunity.jobDescription || "",
               companyName: opportunity.companyName,
               roleTitle: opportunity.roleTitle,
-              strategicMemo: "", // TODO: Add Profiler agent integration
+              strategicMemo,
             });
 
             // Assemble package

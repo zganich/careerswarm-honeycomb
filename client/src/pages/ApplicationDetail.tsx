@@ -4,9 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { 
   ArrowLeft, Copy, CheckCircle2, ExternalLink, 
-  FileText, Mail, MessageSquare, Briefcase 
+  FileText, Mail, MessageSquare, Briefcase, Download, Loader2, FileDown
 } from "lucide-react";
 import StatusPipeline from "@/components/StatusPipeline";
 import NotesSection from "@/components/NotesSection";
@@ -19,10 +25,23 @@ export default function ApplicationDetail() {
   // Using sonner toast
   const [copiedItem, setCopiedItem] = useState<string | null>(null);
 
-  const { data: application, isLoading } = trpc.applications.getById.useQuery(
+  const { data: application, isLoading, refetch } = trpc.applications.getById.useQuery(
     { id: parseInt(id!) },
     { enabled: !!id }
   );
+
+  const { data: packageStatus, isLoading: packageStatusLoading } = trpc.applications.getPackageStatus.useQuery(
+    { applicationId: parseInt(id!) },
+    { enabled: !!id && !!application }
+  );
+
+  const generatePackage = trpc.applications.generatePackage.useMutation({
+    onSuccess: () => {
+      toast.success("Package generation started. You'll be notified when it's ready.");
+      refetch();
+    },
+    onError: (e) => toast.error(e.message),
+  });
 
   const { data: opportunity } = trpc.opportunities.getById.useQuery(
     { id: application?.opportunityId! },
@@ -103,14 +122,75 @@ export default function ApplicationDetail() {
             </div>
           </div>
 
-          {opportunity?.jobUrl && (
-            <Button variant="outline" asChild>
-              <a href={opportunity.jobUrl} target="_blank" rel="noopener noreferrer">
-                View Job Posting
-                <ExternalLink className="w-4 h-4 ml-2" />
-              </a>
-            </Button>
-          )}
+          <div className="flex items-center gap-2">
+            {packageStatusLoading ? (
+              <Button variant="outline" disabled>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Checking package…
+              </Button>
+            ) : packageStatus?.ready ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="default">
+                    <Download className="w-4 h-4 mr-2" />
+                    Download
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {packageStatus.files?.resumePDF && (
+                    <DropdownMenuItem asChild>
+                      <a href={packageStatus.files.resumePDF} target="_blank" rel="noopener noreferrer">
+                        <FileText className="w-4 h-4 mr-2" />
+                        Resume (PDF)
+                      </a>
+                    </DropdownMenuItem>
+                  )}
+                  {packageStatus.files?.resumeDOCX && (
+                    <DropdownMenuItem asChild>
+                      <a href={packageStatus.files.resumeDOCX} target="_blank" rel="noopener noreferrer">
+                        <FileDown className="w-4 h-4 mr-2" />
+                        Resume (DOCX)
+                      </a>
+                    </DropdownMenuItem>
+                  )}
+                  {packageStatus.packageUrl && (
+                    <DropdownMenuItem asChild>
+                      <a href={packageStatus.packageUrl} target="_blank" rel="noopener noreferrer">
+                        <Download className="w-4 h-4 mr-2" />
+                        Full package (ZIP)
+                      </a>
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button
+                variant="outline"
+                onClick={() => generatePackage.mutate({ applicationId: application!.id! })}
+                disabled={generatePackage.isPending}
+              >
+                {generatePackage.isPending ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Generating…
+                  </>
+                ) : (
+                  <>
+                    <Download className="w-4 h-4 mr-2" />
+                    Generate package
+                  </>
+                )}
+              </Button>
+            )}
+            {opportunity?.jobUrl && (
+              <Button variant="outline" asChild>
+                <a href={opportunity.jobUrl} target="_blank" rel="noopener noreferrer">
+                  View Job Posting
+                  <ExternalLink className="w-4 h-4 ml-2" />
+                </a>
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 
