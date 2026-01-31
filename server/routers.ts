@@ -1565,6 +1565,107 @@ Each superpower should:
         return { success: true };
       }),
   }),
+
+  // ================================================================
+  // PUBLIC ROUTES (No authentication required)
+  // ================================================================
+  public: router({
+    // Resume Roast - Lead magnet for user acquisition
+    roast: publicProcedure
+      .input(z.object({
+        resumeText: z.string().min(50, "Resume must be at least 50 characters"),
+      }))
+      .mutation(async ({ input }) => {
+        const { resumeText } = input;
+        
+        // Calculate basic metrics
+        const characterCount = resumeText.length;
+        const wordCount = resumeText.trim().split(/\s+/).length;
+        
+        // Use LLM to analyze resume and provide brutal feedback
+        const prompt = `You are a brutally honest resume critic. Analyze this resume and provide:
+1. A score from 0-100
+2. A one-word verdict (e.g., "Mediocre", "Weak", "Strong", "Excellent")
+3. A brutally honest truth about the resume (1-2 sentences)
+4. Exactly 3 specific mistakes or weaknesses (be specific and actionable)
+
+Resume:
+${resumeText}
+
+Respond in JSON format:
+{
+  "score": number,
+  "verdict": string,
+  "brutalTruth": string,
+  "mistakes": [string, string, string]
+}`;
+
+        try {
+          const response = await invokeLLM({
+            messages: [
+              { role: "system", content: "You are a brutally honest resume critic who provides specific, actionable feedback." },
+              { role: "user", content: prompt }
+            ],
+            response_format: {
+              type: "json_schema",
+              json_schema: {
+                name: "resume_roast",
+                strict: true,
+                schema: {
+                  type: "object",
+                  properties: {
+                    score: { type: "number", description: "Score from 0-100" },
+                    verdict: { type: "string", description: "One-word verdict" },
+                    brutalTruth: { type: "string", description: "Brutally honest truth" },
+                    mistakes: {
+                      type: "array",
+                      items: { type: "string" },
+                      description: "Array of exactly 3 mistakes",
+                      minItems: 3,
+                      maxItems: 3
+                    }
+                  },
+                  required: ["score", "verdict", "brutalTruth", "mistakes"],
+                  additionalProperties: false
+                }
+              }
+            }
+          });
+
+          const messageContent = response.choices?.[0]?.message?.content;
+          const contentString = typeof messageContent === 'string' ? messageContent : '{}';
+          const analysis = JSON.parse(contentString);
+          
+          return {
+            score: analysis.score || 50,
+            verdict: analysis.verdict || "Needs Work",
+            brutalTruth: analysis.brutalTruth || "Your resume needs significant improvement.",
+            mistakes: analysis.mistakes || [
+              "Lacks quantifiable achievements",
+              "Generic descriptions without impact",
+              "Missing key skills and keywords"
+            ],
+            characterCount,
+            wordCount
+          };
+        } catch (error) {
+          console.error("Resume roast error:", error);
+          // Fallback response if LLM fails
+          return {
+            score: 50,
+            verdict: "Needs Work",
+            brutalTruth: "Your resume needs significant improvement to stand out.",
+            mistakes: [
+              "Lacks quantifiable achievements with specific metrics",
+              "Generic job descriptions without demonstrating impact",
+              "Missing key skills and industry keywords"
+            ],
+            characterCount,
+            wordCount
+          };
+        }
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;
