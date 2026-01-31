@@ -5,7 +5,8 @@
 **Status:** TypeScript Errors Fixed, Environment Setup Complete
 
 **Canonical repo:** `careerswarm-honeycomb` — https://github.com/zganich/careerswarm-honeycomb  
-**Prompt for Manus to self-setup:** Copy the contents of `MANUS_REPO_SETUP_PROMPT.md` into a new Manus task so Manus uses this repo and follows this handoff.
+
+**Copy-paste for Manus (single source):** Open `MANUS_UPDATE.md` or `.cursor/commands/copy-paste-prompt-for-manus.md` and copy **everything below the line** into a new Manus task. Both files have the same content.
 
 ---
 

@@ -1,5 +1,7 @@
 # Prompt for Manus: Use the Right Repo and Run Setup
 
+**Preferred:** Use `MANUS_UPDATE.md` or `.cursor/commands/copy-paste-prompt-for-manus.md` for the latest copy-paste (same content in both). This file is a shorter fallback.
+
 **Copy everything below the line into a new Manus task. Manus will use the correct repo and follow the handoff.**
 
 ---

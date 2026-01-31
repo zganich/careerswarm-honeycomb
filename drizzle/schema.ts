@@ -10,8 +10,10 @@ export const users = mysqlTable("users", {
   name: text("name"),
   email: varchar("email", { length: 320 }),
   loginMethod: varchar("loginMethod", { length: 64 }),
-  role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
-  
+  role: mysqlEnum("role", ["user", "admin", "recruiter", "company_admin"]).default("user").notNull(),
+  companyId: int("companyId"), // B2B: link to company account when role is recruiter or company_admin
+  referredByUserId: int("referredByUserId"), // Flywheel: referrer gets 30 days Pro when referred user completes first resume ingestion
+
   // Subscription and billing
   subscriptionTier: mysqlEnum("subscriptionTier", ["free", "pro"]).default("free").notNull(),
   stripeCustomerId: varchar("stripeCustomerId", { length: 255 }),
@@ -454,6 +456,131 @@ export const applicationNotes = mysqlTable("applicationNotes", {
 });
 
 // ================================================================
+// GTM & B2B LEADS
+// ================================================================
+
+export const b2bLeads = mysqlTable("b2b_leads", {
+  id: int("id").autoincrement().primaryKey(),
+  leadType: mysqlEnum("leadType", [
+    "recruiter_inhouse",
+    "recruiter_agency",
+    "hr_leader",
+    "hiring_manager",
+    "startup",
+    "company",
+  ]).notNull(),
+  name: varchar("name", { length: 255 }),
+  title: varchar("title", { length: 255 }),
+  companyName: varchar("companyName", { length: 255 }),
+  companyDomain: varchar("companyDomain", { length: 255 }),
+  linkedinUrl: text("linkedinUrl"),
+  email: varchar("email", { length: 320 }),
+  sourceUrl: text("sourceUrl"),
+  sourceChannel: mysqlEnum("sourceChannel", [
+    "linkedin",
+    "reddit",
+    "twitter",
+    "company_site",
+    "job_board",
+    "newsletter",
+    "event",
+  ]),
+  industry: varchar("industry", { length: 100 }),
+  companySize: varchar("companySize", { length: 50 }), // bucket: '1-10', '11-50', etc
+  geography: varchar("geography", { length: 100 }),
+  signals: text("signals"), // JSON or free text e.g. "posted 5 roles in 30 days"
+  vertical: varchar("vertical", { length: 100 }), // buyer type / industry tag
+  priority: mysqlEnum("priority", ["high", "medium", "low"]).default("medium"),
+  score: int("score"), // 0-100 optional numeric score
+  firstSeenAt: timestamp("firstSeenAt").defaultNow().notNull(),
+  lastEnrichedAt: timestamp("lastEnrichedAt"),
+  outreachStatus: mysqlEnum("outreachStatus", ["none", "drafted", "sent", "replied", "converted"]).default("none"),
+  idempotencyKey: varchar("idempotencyKey", { length: 255 }).unique(), // linkedinUrl or email for dedupe
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export const gtmRuns = mysqlTable("gtm_runs", {
+  id: int("id").autoincrement().primaryKey(),
+  runType: varchar("runType", { length: 50 }).notNull(), // 'strategy', 'content', 'report'
+  inputJson: json("inputJson"),
+  outputJson: json("outputJson"),
+  status: mysqlEnum("status", ["success", "failed", "partial"]).notNull(),
+  errorMessage: text("errorMessage"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export const gtmContent = mysqlTable("gtm_content", {
+  id: int("id").autoincrement().primaryKey(),
+  runId: int("runId"),
+  channel: varchar("channel", { length: 50 }).notNull(), // 'linkedin', 'reddit', 'x', 'tiktok', 'email'
+  contentType: varchar("contentType", { length: 50 }), // 'post', 'outreach_draft', 'email'
+  title: varchar("title", { length: 255 }),
+  body: text("body"),
+  metadata: json("metadata"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export const outreachDrafts = mysqlTable("outreach_drafts", {
+  id: int("id").autoincrement().primaryKey(),
+  leadId: int("leadId").notNull(),
+  channel: varchar("channel", { length: 50 }).notNull(), // 'email', 'linkedin'
+  subject: varchar("subject", { length: 500 }),
+  body: text("body").notNull(),
+  campaignId: varchar("campaignId", { length: 100 }),
+  sentAt: timestamp("sentAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+// ================================================================
+// JOB DESCRIPTION BUILDER (B2B)
+// ================================================================
+
+export const jdDrafts = mysqlTable("jd_drafts", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  companyId: int("companyId"),
+  roleTitle: varchar("roleTitle", { length: 255 }).notNull(),
+  companyName: varchar("companyName", { length: 255 }),
+  department: varchar("department", { length: 100 }),
+  inputJson: json("inputJson"), // must-haves, nice-to-haves, level, location
+  outputSummary: text("outputSummary"),
+  outputResponsibilities: text("outputResponsibilities"),
+  outputRequirements: text("outputRequirements"),
+  outputBenefits: text("outputBenefits"),
+  fullText: text("fullText"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export const jdUsage = mysqlTable("jd_usage", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  companyId: int("companyId"),
+  periodStart: date("periodStart").notNull(),
+  periodEnd: date("periodEnd").notNull(),
+  jdsGenerated: int("jdsGenerated").default(0).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+// ================================================================
+// GTM JOB RUNS (Observability)
+// ================================================================
+
+export const gtmJobRuns = mysqlTable("gtm_job_runs", {
+  id: int("id").autoincrement().primaryKey(),
+  jobId: varchar("jobId", { length: 255 }),
+  jobType: varchar("jobType", { length: 50 }).notNull(), // 'strategy', 'lead_discovery', 'scoring', 'outreach_draft', 'outreach_send', 'content', 'report'
+  channel: varchar("channel", { length: 50 }),
+  startedAt: timestamp("startedAt").defaultNow().notNull(),
+  finishedAt: timestamp("finishedAt"),
+  status: mysqlEnum("status", ["running", "success", "failed", "skipped"]).notNull(),
+  payloadSummary: text("payloadSummary"),
+  errorMessage: text("errorMessage"),
+  durationMs: int("durationMs"),
+});
+
+// ================================================================
 // TYPE EXPORTS
 // ================================================================
 
@@ -477,3 +604,12 @@ export type Notification = typeof notifications.$inferSelect;
 export type SavedOpportunity = typeof savedOpportunities.$inferSelect;
 export type ApplicationNote = typeof applicationNotes.$inferSelect;
 export type InsertApplicationNote = typeof applicationNotes.$inferInsert;
+export type B2BLead = typeof b2bLeads.$inferSelect;
+export type InsertB2BLead = typeof b2bLeads.$inferInsert;
+export type GtmRun = typeof gtmRuns.$inferSelect;
+export type GtmContent = typeof gtmContent.$inferSelect;
+export type OutreachDraft = typeof outreachDrafts.$inferSelect;
+export type JdDraft = typeof jdDrafts.$inferSelect;
+export type InsertJdDraft = typeof jdDrafts.$inferInsert;
+export type JdUsage = typeof jdUsage.$inferSelect;
+export type GtmJobRun = typeof gtmJobRuns.$inferSelect;

@@ -134,6 +134,17 @@ git secrets --scan
 - [ ] Test page load time (target: < 3s)
 - [ ] Test AI agent latency (target: < 10s per agent)
 
+## E2E Test Credentials (Playwright / CI)
+
+To run E2E tests that use a real login (instead of auth bypass), set these in `.env` or your CI environment:
+
+- **`TEST_USER_EMAIL`** – Email of the test user (e.g. `test@example.com`).
+- **`TEST_USER_PASSWORD`** – Password for that user.
+
+If these are **not** set, Playwright tests use the auth-bypass flow (mock JWT) and do not hit real OAuth. That is sufficient for most local and CI runs. Set them only when you need to exercise the full OAuth flow in E2E.
+
+See `.env.example` for the placeholder variables.
+
 ## Success Criteria
 
 All checkboxes above must be checked ✅ before deploying to production.

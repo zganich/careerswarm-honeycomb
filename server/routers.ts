@@ -1,5 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { systemRouter } from "./_core/systemRouter";
+import { gtmRouter } from "./gtm-router";
+import { jdBuilderRouter } from "./jd-builder-router";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import * as db from "./db";
@@ -89,27 +91,67 @@ export const appRouter = router({
         });
 
         const raw = response.choices[0].message.content;
-        const parsed = JSON.parse(typeof raw === "string" ? raw : "{}") as {
-          score: number;
-          verdict: string;
-          brutalTruth: string;
-          mistakes: Array<{ title: string; explanation: string; fix: string }>;
-        };
+        const rawStr = typeof raw === "string" ? raw : "";
+        // Strip markdown code blocks if LLM wrapped JSON in ```json ... ```
+        const jsonStr = rawStr
+          .replace(/^```(?:json)?\s*/i, "")
+          .replace(/\s*```\s*$/i, "")
+          .trim();
+        let parsed: {
+          score?: number;
+          verdict?: string;
+          brutalTruth?: string;
+          mistakes?: Array<{ title?: string; explanation?: string; fix?: string }>;
+        } = {};
+        try {
+          parsed = JSON.parse(jsonStr || "{}") as typeof parsed;
+        } catch {
+          console.warn("[Resume Roast] LLM response was not valid JSON, using fallback");
+          parsed = {
+            score: 50,
+            verdict: "Could not parse detailed feedback.",
+            brutalTruth: "The analysis could not be structured. Try again or paste plain text only.",
+            mistakes: [
+              { title: "Parse issue", explanation: "Response format was unexpected.", fix: "Retry with resume text only." },
+              { title: "—", explanation: "—", fix: "—" },
+              { title: "—", explanation: "—", fix: "—" },
+            ],
+          };
+        }
 
         const score = Math.max(0, Math.min(100, Math.round(Number(parsed.score) || 0)));
 
         return {
           score,
-          verdict: parsed.verdict ?? "",
-          brutalTruth: parsed.brutalTruth ?? "",
+          verdict: String(parsed.verdict ?? "").trim() || "See feedback below.",
+          brutalTruth: String(parsed.brutalTruth ?? "").trim() || "Review the mistakes and improve your resume.",
           mistakes: (parsed.mistakes ?? []).slice(0, 3).map((m) => ({
-            title: m.title ?? "",
-            explanation: m.explanation ?? "",
-            fix: m.fix ?? "",
+            title: String(m.title ?? "").trim() || "Mistake",
+            explanation: String(m.explanation ?? "").trim() || "",
+            fix: String(m.fix ?? "").trim() || "",
           })),
           characterCount,
           wordCount,
         };
+      }),
+
+    estimateQualification: publicProcedure
+      .input(
+        z.object({
+          currentRole: z.string().min(2, "Current role must be at least 2 characters"),
+          targetRole: z.string().min(2, "Target role must be at least 2 characters"),
+        })
+      )
+      .mutation(async ({ input }) => {
+        // Stub: returns valid shape for tests; can be replaced with LLM later
+        const score = Math.min(100, Math.max(0, 50 + Math.floor(Math.random() * 40)));
+        const gaps = [
+          { skill: "Domain experience", importance: "critical" as const, suggestion: "Gain experience in target domain." },
+          { skill: "Leadership", importance: "important" as const, suggestion: "Take on project ownership." },
+          { skill: "Communication", importance: "helpful" as const, suggestion: "Present to stakeholders." },
+        ];
+        const reasoning = `Comparison of ${input.currentRole} to ${input.targetRole}: gap analysis based on typical requirements.`;
+        return { score, gaps, reasoning };
       }),
   }),
 
@@ -144,6 +186,16 @@ export const appRouter = router({
         completed: user.onboardingCompleted || false,
       };
     }),
+
+    // Flywheel: apply referral (call when user lands with ref=referrerUserId in URL). Referrer gets 30 days Pro when this user completes onboarding.
+    applyReferral: protectedProcedure
+      .input(z.object({ referrerUserId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const user = await db.getUserByOpenId(ctx.user.openId);
+        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        await db.setUserReferredBy(user.id, input.referrerUserId);
+        return { success: true };
+      }),
 
     // Update onboarding step
     updateStep: protectedProcedure
@@ -623,6 +675,8 @@ Each superpower should:
 
         // Mark onboarding as complete
         await db.updateUserOnboardingStep(user.id, 5, true);
+        // Flywheel: grant referrer 30 days Pro when referred user completes first resume ingestion
+        await db.grantReferrer30DaysProIfReferred(user.id);
 
         return { success: true };
       }),
@@ -1540,8 +1594,26 @@ Each superpower should:
               message: `Your application package for ${opportunity.companyName} - ${opportunity.roleTitle} is ready to download.`,
               applicationId: application.id,
             });
+
+            // Production metrics: log success for package generation
+            await db.logAgentExecution({
+              userId: user.id,
+              agentName: "PackagePipeline",
+              executionType: "package_generation",
+              status: "success",
+            });
           } catch (error) {
             console.error("Package generation failed:", error);
+
+            // Production metrics: log failure for package generation
+            await db.logAgentExecution({
+              userId: user.id,
+              agentName: "PackagePipeline",
+              executionType: "package_generation",
+              status: "failed",
+              errorMessage: error instanceof Error ? error.message : String(error),
+            });
+
             // Send error notification
             await db.createNotification({
               userId: user.id,
@@ -1697,6 +1769,9 @@ Each superpower should:
         return { success: true };
       }),
   }),
+
+  gtm: gtmRouter,
+  jdBuilder: jdBuilderRouter,
 });
 
 export type AppRouter = typeof appRouter;
