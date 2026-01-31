@@ -346,6 +346,10 @@ export const applications = mysqlTable("applications", {
   // Achievements Used
   achievementsUsed: json("achievementsUsed").$type<number[]>(), // Array of achievement IDs
   
+  // Intelligence (Pivot Analyzer, Success Predictor, Skill Gap)
+  analytics: json("analytics").$type<{ successPrediction?: unknown; skillGap?: unknown }>(),
+  pivotAnalysis: json("pivotAnalysis").$type<{ bridgeSkills?: Array<{ skill: string; toContext: string }>; pivotStrategy?: string; transferableStrengths?: string[] }>(),
+  
   // Application Dates
   appliedAt: timestamp("appliedAt"),
   appliedVia: varchar("appliedVia", { length: 100 }), // 'Greenhouse', 'Lever', 'Email', 'LinkedIn'

@@ -1143,13 +1143,14 @@ Each superpower should:
         }
 
         // Get user profile and preferences
-        const [profile, workExperiences, achievements, skills, superpowers, preferences] = await Promise.all([
+        const [profile, workExperiences, achievements, skills, superpowers, preferences, educationList] = await Promise.all([
           db.getUserProfile(user.id),
           db.getWorkExperiences(user.id),
           db.getAchievements(user.id),
           db.getSkills(user.id),
           db.getSuperpowers(user.id),
           db.getTargetPreferences(user.id),
+          db.getEducation(user.id),
         ]);
 
         const userProfile = {
@@ -1163,7 +1164,8 @@ Each superpower should:
 
         // Import all agents
         const { ProfilerAgent } = await import("./agents/profiler");
-        const { QualifierAgent, HunterAgent, TailorAgent, ScribeAgent, AssemblerAgent } = await import("./agents/remaining");
+        const { QualifierAgent, HunterAgent, ScribeAgent, AssemblerAgent } = await import("./agents/remaining");
+        const { tailorResume } = await import("./agents/tailor");
 
         // AGENT 2: Profiler - Analyze company
         const profiler = new ProfilerAgent(user.id, userProfile);
@@ -1184,9 +1186,37 @@ Each superpower should:
         const hunter = new HunterAgent(user.id);
         const contacts = await hunter.execute(opportunity);
 
-        // AGENT 5: Tailor - Generate resume
-        const tailor = new TailorAgent(user.id, userProfile);
-        const resume = await tailor.execute(opportunity, analysis);
+        // AGENT 5: Tailor - Generate resume (unified tailorResume with addendum rules)
+        const tailorUserProfile = {
+          fullName: user.name || "User",
+          email: user.email || "",
+          phone: (profile as any)?.phone || "",
+          location: (profile as any)?.locationCity || "",
+          linkedIn: (profile as any)?.linkedinUrl || "",
+          workExperience: workExperiences.map((exp: any) => ({
+            company: exp.companyName,
+            title: exp.jobTitle,
+            startDate: exp.startDate?.toISOString?.()?.split("T")[0] ?? "",
+            endDate: exp.endDate ? exp.endDate.toISOString?.()?.split("T")[0] ?? "" : "Present",
+            achievements: achievements
+              .filter((ach: any) => ach.workExperienceId === exp.id)
+              .map((ach: any) => ach.description),
+          })),
+          skills: skills.map((s: any) => s.skillName),
+          education: educationList.map((e: any) => ({
+            institution: e.institution,
+            degree: e.degreeType || "",
+            field: e.fieldOfStudy || "",
+            graduationYear: String(e.graduationYear ?? ""),
+          })),
+        };
+        const resumeResult = await tailorResume({
+          userProfile: tailorUserProfile,
+          jobDescription: opportunity.jobDescription || "",
+          companyName: opportunity.companyName,
+          roleTitle: opportunity.roleTitle,
+        });
+        const resume = resumeResult.resumeMarkdown;
 
         // AGENT 6: Scribe - Write outreach
         const scribe = new ScribeAgent(user.id, userProfile);
@@ -1350,12 +1380,15 @@ Each superpower should:
               topAchievements: achievements.slice(0, 3).map(ach => ach.description)
             };
 
-            // Generate resume
+            // Generate resume (pass pivot context when available for Format B)
             const resumeResult = await tailorResume({
               userProfile: tailorUserProfile,
               jobDescription: opportunity.jobDescription || "",
               companyName: opportunity.companyName,
               roleTitle: opportunity.roleTitle,
+              ...(application.pivotAnalysis && {
+                pivotContext: application.pivotAnalysis,
+              }),
             });
 
             // Run Profiler for company insights (optional; fallback to empty if it fails)

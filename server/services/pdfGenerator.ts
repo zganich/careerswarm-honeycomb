@@ -24,11 +24,16 @@ export async function generatePDF(options: PDFGeneratorOptions): Promise<string>
     const outputDir = path.dirname(outputPath);
     await fs.mkdir(outputDir, { recursive: true });
 
-    // Convert markdown to PDF
+    // Convert markdown to PDF (cleanup temp file only after conversion completes)
     return new Promise((resolve, reject) => {
       markdownpdf()
         .from(tempMdPath)
-        .to(outputPath, (err: Error | null) => {
+        .to(outputPath, async (err: Error | null) => {
+          try {
+            await fs.unlink(tempMdPath);
+          } catch {
+            // Ignore cleanup errors
+          }
           if (err) {
             reject(err);
           } else {
@@ -36,12 +41,5 @@ export async function generatePDF(options: PDFGeneratorOptions): Promise<string>
           }
         });
     });
-  } finally {
-    // Clean up temp file
-    try {
-      await fs.unlink(tempMdPath);
-    } catch (error) {
-      // Ignore cleanup errors
-    }
   }
 }
