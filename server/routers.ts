@@ -1300,7 +1300,7 @@ Each superpower should:
             // Import agents
             const { tailorResume } = await import("./agents/tailor");
             const { generateOutreach } = await import("./agents/scribe");
-            const { assemblePackage } = await import("./agents/assembler");
+            const { assembleApplicationPackage } = await import("./agents/assembler");
 
             // Get user profile for generation
             const [profile, workExperiences, achievements] = await Promise.all([
@@ -1312,9 +1312,20 @@ Each superpower should:
             const userProfile = {
               fullName: user.name || "User",
               email: user.email || "",
-              profile: profile || {},
-              workExperiences,
-              achievements,
+              phone: profile?.phone || "",
+              location: [profile?.locationCity, profile?.locationState, profile?.locationCountry].filter(Boolean).join(', ') || "",
+              linkedIn: profile?.linkedinUrl || "",
+              workExperience: workExperiences.map(exp => ({
+                company: exp.companyName,
+                title: exp.jobTitle,
+                startDate: exp.startDate.toISOString().split('T')[0],
+                endDate: exp.endDate ? exp.endDate.toISOString().split('T')[0] : 'Present',
+                achievements: achievements
+                  .filter(ach => ach.workExperienceId === exp.id)
+                  .map(ach => ach.description),
+              })),
+              skills: [], // TODO: fetch from skills table
+              education: [], // TODO: fetch from education table if exists
             };
 
             // Get opportunity details
@@ -1332,18 +1343,25 @@ Each superpower should:
             });
 
             // Generate cover letter and LinkedIn message
+            const currentTitle = workExperiences[0]?.jobTitle || "Professional";
+            const topAchievements = achievements.slice(0, 3).map(ach => ach.description);
+            
             const outreachResult = await generateOutreach({
-              userProfile,
+              userProfile: {
+                fullName: userProfile.fullName,
+                currentTitle,
+                topAchievements,
+              },
               jobDescription: opportunity.jobDescription || "",
               companyName: opportunity.companyName,
               roleTitle: opportunity.roleTitle,
-              companyDescription: "", // opportunities table doesn't have companyDescription
+              strategicMemo: "Strategic analysis pending", // TODO: integrate Profiler agent
             });
 
             // Assemble package
-            const packageResult = await assemblePackage({
+            const packageResult = await assembleApplicationPackage({
               applicationId: application.id.toString(),
-              resumeMarkdown: resumeResult.resume,
+              resumeMarkdown: resumeResult.resumeMarkdown,
               coverLetter: outreachResult.coverLetter,
               linkedInMessage: outreachResult.linkedInMessage,
               userFullName: userProfile.fullName,
@@ -1356,7 +1374,7 @@ Each superpower should:
               packageZipUrl: packageResult.packageUrl,
               resumePdfUrl: packageResult.files.resumePDF,
               resumeDocxUrl: packageResult.files.resumeDOCX,
-              tailoredResumeText: resumeResult.resume,
+              tailoredResumeText: resumeResult.resumeMarkdown,
               coverLetterText: outreachResult.coverLetter,
               linkedinMessage: outreachResult.linkedInMessage,
             });
