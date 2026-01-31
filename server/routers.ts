@@ -1603,38 +1603,35 @@ Respond in JSON format:
         try {
           const response = await invokeLLM({
             messages: [
-              { role: "system", content: "You are a brutally honest resume critic who provides specific, actionable feedback." },
+              { role: "system", content: "You are a brutally honest resume critic who provides specific, actionable feedback. Always respond with valid JSON." },
               { role: "user", content: prompt }
-            ],
-            response_format: {
-              type: "json_schema",
-              json_schema: {
-                name: "resume_roast",
-                strict: true,
-                schema: {
-                  type: "object",
-                  properties: {
-                    score: { type: "number", description: "Score from 0-100" },
-                    verdict: { type: "string", description: "One-word verdict" },
-                    brutalTruth: { type: "string", description: "Brutally honest truth" },
-                    mistakes: {
-                      type: "array",
-                      items: { type: "string" },
-                      description: "Array of exactly 3 mistakes",
-                      minItems: 3,
-                      maxItems: 3
-                    }
-                  },
-                  required: ["score", "verdict", "brutalTruth", "mistakes"],
-                  additionalProperties: false
-                }
-              }
-            }
+            ]
           });
 
-          const messageContent = response.choices?.[0]?.message?.content;
-          const contentString = typeof messageContent === 'string' ? messageContent : '{}';
-          const analysis = JSON.parse(contentString);
+          // Safely extract and parse LLM response
+          if (!response || !response.choices || response.choices.length === 0) {
+            throw new Error('Invalid LLM response structure');
+          }
+          
+          const messageContent = response.choices[0]?.message?.content;
+          if (!messageContent || typeof messageContent !== 'string') {
+            throw new Error('LLM response content is missing or invalid');
+          }
+          
+          // Strip markdown code blocks if present
+          let jsonContent = messageContent.trim();
+          if (jsonContent.startsWith('```json')) {
+            jsonContent = jsonContent.replace(/^```json\n?/, '').replace(/\n?```$/, '');
+          } else if (jsonContent.startsWith('```')) {
+            jsonContent = jsonContent.replace(/^```\n?/, '').replace(/\n?```$/, '');
+          }
+          
+          const analysis = JSON.parse(jsonContent);
+          
+          // Validate the parsed analysis has required fields
+          if (!analysis || typeof analysis.score !== 'number' || !analysis.verdict || !analysis.brutalTruth || !Array.isArray(analysis.mistakes)) {
+            throw new Error('LLM response missing required fields');
+          }
           
           return {
             score: analysis.score || 50,
