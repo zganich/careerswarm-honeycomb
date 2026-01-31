@@ -11,8 +11,107 @@ import { extractTextFromResume, parseResumeWithLLM, consolidateResumes, generate
 // CAREERSWARM - MASTER PROFILE & 7-AGENT SYSTEM
 // ================================================================
 
+// ================================================================
+// PUBLIC ROUTES (no auth) - Resume Roast, etc.
+// ================================================================
+const ROAST_SYSTEM_PROMPT = `You are a cynical VC recruiter who has reviewed 10,000+ resumes this week. You don't sugarcoat. Ever.
+
+Your job: Roast the resume. Give a 0-100 score and exactly 3 "Million-Dollar Mistakes" — specific, brutal, actionable.
+
+What you hate:
+- Buzzwords without metrics (spearheaded, orchestrated, leverage, synergy, utilize, facilitate, robust)
+- "Responsibilities included..." — who cares what they were supposed to do?
+- Vague achievements ("improved efficiency", "enhanced performance")
+- Generic summaries that could apply to any human with a pulse
+- Formatting disasters (walls of text, inconsistent styling)
+- Skills lists that read like keyword dumps
+
+What impresses you (rarely):
+- Specific numbers: "$2.3M ARR", "47% reduction", "3x improvement"
+- Clear cause-and-effect: "Did X, which resulted in Y"
+- Evidence of actual ownership and decision-making
+- Brevity. They have 6 seconds. Make them count.
+
+Output JSON only: score (0-100), verdict (one short sentence), brutalTruth (2-4 sentences of direct critique), and exactly 3 mistakes, each with title, explanation, and fix.`;
+
 export const appRouter = router({
   system: systemRouter,
+
+  public: router({
+    roast: publicProcedure
+      .input(
+        z.object({
+          resumeText: z.string().min(50, "Resume must be at least 50 characters"),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const resumeText = input.resumeText.trim();
+        const characterCount = resumeText.length;
+        const wordCount = resumeText.split(/\s+/).filter(Boolean).length;
+
+        const response = await invokeLLM({
+          messages: [
+            { role: "system", content: ROAST_SYSTEM_PROMPT },
+            { role: "user", content: `Roast this resume:\n\n${resumeText}` },
+          ],
+          response_format: {
+            type: "json_schema",
+            json_schema: {
+              name: "resume_roast",
+              strict: true,
+              schema: {
+                type: "object",
+                properties: {
+                  score: { type: "number" },
+                  verdict: { type: "string" },
+                  brutalTruth: { type: "string" },
+                  mistakes: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        title: { type: "string" },
+                        explanation: { type: "string" },
+                        fix: { type: "string" },
+                      },
+                      required: ["title", "explanation", "fix"],
+                      additionalProperties: false,
+                    },
+                    minItems: 3,
+                    maxItems: 3,
+                  },
+                },
+                required: ["score", "verdict", "brutalTruth", "mistakes"],
+                additionalProperties: false,
+              },
+            },
+          },
+        });
+
+        const raw = response.choices[0].message.content;
+        const parsed = JSON.parse(typeof raw === "string" ? raw : "{}") as {
+          score: number;
+          verdict: string;
+          brutalTruth: string;
+          mistakes: Array<{ title: string; explanation: string; fix: string }>;
+        };
+
+        const score = Math.max(0, Math.min(100, Math.round(Number(parsed.score) || 0)));
+
+        return {
+          score,
+          verdict: parsed.verdict ?? "",
+          brutalTruth: parsed.brutalTruth ?? "",
+          mistakes: (parsed.mistakes ?? []).slice(0, 3).map((m) => ({
+            title: m.title ?? "",
+            explanation: m.explanation ?? "",
+            fix: m.fix ?? "",
+          })),
+          characterCount,
+          wordCount,
+        };
+      }),
+  }),
 
   // ================================================================
   // AUTH ROUTES

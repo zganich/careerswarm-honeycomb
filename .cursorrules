@@ -144,7 +144,7 @@ Applied to: `agents/profiler.py`, `agents/tailor.py`, `agents/pivot_analyzer.py`
 - Prioritize strategic scaling over tactical task management
 
 ### Resume Roast Persona (`.claude/rules/roast.md`)
-Applied to: `agents/resume_roaster.py`, `api/resume_roast.py`
+Applied to: `server/routers.ts` (public.roast procedure)
 - **Persona:** Cynical VC Recruiter
 - **Tone:** Brutal honesty, no AI fluff
 - **Output:** 0-100 score + 3 "Million-Dollar Mistakes"
