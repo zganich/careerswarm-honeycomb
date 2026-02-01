@@ -24,6 +24,7 @@ const Home = () => {
             <a href="#features" className="hover:text-orange-600 transition-colors">Technology</a>
             <a href="#proof" className="hover:text-orange-600 transition-colors">Evidence Engine</a>
             <a href="#pricing" className="hover:text-orange-600 transition-colors">Enterprise</a>
+            <button onClick={() => setLocation('/roast')} className="hover:text-orange-600 transition-colors">Resume Roast</button>
           </div>
           <button 
             onClick={() => setLocation('/onboarding/welcome')}

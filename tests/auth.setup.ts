@@ -9,6 +9,18 @@ const __dirname = dirname(__filename);
 const authFile = path.join(__dirname, '../playwright/.auth/user.json');
 
 setup('authenticate', async ({ page }) => {
+  // Get test credentials from environment
+  const testEmail = process.env.TEST_USER_EMAIL;
+  const testPassword = process.env.TEST_USER_PASSWORD;
+
+  if (!testEmail || !testPassword) {
+    throw new Error(
+      'TEST_USER_EMAIL and TEST_USER_PASSWORD environment variables must be set for E2E tests'
+    );
+  }
+
+  console.log('🔐 Starting OAuth authentication with test credentials...');
+
   // Navigate to the home page
   await page.goto('/');
 
@@ -18,31 +30,23 @@ setup('authenticate', async ({ page }) => {
   // Wait for OAuth redirect to Manus login page
   await page.waitForURL('**/oauth/**', { timeout: 10000 });
 
-  // Note: At this point, the test would need actual OAuth credentials
-  // For now, we'll document that manual authentication is required
-  // or environment variables need to be set for test credentials
+  console.log('📝 Filling in OAuth login form...');
 
-  // Check if we're on the OAuth page
-  const isOAuthPage = page.url().includes('oauth') || page.url().includes('login');
-  
-  if (isOAuthPage) {
-    console.log('⚠️  OAuth authentication required');
-    console.log('   To run E2E tests, you need to:');
-    console.log('   1. Set TEST_USER_EMAIL and TEST_USER_PASSWORD environment variables');
-    console.log('   2. Or manually authenticate once and save the session');
-    console.log('   3. The auth state will be saved to playwright/.auth/user.json');
-    
-    // For now, skip the actual login and just create a placeholder auth file
-    // In production, this would complete the OAuth flow with test credentials
-    throw new Error('OAuth authentication not configured. Please set up test credentials.');
-  }
+  // Fill in the OAuth login form
+  // Note: These selectors may need adjustment based on actual Manus OAuth UI
+  await page.fill('input[type="email"], input[name="email"]', testEmail);
+  await page.fill('input[type="password"], input[name="password"]', testPassword);
 
-  // If somehow we're already authenticated (shouldn't happen on first run)
-  // Wait for redirect back to the app
-  await page.waitForURL('**/dashboard', { timeout: 10000 });
+  // Click the login/submit button
+  await page.click('button[type="submit"], button:has-text("Sign in"), button:has-text("Log in")');
 
-  // Verify we're authenticated by checking for user-specific elements
-  await expect(page.getByText(/welcome/i)).toBeVisible({ timeout: 5000 });
+  // Wait for redirect back to the app after successful login
+  await page.waitForURL('**/dashboard', { timeout: 15000 });
+
+  console.log('✅ OAuth login successful, waiting for dashboard...');
+
+  // Verify we're authenticated by checking for dashboard elements
+  await expect(page.getByText(/dashboard|welcome|profile/i)).toBeVisible({ timeout: 5000 });
 
   // Save the authenticated state
   await page.context().storageState({ path: authFile });

@@ -6,10 +6,12 @@ import {
   uploadedResumes, targetPreferences,
   opportunities, applications, agentExecutionLogs, notifications,
   certifications, education, awards, savedOpportunities, applicationNotes,
+  agentMetrics,
   type Achievement, type Skill, type WorkExperience, type UserProfile,
   type Superpower, type UploadedResume, type TargetPreferences,
   type Opportunity, type Application, type AgentExecutionLog, type Notification,
-  type Certification, type Education, type Award, type SavedOpportunity, type ApplicationNote
+  type Certification, type Education, type Award, type SavedOpportunity, type ApplicationNote,
+  type AgentMetric, type InsertAgentMetric
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -647,4 +649,81 @@ export async function updateTargetPreferences(
   }
   
   return userId;
+}
+
+
+// ================================================================
+// AGENT METRICS OPERATIONS (Production Monitoring)
+// ================================================================
+
+export async function insertAgentMetric(metric: InsertAgentMetric): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  
+  await db.insert(agentMetrics).values(metric);
+}
+
+export async function getAgentMetrics(options?: {
+  agentType?: string;
+  startDate?: Date;
+  endDate?: Date;
+  limit?: number;
+}): Promise<AgentMetric[]> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  let query = db.select().from(agentMetrics);
+  
+  // Apply filters if provided
+  const conditions = [];
+  if (options?.agentType) {
+    conditions.push(eq(agentMetrics.agentType, options.agentType));
+  }
+  if (options?.startDate) {
+    conditions.push(sql`${agentMetrics.createdAt} >= ${options.startDate}`);
+  }
+  if (options?.endDate) {
+    conditions.push(sql`${agentMetrics.createdAt} <= ${options.endDate}`);
+  }
+  
+  if (conditions.length > 0) {
+    query = query.where(and(...conditions)) as any;
+  }
+  
+  query = query.orderBy(desc(agentMetrics.createdAt)) as any;
+  
+  if (options?.limit) {
+    query = query.limit(options.limit) as any;
+  }
+  
+  return await query;
+}
+
+export async function getAgentPerformanceStats(agentType?: string) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const last24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  
+  let query = sql`
+    SELECT 
+      agentType,
+      COUNT(*) as totalExecutions,
+      SUM(CASE WHEN success = 1 THEN 1 ELSE 0 END) as successfulExecutions,
+      AVG(duration) as avgDuration,
+      MIN(duration) as minDuration,
+      MAX(duration) as maxDuration,
+      (SUM(CASE WHEN success = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*)) as successRate
+    FROM agentMetrics
+    WHERE createdAt >= ${last24h}
+  `;
+  
+  if (agentType) {
+    query = sql`${query} AND agentType = ${agentType}`;
+  }
+  
+  query = sql`${query} GROUP BY agentType`;
+  
+  const result = await db.execute(query);
+  return result;
 }

@@ -473,3 +473,31 @@ export type Notification = typeof notifications.$inferSelect;
 export type SavedOpportunity = typeof savedOpportunities.$inferSelect;
 export type ApplicationNote = typeof applicationNotes.$inferSelect;
 export type InsertApplicationNote = typeof applicationNotes.$inferInsert;
+
+// ================================================================
+// AGENT METRICS (Production Monitoring)
+// ================================================================
+
+export const agentMetrics = mysqlTable("agentMetrics", {
+  id: int("id").autoincrement().primaryKey(),
+  
+  // Agent identification
+  agentType: varchar("agentType", { length: 50 }).notNull(), // 'tailor', 'scribe', 'assembler'
+  
+  // Performance metrics
+  duration: int("duration").notNull(), // milliseconds
+  success: boolean("success").notNull(),
+  errorMessage: text("errorMessage"),
+  
+  // Related entities
+  applicationId: int("applicationId"),
+  userId: int("userId"),
+  
+  // Additional metadata
+  metadata: json("metadata").$type<Record<string, any>>(), // Agent-specific data (e.g., keyword count, confidence score)
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type AgentMetric = typeof agentMetrics.$inferSelect;
+export type InsertAgentMetric = typeof agentMetrics.$inferInsert;

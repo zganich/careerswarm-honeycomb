@@ -1010,3 +1010,34 @@
 See TEST_RESULTS.md for comprehensive documentation.
 
 ---
+
+---
+
+## 🎯 POST-HANDOFF ENHANCEMENTS (Jan 31, 2026)
+
+### Homepage Navigation Enhancement
+- [x] Add "Resume Roast" link to homepage navigation bar
+- [x] Link to /roast route
+- [x] Match existing navigation styling
+
+### E2E Test Credentials Setup
+- [x] Configure TEST_USER_EMAIL environment variable
+- [x] Configure TEST_USER_PASSWORD environment variable
+- [x] Update auth.setup.ts to use test credentials
+- [ ] Test OAuth flow with credentials (requires manual OAuth login)
+- [ ] Verify all 63 Playwright tests can run (requires OAuth setup)
+
+### Production Metrics Tracking
+- [x] Create agentMetrics table in database schema
+- [ ] Add metrics tracking to Tailor agent (infrastructure ready, needs integration)
+- [ ] Add metrics tracking to Scribe agent (infrastructure ready, needs integration)
+- [ ] Add metrics tracking to Assembler agent (infrastructure ready, needs integration)
+- [x] Create analytics.getAgentMetrics tRPC endpoint
+- [x] Create analytics.getPackageSuccessRate tRPC endpoint
+- [ ] Create analytics.getResumeRoastConversion tRPC endpoint (future enhancement)
+- [ ] Create Metrics dashboard page (/metrics route) (future enhancement)
+- [ ] Display agent performance charts (future enhancement)
+- [ ] Display package generation success rates (future enhancement)
+- [ ] Display Resume Roast conversion funnel (future enhancement)
+
+---

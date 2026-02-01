@@ -1536,6 +1536,49 @@ Each superpower should:
         insights: [], // TODO: Generate AI insights
       };
     }),
+
+    // Get agent performance metrics
+    getAgentMetrics: protectedProcedure
+      .input(z.object({
+        agentType: z.enum(['tailor', 'scribe', 'assembler']).optional(),
+        hours: z.number().default(24), // Last N hours
+      }))
+      .query(async ({ input }) => {
+        const startDate = new Date(Date.now() - input.hours * 60 * 60 * 1000);
+        
+        const stats = await db.getAgentPerformanceStats(input.agentType);
+        
+        return stats;
+      }),
+
+    // Get package generation success rate
+    getPackageSuccessRate: protectedProcedure
+      .input(z.object({
+        hours: z.number().default(24), // Last N hours
+      }))
+      .query(async ({ ctx, input }) => {
+        const user = await db.getUserByOpenId(ctx.user.openId);
+        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        
+        const startDate = new Date(Date.now() - input.hours * 60 * 60 * 1000);
+        
+        const applications = await db.getApplications(user.id, {});
+        const recentApplications = applications.filter(
+          (app) => app.createdAt && new Date(app.createdAt).getTime() >= startDate.getTime()
+        );
+        
+        const totalAttempts = recentApplications.length;
+        const successful = recentApplications.filter((app) => app.packageZipUrl).length;
+        const successRate = totalAttempts > 0 ? (successful / totalAttempts) * 100 : 0;
+        
+        return {
+          totalAttempts,
+          successful,
+          failed: totalAttempts - successful,
+          successRate: Math.round(successRate * 10) / 10, // Round to 1 decimal
+          timeRange: `Last ${input.hours} hours`,
+        };
+      }),
   }),
 
   // ================================================================
