@@ -17,14 +17,14 @@ import { PSYCH_COPY } from "./CopyConstants";
 
 export function TransformationHero() {
   return (
-    <section className="relative min-h-[80vh] flex items-center justify-center px-4 pt-32 md:pt-40 pb-16 overflow-hidden bg-gradient-to-b from-slate-50 to-white">
+    <section className="relative min-h-[70vh] flex items-center justify-center px-4 pt-20 md:pt-24 pb-8 overflow-hidden bg-gradient-to-b from-slate-50 to-white">
       
       {/* Main Content */}
       <div className="max-w-6xl mx-auto text-center">
         
         {/* Headline */}
         <motion.h1 
-          className="text-5xl md:text-7xl font-bold text-slate-900 mb-4 mt-8"
+          className="text-5xl md:text-7xl font-bold text-slate-900 mb-3 mt-0"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -33,7 +33,7 @@ export function TransformationHero() {
         </motion.h1>
         
         <motion.p 
-          className="text-xl md:text-2xl text-slate-600 mb-12 max-w-3xl mx-auto"
+          className="text-xl md:text-2xl text-slate-600 mb-6 max-w-3xl mx-auto"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
@@ -43,14 +43,14 @@ export function TransformationHero() {
 
         {/* Split-Screen Transformation Visual */}
         <motion.div 
-          className="flex flex-col md:flex-row items-center justify-center gap-8 mb-12"
+          className="flex flex-col md:flex-row items-center justify-center gap-6 mb-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.4 }}
         >
           
           {/* LEFT: Chaos (Before) */}
-          <div className="relative w-72 h-80 bg-slate-100 rounded-2xl p-6 border-2 border-dashed border-slate-300">
+          <div className="relative w-64 h-72 bg-slate-100 rounded-2xl p-5 border-2 border-dashed border-slate-300">
             <h3 className="text-sm font-semibold text-slate-500 mb-4 uppercase tracking-wide">
               Your Scattered Career Data
             </h3>
@@ -116,7 +116,7 @@ export function TransformationHero() {
           </motion.div>
 
           {/* RIGHT: Order (After) */}
-          <div className="relative w-72 h-80 bg-green-50 rounded-2xl p-6 border-2 border-green-200">
+          <div className="relative w-64 h-72 bg-green-50 rounded-2xl p-5 border-2 border-green-200">
             <h3 className="text-sm font-semibold text-green-700 mb-4 uppercase tracking-wide">
               AI-Generated Application Package
             </h3>
@@ -185,25 +185,25 @@ export function TransformationHero() {
 
         {/* CTAs */}
         <motion.div 
-          className="flex flex-col sm:flex-row items-center justify-center gap-4"
+          className="flex flex-col sm:flex-row items-center justify-center gap-3"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.6 }}
         >
-          <button className="group relative px-8 py-4 bg-orange-500 hover:bg-orange-600 text-white text-lg font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+          <button className="group relative px-7 py-3.5 bg-orange-500 hover:bg-orange-600 text-white text-lg font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5">
             <span className="relative z-10">{PSYCH_COPY.hero.ctaPrimary}</span>
             {/* Heartbeat Animation */}
             <span className="absolute inset-0 rounded-xl bg-orange-400 animate-ping opacity-20" />
           </button>
           
-          <button className="px-8 py-4 bg-white hover:bg-slate-50 text-slate-700 text-lg font-medium rounded-xl border-2 border-slate-200 transition-all duration-300">
+          <button className="px-7 py-3.5 bg-white hover:bg-slate-50 text-slate-700 text-lg font-medium rounded-xl border-2 border-slate-200 transition-all duration-300">
             {PSYCH_COPY.hero.ctaSecondary}
           </button>
         </motion.div>
 
         {/* Trust Signal */}
         <motion.p 
-          className="mt-8 text-slate-500"
+          className="mt-4 text-slate-600 text-lg font-semibold"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
