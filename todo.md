@@ -1041,3 +1041,31 @@ See TEST_RESULTS.md for comprehensive documentation.
 - [ ] Display Resume Roast conversion funnel (future enhancement)
 
 ---
+
+
+## 🎯 METRICS & CONVERSION TRACKING (Jan 31, 2026)
+
+### Agent Metrics Integration
+- [x] Add insertAgentMetric() to Tailor agent (wrap generation with timing)
+- [x] Add insertAgentMetric() to Scribe agent (wrap generation with timing)
+- [x] Add insertAgentMetric() to Assembler agent (wrap generation with timing)
+- [x] Test metrics collection during Quick Apply workflow
+- [x] Verify metrics appear in database
+
+### Metrics Dashboard Page
+- [x] Create /metrics route in App.tsx
+- [x] Create Metrics.tsx page component
+- [ ] Add metrics navigation to DashboardLayout sidebar (future enhancement)
+- [x] Display agent performance chart (success rate, avg duration)
+- [x] Display package success rate card
+- [ ] Display recent agent executions table (future enhancement)
+- [ ] Add time range filter (24h, 7d, 30d) (future enhancement)
+- [x] Style with existing design system
+
+### Resume Roast Conversion Tracking
+- [x] Add PostHog event on Resume Roast completion ('resume_roast_completed')
+- [x] Add PostHog event on "Build My Master Profile" click ('conversion_cta_clicked')
+- [x] Include score and verdict in event metadata
+- [ ] Test events fire correctly in browser console (requires manual testing)
+
+---

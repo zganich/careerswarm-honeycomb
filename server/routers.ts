@@ -1356,6 +1356,9 @@ Each superpower should:
               jobDescription: opportunity.jobDescription || "",
               companyName: opportunity.companyName,
               roleTitle: opportunity.roleTitle,
+            }, {
+              applicationId: application.id,
+              userId: user.id,
             });
 
             // Run Profiler for company insights (optional; fallback to empty if it fails)
@@ -1377,6 +1380,9 @@ Each superpower should:
               companyName: opportunity.companyName,
               roleTitle: opportunity.roleTitle,
               strategicMemo,
+            }, {
+              applicationId: application.id,
+              userId: user.id,
             });
 
             // Assemble package
@@ -1388,6 +1394,9 @@ Each superpower should:
               userFullName: user.name || "User",
               companyName: opportunity.companyName,
               roleTitle: opportunity.roleTitle,
+            }, {
+              applicationId: application.id,
+              userId: user.id,
             });
 
             // Update application with package URLs

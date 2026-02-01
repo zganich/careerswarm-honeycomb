@@ -34,6 +34,7 @@ import ApplicationDetail from "./pages/ApplicationDetail";
 
 // Analytics
 import Analytics from "./pages/Analytics";
+import Metrics from "./pages/Metrics";
 
 // Activity Feed
 import Activity from "./pages/Activity";
@@ -74,6 +75,7 @@ function Router() {
 
       {/* Analytics */}
       <Route path="/analytics" component={Analytics} />
+      <Route path="/metrics" component={Metrics} />
 
       {/* 404 */}
       <Route path="/404" component={NotFound} />

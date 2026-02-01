@@ -2,6 +2,7 @@ import { generatePDF } from '../services/pdfGenerator';
 import { generateDOCX } from '../services/docxGenerator';
 import { createZipPackage } from '../services/zipPackager';
 import { storagePut } from '../storage';
+import { insertAgentMetric } from '../db';
 import { promises as fs } from 'fs';
 import path from 'path';
 import os from 'os';
@@ -32,8 +33,10 @@ function sanitizeFilename(name: string): string {
 }
 
 export async function assembleApplicationPackage(
-  input: AssemblerInput
+  input: AssemblerInput,
+  options?: { applicationId?: number; userId?: number }
 ): Promise<AssemblerOutput> {
+  const startTime = Date.now();
   const { applicationId, resumeMarkdown, coverLetter, linkedInMessage, userFullName, companyName, roleTitle } = input;
 
   // Create temp directory for files
@@ -91,6 +94,23 @@ export async function assembleApplicationPackage(
       storagePut(`applications/${applicationId}/package.zip`, await fs.readFile(zipPath), 'application/zip'),
     ]);
 
+    const duration = Date.now() - startTime;
+    
+    // Log success metric
+    if (options?.applicationId || options?.userId) {
+      await insertAgentMetric({
+        agentType: 'assembler',
+        duration,
+        success: true,
+        applicationId: options.applicationId,
+        userId: options.userId,
+        metadata: {
+          fileCount: 6,
+          packageSize: (await fs.stat(zipPath)).size,
+        },
+      });
+    }
+    
     return {
       packageUrl: zipUpload.url,
       files: {
@@ -101,6 +121,22 @@ export async function assembleApplicationPackage(
         linkedInMessageTXT: linkedInMessageUpload.url,
       },
     };
+  } catch (error) {
+    const duration = Date.now() - startTime;
+    
+    // Log error metric
+    if (options?.applicationId || options?.userId) {
+      await insertAgentMetric({
+        agentType: 'assembler',
+        duration,
+        success: false,
+        errorMessage: error instanceof Error ? error.message : String(error),
+        applicationId: options.applicationId,
+        userId: options.userId,
+      });
+    }
+    
+    throw error;
   } finally {
     // Clean up temp directory
     try {

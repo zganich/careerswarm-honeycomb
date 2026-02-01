@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { trpc } from '../lib/trpc';
 import { Link } from 'wouter';
 import { Button } from '../components/ui/button';
@@ -6,6 +6,7 @@ import { Textarea } from '../components/ui/textarea';
 import { Card } from '../components/ui/card';
 import { AlertCircle, CheckCircle2, TrendingUp, FileText } from 'lucide-react';
 import { toast } from 'sonner';
+import posthog from 'posthog-js';
 
 export default function ResumeRoast() {
   const [resumeText, setResumeText] = useState('');
@@ -18,9 +19,30 @@ export default function ResumeRoast() {
     wordCount: number;
   } | null>(null);
 
+  // Initialize PostHog
+  useEffect(() => {
+    if (import.meta.env.VITE_POSTHOG_KEY && import.meta.env.VITE_POSTHOG_HOST) {
+      posthog.init(import.meta.env.VITE_POSTHOG_KEY, {
+        api_host: import.meta.env.VITE_POSTHOG_HOST,
+        loaded: (posthog) => {
+          if (import.meta.env.DEV) posthog.debug();
+        },
+      });
+    }
+  }, []);
+
   const roastMutation = trpc.public.roast.useMutation({
     onSuccess: (data) => {
       setResults(data);
+      
+      // Track Resume Roast completion
+      posthog.capture('resume_roast_completed', {
+        score: data.score,
+        verdict: data.verdict,
+        characterCount: data.characterCount,
+        wordCount: data.wordCount,
+        mistakeCount: data.mistakes.length,
+      });
     },
     onError: (error) => {
       toast.error(error.message || 'Failed to analyze resume');
@@ -202,7 +224,18 @@ export default function ResumeRoast() {
                     Stop rewriting from scratch—apply to hundreds of jobs in minutes.
                   </p>
                   <Link href="/onboarding">
-                    <Button size="lg" className="text-lg px-8">
+                    <Button 
+                      size="lg" 
+                      className="text-lg px-8"
+                      onClick={() => {
+                        // Track conversion CTA click
+                        posthog.capture('conversion_cta_clicked', {
+                          source: 'resume_roast',
+                          destination: '/onboarding',
+                          score: results?.score,
+                        });
+                      }}
+                    >
                       Build My Master Profile →
                     </Button>
                   </Link>
