@@ -87,7 +87,7 @@ export default function ResumeRoast() {
               </a>
             </Link>
             <Link href="/onboarding/welcome">
-              <Button>Build My Master Profile</Button>
+              <Button className="bg-orange-500 hover:bg-orange-600 text-white">Build My Master Profile</Button>
             </Link>
           </div>
         </div>
@@ -134,7 +134,7 @@ export default function ResumeRoast() {
               <Button
                 onClick={handleRoast}
                 disabled={resumeText.length < 50 || roastMutation.isPending}
-                className="w-full"
+                className="w-full bg-orange-500 hover:bg-orange-600 text-white"
                 size="lg"
               >
                 {roastMutation.isPending ? (
@@ -229,7 +229,7 @@ export default function ResumeRoast() {
                   <Link href="/onboarding/welcome">
                     <Button 
                       size="lg" 
-                      className="text-lg px-8"
+                      className="text-lg px-8 bg-orange-500 hover:bg-orange-600 text-white"
                       onClick={() => {
                         // Track conversion CTA click
                         posthog.capture('conversion_cta_clicked', {

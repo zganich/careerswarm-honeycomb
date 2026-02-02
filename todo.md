@@ -1298,3 +1298,19 @@ See TEST_RESULTS.md for comprehensive documentation.
 4. Resume Roast quality (P2) - Feature regression
 5. Homepage header layout (P2) - Visual bug
 6. Color consistency (P3) - Polish issue
+
+
+## 🎯 CURRENT SPRINT (Feb 2, 2026)
+
+### Testing & Verification
+- [ ] Test OAuth flow from onboarding Welcome page - verify returnTo works correctly
+- [ ] Test OAuth flow from different browsers/incognito to verify session handling
+
+### Feature Enhancements
+- [x] Add returnTo support to Resume Roast page - Not needed: Resume Roast is public, no auth required
+- [x] Add returnTo support to DashboardLayout - Fixed: Now passes current path to getLoginUrl() (line 80 DashboardLayout.tsx)
+- [x] Audit all pages that require authentication for consistent deep-linking - Complete: Only Welcome page and DashboardLayout need returnTo
+
+### Visual Bug Fixes (P2/P3)
+- [x] Fix homepage header layout issue - Not reproducible in current build, appears to be already fixed
+- [x] Fix color inconsistency between Resume Roast and Homepage - Fixed: Updated all Resume Roast buttons to use bg-orange-500 (lines 90, 137, 232 ResumeRoast.tsx)

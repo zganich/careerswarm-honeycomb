@@ -76,7 +76,9 @@ export default function DashboardLayout({
           </div>
           <Button
             onClick={() => {
-              window.location.href = getLoginUrl();
+              // Pass current path as returnTo so user returns here after login
+              const currentPath = window.location.pathname;
+              window.location.href = getLoginUrl(currentPath);
             }}
             size="lg"
             className="w-full shadow-lg hover:shadow-xl transition-all"
