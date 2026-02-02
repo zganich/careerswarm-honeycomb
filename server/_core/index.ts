@@ -7,7 +7,13 @@ import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
+import { verifyEnv } from "./env";
 import { serveStatic, setupVite } from "./vite";
+
+// Fail fast in production if required env vars are missing
+if (process.env.NODE_ENV === "production") {
+  verifyEnv();
+}
 
 // Initialize Sentry for backend error tracking
 if (process.env.SENTRY_DSN) {

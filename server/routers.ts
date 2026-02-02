@@ -285,9 +285,10 @@ export const appRouter = router({
       const completedResumes = resumes.filter(r => r.processingStatus === 'completed' && r.extractedText);
 
       if (completedResumes.length === 0) {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "No processed resumes found" });
+        throw new TRPCError({ code: "BAD_REQUEST", message: "No processed resumes found. Upload and process resumes first, then try again." });
       }
 
+      try {
       // Parse each resume with LLM
       const parsedResumes = [];
       for (const resume of completedResumes) {
@@ -473,6 +474,15 @@ export const appRouter = router({
         skills: consolidated.skills.length,
         superpowers: superpowers,
       };
+      } catch (err) {
+        console.error("[parseResumes] Failed:", err);
+        const message = err instanceof Error ? err.message : String(err);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Resume parsing failed. Please try again or use a different file. If it keeps failing, try a shorter or simpler resume.",
+          cause: err instanceof Error ? err : undefined,
+        });
+      }
     }),
 
     // Legacy code - keep for backward compatibility
@@ -1728,12 +1738,12 @@ Each superpower should:
               errorMessage: error instanceof Error ? error.message : String(error),
             });
 
-            // Send error notification
+            // Send error notification with actionable message
             await db.createNotification({
               userId: user.id,
               type: "application_package_error",
               title: "Package Generation Failed",
-              message: "There was an error generating your application package. Please try again.",
+              message: "We couldn't generate your application package. Please try again in a few minutes, or open the application and use \"Generate Package\" again.",
               applicationId: input.applicationId,
             });
           }

@@ -56,6 +56,8 @@ Nothing required for build or run has been archived; only reference/obsolete mat
 
 ## Recommended next steps (from Manus + current state)
 
+**For critical todos and phased roadmap (updates and fixes), see [CRITICAL_TODOS_AND_PHASES.md](CRITICAL_TODOS_AND_PHASES.md).**
+
 1. **Run migrations:** Ensure MySQL is running and `DATABASE_URL` is in `.env`, then run `pnpm db:migrate` (see RUN_MIGRATION_STEP_BY_STEP.md if new to it).
 2. **Run tests:** `pnpm test` (and E2E if you use Playwright).
 3. **Deploy:** If tests and migration are good, deploy per your hosting (e.g. Manus, Vercel, Railway).
