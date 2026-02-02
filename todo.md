@@ -1268,3 +1268,32 @@ See TEST_RESULTS.md for comprehensive documentation.
 - ❌ **Video Incomplete** - Only shows homepage + Resume Roast page (first 57 seconds)
 - ❌ **Missing Coverage** - No OAuth flow, onboarding steps, or Master Profile creation shown
 - 📝 **Recommendation** - Need longer recording showing complete flow from homepage to Master Profile completion
+
+
+## 🚨 CRITICAL BUGS FROM LOOM VIDEO #2 (Feb 2, 2026)
+
+**Video URL:** https://www.loom.com/share/6421f5c4c9384b9e848a0ded6fba627d
+
+### P0 - Critical (Blocks User Flow)
+- [x] **OAuth Redirect Loop** - Fixed by adding returnTo parameter to login URL (line 42-43 in Welcome.tsx)
+- [x] **OAuth Branding Issue** - Changed button text from "Sign In with Manus" to "Sign In to CareerSwarm" (line 89)
+- [ ] **OAuth Verification Code Required** - Test account can't complete sign-in without verification code (timestamp 2:08) - CANNOT FIX: Manus OAuth system requirement
+
+### P1 - High (Poor UX)
+- [x] **Resume Roast Results Below Fold** - Fixed: Added window.scrollTo({ top: 0, behavior: 'smooth' }) in onSuccess (line 39 ResumeRoast.tsx)
+- [x] **User Dislikes "Sign in with Manus"** - Fixed: Changed to "Sign In to CareerSwarm" (timestamp 1:41)
+
+### P2 - Medium (Quality Issues)
+- [x] **Resume Roast Quality Degraded** - Fixed: Enhanced LLM prompt to be "wickedly funny" with Gordon Ramsay personality, added humor examples (lines 1640-1667 routers.ts)
+- [ ] **Homepage Header Layout Issue** - "this will push the header, this line here, underneath this" (timestamp 0:00)
+
+### P3 - Low (Visual Inconsistency)
+- [ ] **Color Inconsistency** - "Colors are a little bit different than the home page" (Resume Roast vs Homepage) (timestamp 0:32)
+
+## Fix Priority Order
+1. OAuth redirect loop (P0) - Most critical, blocks entire onboarding
+2. OAuth branding (P0) - User explicitly complains about Manus branding
+3. Resume Roast results positioning (P1) - Poor UX after submission
+4. Resume Roast quality (P2) - Feature regression
+5. Homepage header layout (P2) - Visual bug
+6. Color consistency (P3) - Polish issue

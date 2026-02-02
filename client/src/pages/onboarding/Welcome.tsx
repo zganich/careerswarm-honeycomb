@@ -37,8 +37,10 @@ export default function Welcome() {
   };
 
   const handleLogin = () => {
-    // Redirect to OAuth login
-    window.location.href = getLoginUrl();
+    // Redirect to OAuth login with returnTo parameter to come back to onboarding
+    const loginUrl = getLoginUrl();
+    const returnTo = encodeURIComponent('/onboarding/welcome');
+    window.location.href = `${loginUrl}&returnTo=${returnTo}`;
   };
 
   // Show loading state while checking auth
@@ -84,7 +86,7 @@ export default function Welcome() {
               className="w-full"
               onClick={handleLogin}
             >
-              Sign In with Manus
+              Sign In to CareerSwarm
             </Button>
             <p className="text-xs text-center text-muted-foreground">
               Free forever • No credit card required • Takes 30 seconds

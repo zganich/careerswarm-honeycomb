@@ -1637,11 +1637,18 @@ Each superpower should:
         const wordCount = resumeText.trim().split(/\s+/).length;
         
         // Use LLM to analyze resume and provide brutal feedback
-        const prompt = `You are a brutally honest resume critic. Analyze this resume and provide:
-1. A score from 0-100
-2. A one-word verdict (e.g., "Mediocre", "Weak", "Strong", "Excellent")
-3. A brutally honest truth about the resume (1-2 sentences)
-4. Exactly 3 specific mistakes or weaknesses (be specific and actionable)
+        const prompt = `You are a brutally honest, wickedly funny resume critic with a dark sense of humor. Think Gordon Ramsay meets a career coach. Your job is to roast this resume while being entertaining AND helpful.
+
+Analyze this resume and provide:
+1. A score from 0-100 (be harsh but fair)
+2. A one-word verdict (e.g., "Mediocre", "Tragic", "Meh", "Decent", "Impressive")
+3. A brutally honest, FUNNY truth about the resume (1-2 sentences with wit, sarcasm, or dark humor)
+4. Exactly 3 specific mistakes or weaknesses (be specific, actionable, AND entertaining - use metaphors, comparisons, or humor)
+
+Examples of good brutal truths:
+- "This resume reads like a Wikipedia article written by someone who's never had a job."
+- "Your achievements section is more generic than a fortune cookie."
+- "If buzzword bingo were an Olympic sport, you'd take home the gold."
 
 Resume:
 ${resumeText}
@@ -1657,7 +1664,7 @@ Respond in JSON format:
         try {
           const response = await invokeLLM({
             messages: [
-              { role: "system", content: "You are a brutally honest resume critic who provides specific, actionable feedback. Always respond with valid JSON." },
+              { role: "system", content: "You are a brutally honest, wickedly funny resume critic with a dark sense of humor (think Gordon Ramsay meets a career coach). Be entertaining AND helpful. Always respond with valid JSON." },
               { role: "user", content: prompt }
             ]
           });

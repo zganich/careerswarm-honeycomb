@@ -35,6 +35,9 @@ export default function ResumeRoast() {
     onSuccess: (data) => {
       setResults(data);
       
+      // Scroll to top to show results
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
       // Track Resume Roast completion
       posthog.capture('resume_roast_completed', {
         score: data.score,
