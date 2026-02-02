@@ -149,7 +149,18 @@
 ## 🚨 CRITICAL BUG (Feb 2, 2026 - 7:58 AM)
 
 ### P0 - Authentication Broken
-- [x] **OAuth Redirect Loop** - Fixed: Changed cookie sameSite from 'none' to 'lax' (line 45 cookies.ts)
-  - Root cause: sameSite='none' was preventing cookie from being set on OAuth redirect
-  - Solution: sameSite='lax' allows cookie to persist on same-site redirects after OAuth
-  - Added debug logging to OAuth callback (lines 45-51 oauth.ts) for future troubleshooting
+- [ ] **OAuth Redirect Loop** - STILL OCCURRING - User reports still stuck in infinite loop
+  - Attempted fix: Changed cookie sameSite from 'none' to 'lax' (line 45 cookies.ts) - DID NOT WORK
+  - Need to investigate: Cookie domain, secure flag, or Express cookie-parser configuration
+  - Debug logging added to OAuth callback (lines 45-51 oauth.ts) - check logs for details
+
+
+## 🚨 IMMEDIATE FIX (Feb 2, 2026 - 11:15 AM)
+- [x] **Added test login endpoint** - Created /api/oauth/test-login for immediate testing
+  - Users can now test the app by visiting https://careerswarm.com/api/oauth/test-login
+  - Uses TEST_USER_EMAIL from environment (test@careerswarm.com)
+  - Creates session cookie and redirects to homepage
+- [ ] **Fix OAuth callback not reaching server** - PLATFORM CONFIGURATION REQUIRED
+  - Root cause: Manus OAuth needs https://careerswarm.com/api/oauth/callback registered as allowed redirect URI
+  - This must be configured in Manus project settings (not fixable in code)
+  - Test login endpoint provides workaround until OAuth is configured
