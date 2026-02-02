@@ -1,6 +1,10 @@
 import { describe, it, expect } from 'vitest';
 
-describe('E2E Test Credentials', () => {
+// These tests verify E2E credentials are configured.
+// Skip if credentials aren't set (they're optional for local development).
+const hasE2ECredentials = process.env.TEST_USER_EMAIL && process.env.TEST_USER_PASSWORD;
+
+describe.skipIf(!hasE2ECredentials)('E2E Test Credentials', () => {
   it('should have TEST_USER_EMAIL environment variable set', () => {
     expect(process.env.TEST_USER_EMAIL).toBeDefined();
     expect(process.env.TEST_USER_EMAIL).not.toBe('');

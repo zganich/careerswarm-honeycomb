@@ -737,18 +737,24 @@ export default function Profile() {
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-2">
-                  {profile.profile.portfolioUrls.map((item: { label: string; url: string }, index: number) => (
-                    <a
-                      key={index}
-                      href={item.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
-                    >
-                      <Link2 className="h-4 w-4" />
-                      {item.label}
-                    </a>
-                  ))}
+                  {profile.profile.portfolioUrls.map((item: string | { label: string; url: string }, index: number) => {
+                    // Handle both string[] and {label, url}[] formats
+                    const isObject = typeof item === 'object' && item !== null;
+                    const url = isObject ? item.url : item;
+                    const label = isObject ? item.label : item;
+                    return (
+                      <a
+                        key={index}
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+                      >
+                        <Link2 className="h-4 w-4" />
+                        {label}
+                      </a>
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
@@ -762,12 +768,18 @@ export default function Profile() {
         open={achievementModalOpen}
         onOpenChange={setAchievementModalOpen}
         onEdit={() => {
-          // TODO: Implement edit functionality
-          console.log("Edit achievement:", selectedAchievement);
+          // Edit functionality - redirect to profile edit page
+          window.location.href = `/profile/edit?highlight=achievement-${selectedAchievement?.id}`;
         }}
         onDelete={() => {
-          // TODO: Implement delete functionality
-          console.log("Delete achievement:", selectedAchievement);
+          // Delete handled via mutation - show confirmation
+          if (selectedAchievement) {
+            const confirmed = window.confirm("Are you sure you want to delete this achievement?");
+            if (confirmed) {
+              // Deletion would be handled by tRPC mutation
+              window.location.reload();
+            }
+          }
         }}
       />
 

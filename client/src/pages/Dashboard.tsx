@@ -11,8 +11,9 @@ export default function Dashboard() {
   const { data: analytics } = trpc.analytics.getOverview.useQuery();
   const { data: applications, isLoading: applicationsLoading } = trpc.applications.list.useQuery({});
   const { data: opportunities } = trpc.opportunities.list.useQuery({});
-  // Saved opportunities count - using isSaved query
-  const savedJobsCount = 0; // TODO: Implement saved opportunities count
+  // Saved opportunities count
+  const { data: savedOpportunities } = trpc.opportunities.getSaved.useQuery();
+  const savedJobsCount = savedOpportunities?.length || 0;
   const { data: profile } = trpc.profile.get.useQuery();
 
   // Calculate metrics

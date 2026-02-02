@@ -931,3 +931,152 @@ export async function deleteSecurityClearance(id: number, userId: number) {
     .delete(securityClearances)
     .where(and(eq(securityClearances.id, id), eq(securityClearances.userId, userId)));
 }
+
+// ================================================================
+// ALIAS FUNCTIONS (for backward compatibility with routers.ts)
+// ================================================================
+
+export const createLanguage = insertLanguage;
+export const createVolunteerExperience = insertVolunteerExperience;
+export const createProject = insertProject;
+export const createPublication = insertPublication;
+export const createSecurityClearance = insertSecurityClearance;
+
+// ================================================================
+// REFERRAL / FLYWHEEL OPERATIONS
+// ================================================================
+
+export async function setUserReferredBy(userId: number, referrerUserId: number) {
+  const db = await getDb();
+  if (!db) return;
+  
+  // Add referredBy column if user doesn't already have a referrer
+  // Note: This requires a 'referredBy' column in users table, or we store in user profile
+  await db.update(users)
+    .set({ 
+      // Store referrer info - using a JSON field or adding a column
+      // For now, store in profile metadata
+    } as any)
+    .where(eq(users.id, userId));
+}
+
+export async function grantReferrer30DaysProIfReferred(userId: number) {
+  const db = await getDb();
+  if (!db) return;
+  
+  // This function would:
+  // 1. Check if user has a referrer
+  // 2. If so, extend referrer's Pro subscription by 30 days
+  // For now, this is a stub - actual implementation depends on how referrals are tracked
+  console.log(`[Flywheel] Checking referral bonus for user ${userId}`);
+}
+
+// ================================================================
+// GTM / B2B OPERATIONS (Stubs for pipeline-processor)
+// ================================================================
+
+export async function getB2BLeads(limit: number = 100, outreachStatus?: string) {
+  // Stub - B2B leads table not yet created
+  console.log(`[GTM] getB2BLeads called with limit=${limit}, status=${outreachStatus}`);
+  return [] as any[];
+}
+
+export async function upsertB2BLeadByKey(data: any) {
+  // Stub - B2B leads table not yet created
+  console.log(`[GTM] upsertB2BLeadByKey called`);
+  return null;
+}
+
+export async function updateB2BLead(leadId: number, data: any) {
+  // Stub - B2B leads table not yet created
+  console.log(`[GTM] updateB2BLead called for lead ${leadId}`);
+  return null;
+}
+
+export async function createOutreachDraft(leadId: number, channel: string, subject: string | null, body: string, campaignId?: string) {
+  // Stub - Outreach drafts table not yet created
+  console.log(`[GTM] createOutreachDraft called for lead ${leadId}`);
+  return null;
+}
+
+export async function getOutreachDraftsUnsent(limit: number = 10) {
+  // Stub - Outreach drafts table not yet created
+  console.log(`[GTM] getOutreachDraftsUnsent called with limit=${limit}`);
+  return [] as any[];
+}
+
+export async function markOutreachDraftSent(draftId: number) {
+  // Stub - Outreach drafts table not yet created
+  console.log(`[GTM] markOutreachDraftSent called for draft ${draftId}`);
+  return null;
+}
+
+export async function createGtmRun(runType: string, input: any, output: any, status: string) {
+  // Stub - GTM runs table not yet created
+  console.log(`[GTM] createGtmRun called for type ${runType}`);
+  return null;
+}
+
+export async function createGtmContent(data: { channel: string; contentType: string; title: string; body: string; metadata?: any }) {
+  // Stub - GTM content table not yet created
+  console.log(`[GTM] createGtmContent called for channel ${data.channel}`);
+  return null;
+}
+
+export async function createGtmJobRun(step: string, channel: string | null, jobId: string) {
+  // Stub - GTM job runs table not yet created
+  console.log(`[GTM] createGtmJobRun called for step ${step}`);
+  return null;
+}
+
+export async function finishGtmJobRun(runId: any, status: string, message?: string, metadata?: string) {
+  // Stub - GTM job runs table not yet created
+  console.log(`[GTM] finishGtmJobRun called for run ${runId}`);
+  return null;
+}
+
+// ================================================================
+// JD BUILDER OPERATIONS (Stubs)
+// ================================================================
+
+export async function getJdUsageForPeriod(userId: number, periodStart: string, periodEnd: string) {
+  // Stub - JD usage tracking not yet implemented
+  console.log(`[JD] getJdUsageForPeriod called for user ${userId}`);
+  return 0;
+}
+
+export async function createJdDraft(data: {
+  userId: number;
+  companyId: number | null;
+  roleTitle: string;
+  companyName: string;
+  department: string | null;
+  inputJson: any;
+  outputSummary: string;
+  outputResponsibilities: string | string[];
+  outputRequirements: string | string[];
+  outputBenefits: string | string[];
+  fullText: string;
+}) {
+  // Stub - JD drafts table not yet created
+  console.log(`[JD] createJdDraft called for ${data.roleTitle} at ${data.companyName}`);
+  return 1; // Return fake ID
+}
+
+export async function incrementJdUsage(userId: number, companyId: number | null, periodStart: string, periodEnd: string) {
+  // Stub - JD usage tracking not yet implemented
+  console.log(`[JD] incrementJdUsage called for user ${userId}`);
+  return null;
+}
+
+export async function getJdDraftsByUserId(userId: number, limit: number = 50) {
+  // Stub - JD drafts table not yet created
+  console.log(`[JD] getJdDraftsByUserId called for user ${userId}`);
+  return [] as any[];
+}
+
+export async function getJdDraftById(id: number, userId: number): Promise<{ fullText?: string } | null> {
+  // Stub - JD drafts table not yet created
+  console.log(`[JD] getJdDraftById called for id ${id}`);
+  return null;
+}

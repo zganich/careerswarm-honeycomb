@@ -6,7 +6,11 @@ import { tailorResume } from './agents/tailor';
 import { generateOutreach } from './agents/scribe';
 import { assembleApplicationPackage } from './agents/assembler';
 
-describe('Agent Metrics Tracking', () => {
+// These tests require valid LLM API keys - skip if using placeholder keys
+const hasValidApiKey = process.env.BUILT_IN_FORGE_API_KEY && 
+  !process.env.BUILT_IN_FORGE_API_KEY.includes('PLACEHOLDER');
+
+describe.skipIf(!hasValidApiKey)('Agent Metrics Tracking', () => {
   const testUserId = 999999;
   const testApplicationId = 999999;
 

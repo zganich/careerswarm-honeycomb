@@ -300,9 +300,15 @@ export default function Review() {
                   <h2 className="text-lg font-bold">Portfolio & Links</h2>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {profile.profile.portfolioUrls.map((item: { label: string; url: string }, i: number) => (
-                    <a key={i} href={item.url} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline">{item.label}</a>
-                  ))}
+                  {profile.profile.portfolioUrls.map((item: string | { label: string; url: string }, i: number) => {
+                    // Handle both string[] and {label, url}[] formats
+                    const isObject = typeof item === 'object' && item !== null;
+                    const url = isObject ? item.url : item;
+                    const label = isObject ? item.label : item;
+                    return (
+                      <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline">{label}</a>
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>

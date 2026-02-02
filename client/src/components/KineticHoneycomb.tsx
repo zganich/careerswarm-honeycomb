@@ -164,7 +164,7 @@ export function KineticHoneycomb({ onGridCompletion }: KineticHoneycombProps = {
                 const idx = particlesRef.current.indexOf(unlocked[i]);
                 if (idx > -1) particlesRef.current.splice(idx, 1);
               }
-              console.log(`[Adaptive Quality] Reduced particles to ${particlesRef.current.length} for better performance`);
+              // Adaptive quality: reduced particles for better performance
             }
             lowFpsCountRef.current = 0; // Reset counter
           }

@@ -116,7 +116,7 @@ async function startServer() {
         queueModule.QueueName.GTM_PIPELINE,
         async (job) => {
           const data = job.data;
-          const runId = await createGtmJobRun(data.step, data.channel ?? null, job.id);
+          const runId = await createGtmJobRun(data.step, data.channel ?? null, job.id ?? "unknown");
           try {
             const result = await processGtmJob(data);
             if (runId) await finishGtmJobRun(runId, result.ok ? "success" : "failed", result.message, JSON.stringify({ count: result.count }));

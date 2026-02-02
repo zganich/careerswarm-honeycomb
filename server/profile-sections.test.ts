@@ -1,8 +1,44 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import * as db from './db';
+import { getDb } from './db';
+import { users, languages, volunteerExperiences, projects, publications, securityClearances } from '../drizzle/schema';
+import { eq } from 'drizzle-orm';
 
 describe('Profile Sections CRUD', () => {
-  const testUserId = 1; // Use existing test user
+  let testUserId: number;
+  const testOpenId = 'test-profile-sections-user-' + Date.now();
+  
+  beforeAll(async () => {
+    // Create a test user for profile section tests
+    const database = await getDb();
+    if (!database) {
+      console.log('Database not available - skipping profile section tests');
+      return;
+    }
+    
+    // Create test user
+    const result = await database.insert(users).values({
+      openId: testOpenId,
+      name: 'Test Profile User',
+      email: 'test-profile@example.com',
+      role: 'user',
+    });
+    testUserId = result[0].insertId;
+  });
+  
+  afterAll(async () => {
+    // Clean up test data
+    const database = await getDb();
+    if (!database || !testUserId) return;
+    
+    // Delete test data in reverse order (foreign key constraints)
+    await database.delete(languages).where(eq(languages.userId, testUserId));
+    await database.delete(volunteerExperiences).where(eq(volunteerExperiences.userId, testUserId));
+    await database.delete(projects).where(eq(projects.userId, testUserId));
+    await database.delete(publications).where(eq(publications.userId, testUserId));
+    await database.delete(securityClearances).where(eq(securityClearances.userId, testUserId));
+    await database.delete(users).where(eq(users.id, testUserId));
+  });
 
   describe('Languages', () => {
     it('should insert and retrieve languages', async () => {

@@ -98,7 +98,14 @@ interface ParsedResume {
   projects: Array<{ name: string; description?: string; url?: string; role?: string; startDate?: string; endDate?: string }>;
   publications: Array<{ title: string; publisherOrVenue?: string; year?: number; url?: string; context?: string }>;
   securityClearances: Array<{ clearanceType: string; level?: string; expiryDate?: string }>;
+  // Additional fields for Master Profile
+  professionalSummary?: string;
+  portfolioUrls?: string[];
+  parsedContact?: { email?: string; phone?: string; location?: string; linkedin?: string };
+  licenses?: Array<{ name: string; organization?: string; year?: number }>;
 }
+
+export type { ParsedResume };
 
 /**
  * Parse work history and achievements from resume text using LLM

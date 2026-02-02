@@ -487,11 +487,13 @@ export const appRouter = router({
         superpowers: superpowers,
       };
       } catch (err) {
-        console.error("[parseResumes] Failed:", err);
-        const message = err instanceof Error ? err.message : String(err);
+        console.error("[parseResumes] Failed to save profile:", err);
+        const isDbError = err && typeof err === "object" && ("code" in err || "errno" in err);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "Resume parsing failed. Please try again or use a different file. If it keeps failing, try a shorter or simpler resume.",
+          message: isDbError
+            ? "Failed to save your profile. Please try again or contact support."
+            : "Resume parsing failed. Please try again or use a different file. If it keeps failing, try a shorter or simpler resume.",
           cause: err instanceof Error ? err : undefined,
         });
       }

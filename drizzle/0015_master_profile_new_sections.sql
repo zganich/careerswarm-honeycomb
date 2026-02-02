@@ -1,15 +1,40 @@
 -- Master Profile new sections: userProfiles columns, certifications type, new tables
+-- Idempotent: safe to run multiple times (ADD COLUMN only if missing, CREATE TABLE IF NOT EXISTS).
 
 -- userProfiles: professional summary, portfolio URLs, parsed contact (pre-fill)
-ALTER TABLE `userProfiles` ADD COLUMN `professionalSummary` text;
-ALTER TABLE `userProfiles` ADD COLUMN `portfolioUrls` json;
-ALTER TABLE `userProfiles` ADD COLUMN `parsedContactFromResume` json;
+SET @db = DATABASE();
+
+SET @sql = (SELECT IF(
+  (SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = @db AND TABLE_NAME = 'userProfiles' AND COLUMN_NAME = 'professionalSummary') = 0,
+  'ALTER TABLE `userProfiles` ADD COLUMN `professionalSummary` text',
+  'SELECT 1'
+));
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @sql = (SELECT IF(
+  (SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = @db AND TABLE_NAME = 'userProfiles' AND COLUMN_NAME = 'portfolioUrls') = 0,
+  'ALTER TABLE `userProfiles` ADD COLUMN `portfolioUrls` json',
+  'SELECT 1'
+));
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @sql = (SELECT IF(
+  (SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = @db AND TABLE_NAME = 'userProfiles' AND COLUMN_NAME = 'parsedContactFromResume') = 0,
+  'ALTER TABLE `userProfiles` ADD COLUMN `parsedContactFromResume` json',
+  'SELECT 1'
+));
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
 -- certifications: type for license vs certification
-ALTER TABLE `certifications` ADD COLUMN `type` enum('certification','license') DEFAULT 'certification';
+SET @sql = (SELECT IF(
+  (SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = @db AND TABLE_NAME = 'certifications' AND COLUMN_NAME = 'type') = 0,
+  'ALTER TABLE `certifications` ADD COLUMN `type` enum(''certification'',''license'') DEFAULT ''certification''',
+  'SELECT 1'
+));
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
 -- languages
-CREATE TABLE `languages` (
+CREATE TABLE IF NOT EXISTS `languages` (
   `id` int AUTO_INCREMENT NOT NULL PRIMARY KEY,
   `userId` int NOT NULL,
   `language` varchar(100) NOT NULL,
@@ -19,7 +44,7 @@ CREATE TABLE `languages` (
 );
 
 -- volunteerExperiences
-CREATE TABLE `volunteerExperiences` (
+CREATE TABLE IF NOT EXISTS `volunteerExperiences` (
   `id` int AUTO_INCREMENT NOT NULL PRIMARY KEY,
   `userId` int NOT NULL,
   `organization` varchar(255) NOT NULL,
@@ -31,7 +56,7 @@ CREATE TABLE `volunteerExperiences` (
 );
 
 -- projects
-CREATE TABLE `projects` (
+CREATE TABLE IF NOT EXISTS `projects` (
   `id` int AUTO_INCREMENT NOT NULL PRIMARY KEY,
   `userId` int NOT NULL,
   `name` varchar(255) NOT NULL,
@@ -44,7 +69,7 @@ CREATE TABLE `projects` (
 );
 
 -- publications
-CREATE TABLE `publications` (
+CREATE TABLE IF NOT EXISTS `publications` (
   `id` int AUTO_INCREMENT NOT NULL PRIMARY KEY,
   `userId` int NOT NULL,
   `title` varchar(500) NOT NULL,
@@ -56,7 +81,7 @@ CREATE TABLE `publications` (
 );
 
 -- securityClearances
-CREATE TABLE `securityClearances` (
+CREATE TABLE IF NOT EXISTS `securityClearances` (
   `id` int AUTO_INCREMENT NOT NULL PRIMARY KEY,
   `userId` int NOT NULL,
   `clearanceType` varchar(100) NOT NULL,
