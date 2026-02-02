@@ -24,11 +24,12 @@ You are taking over the CareerSwarm repo (careerswarm-honeycomb). The app is rea
 
 3. **Database**
    - Ensure MySQL is running and reachable at the host in `DATABASE_URL`.
-   - Run migrations once:
+   - Run migrations **once** using the non-interactive script (do **not** use `pnpm db:push` — it prompts for every table):
      ```bash
      pnpm db:migrate
      ```
    - If you see ECONNREFUSED, MySQL is not running or `DATABASE_URL` is wrong. Fix and run again.
+   - **Important:** Use `pnpm db:migrate` only. `pnpm db:push` runs interactive drizzle-kit prompts and is not suitable for deployment. See `docs/RESPONSE_MANUS_TESTING.md` if migrations failed with prompts.
 
 4. **OAuth redirect URI (required for “Sign in” to work)**
    - In the **Manus dashboard**, open the app/project for CareerSwarm.
@@ -75,7 +76,7 @@ The prompt above is the single source of truth for Manus. The steps are also lis
 |------|--------|
 | 1 | `pnpm install` |
 | 2 | Copy `.env.example` → `.env`. Set `DATABASE_URL`, `JWT_SECRET`, `OAUTH_SERVER_URL`, `BUILT_IN_FORGE_API_KEY`, `VITE_OAUTH_PORTAL_URL`, `VITE_APP_ID`. For production set `NODE_ENV=production`, `PORT`. |
-| 3 | MySQL running. Run `pnpm db:migrate`. |
+| 3 | MySQL running. Run `pnpm db:migrate` (do **not** use `db:push`). |
 | 4 | In Manus dashboard: whitelist `https://YOUR_DEPLOYMENT_DOMAIN/api/oauth/callback` (and preview URLs if needed). |
 | 5 | `pnpm run verify-env` → must say “Required env vars OK.” |
 | 6 | `pnpm run build` (with `VITE_*` set). |

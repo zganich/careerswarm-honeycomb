@@ -12,7 +12,7 @@
    - Production: `https://YOUR_DOMAIN/api/oauth/callback`
 
 2. **Run app and validate**  
-   Follow [MANUS_PROMPT.md](../MANUS_PROMPT.md): install, `.env`, `pnpm db:migrate`, `pnpm run verify-env`, `pnpm run build`, `pnpm start` (or `pnpm dev`). Use Dev Login at `/login` if OAuth isn’t whitelisted yet.
+   Follow [MANUS_PROMPT.md](../MANUS_PROMPT.md): install, `.env`, **`pnpm db:migrate`** (do **not** use `db:push` — see [MANUS_TESTING_UPDATE.md](../MANUS_TESTING_UPDATE.md) and [docs/RESPONSE_MANUS_TESTING.md](RESPONSE_MANUS_TESTING.md)), `pnpm run verify-env`, `pnpm run build`, `pnpm start` (or `pnpm dev`). Use Dev Login at `/login` if OAuth isn’t whitelisted yet.
 
 3. **Phase 2: Application package generation**  
    After auth works (OAuth or Dev Login), run the package-generation flow (e.g. `test-package-simple.mjs` or UI flow) and confirm Tailor/Scribe/Assembler and DB writes.

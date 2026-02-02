@@ -284,6 +284,15 @@ export const appRouter = router({
       const user = await db.getUserByOpenId(ctx.user.openId);
       if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
+      const database = await db.getDb();
+      if (!database) {
+        console.error("[parseResumes] Database not available");
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Database is not available. Please check your connection and try again. If this persists, contact support.",
+        });
+      }
+
       const resumes = await db.getUploadedResumes(user.id);
       const completedResumes = resumes.filter(r => r.processingStatus === 'completed' && r.extractedText);
 
