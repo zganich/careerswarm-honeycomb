@@ -196,9 +196,9 @@ export function SwarmNarrative() {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.8, x: -200 }}
                 transition={{ duration: 0.5 }}
-                className="bg-white/70 backdrop-blur-md border-2 border-green-200 rounded-2xl p-6 shadow-2xl w-full max-w-sm"
+                className="bg-white/70 backdrop-blur-md border-2 border-orange-200 rounded-2xl p-6 shadow-2xl w-full max-w-sm"
               >
-                <div className="text-sm uppercase tracking-wider text-green-600 font-bold mb-6 text-center">
+                <div className="text-sm uppercase tracking-wider text-orange-600 font-bold mb-6 text-center">
                   3. PRODUCTION
                 </div>
                 
@@ -240,28 +240,28 @@ export function SwarmNarrative() {
                 initial={{ opacity: 0, scale: 0.5 }}
                 animate={{ opacity: 1, scale: 1.05 }}
                 transition={{ duration: 0.6, type: "spring" }}
-                className="relative bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 shadow-2xl border-4 border-green-300 w-full max-w-sm"
+                className="relative bg-gradient-to-br from-orange-50 to-amber-50 rounded-2xl p-6 shadow-2xl border-4 border-orange-300 w-full max-w-sm"
               >
-                {/* Glowing Badge */}
+                {/* Glowing Badge - Moved inside card to prevent overlap */}
                 <motion.div
-                  className="absolute -top-5 left-1/2 -translate-x-1/2"
-                  animate={{ scale: [1, 1.1, 1] }}
+                  className="mb-4"
+                  animate={{ scale: [1, 1.05, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
-                  <div className="bg-green-500 text-white px-6 py-2 rounded-full text-base font-bold shadow-xl flex items-center gap-2">
+                  <div className="bg-orange-500 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow-lg flex items-center justify-center gap-2 w-fit mx-auto">
                     <span>⏱️</span>
                     <span>Saved ~3.5 Hours</span>
                   </div>
                 </motion.div>
 
-                <div className="mt-6 flex items-center gap-5">
+                <div className="flex items-center gap-5">
                   {/* File Icon */}
                   <motion.div
-                    className="w-20 h-20 bg-green-100 rounded-xl flex items-center justify-center"
+                    className="w-20 h-20 bg-orange-100 rounded-xl flex items-center justify-center"
                     animate={{ rotate: [0, 5, -5, 0] }}
                     transition={{ duration: 2, repeat: Infinity }}
                   >
-                    <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-10 h-10 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                     </svg>
                   </motion.div>
@@ -287,7 +287,7 @@ export function SwarmNarrative() {
                       transition={{ delay: 0.2 + index * 0.1 }}
                       className="flex items-center gap-3 text-slate-700"
                     >
-                      <span className="text-green-600 font-bold text-lg">✓</span>
+                      <span className="text-orange-600 font-bold text-lg">✓</span>
                       <span className="text-sm font-medium">{item}</span>
                     </motion.div>
                   ))}

@@ -1199,3 +1199,12 @@ See TEST_RESULTS.md for comprehensive documentation.
 - [ ] Set 50/50 traffic split
 - [ ] Run test for minimum 1000 conversions per variant
 - [ ] Analyze conversion rate, bounce rate, time on page metrics
+
+### URGENT: Animation Overlap and Color Scheme Fixes (Feb 2, 2026)
+- [x] Fix "Saved ~3.5 Hours" badge overlapping with safety latch text (moved inside card)
+- [x] Fix "Saved ~3.5 Hours" badge overlapping with Application Package card (moved to mb-4 position)
+- [x] Change green "Saved" badge color to match orange/slate color scheme (bg-green-500 → bg-orange-500)
+- [x] Standardize all animation colors to use consistent palette (all green → orange)
+- [x] Complete stage: from-green-50 to-emerald-50 border-green-300 → from-orange-50 to-amber-50 border-orange-300
+- [x] Production stage: border-green-200 text-green-600 → border-orange-200 text-orange-600
+- [x] Checkmarks: text-green-600 → text-orange-600
