@@ -38,9 +38,8 @@ export default function Welcome() {
 
   const handleLogin = () => {
     // Redirect to OAuth login with returnTo parameter to come back to onboarding
-    const loginUrl = getLoginUrl();
-    const returnTo = encodeURIComponent('/onboarding/welcome');
-    window.location.href = `${loginUrl}&returnTo=${returnTo}`;
+    const loginUrl = getLoginUrl('/onboarding/welcome');
+    window.location.href = loginUrl;
   };
 
   // Show loading state while checking auth

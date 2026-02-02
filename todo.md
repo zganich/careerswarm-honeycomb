@@ -1278,6 +1278,7 @@ See TEST_RESULTS.md for comprehensive documentation.
 - [x] **OAuth Redirect Loop** - Fixed by adding returnTo parameter to login URL (line 42-43 in Welcome.tsx)
 - [x] **OAuth Branding Issue** - Changed button text from "Sign In with Manus" to "Sign In to CareerSwarm" (line 89)
 - [ ] **OAuth Verification Code Required** - Test account can't complete sign-in without verification code (timestamp 2:08) - CANNOT FIX: Manus OAuth system requirement
+- [x] **OAuth Session Switching Bug** - Fixed: OAuth callback now decodes returnTo from state parameter and redirects to original page instead of hardcoded '/' (lines 47-59 oauth.ts, line 4 const.ts)
 
 ### P1 - High (Poor UX)
 - [x] **Resume Roast Results Below Fold** - Fixed: Added window.scrollTo({ top: 0, behavior: 'smooth' }) in onSuccess (line 39 ResumeRoast.tsx)
