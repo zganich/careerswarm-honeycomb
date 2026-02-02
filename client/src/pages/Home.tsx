@@ -60,7 +60,7 @@ const Home = () => {
           {/* Headline Group */}
           <div className="space-y-2 max-w-4xl px-2 md:px-0">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight">
-              Stop Applying. <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-600">Start Infiltrating.</span>
+              <span className="whitespace-nowrap">Stop Applying.</span> <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-600 whitespace-nowrap">Start Infiltrating.</span>
             </h1>
             
             <p className="text-sm sm:text-base md:text-lg text-slate-600 leading-relaxed">
