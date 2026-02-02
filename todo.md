@@ -1090,3 +1090,33 @@ See TEST_RESULTS.md for comprehensive documentation.
 - [x] Verify new certifications column: type
 - [x] Update drizzle/schema.ts with new table definitions
 
+
+---
+
+## 🎯 MASTER PROFILE EXTENSION (Jan 31, 2026)
+
+### Database Migration 0015 ✅ COMPLETE
+- [x] Locate migration file 0015_master_profile_new_sections.sql
+- [x] Review migration SQL for new tables and columns
+- [x] Execute migration against production database
+- [x] Verify new tables created: languages, volunteerExperiences, projects, publications, securityClearances
+- [x] Verify new userProfiles columns: professionalSummary, portfolioUrls, parsedContactFromResume
+- [x] Verify new certifications column: type
+- [x] Update drizzle/schema.ts with new table definitions
+
+### Master Profile CRUD Implementation ✅ COMPLETE
+- [x] Add database helper functions in server/db.ts for all 5 new tables
+- [x] Create server/routers/profile.ts with tRPC CRUD endpoints
+- [x] Mount profileRouter as profileSections in server/routers.ts
+- [x] Create ProfileSections.tsx page with forms for all 5 sections
+- [x] Add /profile/sections route to App.tsx
+- [x] Update resumeParser.ts to extract new profile sections from resumes
+- [x] Add new sections to LLM extraction schema (languages, volunteer, projects, publications, clearances)
+- [x] Test all CRUD operations with vitest (5/5 tests passing)
+
+### Implementation Details
+- **CRUD Endpoints:** `trpc.profileSections.{languages|volunteerExperiences|projects|publications|securityClearances}.{list|create|update|delete}`
+- **UI Route:** `/profile/sections` - Dedicated page for managing additional profile sections
+- **Resume Parser:** Enhanced to extract languages, volunteer work, projects, publications, and security clearances from uploaded resumes
+- **Database:** All 5 new tables operational with full CRUD support
+

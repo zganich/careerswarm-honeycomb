@@ -6,12 +6,17 @@ import {
   uploadedResumes, targetPreferences,
   opportunities, applications, agentExecutionLogs, notifications,
   certifications, education, awards, savedOpportunities, applicationNotes,
-  agentMetrics,
+  agentMetrics, languages, volunteerExperiences, projects, publications, securityClearances,
   type Achievement, type Skill, type WorkExperience, type UserProfile,
   type Superpower, type UploadedResume, type TargetPreferences,
   type Opportunity, type Application, type AgentExecutionLog, type Notification,
   type Certification, type Education, type Award, type SavedOpportunity, type ApplicationNote,
-  type AgentMetric, type InsertAgentMetric
+  type AgentMetric, type InsertAgentMetric,
+  type Language, type InsertLanguage,
+  type VolunteerExperience, type InsertVolunteerExperience,
+  type Project, type InsertProject,
+  type Publication, type InsertPublication,
+  type SecurityClearance, type InsertSecurityClearance
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -726,4 +731,203 @@ export async function getAgentPerformanceStats(agentType?: string) {
   
   const result = await db.execute(query);
   return result;
+}
+
+// ================================================================
+// MASTER PROFILE - ADDITIONAL SECTIONS
+// ================================================================
+
+// Languages
+export async function getUserLanguages(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db
+    .select()
+    .from(languages)
+    .where(eq(languages.userId, userId))
+    .orderBy(desc(languages.createdAt));
+}
+
+export async function insertLanguage(data: InsertLanguage) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.insert(languages).values(data);
+  return result;
+}
+
+export async function updateLanguage(id: number, userId: number, data: Partial<InsertLanguage>) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  return await db
+    .update(languages)
+    .set(data)
+    .where(and(eq(languages.id, id), eq(languages.userId, userId)));
+}
+
+export async function deleteLanguage(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  return await db
+    .delete(languages)
+    .where(and(eq(languages.id, id), eq(languages.userId, userId)));
+}
+
+// Volunteer Experiences
+export async function getUserVolunteerExperiences(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db
+    .select()
+    .from(volunteerExperiences)
+    .where(eq(volunteerExperiences.userId, userId))
+    .orderBy(desc(volunteerExperiences.createdAt));
+}
+
+export async function insertVolunteerExperience(data: InsertVolunteerExperience) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.insert(volunteerExperiences).values(data);
+  return result;
+}
+
+export async function updateVolunteerExperience(id: number, userId: number, data: Partial<InsertVolunteerExperience>) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  return await db
+    .update(volunteerExperiences)
+    .set(data)
+    .where(and(eq(volunteerExperiences.id, id), eq(volunteerExperiences.userId, userId)));
+}
+
+export async function deleteVolunteerExperience(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  return await db
+    .delete(volunteerExperiences)
+    .where(and(eq(volunteerExperiences.id, id), eq(volunteerExperiences.userId, userId)));
+}
+
+// Projects
+export async function getUserProjects(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db
+    .select()
+    .from(projects)
+    .where(eq(projects.userId, userId))
+    .orderBy(desc(projects.createdAt));
+}
+
+export async function insertProject(data: InsertProject) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.insert(projects).values(data);
+  return result;
+}
+
+export async function updateProject(id: number, userId: number, data: Partial<InsertProject>) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  return await db
+    .update(projects)
+    .set(data)
+    .where(and(eq(projects.id, id), eq(projects.userId, userId)));
+}
+
+export async function deleteProject(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  return await db
+    .delete(projects)
+    .where(and(eq(projects.id, id), eq(projects.userId, userId)));
+}
+
+// Publications
+export async function getUserPublications(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db
+    .select()
+    .from(publications)
+    .where(eq(publications.userId, userId))
+    .orderBy(desc(publications.createdAt));
+}
+
+export async function insertPublication(data: InsertPublication) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.insert(publications).values(data);
+  return result;
+}
+
+export async function updatePublication(id: number, userId: number, data: Partial<InsertPublication>) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  return await db
+    .update(publications)
+    .set(data)
+    .where(and(eq(publications.id, id), eq(publications.userId, userId)));
+}
+
+export async function deletePublication(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  return await db
+    .delete(publications)
+    .where(and(eq(publications.id, id), eq(publications.userId, userId)));
+}
+
+// Security Clearances
+export async function getUserSecurityClearances(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db
+    .select()
+    .from(securityClearances)
+    .where(eq(securityClearances.userId, userId))
+    .orderBy(desc(securityClearances.createdAt));
+}
+
+export async function insertSecurityClearance(data: InsertSecurityClearance) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.insert(securityClearances).values(data);
+  return result;
+}
+
+export async function updateSecurityClearance(id: number, userId: number, data: Partial<InsertSecurityClearance>) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  return await db
+    .update(securityClearances)
+    .set(data)
+    .where(and(eq(securityClearances.id, id), eq(securityClearances.userId, userId)));
+}
+
+export async function deleteSecurityClearance(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  return await db
+    .delete(securityClearances)
+    .where(and(eq(securityClearances.id, id), eq(securityClearances.userId, userId)));
 }

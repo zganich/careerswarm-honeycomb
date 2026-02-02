@@ -24,6 +24,7 @@ import OnboardingPreferences from "./pages/onboarding/Preferences";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import ProfileEdit from "./pages/ProfileEdit";
+import ProfileSections from "./pages/ProfileSections";
 
 // Jobs & Applications
 import Jobs from "./pages/Jobs";
@@ -66,6 +67,7 @@ function Router() {
       {/* Master Profile */}
       <Route path="/profile" component={Profile} />
       <Route path="/profile/edit" component={ProfileEdit} />
+      <Route path="/profile/sections" component={ProfileSections} />
       {/* Jobs & Opportunities */}
       <Route path="/jobs" component={Jobs} />
       <Route path="/saved" component={SavedOpportunities} />

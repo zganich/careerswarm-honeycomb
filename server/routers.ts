@@ -6,6 +6,7 @@ import * as db from "./db";
 import { invokeLLM } from "./_core/llm";
 import { storagePut, storageGet } from "./storage";
 import { extractTextFromResume, parseResumeWithLLM, consolidateResumes, generateSuperpowers } from "./resumeParser";
+import { profileRouter } from "./routers/profile";
 
 // ================================================================
 // CAREERSWARM - MASTER PROFILE & 7-AGENT SYSTEM
@@ -13,6 +14,7 @@ import { extractTextFromResume, parseResumeWithLLM, consolidateResumes, generate
 
 export const appRouter = router({
   system: systemRouter,
+  profileSections: profileRouter,
 
   // ================================================================
   // AUTH ROUTES

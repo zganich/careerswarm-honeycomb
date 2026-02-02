@@ -93,6 +93,11 @@ interface ParsedResume {
   certifications: Array<{ name: string; organization?: string; year?: number }>;
   education: Array<{ degree?: string; field?: string; institution: string; graduationYear?: number }>;
   awards: Array<{ name: string; organization?: string; year?: number; context?: string }>;
+  languages: Array<{ language: string; proficiency?: string; isNative?: boolean }>;
+  volunteerExperiences: Array<{ organization: string; role?: string; startDate?: string; endDate?: string; description?: string }>;
+  projects: Array<{ name: string; description?: string; url?: string; role?: string; startDate?: string; endDate?: string }>;
+  publications: Array<{ title: string; publisherOrVenue?: string; year?: number; url?: string; context?: string }>;
+  securityClearances: Array<{ clearanceType: string; level?: string; expiryDate?: string }>;
 }
 
 /**
@@ -116,6 +121,11 @@ CRITICAL RULES:
 8. Identify current vs past roles
 9. Extract skills with categories and proficiency
 10. Extract certifications, education, and awards
+11. Extract languages with proficiency levels (Native, Fluent, Conversational, Basic)
+12. Extract volunteer experiences with organizations, roles, and impact
+13. Extract personal/professional projects with descriptions and URLs
+14. Extract publications (papers, articles, books) with publishers and years
+15. Extract security clearances with types, levels, and expiry dates
 
 Return valid JSON matching the schema.`,
       },
@@ -226,8 +236,80 @@ Return valid JSON matching the schema.`,
                 additionalProperties: false,
               },
             },
+            languages: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  language: { type: 'string' },
+                  proficiency: { type: 'string' },
+                  isNative: { type: 'boolean' },
+                },
+                required: ['language'],
+                additionalProperties: false,
+              },
+            },
+            volunteerExperiences: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  organization: { type: 'string' },
+                  role: { type: 'string' },
+                  startDate: { type: 'string' },
+                  endDate: { type: 'string' },
+                  description: { type: 'string' },
+                },
+                required: ['organization'],
+                additionalProperties: false,
+              },
+            },
+            projects: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  name: { type: 'string' },
+                  description: { type: 'string' },
+                  url: { type: 'string' },
+                  role: { type: 'string' },
+                  startDate: { type: 'string' },
+                  endDate: { type: 'string' },
+                },
+                required: ['name'],
+                additionalProperties: false,
+              },
+            },
+            publications: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  title: { type: 'string' },
+                  publisherOrVenue: { type: 'string' },
+                  year: { type: 'number' },
+                  url: { type: 'string' },
+                  context: { type: 'string' },
+                },
+                required: ['title'],
+                additionalProperties: false,
+              },
+            },
+            securityClearances: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  clearanceType: { type: 'string' },
+                  level: { type: 'string' },
+                  expiryDate: { type: 'string' },
+                },
+                required: ['clearanceType'],
+                additionalProperties: false,
+              },
+            },
           },
-          required: ['workExperiences', 'skills', 'certifications', 'education', 'awards'],
+          required: ['workExperiences', 'skills', 'certifications', 'education', 'awards', 'languages', 'volunteerExperiences', 'projects', 'publications', 'securityClearances'],
           additionalProperties: false,
         },
       },
@@ -398,6 +480,61 @@ export function consolidateResumes(parsedResumes: ParsedResume[]): ParsedResume 
     }
   }
 
+  // Merge languages (deduplicate by language name)
+  const languagesMap = new Map<string, typeof parsedResumes[0]['languages'][0]>();
+  for (const resume of parsedResumes) {
+    for (const lang of resume.languages || []) {
+      const key = lang.language.toLowerCase();
+      if (!languagesMap.has(key)) {
+        languagesMap.set(key, lang);
+      }
+    }
+  }
+
+  // Merge volunteer experiences (deduplicate by organization + role)
+  const volunteerMap = new Map<string, typeof parsedResumes[0]['volunteerExperiences'][0]>();
+  for (const resume of parsedResumes) {
+    for (const vol of resume.volunteerExperiences || []) {
+      const key = `${vol.organization.toLowerCase()}-${(vol.role || '').toLowerCase()}`;
+      if (!volunteerMap.has(key)) {
+        volunteerMap.set(key, vol);
+      }
+    }
+  }
+
+  // Merge projects (deduplicate by name)
+  const projectsMap = new Map<string, typeof parsedResumes[0]['projects'][0]>();
+  for (const resume of parsedResumes) {
+    for (const proj of resume.projects || []) {
+      const key = proj.name.toLowerCase();
+      if (!projectsMap.has(key)) {
+        projectsMap.set(key, proj);
+      }
+    }
+  }
+
+  // Merge publications (deduplicate by title)
+  const publicationsMap = new Map<string, typeof parsedResumes[0]['publications'][0]>();
+  for (const resume of parsedResumes) {
+    for (const pub of resume.publications || []) {
+      const key = pub.title.toLowerCase();
+      if (!publicationsMap.has(key)) {
+        publicationsMap.set(key, pub);
+      }
+    }
+  }
+
+  // Merge security clearances (deduplicate by clearance type)
+  const clearancesMap = new Map<string, typeof parsedResumes[0]['securityClearances'][0]>();
+  for (const resume of parsedResumes) {
+    for (const clearance of resume.securityClearances || []) {
+      const key = clearance.clearanceType.toLowerCase();
+      if (!clearancesMap.has(key)) {
+        clearancesMap.set(key, clearance);
+      }
+    }
+  }
+
   return {
     workExperiences: Array.from(workExpMap.values()).sort((a, b) => {
       // Sort by start date descending (most recent first)
@@ -407,5 +544,10 @@ export function consolidateResumes(parsedResumes: ParsedResume[]): ParsedResume 
     certifications: Array.from(certsMap.values()),
     education: Array.from(eduMap.values()),
     awards: Array.from(awardsMap.values()),
+    languages: Array.from(languagesMap.values()),
+    volunteerExperiences: Array.from(volunteerMap.values()),
+    projects: Array.from(projectsMap.values()),
+    publications: Array.from(publicationsMap.values()),
+    securityClearances: Array.from(clearancesMap.values()),
   };
 }
