@@ -45,9 +45,15 @@ export function registerOAuthRoutes(app: Express) {
       const cookieOptions = getSessionCookieOptions(req);
       res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
       console.log('[OAuth] Test login successful for:', testEmail);
+      console.log('[OAuth] Cookie options:', cookieOptions);
+      console.log('[OAuth] Session token set:', sessionToken ? 'YES' : 'NO');
       
-      // Redirect to homepage
-      res.redirect(302, '/');
+      // Also return token in response body for localStorage fallback
+      res.json({ 
+        success: true, 
+        sessionToken,
+        message: 'Login successful - redirecting...'
+      });
     } catch (error) {
       console.error('[OAuth] Test login failed:', error);
       res.status(500).json({ error: 'Test login failed' });

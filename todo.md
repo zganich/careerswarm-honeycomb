@@ -164,3 +164,13 @@
   - Root cause: Manus OAuth needs https://careerswarm.com/api/oauth/callback registered as allowed redirect URI
   - This must be configured in Manus project settings (not fixable in code)
   - Test login endpoint provides workaround until OAuth is configured
+
+
+## 🎯 CURRENT TASK (Feb 2, 2026 - 12:30 PM)
+- [x] **Implement working dev login** - COMPLETE ✅
+  - Created /login page with "Sign In as Test User" button (DevLogin.tsx)
+  - Added test-login endpoint that returns JWT token (oauth.ts line 82-107)
+  - Store token in localStorage and send as Bearer header (main.tsx line 117-134)
+  - Updated SDK authenticateRequest to check Authorization header (sdk.ts line 260-287)
+  - Tested complete flow: /login → homepage → /onboarding/welcome → NO OAUTH MODAL ✅
+  - Authentication fully working with localStorage + Bearer token approach
