@@ -369,3 +369,95 @@ CareerSwarm is **production-ready** with all critical systems validated and oper
 *Testing completed by Manus AI Agent*  
 *Date: January 31, 2026*  
 *Sandbox Environment: /home/ubuntu/careerswarm*
+
+
+---
+
+## February 2, 2026 Testing Session
+
+**Tester:** Manus AI  
+**Context:** Following MANUS_PROMPT.md instructions  
+**Commit:** Latest (with dev login + OAuth fixes)
+
+### Phase 1: Environment Setup Validation (Re-test)
+
+**Status:** ✅ PASSED
+
+**Validation Results:**
+```
+✅ All environment variables present
+✅ Database connection successful  
+✅ Stripe API connection successful
+✅ tRPC routers loaded (70 procedures) [was 48, now 70]
+```
+
+**Notes:**
+- Procedure count increased from 48 to 70 (new features added)
+- All environment checks still passing
+- System remains production-ready
+
+### Phase 2: Application Package Generation Testing (Re-test)
+
+**Status:** ⚠️ BLOCKED - Authentication Issues
+
+**Issue Encountered:**
+1. Regular OAuth flow returns 403 error from manus.im
+   - URL: `https://manus.im/?app_id=ZfVp3DR5T953XYC34e9PSQ&redirect_uri=http://localhost:3000/api/oauth/callback`
+   - Error: "Request blocked. We can't connect to the server for this app or website at this time."
+   - Root cause: `http://localhost:3000/api/oauth/callback` not whitelisted in Manus OAuth dashboard
+
+2. Dev login workaround implemented but not fully functional
+   - Dev login page loads at `/login`
+   - "Sign In as Test User" button triggers request
+   - Server logs show: `[OAuth] Test login successful for: test@careerswarm.com`
+   - Cookie set with options: `{ httpOnly: true, path: '/', sameSite: 'none', secure: true }`
+   - **Problem:** Session cookie not persisting in browser
+   - User redirected to homepage but remains unauthenticated
+
+**Root Cause Analysis:**
+- `sameSite: 'none'` requires secure HTTPS context
+- `localhost` HTTP doesn't qualify as secure context
+- Browser rejects cookie even though `secure: true` is set
+- localStorage + Bearer token approach was implemented but may need verification
+
+**Attempted Solutions:**
+1. Changed `sameSite` from 'lax' to 'none' - didn't work
+2. Implemented localStorage token storage - needs testing
+3. Added Authorization header to tRPC requests - needs verification
+
+### Recommendations for Unblocking Testing
+
+**Option 1: Whitelist localhost OAuth redirect (Recommended)**
+- Add `http://localhost:3000/api/oauth/callback` to Manus OAuth dashboard
+- This will allow regular OAuth flow to work
+- Most accurate representation of production behavior
+
+**Option 2: Use HTTPS for local development**
+- Set up local HTTPS proxy (e.g., ngrok, mkcert)
+- Allows `sameSite: 'none'` cookies to work properly
+- More complex setup
+
+**Option 3: Fix localStorage authentication**
+- Verify Bearer token is being sent in Authorization header
+- Verify SDK authenticateRequest checks Authorization header
+- Test if authenticated requests work despite cookie issue
+
+### Current Blocker
+
+Cannot proceed with Phase 2 testing (application package generation) until authentication is working. Need to either:
+1. Whitelist `http://localhost:3000/api/oauth/callback` in Manus dashboard, OR
+2. Verify and fix localStorage + Bearer token authentication flow
+
+### Next Steps
+
+1. **User action required:** Whitelist OAuth redirect URI in Manus dashboard
+2. **OR** Investigate why localStorage token isn't working for authentication
+3. Once authentication works, continue with Phase 2 testing
+4. Test complete package generation flow
+5. Verify all agents (Tailor, Scribe, Assembler) still working
+6. Document results
+
+---
+
+**Session Status:** ⏸️ PAUSED - Waiting for authentication fix
+
