@@ -22,9 +22,8 @@ const Home = () => {
             <span className="text-xl font-bold tracking-tight text-slate-900">CareerSwarm</span>
           </div>
           <div className="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-600">
-            <a href="#features" className="hover:text-orange-600 transition-colors cursor-pointer">Technology</a>
-            <a href="#proof" className="hover:text-orange-600 transition-colors cursor-pointer">Evidence Engine</a>
-            <button onClick={() => setLocation('/pricing')} className="hover:text-orange-600 transition-colors">Enterprise</button>
+            <button onClick={() => setLocation('/pricing')} className="hover:text-orange-600 transition-colors">Pricing</button>
+            <button onClick={() => setLocation('/recruiters')} className="hover:text-orange-600 transition-colors">For Recruiters</button>
             <button onClick={() => setLocation('/roast')} className="hover:text-orange-600 transition-colors">Resume Roast</button>
           </div>
           <div className="flex items-center space-x-4">
@@ -72,10 +71,7 @@ const Home = () => {
             </p>
           </div>
 
-          {/* Swarm Narrative Animation */}
-          <SwarmNarrative />
-
-          {/* Action Group */}
+          {/* Action Group - MOVED ABOVE ANIMATION */}
           <div className="space-y-4">
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -97,6 +93,9 @@ const Home = () => {
               <span>Read-Only Access • No Credit Card • We never post to LinkedIn</span>
             </div>
           </div>
+
+          {/* Swarm Narrative Animation - MOVED BELOW CTAs */}
+          <SwarmNarrative />
 
         </div>
       </section>

@@ -1121,3 +1121,33 @@ See TEST_RESULTS.md for comprehensive documentation.
 - [x] Make final Mission Package card scale-105 to draw attention
 - [x] Create TrustStrip component with social proof (stats + company logos)
 - [x] Insert TrustStrip below hero section
+
+
+---
+
+## 🚨 CRITICAL UX FIXES (Feb 2, 2026)
+
+### Issue 1: CTA Not Above the Fold
+- [x] Move primary CTA buttons ("Start Free Trial" + "Import from LinkedIn") higher in hero
+- [ ] Ensure CTAs are visible without scrolling on desktop
+- [ ] Test on mobile viewport (375px width)
+
+### Issue 2: Navigation Problems
+- [x] Replace "Technology" nav link - removed (was just anchor link)
+- [x] Replace "Evidence Engine" nav link - removed (was just anchor link)
+- [x] Rename "Enterprise" to "Pricing" for clarity
+- [x] Add "For Recruiters" section to navigation
+- [x] Create Recruiters landing page explaining how CareerSwarm helps them
+- [x] Add back navigation/escape routes to all pages (Pricing has logo click, Recruiters has back button)
+
+### Issue 3: Resume Roast → Onboarding Flow Broken
+- [x] Debug why Resume Roast redirects to homepage instead of onboarding (was using /onboarding instead of /onboarding/welcome)
+- [x] Fix redirect to use correct onboarding entry point
+- [ ] Fix "Failed to upload resumes" error in onboarding after roast
+- [ ] Ensure roasted resume file is passed to onboarding upload step
+- [ ] Test complete flow: Roast → Onboarding → Upload → Extraction
+
+### Issue 4: Onboarding File Order
+- [ ] Review onboarding step sequence based on file timestamps
+- [ ] Ensure logical flow: Welcome → Upload → Extraction → Review → Preferences
+- [ ] Verify all steps are accessible and functional

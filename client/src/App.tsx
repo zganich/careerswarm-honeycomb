@@ -8,6 +8,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 // Landing & Public Pages
 import Home from "./pages/Home";
 import ResumeRoast from "./pages/ResumeRoast";
+import Recruiters from "./pages/Recruiters";
 import Pricing from "./pages/Pricing";
 import FAQ from "./pages/FAQ";
 import Privacy from "./pages/Privacy";
@@ -46,6 +47,7 @@ function Router() {
       {/* Public Pages */}
       <Route path="/" component={Home} />
       <Route path="/roast" component={ResumeRoast} />
+      <Route path="/recruiters" component={Recruiters} />
       <Route path="/pricing" component={Pricing} />
       <Route path="/faq" component={FAQ} />
       <Route path="/privacy" component={Privacy} />

@@ -83,7 +83,7 @@ export default function ResumeRoast() {
                 <span className="font-bold text-xl">CareerSwarm</span>
               </a>
             </Link>
-            <Link href="/onboarding">
+            <Link href="/onboarding/welcome">
               <Button>Build My Master Profile</Button>
             </Link>
           </div>
@@ -223,7 +223,7 @@ export default function ResumeRoast() {
                     Build your Master Profile and let AI automatically tailor your resume for every job. 
                     Stop rewriting from scratch—apply to hundreds of jobs in minutes.
                   </p>
-                  <Link href="/onboarding">
+                  <Link href="/onboarding/welcome">
                     <Button 
                       size="lg" 
                       className="text-lg px-8"
@@ -231,7 +231,7 @@ export default function ResumeRoast() {
                         // Track conversion CTA click
                         posthog.capture('conversion_cta_clicked', {
                           source: 'resume_roast',
-                          destination: '/onboarding',
+                          destination: '/onboarding/welcome',
                           score: results?.score,
                         });
                       }}
