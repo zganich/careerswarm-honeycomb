@@ -18,6 +18,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.0] - 2026-02-02
+
+### Added
+- **Master Profile Sections**: Languages, volunteer experiences, projects, publications, security clearances, licenses, portfolio URLs
+- **DB Function Aliases**: `createLanguage`, `createVolunteerExperience`, `createProject`, `createPublication`, `createSecurityClearance`
+- **GTM/JD Builder Stubs**: Placeholder functions for B2B features
+
+### Fixed
+- **37 TypeScript Errors**: Resolved all type errors across codebase
+- **Migration 0015 Idempotent**: Safe to re-run with `IF NOT EXISTS` checks
+- **Test Environment**: Vitest now loads `.env` file for tests
+- **Graceful Test Skipping**: Tests skip when env vars/API keys missing
+- **Portfolio URLs Type**: Handles both `string[]` and `{label, url}[]` formats
+
+### Changed
+- Improved error handling in resume parser (distinguishes DB vs LLM errors)
+- Archived 45 outdated handoff/testing documents to `.archive/`
+- Streamlined documentation structure
+
+### Tests
+- 129 passing, 42 skipped (env-dependent)
+- Added test user setup/teardown in profile-sections.test.ts
+
+---
+
 ## [1.3.0] - 2026-01-25
 
 ### Added
@@ -117,6 +142,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version History
 
+- **v1.4.0** (749d158) - TypeScript Fixes, Master Profile Sections, Documentation Cleanup
 - **v1.3.0** (c2bc14ad) - Auth Bypass & Navigation Fixes
 - **v1.2.0** (8ee11914) - Pivot Analyzer & E2E Tests
 - **v1.1.0** (6bcb909a) - ATS Agent & Intelligence Fleet UI

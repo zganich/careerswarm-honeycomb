@@ -4,11 +4,10 @@
 
 Transform your job search from chaos to order with a 7-stage AI agent pipeline that analyzes, tailors, and optimizes every application.
 
-**Taking over this repo?** → **[HANDOFF.md](./HANDOFF.md)**. **Giving to Manus?** → **[MANUS_PROMPT.md](./MANUS_PROMPT.md)** — prompt and steps so Manus knows exactly what to do.
-
-[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](./CHANGELOG.md)
-[![Tests](https://img.shields.io/badge/tests-127%20passing-green.svg)](./server)
-[![E2E](https://img.shields.io/badge/e2e-20%20passing-green.svg)](./tests)
+[![Version](https://img.shields.io/badge/version-1.4.0-blue.svg)](./CHANGELOG.md)
+[![Tests](https://img.shields.io/badge/tests-129%20passing-green.svg)](./server)
+[![TypeScript](https://img.shields.io/badge/typescript-0%20errors-green.svg)](./tsconfig.json)
+[![Build](https://img.shields.io/badge/build-passing-green.svg)](./package.json)
 
 ---
 
@@ -70,11 +69,14 @@ npx playwright test
 
 ## 📚 Documentation
 
-- [**PROJECT_SUMMARY.md**](./PROJECT_SUMMARY.md) - Complete technical documentation
-- [**CHANGELOG.md**](./CHANGELOG.md) - Version history and release notes
-- [**todo.md**](./todo.md) - Current tasks and feature tracking
-- [**docs/SHIP_STEP_BY_STEP.md**](./docs/SHIP_STEP_BY_STEP.md) - **Start here:** numbered steps to get running and ship (MySQL, migrate, OAuth, env)
-- [**docs/SHIP_CHECKLIST.md**](./docs/SHIP_CHECKLIST.md) - Deploy checklist (migrations, OAuth whitelist, verify)
+| Doc | Purpose |
+|-----|---------|
+| [**SETUP_GUIDE.md**](./SETUP_GUIDE.md) | Quick start (5 min setup) |
+| [**docs/SHIP_STEP_BY_STEP.md**](./docs/SHIP_STEP_BY_STEP.md) | Deployment guide |
+| [**docs/SHIP_CHECKLIST.md**](./docs/SHIP_CHECKLIST.md) | Pre-deploy checklist |
+| [**PROJECT_SUMMARY.md**](./PROJECT_SUMMARY.md) | Technical architecture |
+| [**CHANGELOG.md**](./CHANGELOG.md) | Version history |
+| [**docs/GTM_PLAN.md**](./docs/GTM_PLAN.md) | Go-to-market strategy |
 
 ---
 
@@ -88,21 +90,15 @@ pnpm test server/pivot-analyzer.test.ts  # Run specific test
 pnpm test --watch                      # Watch mode
 ```
 
-**Coverage:** 127 passing tests across 17 test files
+**Coverage:** 129 passing tests, 42 skipped (env-dependent)
 
 ### E2E Tests (Playwright)
 
 ```bash
 npx playwright install chromium  # One-time browser install
-npx playwright test              # Run all tests (20 passing, 2 skipped)
+npx playwright test              # Run all tests
 npx playwright test --ui         # Interactive mode
-npx playwright show-report       # View HTML report
 ```
-
-**Features:**
-- Auth bypass utility for reliable testing
-- Video recording for all test runs
-- Chromium-only configuration (no browser errors)
 
 ---
 
