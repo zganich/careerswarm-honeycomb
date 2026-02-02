@@ -1078,3 +1078,15 @@ See TEST_RESULTS.md for comprehensive documentation.
 - [x] Tighten padding/margins in hero section
 - [x] Test on standard desktop viewport (1920x1080, 1440x900)
 
+
+## 🗄️ DATABASE MIGRATION (Feb 1, 2026)
+
+### Master Profile Schema Extension
+- [x] Locate migration file 0015_master_profile_new_sections.sql
+- [x] Review migration SQL for new tables and columns
+- [x] Execute migration against production database
+- [x] Verify new tables created: languages, volunteerExperiences, projects, publications, securityClearances
+- [x] Verify new userProfiles columns: professionalSummary, portfolioUrls, parsedContactFromResume
+- [x] Verify new certifications column: type
+- [x] Update drizzle/schema.ts with new table definitions
+
