@@ -59,7 +59,7 @@ const Home = () => {
           
           {/* Headline Group */}
           <div className="space-y-2 max-w-4xl">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight whitespace-nowrap">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight">
               Stop Applying. <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-600">Start Infiltrating.</span>
             </h1>
             
@@ -93,34 +93,6 @@ const Home = () => {
 
           {/* Swarm Narrative Animation - MOVED BELOW CTAs */}
           <SwarmNarrative />
-
-          {/* Bottom CTA - Reinforcement After Animation */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1, duration: 0.6 }}
-            className="space-y-4 mt-8"
-          >
-            {/* CTAs */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <button 
-                onClick={() => setLocation('/onboarding/welcome')}
-                className="group relative px-8 py-3.5 bg-orange-500 hover:bg-orange-600 text-white text-lg font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
-              >
-                <span className="relative z-10">Start Free Trial</span>
-              </button>
-              
-              <button className="px-8 py-3.5 bg-white hover:bg-slate-50 text-slate-700 text-lg font-medium rounded-xl border-2 border-slate-200 transition-all duration-300">
-                Import from LinkedIn
-              </button>
-            </div>
-
-            {/* Safety Latch - De-Risking */}
-            <div className="flex items-center justify-center gap-2 text-xs text-slate-400">
-              <span className="text-base">🔒</span>
-              <span>Read-Only Access • No Credit Card • We never post to LinkedIn</span>
-            </div>
-          </motion.div>
 
         </div>
       </section>

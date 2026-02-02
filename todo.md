@@ -1174,3 +1174,10 @@ See TEST_RESULTS.md for comprehensive documentation.
 - [x] Aggressively reduce all vertical spacing (gap-4, space-y-2, pt-16, pb-8, min-h-90vh)
 - [x] Reduce animation height (320px min-height, gap-6)
 - [x] Verified headline is single line and content more compact
+
+### URGENT: Layout Overlap and Cutoff Fixes (Feb 2, 2026)
+- [x] Remove whitespace-nowrap from headline (causing cutoff on right side)
+- [x] Reduce animation card max-width to prevent overlap (max-w-md → max-w-sm)
+- [x] Scale down Complete stage card size (max-w-lg → max-w-sm, p-8 → p-6)
+- [x] Remove bottom CTA entirely (can't fit above fold with animation)
+- [x] Test that headline, subhead, top CTA, and animation all fit without overlap

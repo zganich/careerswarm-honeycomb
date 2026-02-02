@@ -114,7 +114,7 @@ export function SwarmNarrative() {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.8, x: -200 }}
                 transition={{ duration: 0.5 }}
-                className="bg-white/70 backdrop-blur-md border-2 border-orange-200 rounded-2xl p-8 shadow-2xl w-full max-w-md"
+                className="bg-white/70 backdrop-blur-md border-2 border-orange-200 rounded-2xl p-6 shadow-2xl w-full max-w-sm"
               >
                 <div className="text-sm uppercase tracking-wider text-orange-500 font-bold mb-6 text-center">
                   1. DEEP RESEARCH
@@ -158,7 +158,7 @@ export function SwarmNarrative() {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.8, x: -200 }}
                 transition={{ duration: 0.5 }}
-                className="bg-white/70 backdrop-blur-md border-2 border-purple-200 rounded-2xl p-8 shadow-2xl w-full max-w-md"
+                className="bg-white/70 backdrop-blur-md border-2 border-purple-200 rounded-2xl p-6 shadow-2xl w-full max-w-sm"
               >
                 <div className="text-sm uppercase tracking-wider text-purple-500 font-bold mb-6 text-center">
                   2. TARGETING
@@ -196,7 +196,7 @@ export function SwarmNarrative() {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.8, x: -200 }}
                 transition={{ duration: 0.5 }}
-                className="bg-white/70 backdrop-blur-md border-2 border-green-200 rounded-2xl p-8 shadow-2xl w-full max-w-md"
+                className="bg-white/70 backdrop-blur-md border-2 border-green-200 rounded-2xl p-6 shadow-2xl w-full max-w-sm"
               >
                 <div className="text-sm uppercase tracking-wider text-green-600 font-bold mb-6 text-center">
                   3. PRODUCTION
@@ -240,7 +240,7 @@ export function SwarmNarrative() {
                 initial={{ opacity: 0, scale: 0.5 }}
                 animate={{ opacity: 1, scale: 1.05 }}
                 transition={{ duration: 0.6, type: "spring" }}
-                className="relative bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 shadow-2xl border-4 border-green-300 w-full max-w-lg"
+                className="relative bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 shadow-2xl border-4 border-green-300 w-full max-w-sm"
               >
                 {/* Glowing Badge */}
                 <motion.div
