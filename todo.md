@@ -1240,3 +1240,31 @@ See TEST_RESULTS.md for comprehensive documentation.
 - [ ] Re-run all 102 Playwright tests
 - [ ] Verify all tests pass with no failures
 - [ ] Update PLAYWRIGHT_ERRORS.md with resolution status
+
+
+## E2E Manual Testing with Real OAuth (Feb 2, 2026)
+- [x] Test homepage → "Build My Master Profile" button
+- [x] Verify OAuth gate modal appears on Welcome page
+- [x] Click "Sign In with Manus" - redirects to manus.im OAuth portal
+- [ ] ❌ BLOCKER: Cloudflare CAPTCHA prevents automated OAuth completion
+- [ ] ❌ ISSUE: OAuth redirects off-site to manus.im (violates knowledge base requirement)
+- [ ] ❌ ISSUE: OAuth page shows "Powered by Manus" branding (not CareerSwarm)
+- [ ] Test "Let's Build Your Profile" button proceeds to Upload page (requires auth bypass)
+- [ ] Test resume file upload (PDF/DOCX)
+- [ ] Verify extraction process completes successfully
+- [ ] Test Review page - edit extracted data
+- [ ] Test Preferences page - set job preferences
+- [ ] Verify Master Profile creation completes
+
+### E2E Testing Findings:
+1. **OAuth Gate Working** - Modal appears correctly with CareerSwarm branding
+2. **OAuth Flow External** - Manus OAuth system redirects to manus.im (by design, not customizable)
+3. **Cloudflare Blocking** - CAPTCHA prevents automated testing of real OAuth flow
+4. **Playwright Tests Failing** - Need to fix test suite to work with new OAuth gate
+
+### Loom Video Findings (https://www.loom.com/share/796912aa48f048fe965117e7a44d1056):
+- ✅ **Homepage Working** - All elements visible, animation running, CTAs above fold
+- ✅ **Resume Roast Working** - Navigation works, page loads correctly, validation present
+- ❌ **Video Incomplete** - Only shows homepage + Resume Roast page (first 57 seconds)
+- ❌ **Missing Coverage** - No OAuth flow, onboarding steps, or Master Profile creation shown
+- 📝 **Recommendation** - Need longer recording showing complete flow from homepage to Master Profile completion

@@ -1,0 +1,90 @@
+# Page snapshot
+
+```yaml
+- generic:
+  - generic:
+    - region "Notifications alt+T"
+    - generic:
+      - banner:
+        - generic:
+          - generic:
+            - img
+            - generic: CareerSwarm
+          - generic: Step 1 of 5
+      - generic:
+        - generic:
+          - heading [level=1]: Welcome to CareerSwarm
+          - paragraph: Let's build your Master Profile in about 10 minutes
+        - generic:
+          - generic:
+            - generic:
+              - generic: "1"
+              - paragraph: Welcome
+          - generic:
+            - generic:
+              - generic: "2"
+              - paragraph: Upload
+          - generic:
+            - generic:
+              - generic: "3"
+              - paragraph: Extract
+          - generic:
+            - generic:
+              - generic: "4"
+              - paragraph: Review
+          - generic:
+            - generic:
+              - generic: "5"
+              - paragraph: Preferences
+        - generic:
+          - generic:
+            - heading [level=2]: What We'll Build Together
+            - generic:
+              - generic:
+                - generic:
+                  - img
+                - generic:
+                  - heading [level=3]: Upload Your Resumes
+                  - paragraph: Drag and drop your existing resumes (PDF, DOCX). We'll extract everything automatically.
+              - generic:
+                - generic:
+                  - img
+                - generic:
+                  - heading [level=3]: AI Extracts Your Career Data
+                  - paragraph: Our AI parses your work history, achievements, skills, and identifies your top 3 "superpowers."
+              - generic:
+                - generic:
+                  - img
+                - generic:
+                  - heading [level=3]: Review & Refine
+                  - paragraph: Edit any extracted data, add missing achievements, and confirm your superpowers.
+              - generic:
+                - generic:
+                  - img
+                - generic:
+                  - heading [level=3]: Set Your Preferences
+                  - paragraph: Tell us your target roles, industries, salary range, and location preferences.
+        - generic:
+          - button: Let's Build Your Profile →
+          - paragraph: Takes about 10 minutes • Your data is private and secure
+  - dialog "Sign In Required" [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - img [ref=e5]
+        - heading "Sign In Required" [level=2] [ref=e8]
+      - paragraph [ref=e9]:
+        - paragraph [ref=e10]: To build your Master Profile and save your career data securely, you need to create a free account.
+        - generic [ref=e11]:
+          - paragraph [ref=e12]: Why sign in?
+          - list [ref=e13]:
+            - listitem [ref=e14]: • Save your profile securely in the cloud
+            - listitem [ref=e15]: • Access your data from any device
+            - listitem [ref=e16]: • Track your application history
+            - listitem [ref=e17]: • Get personalized job recommendations
+    - generic [ref=e18]:
+      - button "Sign In with Manus" [active] [ref=e19] [cursor=pointer]
+      - paragraph [ref=e20]: Free forever • No credit card required • Takes 30 seconds
+    - button "Close" [ref=e21] [cursor=pointer]:
+      - img
+      - generic [ref=e22]: Close
+```
