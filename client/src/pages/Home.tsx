@@ -44,7 +44,7 @@ const Home = () => {
       </nav>
 
       {/* --- HERO: 7-AGENT ASSEMBLY LINE --- */}
-      <section className="relative min-h-[90vh] flex items-center justify-center px-6 pt-16 pb-8 overflow-hidden bg-gradient-to-b from-slate-50 to-white">
+      <section className="relative min-h-[90vh] flex items-center justify-center px-4 md:px-6 pt-12 md:pt-16 pb-6 md:pb-8 overflow-hidden bg-gradient-to-b from-slate-50 to-white">
         {/* Dot Grid Background */}
         <div className="absolute inset-0 opacity-30" style={{
           backgroundImage: 'radial-gradient(circle, #e2e8f0 1px, transparent 1px)',
@@ -58,12 +58,12 @@ const Home = () => {
         <div className="relative z-10 flex flex-col items-center justify-center text-center gap-4 max-w-7xl mx-auto w-full">
           
           {/* Headline Group */}
-          <div className="space-y-2 max-w-4xl">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight">
+          <div className="space-y-2 max-w-4xl px-2 md:px-0">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight">
               Stop Applying. <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-600">Start Infiltrating.</span>
             </h1>
             
-            <p className="text-base md:text-lg text-slate-600 leading-relaxed">
+            <p className="text-sm sm:text-base md:text-lg text-slate-600 leading-relaxed">
               The average job seeker applies to <strong className="text-slate-900">100 black holes</strong>. The Swarm scouts the role, profiles the company, and hunts the hiring manager so you can <strong className="text-orange-600">skip the line</strong>.
             </p>
           </div>
@@ -71,21 +71,21 @@ const Home = () => {
           {/* Action Group - MOVED ABOVE ANIMATION */}
           <div className="space-y-2">
             {/* CTAs */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full px-4 sm:px-0">
               <button 
                 onClick={() => setLocation('/onboarding/welcome')}
-                className="group relative px-8 py-3.5 bg-orange-500 hover:bg-orange-600 text-white text-lg font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+                className="group relative w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-3.5 bg-orange-500 hover:bg-orange-600 text-white text-base sm:text-lg font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
               >
                 <span className="relative z-10">Start Free Trial</span>
               </button>
               
-              <button className="px-8 py-3.5 bg-white hover:bg-slate-50 text-slate-700 text-lg font-medium rounded-xl border-2 border-slate-200 transition-all duration-300">
+              <button className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-3.5 bg-white hover:bg-slate-50 text-slate-700 text-base sm:text-lg font-medium rounded-xl border-2 border-slate-200 transition-all duration-300">
                 Import from LinkedIn
               </button>
             </div>
 
             {/* Safety Latch - De-Risking */}
-            <div className="flex items-center justify-center gap-2 text-xs text-slate-400 mt-2">
+            <div className="flex items-center justify-center gap-2 text-[10px] sm:text-xs text-slate-400 mt-2 px-2">
               <span className="text-base">🔒</span>
               <span>Read-Only Access • No Credit Card • We never post to LinkedIn</span>
             </div>

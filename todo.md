@@ -1181,3 +1181,21 @@ See TEST_RESULTS.md for comprehensive documentation.
 - [x] Scale down Complete stage card size (max-w-lg → max-w-sm, p-8 → p-6)
 - [x] Remove bottom CTA entirely (can't fit above fold with animation)
 - [x] Test that headline, subhead, top CTA, and animation all fit without overlap
+
+## Mobile Responsive Optimization (Feb 2, 2026)
+- [x] Test current layout on 375px mobile viewport
+- [x] Add responsive breakpoints for SwarmNarrative animation (already had flex-col lg:flex-row)
+- [x] Ensure animation stacks vertically on mobile (flex-col on small screens)
+- [x] Prevent horizontal overflow on mobile (added px-4 md:px-6, px-2 for text)
+- [x] Test headline wrapping on mobile (text-3xl sm:text-4xl md:text-5xl lg:text-6xl)
+- [x] Verify CTAs stack vertically on mobile (w-full sm:w-auto, flex-col sm:flex-row)
+- [x] Test safety latch text readability (text-[10px] sm:text-xs)
+
+## A/B Testing Setup (Future)
+- [ ] Set up PostHog feature flag for CTA placement
+- [ ] Create variant A: Single CTA above animation (current - checkpoint 193e0946)
+- [ ] Create variant B: Dual CTA above + below animation (checkpoint 0b89dfe3)
+- [ ] Track conversion events: hero_cta_top_clicked, hero_cta_bottom_clicked
+- [ ] Set 50/50 traffic split
+- [ ] Run test for minimum 1000 conversions per variant
+- [ ] Analyze conversion rate, bounce rate, time on page metrics
