@@ -317,7 +317,7 @@ export function MagicOnboardingWizard({ onComplete }: MagicOnboardingWizardProps
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ delay: 0.3, type: "spring" }}
-                    className="text-7xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent mb-2"
+                    className="text-5xl sm:text-6xl md:text-7xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent mb-2 break-words"
                   >
                     7.8/10
                   </motion.div>
@@ -466,7 +466,7 @@ export function MagicOnboardingWizard({ onComplete }: MagicOnboardingWizardProps
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
-                  className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent"
+                  className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent break-words"
                 >
                   You're All Set!
                 </motion.h2>

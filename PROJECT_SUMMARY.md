@@ -248,6 +248,55 @@ careerswarm/
 
 **tRPC Procedure:** `resumes.generate`
 
+#### Appendix A: Dynamic Format Selection Logic (2026 Standards)
+
+**Purpose:** Instructions for the Tailor Agent to select the optimal resume architecture based on Job Role, Industry, and Region.
+
+**1. The Three Core Architectures**
+
+Select the base template based on the user's career trajectory:
+
+- **Format A: Enhanced Reverse-Chronological (The Default)**
+  - **Trigger:** Standard corporate roles, steady employment history, Finance, Legal, Operations.
+  - **Logic:** Focuses on linear progression. Use for 90% of applications to maximize recruiter familiarity.
+  - **Risk:** Highlights employment gaps; avoid if user has >6 month gaps.
+
+- **Format B: Strategic Hybrid (The Pivot)**
+  - **Trigger:** Career changers, "Squiggly" career paths, Executives, or Mid-career transitions.
+  - **Logic:** Places a robust "Skills/Summary" section at the top to frame capabilities before showing work history.
+  - **Why:** Mitigates "garbage data" risks associated with pure functional resumes in modern ATS.
+
+- **Format C: Functional (Restricted Use)**
+  - **Trigger:** ONLY for users with massive employment gaps returning to the workforce.
+  - **Warning:** Highly susceptible to ATS rejection due to lack of timeline anchors. Mark as "High Risk" in UI.
+
+**2. Sectoral Optimization Rules**
+
+| Sector | Rules |
+|--------|-------|
+| **Technology & Engineering** | Must include Artifact Links (GitHub, Portfolio). Tech Stack section must precede Work Experience. Group by Languages, Frameworks, Tools. Enforce Google XYZ Formula. Metric focus: Latency, Scalability, Uptime. |
+| **Creative & Design** | External Portfolio Link mandatory. Use "Visual-Strategic" layout—clean typography and white space, but avoid columns/tables that break parsing. Metric focus: Conversion rates, User Engagement. |
+| **Federal Government (USA)** | Strict 2-Page Maximum. Must include hours worked per week, salary, supervisor details. Dates: MM/DD/YYYY format. |
+| **Healthcare & Medical Sales** | Keywords: Clinical fluency (GMP, Clinical Trials) + Commercial Drive (Quota Attainment). Hybrid format preferred; certifications/licenses prominent. |
+| **Skilled Trades** | Focus: Equipment proficiency, safety records, apprenticeship history. Quantify reliability (e.g., "0 safety incidents," "100% inspection pass rate"). |
+
+**3. Regional Compliance Filters**
+
+| Region | Rules |
+|--------|-------|
+| **North America / UK / Australia** | Prohibited: Photos, Age, Marital Status, Religion. Tone: Achievement-driven, "I" statements. |
+| **Germany / DACH** | Required: Professional Headshot, strict chronological order, explanation of all timeline gaps. |
+| **France / Asia** | Photos common/expected. Education often placed higher (France). |
+
+**4. ATS "Safe Parse" Guardrails**
+
+The ATS Compatibility Agent flags the following as Critical Errors:
+
+- **Dates:** Must use MM/YYYY or Month YYYY. Never use "Seasons" (e.g., "Summer 2026").
+- **Layout:** Single-column body text only. No text boxes, sidebars, or tables.
+- **Fonts:** Standard only (Arial, Calibri, Helvetica). No custom/script fonts.
+- **Headers:** Use standard labels ("Experience") not creative ones ("My Journey").
+
 ---
 
 ### 5. Scribe Agent (`applications.generateOutreach`)

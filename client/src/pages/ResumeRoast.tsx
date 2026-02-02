@@ -1,267 +1,196 @@
-import { useState, useEffect } from 'react';
-import { trpc } from '../lib/trpc';
-import { Link } from 'wouter';
-import { Button } from '../components/ui/button';
-import { Textarea } from '../components/ui/textarea';
-import { Card } from '../components/ui/card';
-import { AlertCircle, CheckCircle2, TrendingUp, FileText } from 'lucide-react';
-import { toast } from 'sonner';
-import posthog from 'posthog-js';
+import { useState } from "react";
+import { useLocation } from "wouter";
+import { Flame, ArrowLeft, Loader2, ThumbsUp, ThumbsDown } from "lucide-react";
+import { trpc } from "@/lib/trpc";
+import { Button } from "@/components/ui/button";
+import { trackEvent, EVENTS } from "@/lib/posthog";
+
+const MIN_LENGTH = 50;
 
 export default function ResumeRoast() {
-  const [resumeText, setResumeText] = useState('');
-  const [results, setResults] = useState<{
-    score: number;
-    verdict: string;
-    brutalTruth: string;
-    mistakes: string[];
-    characterCount: number;
-    wordCount: number;
-  } | null>(null);
-
-  // Initialize PostHog
-  useEffect(() => {
-    if (import.meta.env.VITE_POSTHOG_KEY && import.meta.env.VITE_POSTHOG_HOST) {
-      posthog.init(import.meta.env.VITE_POSTHOG_KEY, {
-        api_host: import.meta.env.VITE_POSTHOG_HOST,
-        loaded: (posthog) => {
-          if (import.meta.env.DEV) posthog.debug();
-        },
-      });
-    }
-  }, []);
+  const [, setLocation] = useLocation();
+  const [resumeText, setResumeText] = useState("");
+  const [feedback, setFeedback] = useState<"helpful" | "not-helpful" | null>(null);
 
   const roastMutation = trpc.public.roast.useMutation({
     onSuccess: (data) => {
-      setResults(data);
-      
-      // Scroll to top to show results
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      
-      // Track Resume Roast completion
-      posthog.capture('resume_roast_completed', {
-        score: data.score,
-        verdict: data.verdict,
-        characterCount: data.characterCount,
-        wordCount: data.wordCount,
-        mistakeCount: data.mistakes.length,
-      });
+      trackEvent(EVENTS.RESUME_ROASTED, { score: data?.score });
     },
-    onError: (error) => {
-      toast.error(error.message || 'Failed to analyze resume');
+    onError: (err) => {
+      console.error("[Resume Roast]", err);
     },
   });
 
-  const handleRoast = () => {
-    if (resumeText.length < 50) {
-      toast.error('Please paste at least 50 characters of your resume');
-      return;
-    }
-    roastMutation.mutate({ resumeText });
+  const result = roastMutation.data;
+  const canSubmit = resumeText.trim().length >= MIN_LENGTH && !roastMutation.isPending;
+
+  const handleFeedback = (helpful: boolean) => {
+    if (feedback !== null) return;
+    setFeedback(helpful ? "helpful" : "not-helpful");
+    trackEvent(EVENTS.RESUME_ROAST_FEEDBACK, {
+      helpful,
+      score: result?.score,
+    });
   };
 
-  const getScoreColor = (score: number) => {
-    if (score >= 80) return 'text-green-600';
-    if (score >= 60) return 'text-yellow-600';
-    return 'text-red-600';
-  };
-
-  const getScoreBgColor = (score: number) => {
-    if (score >= 80) return 'bg-green-100';
-    if (score >= 60) return 'bg-yellow-100';
-    return 'bg-red-100';
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!canSubmit) return;
+    roastMutation.mutate({ resumeText: resumeText.trim() });
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/">
-              <a className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">CS</span>
-                </div>
-                <span className="font-bold text-xl">CareerSwarm</span>
-              </a>
-            </Link>
-            <Link href="/onboarding/welcome">
-              <Button className="bg-orange-500 hover:bg-orange-600 text-white">Build My Master Profile</Button>
-            </Link>
+    <div className="min-h-screen bg-slate-50 font-inter text-slate-900">
+      <div className="max-w-2xl mx-auto px-6 py-12">
+        <button
+          type="button"
+          onClick={() => setLocation("/")}
+          className="flex items-center gap-2 text-sm text-slate-600 hover:text-orange-600 mb-8"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back
+        </button>
+
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center">
+            <Flame className="w-6 h-6 text-orange-600" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">Resume Roast</h1>
+            <p className="text-sm text-slate-600">
+              Brutally honest feedback. No signup. Paste your resume (min {MIN_LENGTH} characters).
+            </p>
           </div>
         </div>
-      </header>
 
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
-        {!results ? (
-          <>
-            {/* Hero Section */}
-            <div className="text-center mb-12">
-              <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-                Get Your Resume <span className="text-orange-500">Roasted</span>
-              </h1>
-              <p className="text-xl text-slate-600 mb-2">
-                Brutally honest feedback in 60 seconds
-              </p>
-              <p className="text-sm text-slate-500">
-                No signup required • 100% free • AI-powered analysis
-              </p>
-            </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <textarea
+            value={resumeText}
+            onChange={(e) => setResumeText(e.target.value)}
+            placeholder="Paste your resume text here..."
+            className="w-full min-h-[200px] px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 resize-y"
+            disabled={roastMutation.isPending}
+          />
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-xs text-slate-500">
+              {resumeText.trim().length} chars
+              {resumeText.trim().length > 0 && resumeText.trim().length < MIN_LENGTH && (
+                <span className="text-amber-600"> — need at least {MIN_LENGTH}</span>
+              )}
+            </span>
+            <Button type="submit" disabled={!canSubmit} className="bg-orange-500 hover:bg-orange-600">
+              {roastMutation.isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Roasting...
+                </>
+              ) : (
+                "Get Roasted"
+              )}
+            </Button>
+          </div>
+        </form>
 
-            {/* Input Section */}
-            <Card className="p-8 mb-8">
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Paste Your Resume Text
-                </label>
-                <Textarea
-                  value={resumeText}
-                  onChange={(e) => setResumeText(e.target.value)}
-                  placeholder="Paste your resume text here (at least 50 characters)..."
-                  className="min-h-[300px] font-mono text-sm"
-                />
-                <div className="flex justify-between items-center mt-2">
-                  <span className="text-sm text-slate-500">
-                    {resumeText.length} characters • {resumeText.trim().split(/\s+/).filter(Boolean).length} words
-                  </span>
-                  <span className="text-sm text-slate-500">
-                    {resumeText.length >= 50 ? '✓ Ready' : `Need ${50 - resumeText.length} more characters`}
-                  </span>
-                </div>
-              </div>
+        {roastMutation.isError && (
+          <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-800">
+            {roastMutation.error.message}
+          </div>
+        )}
 
-              <Button
-                onClick={handleRoast}
-                disabled={resumeText.length < 50 || roastMutation.isPending}
-                className="w-full bg-orange-500 hover:bg-orange-600 text-white"
-                size="lg"
+        {result && (
+          <div className="mt-8 space-y-6">
+            <div className="flex items-center gap-4">
+              <div
+                className={`text-3xl font-bold ${
+                  result.score >= 70 ? "text-emerald-600" : result.score >= 40 ? "text-amber-600" : "text-red-600"
+                }`}
               >
-                {roastMutation.isPending ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                    Analyzing...
-                  </>
-                ) : (
-                  <>
-                    <FileText className="w-4 h-4 mr-2" />
-                    Get Roasted
-                  </>
-                )}
-              </Button>
-            </Card>
-
-            {/* Trust Badges */}
-            <div className="flex justify-center gap-8 text-sm text-slate-600">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-green-600" />
-                <span>No signup required</span>
+                {result.score}/100
               </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-green-600" />
-                <span>100% free</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-green-600" />
-                <span>Instant results</span>
-              </div>
+              <p className="text-slate-700 font-medium">{result.verdict}</p>
             </div>
-          </>
-        ) : (
-          <>
-            {/* Results Section */}
-            <div className="space-y-6">
-              {/* Score Card */}
-              <Card className="p-8 text-center">
-                <div className="mb-4">
-                  <div className={`inline-flex items-center justify-center w-32 h-32 rounded-full ${getScoreBgColor(results.score)} mb-4`}>
-                    <span className={`text-5xl font-bold ${getScoreColor(results.score)}`}>
-                      {results.score}
-                    </span>
-                  </div>
-                  <h2 className="text-3xl font-bold text-slate-900 mb-2">
-                    {results.verdict}
-                  </h2>
-                  <p className="text-lg text-slate-600 italic">
-                    "{results.brutalTruth}"
-                  </p>
-                </div>
-                <div className="flex justify-center gap-6 text-sm text-slate-500">
-                  <span>{results.characterCount} characters</span>
-                  <span>•</span>
-                  <span>{results.wordCount} words</span>
-                </div>
-              </Card>
 
-              {/* Mistakes Card */}
-              <Card className="p-8">
-                <div className="flex items-center gap-2 mb-6">
-                  <AlertCircle className="w-5 h-5 text-red-500" />
-                  <h3 className="text-xl font-bold text-slate-900">
-                    3 Critical Mistakes
-                  </h3>
-                </div>
-                <div className="space-y-4">
-                  {results.mistakes.map((mistake, index) => (
-                    <div key={index} className="flex gap-4">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center font-bold">
-                        {index + 1}
-                      </div>
-                      <p className="text-slate-700 flex-1 pt-1">{mistake}</p>
-                    </div>
-                  ))}
-                </div>
-              </Card>
+            <div className="p-4 bg-slate-100 border border-slate-200 rounded-xl">
+              <p className="text-sm font-semibold text-slate-700 mb-2">The brutal truth</p>
+              <p className="text-sm text-slate-700 leading-relaxed">{result.brutalTruth}</p>
+            </div>
 
-              {/* Conversion Block - Lead Magnet CTA */}
-              <Card className="p-8 bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
-                <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-orange-500 text-white mb-4">
-                    <TrendingUp className="w-8 h-8" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-slate-900 mb-2">
-                    Want to Fix These Issues?
-                  </h3>
-                  <p className="text-slate-700 mb-6 max-w-2xl mx-auto">
-                    Build your Master Profile and let AI automatically tailor your resume for every job. 
-                    Stop rewriting from scratch—apply to hundreds of jobs in minutes.
-                  </p>
-                  <Link href="/onboarding/welcome">
-                    <Button 
-                      size="lg" 
-                      className="text-lg px-8 bg-orange-500 hover:bg-orange-600 text-white"
-                      onClick={() => {
-                        // Track conversion CTA click
-                        posthog.capture('conversion_cta_clicked', {
-                          source: 'resume_roast',
-                          destination: '/onboarding/welcome',
-                          score: results?.score,
-                        });
-                      }}
-                    >
-                      Build My Master Profile →
-                    </Button>
-                  </Link>
-                  <p className="text-sm text-slate-600 mt-4">
-                    Takes less than 5 minutes • No credit card required
-                  </p>
-                </div>
-              </Card>
+            <div>
+              <p className="text-sm font-semibold text-slate-700 mb-3">3 Million-Dollar Mistakes</p>
+              <ul className="space-y-4">
+                {result.mistakes.map((m: { title?: string; explanation?: string; fix?: string }, i: number) => (
+                  <li key={i} className="p-4 bg-white border border-slate-200 rounded-xl">
+                    <p className="font-medium text-slate-900">{m.title}</p>
+                    <p className="text-sm text-slate-600 mt-1">{m.explanation}</p>
+                    <p className="text-sm text-emerald-700 mt-2">
+                      <span className="font-medium">Fix:</span> {m.fix}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-              {/* Try Another Resume */}
-              <div className="text-center">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setResults(null);
-                    setResumeText('');
-                  }}
+            <p className="text-xs text-slate-500">
+              {result.wordCount} words · {result.characterCount} characters
+            </p>
+
+            {/* Feedback: humor quality */}
+            <div className="flex items-center gap-4 pt-4 border-t border-slate-200">
+              <span className="text-sm font-medium text-slate-700">Was this helpful?</span>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleFeedback(true)}
+                  disabled={feedback !== null}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                    feedback === "helpful"
+                      ? "bg-emerald-100 text-emerald-800"
+                      : feedback === null
+                        ? "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                        : "bg-slate-50 text-slate-400 cursor-default"
+                  }`}
                 >
-                  Roast Another Resume
-                </Button>
+                  <ThumbsUp className="w-4 h-4" />
+                  Yes
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleFeedback(false)}
+                  disabled={feedback !== null}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                    feedback === "not-helpful"
+                      ? "bg-amber-100 text-amber-800"
+                      : feedback === null
+                        ? "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                        : "bg-slate-50 text-slate-400 cursor-default"
+                  }`}
+                >
+                  <ThumbsDown className="w-4 h-4" />
+                  Not really
+                </button>
               </div>
+              {feedback !== null && (
+                <span className="text-xs text-slate-500">Thanks for the feedback</span>
+              )}
             </div>
-          </>
+
+            {/* Lead magnet → onboarding conversion */}
+            <div className="mt-8 p-6 bg-slate-900 rounded-2xl text-center">
+              <h2 className="text-xl font-bold text-white mb-2">
+                Turn these fixes into a resume that gets interviews
+              </h2>
+              <p className="text-sm text-slate-300 mb-4">
+                Build one Master Profile. We’ll help you fix these mistakes and tailor every application.
+              </p>
+              <Button
+                type="button"
+                onClick={() => setLocation("/onboarding/welcome")}
+                className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-6 py-3 rounded-xl"
+              >
+                Build my Master Profile
+              </Button>
+            </div>
+          </div>
         )}
       </div>
     </div>

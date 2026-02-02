@@ -2,6 +2,8 @@ import React from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight, Hexagon, ShieldCheck, Zap, Database, Check, Upload, Sparkles, Shield } from 'lucide-react';
 import { useLocation } from 'wouter';
+import { getLoginUrl } from '@/const';
+import { TransformationHero } from '@/components/ui/psych/TransformationHero';
 import { SwarmNarrative } from '@/components/SwarmNarrative';
 import { TrustStrip } from '@/components/TrustStrip';
 
@@ -22,18 +24,20 @@ const Home = () => {
             <span className="text-xl font-bold tracking-tight text-slate-900">CareerSwarm</span>
           </div>
           <div className="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-600">
-            <button onClick={() => setLocation('/pricing')} className="hover:text-orange-600 transition-colors">Pricing</button>
-            <button onClick={() => setLocation('/recruiters')} className="hover:text-orange-600 transition-colors">For Recruiters</button>
-            <button onClick={() => setLocation('/roast')} className="hover:text-orange-600 transition-colors">Resume Roast</button>
+            <button type="button" onClick={() => setLocation('/pricing')} className="hover:text-orange-600 transition-colors">Pricing</button>
+            <button type="button" onClick={() => setLocation('/recruiters')} className="hover:text-orange-600 transition-colors">For Recruiters</button>
+            <button type="button" onClick={() => setLocation('/roast')} className="hover:text-orange-600 transition-colors">Resume Roast</button>
           </div>
           <div className="flex items-center space-x-4">
-            <button 
-              onClick={() => window.location.href = `${import.meta.env.VITE_OAUTH_PORTAL_URL}?app_id=${import.meta.env.VITE_APP_ID}&redirect_uri=${window.location.origin}/api/oauth/callback`}
+            <button
+              type="button"
+              onClick={() => { const u = getLoginUrl(); if (u && u !== '#') window.location.href = u; else setLocation('/login'); }}
               className="text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors"
             >
               Sign In
             </button>
-            <button 
+            <button
+              type="button"
               onClick={() => setLocation('/onboarding/welcome')}
               className="bg-slate-900 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-orange-600 transition-all shadow-lg shadow-orange-500/20"
             >
@@ -43,62 +47,11 @@ const Home = () => {
         </div>
       </nav>
 
-      {/* --- HERO: 7-AGENT ASSEMBLY LINE --- */}
-      <section className="relative min-h-[90vh] flex items-center justify-center px-4 md:px-6 pt-12 md:pt-16 pb-6 md:pb-8 overflow-hidden bg-gradient-to-b from-slate-50 to-white">
-        {/* Dot Grid Background */}
-        <div className="absolute inset-0 opacity-30" style={{
-          backgroundImage: 'radial-gradient(circle, #e2e8f0 1px, transparent 1px)',
-          backgroundSize: '24px 24px'
-        }}></div>
-
-        {/* Gradient Orb */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-gradient-to-br from-orange-200/20 via-orange-100/10 to-transparent rounded-full blur-3xl"></div>
-
-        {/* Content */}
-        <div className="relative z-10 flex flex-col items-center justify-center text-center gap-4 max-w-7xl mx-auto w-full">
-          
-          {/* Headline Group */}
-          <div className="space-y-2 max-w-4xl px-2 md:px-0">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight">
-              <span className="whitespace-nowrap">Stop Applying.</span> <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-600 whitespace-nowrap">Start Infiltrating.</span>
-            </h1>
-            
-            <p className="text-sm sm:text-base md:text-lg text-slate-600 leading-relaxed">
-              The average job seeker applies to <strong className="text-slate-900">100 black holes</strong>. The Swarm scouts the role, profiles the company, and hunts the hiring manager so you can <strong className="text-orange-600">skip the line</strong>.
-            </p>
-          </div>
-
-          {/* Action Group - MOVED ABOVE ANIMATION */}
-          <div className="space-y-2">
-            {/* CTAs */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full px-4 sm:px-0">
-              <button 
-                onClick={() => setLocation('/onboarding/welcome')}
-                className="group relative w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-3.5 bg-orange-500 hover:bg-orange-600 text-white text-base sm:text-lg font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
-              >
-                <span className="relative z-10">Start Free Trial</span>
-              </button>
-              
-              <button className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-3.5 bg-white hover:bg-slate-50 text-slate-700 text-base sm:text-lg font-medium rounded-xl border-2 border-slate-200 transition-all duration-300">
-                Import from LinkedIn
-              </button>
-            </div>
-
-            {/* Safety Latch - De-Risking */}
-            <div className="flex items-center justify-center gap-2 text-[10px] sm:text-xs text-slate-400 mt-2 px-2">
-              <span className="text-base">🔒</span>
-              <span>Read-Only Access • No Credit Card • We never post to LinkedIn</span>
-            </div>
-          </div>
-
-          {/* Swarm Narrative Animation - MOVED BELOW CTAs */}
-          <SwarmNarrative />
-
-        </div>
-      </section>
-
-      {/* --- TRUST STRIP: SOCIAL PROOF --- */}
-      <TrustStrip />
+      {/* --- HERO: TRANSFORMATION (Pillar 4) --- */}
+      <TransformationHero
+        onCtaPrimary={() => setLocation("/onboarding/welcome")}
+        onCtaSecondary={() => setLocation("/roast")}
+      />
 
       {/* --- FEATURE CARDS: LAB AESTHETIC --- */}
       <section id="features" className="py-24 bg-white relative">

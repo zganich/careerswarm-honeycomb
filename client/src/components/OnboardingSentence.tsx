@@ -117,7 +117,7 @@ export function OnboardingSentence({ onComplete }: OnboardingSentenceProps) {
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* The Mad Libs Sentence */}
           <h1
-            className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-50 leading-tight"
+            className="text-4xl sm:text-5xl md:text-6xl font-bold text-slate-50 leading-tight break-words"
             style={{ fontFamily: 'Cabinet Grotesk, sans-serif' }}
           >
             I am a{' '}

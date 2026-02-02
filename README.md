@@ -4,6 +4,8 @@
 
 Transform your job search from chaos to order with a 7-stage AI agent pipeline that analyzes, tailors, and optimizes every application.
 
+**Taking over this repo?** → **[HANDOFF.md](./HANDOFF.md)**. **Giving to Manus?** → **[MANUS_PROMPT.md](./MANUS_PROMPT.md)** — prompt and steps so Manus knows exactly what to do.
+
 [![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](./CHANGELOG.md)
 [![Tests](https://img.shields.io/badge/tests-127%20passing-green.svg)](./server)
 [![E2E](https://img.shields.io/badge/e2e-20%20passing-green.svg)](./tests)
@@ -71,6 +73,8 @@ npx playwright test
 - [**PROJECT_SUMMARY.md**](./PROJECT_SUMMARY.md) - Complete technical documentation
 - [**CHANGELOG.md**](./CHANGELOG.md) - Version history and release notes
 - [**todo.md**](./todo.md) - Current tasks and feature tracking
+- [**docs/SHIP_STEP_BY_STEP.md**](./docs/SHIP_STEP_BY_STEP.md) - **Start here:** numbered steps to get running and ship (MySQL, migrate, OAuth, env)
+- [**docs/SHIP_CHECKLIST.md**](./docs/SHIP_CHECKLIST.md) - Deploy checklist (migrations, OAuth whitelist, verify)
 
 ---
 

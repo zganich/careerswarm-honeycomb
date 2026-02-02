@@ -1,56 +1,94 @@
-# Manus Task Prompt – CareerSwarm Honeycomb
+# Prompt for Manus
 
-**Copy everything below the line into a new Manus task. Manus will use the correct repo and follow the handoff.**
-
----
-
-## Repo and context
-
-- **Use this repo only:** `careerswarm-honeycomb`  
-- **URL:** https://github.com/zganich/careerswarm-honeycomb  
-- Do **not** use any repo named "CareerSwarm" or "careerswarm" without `-honeycomb` (that is the old repo).
-
-**First steps:**
-
-1. **Clone or connect** to `careerswarm-honeycomb` from the URL above. If another project is open, confirm it is this repo (path or URL includes `careerswarm-honeycomb`). If you have the old CareerSwarm repo, switch to or clone `careerswarm-honeycomb` instead.
-
-2. **Read** `CLAUDE_MANUS_HANDOFF.md` in the project root. Follow its testing and validation instructions. **Do not redo** the fixes it describes (TypeScript and package-generation fixes are already applied).
-
-3. Use **this repo** for all work—code changes, validation, and tests.
+**Give Manus this prompt (copy everything below the line):**
 
 ---
 
-## Current state (as of handoff + follow-up)
+You are taking over the CareerSwarm repo (careerswarm-honeycomb). The app is ready to deploy. Do the following in order. All commands are run from the repo root (where `package.json` is).
 
-- **TypeScript:** `pnpm check` passes (0 errors). Application package generation in `server/routers.ts` is fixed (assembleApplicationPackage, TailorInput/ScribeInput, resumeMarkdown, skills/education, Profiler).
-- **Package generation:** Fetches skills and education via `db.getSkills()` / `db.getEducation()`; integrates Profiler agent for Scribe `strategicMemo`; fallback to empty memo if Profiler fails.
-- **Download UI:** Applications list and Application detail page have Download (PDF/DOCX/ZIP) and “Generate package” with loading states.
+1. **Install dependencies**
+   ```bash
+   pnpm install
+   ```
+
+2. **Environment**
+   - Copy `.env.example` to `.env` in the repo root.
+   - In `.env`, set these (use your real values; get OAuth/Forge URLs and keys from your Manus dashboard):
+     - `DATABASE_URL` — MySQL connection string (e.g. `mysql://user:password@host:3306/careerswarm`). Use your hosted MySQL or the URL Manus provides.
+     - `JWT_SECRET` — Any long random string (min 32 characters). Used to sign session cookies.
+     - `OAUTH_SERVER_URL` — Your Manus OAuth server URL (e.g. `https://oauth.manus.im`).
+     - `BUILT_IN_FORGE_API_KEY` — Your Manus Forge API key (for LLM / Resume Roast).
+     - `VITE_OAUTH_PORTAL_URL` — Same as OAuth portal base URL (e.g. `https://oauth.manus.im`). Must be set at **build time** so the frontend “Sign in” link works.
+     - `VITE_APP_ID` — Your app id in Manus (e.g. `careerswarm`). Must be set at **build time**.
+   - For production: set `NODE_ENV=production` and `PORT` (e.g. `3000`) in `.env` or in your runtime environment.
+
+3. **Database**
+   - Ensure MySQL is running and reachable at the host in `DATABASE_URL`.
+   - Run migrations once:
+     ```bash
+     pnpm db:migrate
+     ```
+   - If you see ECONNREFUSED, MySQL is not running or `DATABASE_URL` is wrong. Fix and run again.
+
+4. **OAuth redirect URI (required for “Sign in” to work)**
+   - In the **Manus dashboard**, open the app/project for CareerSwarm.
+   - Find **OAuth** / **Auth** / **Redirect URIs** (or “Allowed callbacks”).
+   - Add this URL (replace with the actual URL where the app will be hosted):
+     - Production: `https://YOUR_DEPLOYMENT_DOMAIN/api/oauth/callback`
+     - Preview: `https://YOUR_PREVIEW_HOST/api/oauth/callback` (add each preview URL you use).
+   - Save. If you skip this, “Sign in” will redirect-loop; users can still use **Dev Login** at `/login` if you set `ENABLE_DEV_LOGIN=true`.
+
+5. **Verify env**
+   ```bash
+   pnpm run verify-env
+   ```
+   - It must print “Required env vars OK.” If not, add the missing vars to `.env`.
+
+6. **Build**
+   - Ensure `VITE_OAUTH_PORTAL_URL` and `VITE_APP_ID` are set in the environment (or in `.env`) when you run the build.
+   ```bash
+   pnpm run build
+   ```
+
+7. **Run**
+   ```bash
+   pnpm start
+   ```
+   - The app serves the frontend and API. Set `PORT` if needed (default 3000).
+   - Open the app URL; go to `/dashboard`. Sign in via OAuth or, if OAuth isn’t ready, use **Dev Login** at `/login` (any email). Set `ENABLE_DEV_LOGIN=true` in production to allow Dev Login on preview URLs.
+
+**Optional**
+- Run tests: `pnpm test` (Vitest), `npx playwright test` (E2E). Auth E2E tests may skip without MySQL.
+- Dev Login on preview: set `ENABLE_DEV_LOGIN=true` so users can sign in at `/login` without OAuth when the redirect URI isn’t whitelisted yet.
+
+**If something fails**
+- See `docs/SHIP_STEP_BY_STEP.md` for detailed steps (including Docker MySQL and OAuth whitelist).
+- See `docs/OAUTH_WHITELIST_MANUS.md` for redirect URI format and whitelist details.
 
 ---
 
-## Your task
+## Full step-by-step (same content, for reference in-repo)
 
-1. **Confirm repo:** Reply with which repo you are using (should be `careerswarm-honeycomb`) and that you have read `CLAUDE_MANUS_HANDOFF.md`.
+The prompt above is the single source of truth for Manus. The steps are also listed here so Manus can follow them from this file.
 
-2. **Run validation:**  
-   `pnpm validate`  
-   If it fails (e.g. module resolution), see `DIAGNOSTIC_INVESTIGATION.md` for options.
+| Step | Action |
+|------|--------|
+| 1 | `pnpm install` |
+| 2 | Copy `.env.example` → `.env`. Set `DATABASE_URL`, `JWT_SECRET`, `OAUTH_SERVER_URL`, `BUILT_IN_FORGE_API_KEY`, `VITE_OAUTH_PORTAL_URL`, `VITE_APP_ID`. For production set `NODE_ENV=production`, `PORT`. |
+| 3 | MySQL running. Run `pnpm db:migrate`. |
+| 4 | In Manus dashboard: whitelist `https://YOUR_DEPLOYMENT_DOMAIN/api/oauth/callback` (and preview URLs if needed). |
+| 5 | `pnpm run verify-env` → must say “Required env vars OK.” |
+| 6 | `pnpm run build` (with `VITE_*` set). |
+| 7 | `pnpm start`. Open app URL, use OAuth or Dev Login at `/login`. |
 
-3. **Do the handoff testing phases** (from `CLAUDE_MANUS_HANDOFF.md`):
-   - Phase 1: Environment setup (`.env`, database, `pnpm validate`).
-   - Phase 2: Application package generation (dev server, create application, trigger package, check DB/S3/notifications).
-   - Phase 3+: Agent integration and E2E as described in the handoff.
+**Required env vars (see `.env.example`):**
+- `DATABASE_URL` — MySQL URL
+- `JWT_SECRET` — min 32 chars
+- `OAUTH_SERVER_URL` — Manus OAuth server
+- `BUILT_IN_FORGE_API_KEY` — Manus Forge API key
+- `VITE_OAUTH_PORTAL_URL` — OAuth portal (build-time)
+- `VITE_APP_ID` — App id (build-time)
 
-4. **Document findings** in something like `TEST_RESULTS.md` or the handoff’s suggested format (pass/fail, errors, screenshots if useful).
+**OAuth redirect URI to whitelist:** `https://<your-app-domain>/api/oauth/callback`
 
----
-
-## Optional: add handoff to Manus knowledge base
-
-- In a Manus project, set a Master Instruction like:  
-  *“When doing testing or validation, read CLAUDE_MANUS_HANDOFF.md first. Follow its phases and do not redo the fixes it describes.”*  
-- Add `CLAUDE_MANUS_HANDOFF.md` to the project’s Knowledge Base so it’s available in every task.
-
----
-
-**Reply with:** (1) repo in use, (2) confirmation you read the handoff, (3) result of `pnpm validate`, and (4) what you will do next (e.g. Phase 1 then Phase 2 from the handoff).
+**Stack:** React 19, TypeScript, tRPC 11, Express 4, Drizzle ORM, MySQL, Tailwind 4. Server loads `.env` via `dotenv/config` at startup.

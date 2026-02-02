@@ -3,10 +3,10 @@
 export const PSYCH_COPY = {
   // Hero Section
   hero: {
-    headline: "Stop Blindly Applying. Start Infiltrating.",
-    subheadline: "The average job seeker applies to 100 black holes. The Swarm scouts the role, profiles the company, and hunts the hiring manager so you can skip the line.",
-    ctaPrimary: "Start Free Trial",
-    ctaSecondary: "Import from LinkedIn",
+    headline: "Stop Rewriting Your Resume.",
+    subheadline: "Build One Master Profile. Auto-Apply to Hundreds of Jobs While You Sleep.",
+    ctaPrimary: "Build My Master Profile",
+    ctaSecondary: "Get free feedback (Resume Roast)",
   },
   
   // Onboarding

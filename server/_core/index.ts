@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import "dotenv/config";
 import * as Sentry from "@sentry/node";
 import express from "express";
 import { createServer } from "http";
@@ -7,7 +8,13 @@ import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
+import { verifyEnv } from "./env";
 import { serveStatic, setupVite } from "./vite";
+
+// Fail fast in production if required env vars are missing
+if (process.env.NODE_ENV === "production") {
+  verifyEnv();
+}
 
 // Initialize Sentry for backend error tracking
 if (process.env.SENTRY_DSN) {
@@ -99,14 +106,42 @@ async function startServer() {
 
   server.listen(port, async () => {
     console.log(`Server running on http://localhost:${port}/`);
-    
-    // Start notification scheduler - DISABLED (old system)
-    // try {
-    //   const { startNotificationScheduler } = await import("../notificationScheduler");
-    //   startNotificationScheduler();
-    // } catch (err) {
-    //   console.error("[Notification] Failed to start scheduler:", err);
-    // }
+
+    // Start GTM pipeline worker if Redis available
+    try {
+      const queueModule = await import("../queue");
+      const { processGtmJob } = await import("../agents/gtm/pipeline-processor");
+      const { createGtmJobRun, finishGtmJobRun } = await import("../db");
+      const worker = queueModule.createWorker<import("../queue").GtmPipelineData>(
+        queueModule.QueueName.GTM_PIPELINE,
+        async (job) => {
+          const data = job.data;
+          const runId = await createGtmJobRun(data.step, data.channel ?? null, job.id);
+          try {
+            const result = await processGtmJob(data);
+            if (runId) await finishGtmJobRun(runId, result.ok ? "success" : "failed", result.message, JSON.stringify({ count: result.count }));
+            return result;
+          } catch (err: any) {
+            if (runId) await finishGtmJobRun(runId, "failed", err?.message ?? String(err));
+            throw err;
+          }
+        },
+        { concurrency: 2 }
+      );
+      worker.on("completed", () => {});
+      worker.on("failed", (job, err) => console.error("[GTM Worker] Job failed:", job?.id, err));
+
+      // Enqueue weekly strategy and report (every 7 days)
+      const enqueueWeekly = () => {
+        queueModule.addJob(queueModule.QueueName.GTM_PIPELINE, { step: "strategy", payload: {} });
+        queueModule.addJob(queueModule.QueueName.GTM_PIPELINE, { step: "report", payload: {} });
+      };
+      const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+      setTimeout(enqueueWeekly, 60 * 1000); // first run 1 min after start
+      setInterval(enqueueWeekly, SEVEN_DAYS_MS);
+    } catch (err) {
+      console.warn("[GTM Worker] Not started (Redis or queue unavailable):", (err as Error).message);
+    }
   });
 }
 

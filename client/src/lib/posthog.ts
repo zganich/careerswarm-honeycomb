@@ -42,6 +42,7 @@ export const EVENTS = {
   // Core features
   ACHIEVEMENT_CREATED: 'achievement_created',
   RESUME_ROASTED: 'resume_roasted',
+  RESUME_ROAST_FEEDBACK: 'resume_roast_feedback',
   RESUME_GENERATED: 'resume_generated',
   CAREER_SCORE_CALCULATED: 'career_score_calculated',
   

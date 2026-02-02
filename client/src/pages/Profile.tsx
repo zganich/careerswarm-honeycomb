@@ -14,6 +14,12 @@ import {
   Plus,
   ChevronDown,
   ChevronUp,
+  Globe,
+  BookOpen,
+  Shield,
+  Link2,
+  Heart,
+  FolderGit2,
 } from "lucide-react";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
@@ -131,6 +137,21 @@ export default function Profile() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Professional Summary */}
+        {profile?.profile?.professionalSummary && (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5 text-primary" />
+                Professional Summary
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground whitespace-pre-wrap">{profile.profile.professionalSummary}</p>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Superpowers Section */}
         <Card className="mb-8">
@@ -467,9 +488,271 @@ export default function Profile() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Education records coming soon</p>
+              {profile?.education && profile.education.length > 0 ? (
+                <div className="space-y-3">
+                  {profile.education.map((edu: any, index: number) => (
+                    <div key={index} className="text-sm">
+                      <p className="font-medium">{edu.institution}</p>
+                      {(edu.degreeType || edu.fieldOfStudy) && (
+                        <p className="text-muted-foreground">
+                          {[edu.degreeType, edu.fieldOfStudy].filter(Boolean).join(" in ")}
+                        </p>
+                      )}
+                      {edu.graduationYear && (
+                        <p className="text-xs text-muted-foreground">{edu.graduationYear}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">No education added yet</p>
+              )}
             </CardContent>
           </Card>
+        </div>
+
+        {/* Certifications & Awards Row */}
+        <div className="grid md:grid-cols-2 gap-8 mb-8">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5 text-primary" />
+                Certifications & Licenses
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {profile?.certifications && profile.certifications.length > 0 ? (
+                <div className="space-y-2">
+                  {profile.certifications.map((cert: any, index: number) => (
+                    <div key={index} className="flex items-start justify-between gap-2 text-sm">
+                      <div>
+                        <p className="font-medium">{cert.certificationName}</p>
+                        {cert.issuingOrganization && (
+                          <p className="text-muted-foreground text-xs">{cert.issuingOrganization}</p>
+                        )}
+                        {cert.issueYear && (
+                          <p className="text-xs text-muted-foreground">{cert.issueYear}</p>
+                        )}
+                      </div>
+                      {cert.type === "license" && (
+                        <Badge variant="outline" className="text-xs">License</Badge>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">No certifications or licenses added yet</p>
+              )}
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Award className="h-5 w-5 text-primary" />
+                Awards
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {profile?.awards && profile.awards.length > 0 ? (
+                <div className="space-y-2">
+                  {profile.awards.map((award: any, index: number) => (
+                    <div key={index} className="text-sm">
+                      <p className="font-medium">{award.awardName}</p>
+                      {(award.organization || award.year) && (
+                        <p className="text-muted-foreground text-xs">
+                          {[award.organization, award.year].filter(Boolean).join(" · ")}
+                        </p>
+                      )}
+                      {award.context && (
+                        <p className="text-xs text-muted-foreground mt-1">{award.context}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">No awards added yet</p>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Languages, Volunteer, Projects, Publications, Clearances, Portfolio */}
+        <div className="grid md:grid-cols-2 gap-8 mb-8">
+          {profile?.languages && profile.languages.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Globe className="h-5 w-5 text-primary" />
+                  Languages
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2">
+                  {profile.languages.map((lang: any, index: number) => (
+                    <Badge key={index} variant="secondary">
+                      {lang.language}
+                      {lang.proficiency && ` (${lang.proficiency})`}
+                      {lang.isNative && " · Native"}
+                    </Badge>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          {profile?.volunteerExperiences && profile.volunteerExperiences.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Heart className="h-5 w-5 text-primary" />
+                  Volunteer & Community
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {profile.volunteerExperiences.map((v: any, index: number) => (
+                    <div key={index} className="text-sm">
+                      <p className="font-medium">{v.organization}</p>
+                      {v.role && <p className="text-muted-foreground text-xs">{v.role}</p>}
+                      {(v.startDate || v.endDate) && (
+                        <p className="text-xs text-muted-foreground">
+                          {v.startDate || "?"} – {v.endDate || "Present"}
+                        </p>
+                      )}
+                      {v.description && (
+                        <p className="text-xs text-muted-foreground mt-1">{v.description}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          {profile?.projects && profile.projects.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <FolderGit2 className="h-5 w-5 text-primary" />
+                  Projects
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {profile.projects.map((p: any, index: number) => (
+                    <div key={index} className="text-sm">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="font-medium">{p.name}</p>
+                        {p.url && (
+                          <a
+                            href={p.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary text-xs flex items-center gap-1"
+                          >
+                            <Link2 className="h-3 w-3" /> Link
+                          </a>
+                        )}
+                      </div>
+                      {p.role && <p className="text-muted-foreground text-xs">{p.role}</p>}
+                      {(p.startDate || p.endDate) && (
+                        <p className="text-xs text-muted-foreground">
+                          {p.startDate || "?"} – {p.endDate || "Present"}
+                        </p>
+                      )}
+                      {p.description && (
+                        <p className="text-xs text-muted-foreground mt-1">{p.description}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          {profile?.publications && profile.publications.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <BookOpen className="h-5 w-5 text-primary" />
+                  Publications & Patents
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {profile.publications.map((pub: any, index: number) => (
+                    <div key={index} className="text-sm">
+                      <p className="font-medium">{pub.title}</p>
+                      {(pub.publisherOrVenue || pub.year) && (
+                        <p className="text-muted-foreground text-xs">
+                          {[pub.publisherOrVenue, pub.year].filter(Boolean).join(" · ")}
+                        </p>
+                      )}
+                      {pub.url && (
+                        <a
+                          href={pub.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary text-xs flex items-center gap-1 mt-1"
+                        >
+                          <Link2 className="h-3 w-3" /> View
+                        </a>
+                      )}
+                      {pub.context && (
+                        <p className="text-xs text-muted-foreground mt-1">{pub.context}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          {profile?.securityClearances && profile.securityClearances.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="h-5 w-5 text-primary" />
+                  Security Clearances
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {profile.securityClearances.map((c: any, index: number) => (
+                    <div key={index} className="text-sm flex items-center gap-2 flex-wrap">
+                      <Badge variant="secondary">{c.clearanceType}</Badge>
+                      {c.level && <span className="text-muted-foreground text-xs">{c.level}</span>}
+                      {c.expiryDate && (
+                        <span className="text-xs text-muted-foreground">Expires: {c.expiryDate}</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          {profile?.profile?.portfolioUrls && Array.isArray(profile.profile.portfolioUrls) && profile.profile.portfolioUrls.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Link2 className="h-5 w-5 text-primary" />
+                  Portfolio & Links
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2">
+                  {profile.profile.portfolioUrls.map((item: { label: string; url: string }, index: number) => (
+                    <a
+                      key={index}
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+                    >
+                      <Link2 className="h-4 w-4" />
+                      {item.label}
+                    </a>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
 

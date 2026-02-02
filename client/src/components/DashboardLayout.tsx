@@ -63,6 +63,10 @@ export default function DashboardLayout({
   }
 
   if (!user) {
+    const returnTo =
+      typeof window !== "undefined"
+        ? window.location.pathname + window.location.search || "/dashboard"
+        : "/dashboard";
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="flex flex-col items-center gap-8 p-8 max-w-md w-full">
@@ -74,17 +78,30 @@ export default function DashboardLayout({
               Access to this dashboard requires authentication. Continue to launch the login flow.
             </p>
           </div>
-          <Button
-            onClick={() => {
-              // Pass current path as returnTo so user returns here after login
-              const currentPath = window.location.pathname;
-              window.location.href = getLoginUrl(currentPath);
-            }}
-            size="lg"
-            className="w-full shadow-lg hover:shadow-xl transition-all"
-          >
-            Sign in
-          </Button>
+          <div className="flex flex-col gap-3 w-full">
+            <Button
+              onClick={() => {
+                const url = getLoginUrl(returnTo);
+                if (url && url !== "#") window.location.href = url;
+                else window.location.href = `/login?returnTo=${encodeURIComponent(returnTo)}`;
+              }}
+              size="lg"
+              className="w-full shadow-lg hover:shadow-xl transition-all"
+            >
+              Sign in
+            </Button>
+            {(!import.meta.env.VITE_OAUTH_PORTAL_URL || import.meta.env.DEV) && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  window.location.href = `/login?returnTo=${encodeURIComponent(returnTo)}`;
+                }}
+              >
+                Dev Login (bypass OAuth)
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     );

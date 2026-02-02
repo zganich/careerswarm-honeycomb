@@ -38,9 +38,15 @@ class OAuthService {
     }
   }
 
+  /** Decode state: supports JSON { redirectUri, returnTo } or legacy plain redirectUri */
   private decodeState(state: string): string {
-    const redirectUri = atob(state);
-    return redirectUri;
+    const raw = atob(state);
+    try {
+      const parsed = JSON.parse(raw) as { redirectUri?: string };
+      return typeof parsed?.redirectUri === "string" ? parsed.redirectUri : raw;
+    } catch {
+      return raw;
+    }
   }
 
   async getTokenByCode(
@@ -300,7 +306,7 @@ class SDKServer {
     const signedInAt = new Date();
     let user = await db.getUserByOpenId(sessionUserId);
 
-    // If user not in DB, sync from OAuth server automatically
+    // If user not in DB, sync from OAuth server or create test user
     if (!user) {
       try {
         const userInfo = await this.getUserInfoWithJwt(sessionCookie ?? "");
@@ -313,8 +319,21 @@ class SDKServer {
         });
         user = await db.getUserByOpenId(userInfo.openId);
       } catch (error) {
-        console.error("[Auth] Failed to sync user from OAuth:", error);
-        throw ForbiddenError("Failed to sync user info");
+        // E2E test users: allow test-user-* openIds without Manus (auth-bypass)
+        if (sessionUserId.startsWith("test-user-")) {
+          await db.upsertUser({
+            openId: sessionUserId,
+            name: session.name || "Playwright Test User",
+            email: null,
+            loginMethod: "test",
+            lastSignedIn: signedInAt,
+          });
+          user = await db.getUserByOpenId(sessionUserId);
+        }
+        if (!user) {
+          console.error("[Auth] Failed to sync user from OAuth:", error);
+          throw ForbiddenError("Failed to sync user info");
+        }
       }
     }
 

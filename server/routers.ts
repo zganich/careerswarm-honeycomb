@@ -1,5 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { systemRouter } from "./_core/systemRouter";
+import { gtmRouter } from "./gtm-router";
+import { jdBuilderRouter } from "./jd-builder-router";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import * as db from "./db";
@@ -12,9 +14,148 @@ import { profileRouter } from "./routers/profile";
 // CAREERSWARM - MASTER PROFILE & 7-AGENT SYSTEM
 // ================================================================
 
+// ================================================================
+// PUBLIC ROUTES (no auth) - Resume Roast, etc.
+// ================================================================
+const ROAST_SYSTEM_PROMPT = `You are a cynical VC recruiter who has reviewed 10,000+ resumes this week. You don't sugarcoat. Ever.
+
+Your job: Roast the resume. Give a 0-100 score and exactly 3 "Million-Dollar Mistakes" — specific, brutal, actionable.
+
+What you hate:
+- Buzzwords without metrics (spearheaded, orchestrated, leverage, synergy, utilize, facilitate, robust)
+- "Responsibilities included..." — who cares what they were supposed to do?
+- Vague achievements ("improved efficiency", "enhanced performance")
+- Generic summaries that could apply to any human with a pulse
+- Formatting disasters (walls of text, inconsistent styling)
+- Skills lists that read like keyword dumps
+
+What impresses you (rarely):
+- Specific numbers: "$2.3M ARR", "47% reduction", "3x improvement"
+- Clear cause-and-effect: "Did X, which resulted in Y"
+- Evidence of actual ownership and decision-making
+- Brevity. They have 6 seconds. Make them count.
+
+Output JSON only: score (0-100), verdict (one short sentence), brutalTruth (2-4 sentences of direct critique), and exactly 3 mistakes, each with title, explanation, and fix.`;
+
 export const appRouter = router({
   system: systemRouter,
   profileSections: profileRouter,
+
+  public: router({
+    roast: publicProcedure
+      .input(
+        z.object({
+          resumeText: z.string().min(50, "Resume must be at least 50 characters"),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const resumeText = input.resumeText.trim();
+        const characterCount = resumeText.length;
+        const wordCount = resumeText.split(/\s+/).filter(Boolean).length;
+
+        const response = await invokeLLM({
+          messages: [
+            { role: "system", content: ROAST_SYSTEM_PROMPT },
+            { role: "user", content: `Roast this resume:\n\n${resumeText}` },
+          ],
+          response_format: {
+            type: "json_schema",
+            json_schema: {
+              name: "resume_roast",
+              strict: true,
+              schema: {
+                type: "object",
+                properties: {
+                  score: { type: "number" },
+                  verdict: { type: "string" },
+                  brutalTruth: { type: "string" },
+                  mistakes: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        title: { type: "string" },
+                        explanation: { type: "string" },
+                        fix: { type: "string" },
+                      },
+                      required: ["title", "explanation", "fix"],
+                      additionalProperties: false,
+                    },
+                    minItems: 3,
+                    maxItems: 3,
+                  },
+                },
+                required: ["score", "verdict", "brutalTruth", "mistakes"],
+                additionalProperties: false,
+              },
+            },
+          },
+        });
+
+        const raw = response.choices[0].message.content;
+        const rawStr = typeof raw === "string" ? raw : "";
+        // Strip markdown code blocks if LLM wrapped JSON in ```json ... ```
+        const jsonStr = rawStr
+          .replace(/^```(?:json)?\s*/i, "")
+          .replace(/\s*```\s*$/i, "")
+          .trim();
+        let parsed: {
+          score?: number;
+          verdict?: string;
+          brutalTruth?: string;
+          mistakes?: Array<{ title?: string; explanation?: string; fix?: string }>;
+        } = {};
+        try {
+          parsed = JSON.parse(jsonStr || "{}") as typeof parsed;
+        } catch {
+          console.warn("[Resume Roast] LLM response was not valid JSON, using fallback");
+          parsed = {
+            score: 50,
+            verdict: "Could not parse detailed feedback.",
+            brutalTruth: "The analysis could not be structured. Try again or paste plain text only.",
+            mistakes: [
+              { title: "Parse issue", explanation: "Response format was unexpected.", fix: "Retry with resume text only." },
+              { title: "—", explanation: "—", fix: "—" },
+              { title: "—", explanation: "—", fix: "—" },
+            ],
+          };
+        }
+
+        const score = Math.max(0, Math.min(100, Math.round(Number(parsed.score) || 0)));
+
+        return {
+          score,
+          verdict: String(parsed.verdict ?? "").trim() || "See feedback below.",
+          brutalTruth: String(parsed.brutalTruth ?? "").trim() || "Review the mistakes and improve your resume.",
+          mistakes: (parsed.mistakes ?? []).slice(0, 3).map((m) => ({
+            title: String(m.title ?? "").trim() || "Mistake",
+            explanation: String(m.explanation ?? "").trim() || "",
+            fix: String(m.fix ?? "").trim() || "",
+          })),
+          characterCount,
+          wordCount,
+        };
+      }),
+
+    estimateQualification: publicProcedure
+      .input(
+        z.object({
+          currentRole: z.string().min(2, "Current role must be at least 2 characters"),
+          targetRole: z.string().min(2, "Target role must be at least 2 characters"),
+        })
+      )
+      .mutation(async ({ input }) => {
+        // Stub: returns valid shape for tests; can be replaced with LLM later
+        const score = Math.min(100, Math.max(0, 50 + Math.floor(Math.random() * 40)));
+        const gaps = [
+          { skill: "Domain experience", importance: "critical" as const, suggestion: "Gain experience in target domain." },
+          { skill: "Leadership", importance: "important" as const, suggestion: "Take on project ownership." },
+          { skill: "Communication", importance: "helpful" as const, suggestion: "Present to stakeholders." },
+        ];
+        const reasoning = `Comparison of ${input.currentRole} to ${input.targetRole}: gap analysis based on typical requirements.`;
+        return { score, gaps, reasoning };
+      }),
+  }),
 
   // ================================================================
   // AUTH ROUTES
@@ -27,8 +168,9 @@ export const appRouter = router({
     }),
 
     logout: protectedProcedure.mutation(async ({ ctx }) => {
-      // Logout is handled by clearing the session cookie
-      // This is just a placeholder procedure
+      const { COOKIE_NAME } = await import("@shared/const");
+      const { getSessionCookieOptions } = await import("./_core/cookies");
+      ctx.res.clearCookie(COOKIE_NAME, { ...getSessionCookieOptions(ctx.req), maxAge: 0 });
       return { success: true };
     }),
   }),
@@ -47,6 +189,16 @@ export const appRouter = router({
         completed: user.onboardingCompleted || false,
       };
     }),
+
+    // Flywheel: apply referral (call when user lands with ref=referrerUserId in URL). Referrer gets 30 days Pro when this user completes onboarding.
+    applyReferral: protectedProcedure
+      .input(z.object({ referrerUserId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const user = await db.getUserByOpenId(ctx.user.openId);
+        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        await db.setUserReferredBy(user.id, input.referrerUserId);
+        return { success: true };
+      }),
 
     // Update onboarding step
     updateStep: protectedProcedure
@@ -136,9 +288,10 @@ export const appRouter = router({
       const completedResumes = resumes.filter(r => r.processingStatus === 'completed' && r.extractedText);
 
       if (completedResumes.length === 0) {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "No processed resumes found" });
+        throw new TRPCError({ code: "BAD_REQUEST", message: "No processed resumes found. Upload and process resumes first, then try again." });
       }
 
+      try {
       // Parse each resume with LLM
       const parsedResumes = [];
       for (const resume of completedResumes) {
@@ -227,6 +380,81 @@ export const appRouter = router({
         });
       }
 
+      // Save professional summary, portfolio URLs, parsed contact (pre-fill only)
+      await db.upsertUserProfile(user.id, {
+        professionalSummary: consolidated.professionalSummary || null,
+        portfolioUrls: (consolidated.portfolioUrls?.length ? consolidated.portfolioUrls : null) as any,
+        parsedContactFromResume: consolidated.parsedContact && Object.keys(consolidated.parsedContact).length ? consolidated.parsedContact as any : null,
+      });
+
+      // Save languages
+      for (const lang of consolidated.languages ?? []) {
+        await db.createLanguage({
+          userId: user.id,
+          language: lang.language,
+          proficiency: lang.proficiency ?? undefined,
+          isNative: lang.isNative ?? false,
+        });
+      }
+
+      // Save volunteer experiences
+      for (const v of consolidated.volunteerExperiences ?? []) {
+        await db.createVolunteerExperience({
+          userId: user.id,
+          organization: v.organization,
+          role: v.role ?? undefined,
+          startDate: v.startDate ?? undefined,
+          endDate: v.endDate ?? undefined,
+          description: v.description ?? undefined,
+        });
+      }
+
+      // Save projects
+      for (const p of consolidated.projects ?? []) {
+        await db.createProject({
+          userId: user.id,
+          name: p.name,
+          description: p.description ?? undefined,
+          url: p.url ?? undefined,
+          role: p.role ?? undefined,
+          startDate: p.startDate ?? undefined,
+          endDate: p.endDate ?? undefined,
+        });
+      }
+
+      // Save publications
+      for (const pub of consolidated.publications ?? []) {
+        await db.createPublication({
+          userId: user.id,
+          title: pub.title,
+          publisherOrVenue: pub.publisherOrVenue ?? undefined,
+          year: pub.year ?? undefined,
+          url: pub.url ?? undefined,
+          context: pub.context ?? undefined,
+        });
+      }
+
+      // Save security clearances
+      for (const c of consolidated.securityClearances ?? []) {
+        await db.createSecurityClearance({
+          userId: user.id,
+          clearanceType: c.clearanceType,
+          level: c.level ?? undefined,
+          expiryDate: c.expiryDate ?? undefined,
+        });
+      }
+
+      // Save licenses (as certifications with type 'license')
+      for (const lic of consolidated.licenses ?? []) {
+        await db.createCertification({
+          userId: user.id,
+          certificationName: lic.name,
+          issuingOrganization: lic.organization ?? null,
+          issueYear: lic.year ?? null,
+          type: "license",
+        } as any);
+      }
+
       // Generate superpowers
       const allAchievements = consolidated.workExperiences.flatMap(we => we.achievements);
       const superpowers = await generateSuperpowers(allAchievements);
@@ -249,6 +477,15 @@ export const appRouter = router({
         skills: consolidated.skills.length,
         superpowers: superpowers,
       };
+      } catch (err) {
+        console.error("[parseResumes] Failed:", err);
+        const message = err instanceof Error ? err.message : String(err);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Resume parsing failed. Please try again or use a different file. If it keeps failing, try a shorter or simpler resume.",
+          cause: err instanceof Error ? err : undefined,
+        });
+      }
     }),
 
     // Legacy code - keep for backward compatibility
@@ -526,6 +763,8 @@ Each superpower should:
 
         // Mark onboarding as complete
         await db.updateUserOnboardingStep(user.id, 5, true);
+        // Flywheel: grant referrer 30 days Pro when referred user completes first resume ingestion
+        await db.grantReferrer30DaysProIfReferred(user.id);
 
         return { success: true };
       }),
@@ -540,13 +779,36 @@ Each superpower should:
       const user = await db.getUserByOpenId(ctx.user.openId);
       if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
-      const [userProfile, workExperiences, achievements, skills, superpowers, preferences] = await Promise.all([
+      const [
+        userProfile,
+        workExperiences,
+        achievements,
+        skills,
+        superpowers,
+        preferences,
+        education,
+        certifications,
+        awards,
+        languages,
+        volunteerExperiences,
+        projects,
+        publications,
+        securityClearances,
+      ] = await Promise.all([
         db.getUserProfile(user.id),
         db.getWorkExperiences(user.id),
         db.getAchievements(user.id),
         db.getSkills(user.id),
         db.getSuperpowers(user.id),
         db.getTargetPreferences(user.id),
+        db.getEducation(user.id),
+        db.getCertifications(user.id),
+        db.getAwards(user.id),
+        db.getLanguages(user.id),
+        db.getVolunteerExperiences(user.id),
+        db.getProjects(user.id),
+        db.getPublications(user.id),
+        db.getSecurityClearances(user.id),
       ]);
 
       return {
@@ -561,6 +823,14 @@ Each superpower should:
         skills,
         superpowers,
         preferences,
+        education,
+        certifications,
+        awards,
+        languages,
+        volunteerExperiences,
+        projects,
+        publications,
+        securityClearances,
       };
     }),
 
@@ -806,12 +1076,13 @@ Each superpower should:
       const user = await db.getUserByOpenId(ctx.user.openId);
       if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
-      const [userProfile, workExperiences, achievements, skills, preferences] = await Promise.all([
+      const [userProfile, workExperiences, achievements, skills, preferences, languages] = await Promise.all([
         db.getUserProfile(user.id),
         db.getWorkExperiences(user.id),
         db.getAchievements(user.id),
         db.getSkills(user.id),
         db.getTargetPreferences(user.id),
+        db.getLanguages(user.id),
       ]);
 
       // Calculate completeness score (0-100)
@@ -877,6 +1148,13 @@ Each superpower should:
       } else {
         missing.push("Target preferences");
       }
+
+      // Profile richness (up to 5 bonus points; total capped at 100; optional, no penalty if missing)
+      let richness = 0;
+      if (userProfile?.professionalSummary?.trim()) richness += 2;
+      if (languages.length >= 1) richness += 2;
+      if (userProfile?.portfolioUrls && Array.isArray(userProfile.portfolioUrls) && userProfile.portfolioUrls.length > 0) richness += 1;
+      score = Math.min(100, score + richness);
 
       return {
         score,
@@ -1145,13 +1423,14 @@ Each superpower should:
         }
 
         // Get user profile and preferences
-        const [profile, workExperiences, achievements, skills, superpowers, preferences] = await Promise.all([
+        const [profile, workExperiences, achievements, skills, superpowers, preferences, educationList] = await Promise.all([
           db.getUserProfile(user.id),
           db.getWorkExperiences(user.id),
           db.getAchievements(user.id),
           db.getSkills(user.id),
           db.getSuperpowers(user.id),
           db.getTargetPreferences(user.id),
+          db.getEducation(user.id),
         ]);
 
         const userProfile = {
@@ -1165,7 +1444,8 @@ Each superpower should:
 
         // Import all agents
         const { ProfilerAgent } = await import("./agents/profiler");
-        const { QualifierAgent, HunterAgent, TailorAgent, ScribeAgent, AssemblerAgent } = await import("./agents/remaining");
+        const { QualifierAgent, HunterAgent, ScribeAgent, AssemblerAgent } = await import("./agents/remaining");
+        const { tailorResume } = await import("./agents/tailor");
 
         // AGENT 2: Profiler - Analyze company
         const profiler = new ProfilerAgent(user.id, userProfile);
@@ -1186,9 +1466,37 @@ Each superpower should:
         const hunter = new HunterAgent(user.id);
         const contacts = await hunter.execute(opportunity);
 
-        // AGENT 5: Tailor - Generate resume
-        const tailor = new TailorAgent(user.id, userProfile);
-        const resume = await tailor.execute(opportunity, analysis);
+        // AGENT 5: Tailor - Generate resume (unified tailorResume with addendum rules)
+        const tailorUserProfile = {
+          fullName: user.name || "User",
+          email: user.email || "",
+          phone: (profile as any)?.phone || "",
+          location: (profile as any)?.locationCity || "",
+          linkedIn: (profile as any)?.linkedinUrl || "",
+          workExperience: workExperiences.map((exp: any) => ({
+            company: exp.companyName,
+            title: exp.jobTitle,
+            startDate: exp.startDate?.toISOString?.()?.split("T")[0] ?? "",
+            endDate: exp.endDate ? exp.endDate.toISOString?.()?.split("T")[0] ?? "" : "Present",
+            achievements: achievements
+              .filter((ach: any) => ach.workExperienceId === exp.id)
+              .map((ach: any) => ach.description),
+          })),
+          skills: skills.map((s: any) => s.skillName),
+          education: educationList.map((e: any) => ({
+            institution: e.institution,
+            degree: e.degreeType || "",
+            field: e.fieldOfStudy || "",
+            graduationYear: String(e.graduationYear ?? ""),
+          })),
+        };
+        const resumeResult = await tailorResume({
+          userProfile: tailorUserProfile,
+          jobDescription: opportunity.jobDescription || "",
+          companyName: opportunity.companyName,
+          roleTitle: opportunity.roleTitle,
+        });
+        const resume = resumeResult.resumeMarkdown;
 
         // AGENT 6: Scribe - Write outreach
         const scribe = new ScribeAgent(user.id, userProfile);
@@ -1352,12 +1660,15 @@ Each superpower should:
               topAchievements: achievements.slice(0, 3).map(ach => ach.description)
             };
 
-            // Generate resume
+            // Generate resume (pass pivot context when available for Format B)
             const resumeResult = await tailorResume({
               userProfile: tailorUserProfile,
               jobDescription: opportunity.jobDescription || "",
               companyName: opportunity.companyName,
               roleTitle: opportunity.roleTitle,
+              ...(application.pivotAnalysis && {
+                pivotContext: application.pivotAnalysis,
+              }),
             }, {
               applicationId: application.id,
               userId: user.id,
@@ -1419,14 +1730,32 @@ Each superpower should:
               message: `Your application package for ${opportunity.companyName} - ${opportunity.roleTitle} is ready to download.`,
               applicationId: application.id,
             });
+
+            // Production metrics: log success for package generation
+            await db.logAgentExecution({
+              userId: user.id,
+              agentName: "PackagePipeline",
+              executionType: "package_generation",
+              status: "success",
+            });
           } catch (error) {
             console.error("Package generation failed:", error);
-            // Send error notification
+
+            // Production metrics: log failure for package generation
+            await db.logAgentExecution({
+              userId: user.id,
+              agentName: "PackagePipeline",
+              executionType: "package_generation",
+              status: "failed",
+              errorMessage: error instanceof Error ? error.message : String(error),
+            });
+
+            // Send error notification with actionable message
             await db.createNotification({
               userId: user.id,
               type: "application_package_error",
               title: "Package Generation Failed",
-              message: "There was an error generating your application package. Please try again.",
+              message: "We couldn't generate your application package. Please try again in a few minutes, or open the application and use \"Generate Package\" again.",
               applicationId: input.applicationId,
             });
           }
@@ -1620,110 +1949,8 @@ Each superpower should:
       }),
   }),
 
-  // ================================================================
-  // PUBLIC ROUTES (No authentication required)
-  // ================================================================
-  public: router({
-    // Resume Roast - Lead magnet for user acquisition
-    roast: publicProcedure
-      .input(z.object({
-        resumeText: z.string().min(50, "Resume must be at least 50 characters"),
-      }))
-      .mutation(async ({ input }) => {
-        const { resumeText } = input;
-        
-        // Calculate basic metrics
-        const characterCount = resumeText.length;
-        const wordCount = resumeText.trim().split(/\s+/).length;
-        
-        // Use LLM to analyze resume and provide brutal feedback
-        const prompt = `You are a brutally honest, wickedly funny resume critic with a dark sense of humor. Think Gordon Ramsay meets a career coach. Your job is to roast this resume while being entertaining AND helpful.
-
-Analyze this resume and provide:
-1. A score from 0-100 (be harsh but fair)
-2. A one-word verdict (e.g., "Mediocre", "Tragic", "Meh", "Decent", "Impressive")
-3. A brutally honest, FUNNY truth about the resume (1-2 sentences with wit, sarcasm, or dark humor)
-4. Exactly 3 specific mistakes or weaknesses (be specific, actionable, AND entertaining - use metaphors, comparisons, or humor)
-
-Examples of good brutal truths:
-- "This resume reads like a Wikipedia article written by someone who's never had a job."
-- "Your achievements section is more generic than a fortune cookie."
-- "If buzzword bingo were an Olympic sport, you'd take home the gold."
-
-Resume:
-${resumeText}
-
-Respond in JSON format:
-{
-  "score": number,
-  "verdict": string,
-  "brutalTruth": string,
-  "mistakes": [string, string, string]
-}`;
-
-        try {
-          const response = await invokeLLM({
-            messages: [
-              { role: "system", content: "You are a brutally honest, wickedly funny resume critic with a dark sense of humor (think Gordon Ramsay meets a career coach). Be entertaining AND helpful. Always respond with valid JSON." },
-              { role: "user", content: prompt }
-            ]
-          });
-
-          // Safely extract and parse LLM response
-          if (!response || !response.choices || response.choices.length === 0) {
-            throw new Error('Invalid LLM response structure');
-          }
-          
-          const messageContent = response.choices[0]?.message?.content;
-          if (!messageContent || typeof messageContent !== 'string') {
-            throw new Error('LLM response content is missing or invalid');
-          }
-          
-          // Strip markdown code blocks if present
-          let jsonContent = messageContent.trim();
-          if (jsonContent.startsWith('```json')) {
-            jsonContent = jsonContent.replace(/^```json\n?/, '').replace(/\n?```$/, '');
-          } else if (jsonContent.startsWith('```')) {
-            jsonContent = jsonContent.replace(/^```\n?/, '').replace(/\n?```$/, '');
-          }
-          
-          const analysis = JSON.parse(jsonContent);
-          
-          // Validate the parsed analysis has required fields
-          if (!analysis || typeof analysis.score !== 'number' || !analysis.verdict || !analysis.brutalTruth || !Array.isArray(analysis.mistakes)) {
-            throw new Error('LLM response missing required fields');
-          }
-          
-          return {
-            score: analysis.score || 50,
-            verdict: analysis.verdict || "Needs Work",
-            brutalTruth: analysis.brutalTruth || "Your resume needs significant improvement.",
-            mistakes: analysis.mistakes || [
-              "Lacks quantifiable achievements",
-              "Generic descriptions without impact",
-              "Missing key skills and keywords"
-            ],
-            characterCount,
-            wordCount
-          };
-        } catch (error) {
-          console.error("Resume roast error:", error);
-          // Fallback response if LLM fails
-          return {
-            score: 50,
-            verdict: "Needs Work",
-            brutalTruth: "Your resume needs significant improvement to stand out.",
-            mistakes: [
-              "Lacks quantifiable achievements with specific metrics",
-              "Generic job descriptions without demonstrating impact",
-              "Missing key skills and industry keywords"
-            ],
-            characterCount,
-            wordCount
-          };
-        }
-      }),
-  }),
+  gtm: gtmRouter,
+  jdBuilder: jdBuilderRouter,
 });
 
 export type AppRouter = typeof appRouter;

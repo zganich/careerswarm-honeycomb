@@ -6,6 +6,8 @@
 **Environment:** Manus Cloud Sandbox  
 **Reference:** CLAUDE_MANUS_HANDOFF.md
 
+> **Latest full report (Phases 1–4 complete):** [E2E_TEST_REPORT_2026-01-31.md](./E2E_TEST_REPORT_2026-01-31.md) — commit 4f132003, production-ready 95%.
+
 ---
 
 ## Phase 1: Environment Setup Validation ✅ PASSED
@@ -460,4 +462,38 @@ Cannot proceed with Phase 2 testing (application package generation) until authe
 ---
 
 **Session Status:** ⏸️ PAUSED - Waiting for authentication fix
+
+---
+
+## Re-validation (Feb 2, 2026 — Post–merge)
+
+**Context:** Validation re-run on latest commit after resolving merge conflicts and Dev Login cookie fix (sameSite/secure for localhost).
+
+### Fixes applied this session
+
+- **Merge conflict markers removed** in `server/_core/oauth.ts` and `server/routers.ts`.
+- **OAuth callback:** Kept cookie setting + redirect to `redirectUrl` (returnTo from state already applied above).
+- **tailorResume call:** Merged both `pivotContext` in first arg and `{ applicationId, userId }` in second arg.
+- **Duplicate `public` router removed:** A second `public: router({ roast... })` block (lines 1955–2063) was removed; `public.roast` already exists at line 44.
+- **ResumeRoast.tsx:** Typed `mistakes.map` callback `(m, i)` to fix implicit `any`.
+
+### Validation results
+
+| Step | Status | Notes |
+|------|--------|------|
+| `pnpm run verify-env` | ✅ Passed | Required env vars OK; optional AWS/SENTRY unset. |
+| `pnpm run check` (tsc) | ⚠️ Errors | Merge/duplicate issues fixed; remaining errors from db/schema drift (e.g. GTM/JD/referee methods, ParsedResume fields, `application.pivotAnalysis`). |
+| `pnpm run build` | ✅ Passed | Vite + esbuild completed; chunk size warning. |
+| `pnpm test` (Vitest) | ⚠️ Partial | **123 passed**, 13 failed, 35 skipped. Failures: profile-sections (5, db API), agent-metrics (4, OPENAI_KEY/manus-md-to-pdf/DB), e2e-credentials (3, env), analytics (1). |
+| `npx playwright test` | ⏳ Timeout | 101 tests, 1 worker; run started but timed out at 120s. |
+
+### Summary
+
+- **Environment:** OK.
+- **Build:** OK.
+- **TypeScript:** Clean for conflict/duplicate fixes; remaining `tsc` errors are pre-existing (db/schema, types).
+- **Vitest:** Majority passing; failures are env/tooling (OPENAI_KEY, manus-md-to-pdf, TEST_USER_*, DB) or profile-section DB API mismatch.
+- **Playwright:** Not fully re-run; consider `npx playwright test --reporter=line` or increased timeout for full run.
+
+Re-validation can be re-run after Manus OAuth whitelist or full env (OPENAI_KEY, DB, TEST_USER_*, manus-md-to-pdf) is configured.
 

@@ -9,57 +9,42 @@ function getQueryParam(req: Request, key: string): string | undefined {
   return typeof value === "string" ? value : undefined;
 }
 
+/** Dev-only: enable test-login when not production OR ENABLE_DEV_LOGIN=true */
+function isDevLoginEnabled(): boolean {
+  if (process.env.ENABLE_DEV_LOGIN === "true") return true;
+  return process.env.NODE_ENV !== "production";
+}
+
 export function registerOAuthRoutes(app: Express) {
-  // Test endpoint to verify OAuth routes are working
-  app.get("/api/oauth/test", (req: Request, res: Response) => {
-    console.log('[OAuth] Test endpoint hit!');
-    res.json({ status: 'OAuth routes are registered and working' });
-  });
-  
-  // Development test login endpoint - uses TEST_USER credentials
-  app.get("/api/oauth/test-login", async (req: Request, res: Response) => {
-    try {
-      const testEmail = process.env.TEST_USER_EMAIL;
-      if (!testEmail) {
-        return res.status(500).json({ error: 'TEST_USER_EMAIL not configured' });
-      }
-      
-      const testOpenId = 'test-user-' + testEmail;
-      
-      // Create or update test user in database
-      await db.upsertUser({
-        openId: testOpenId,
-        name: 'Test User',
-        email: testEmail,
-        loginMethod: 'test',
-        lastSignedIn: new Date(),
-      });
-      
-      // Create session token
-      const sessionToken = await sdk.createSessionToken(testOpenId, {
-        name: 'Test User',
-        expiresInMs: ONE_YEAR_MS,
-      });
-      
-      // Set cookie
-      const cookieOptions = getSessionCookieOptions(req);
-      res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
-      console.log('[OAuth] Test login successful for:', testEmail);
-      console.log('[OAuth] Cookie options:', cookieOptions);
-      console.log('[OAuth] Session token set:', sessionToken ? 'YES' : 'NO');
-      
-      // Also return token in response body for localStorage fallback
-      res.json({ 
-        success: true, 
-        sessionToken,
-        message: 'Login successful - redirecting...'
-      });
-    } catch (error) {
-      console.error('[OAuth] Test login failed:', error);
-      res.status(500).json({ error: 'Test login failed' });
+  // Dev login: bypass OAuth when cookies/redirect don't work (local, preview URLs)
+  app.post("/api/auth/test-login", async (req: Request, res: Response) => {
+    if (!isDevLoginEnabled()) {
+      res.status(403).json({ error: "Dev login is disabled in production" });
+      return;
     }
+    const email = typeof req.body?.email === "string" ? req.body.email.trim() : "";
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      res.status(400).json({ error: "Valid email is required" });
+      return;
+    }
+    const openId = `dev-${email}`;
+    await db.upsertUser({
+      openId,
+      name: email.split("@")[0],
+      email,
+      loginMethod: "dev",
+      lastSignedIn: new Date(),
+    });
+    const sessionToken = await sdk.createSessionToken(openId, {
+      name: email.split("@")[0],
+      expiresInMs: ONE_YEAR_MS,
+    });
+    const cookieOptions = getSessionCookieOptions(req);
+    res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
+    const returnTo = typeof req.body?.returnTo === "string" ? req.body.returnTo : "/dashboard";
+    res.status(200).json({ success: true, redirect: returnTo });
   });
-  
+
   app.get("/api/oauth/callback", async (req: Request, res: Response) => {
     console.log('[OAuth] Callback hit!', { 
       query: req.query,
@@ -109,8 +94,8 @@ export function registerOAuthRoutes(app: Express) {
       }
 
       const cookieOptions = getSessionCookieOptions(req);
-      console.log('[OAuth] Setting cookie with options:', { 
-        cookieName: COOKIE_NAME, 
+      console.log('[OAuth] Setting cookie with options:', {
+        cookieName: COOKIE_NAME,
         options: { ...cookieOptions, maxAge: ONE_YEAR_MS },
         hostname: req.hostname,
         protocol: req.protocol,
@@ -119,7 +104,7 @@ export function registerOAuthRoutes(app: Express) {
       });
       res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
       console.log('[OAuth] Cookie set successfully, redirecting to:', redirectUrl);
-      
+
       res.redirect(302, redirectUrl);
     } catch (error) {
       console.error("[OAuth] Callback failed", error);

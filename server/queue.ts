@@ -16,6 +16,7 @@ export enum QueueName {
   TRACK_STATUS = "track-status",
   SEND_EMAIL = "send-email",
   ANALYZE_ACHIEVEMENT = "analyze-achievement",
+  GTM_PIPELINE = "gtm-pipeline",
 }
 
 /**
@@ -73,6 +74,24 @@ export interface SendEmailData {
 export interface AnalyzeAchievementData {
   userId: number;
   achievementId: number;
+}
+
+/** GTM pipeline job types */
+export type GtmJobStep =
+  | "strategy"
+  | "lead_discovery"
+  | "enrichment"
+  | "scoring"
+  | "outreach_draft"
+  | "outreach_send"
+  | "content"
+  | "report";
+
+export interface GtmPipelineData {
+  step: GtmJobStep;
+  channel?: string; // linkedin | reddit | twitter | company_site | job_board | newsletter | event
+  vertical?: string; // buyer type or industry tag
+  payload?: Record<string, unknown>;
 }
 
 /**

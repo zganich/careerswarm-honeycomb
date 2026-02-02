@@ -39,10 +39,13 @@ export function getSessionCookieOptions(
   //       ? hostname
   //       : undefined;
 
+  // On localhost/HTTP, use lax + secure:false so the cookie persists (Dev Login).
+  // On HTTPS (production/preview), use none + secure:true for cross-site OAuth.
+  const secure = isSecureRequest(req);
   return {
     httpOnly: true,
     path: "/",
-    sameSite: "none",
-    secure: true, // Force secure for sameSite=none
+    sameSite: secure ? "none" : "lax",
+    secure,
   };
 }

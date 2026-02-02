@@ -26,6 +26,12 @@ interface TailorInput {
   jobDescription: string;
   companyName: string;
   roleTitle: string;
+  /** When present (career pivot), force Format B (Strategic Hybrid) with bridge skills at top */
+  pivotContext?: {
+    bridgeSkills?: Array<{ skill: string; toContext: string }>;
+    pivotStrategy?: string;
+    transferableStrengths?: string[];
+  };
 }
 
 interface TailorOutput {
@@ -55,6 +61,31 @@ export async function tailorResume(input: TailorInput, options?: { applicationId
   const systemPrompt = `You are an expert Executive Recruiter and Resume Strategist.
 
 Your task is to rewrite the user's resume to align perfectly with the target Job Description (JD).
+
+**PHASE 0 - Classify Job Persona & Select Format (Do this first):**
+1. Analyze the JD. Classify as: Federal, Tech, Creative, Healthcare, Skilled Trades, or Corporate.
+2. Select base format:
+   - **Format A (Enhanced Reverse-Chronological)**: Corporate, Finance, Legal, Operations. Default for 90% of roles. Avoid if user has >6 month employment gaps.
+   - **Format B (Strategic Hybrid)**: Career changers, pivot roles, executives, squiggly paths. Put robust Skills/Summary section at top, then work history.
+   - **Format C (Functional)**: ONLY for massive employment gaps returning to workforce. Mark as HIGH RISK for ATS.
+
+**Sectoral Optimization Rules (apply based on job persona):**
+- **Tech & Engineering**: Artifact links (GitHub, Portfolio), Tech Stack section before Experience, Google XYZ formula (Accomplished [X] as measured by [Y], by doing [Z]), metrics (latency, scalability, uptime)
+- **Creative & Design**: Portfolio link mandatory, Visual-Strategic layout (clean typography, no columns/tables), metrics (conversion, engagement)
+- **Federal (USA)**: 2-page max, include hours/week + salary + supervisor, dates MM/DD/YYYY
+- **Healthcare & Medical Sales**: Keywords: GMP, Clinical Trials, Quota Attainment; Hybrid format; certifications/licenses prominent
+- **Skilled Trades**: Equipment proficiency, safety records, apprenticeship; quantify reliability (0 incidents, 100% pass rate)
+
+**Regional Compliance (infer from job location):**
+- **North America / UK / Australia**: No photos, age, marital status, religion; achievement-driven "I" statements
+- **Germany / DACH**: Professional headshot expected, strict chronological, explain timeline gaps
+- **France / Asia**: Photos acceptable; education often higher (France)
+
+**ATS Safe Parse Guardrails (enforce in output):**
+- Dates: MM/YYYY or Month YYYY only; never "Summer 2026"
+- Layout: Single-column, no text boxes, sidebars, or tables
+- Fonts: Arial, Calibri, Helvetica only
+- Headers: Use "Experience", "Education", "Skills" — not creative labels like "My Journey"
 
 **CRITICAL RULES - "Gold Standard":**
 
@@ -94,12 +125,20 @@ Your task is to rewrite the user's resume to align perfectly with the target Job
 - Removes irrelevant experience
 - Keeps to 1-2 pages maximum`;
 
+  const pivotBlock = input.pivotContext
+    ? `
+
+**CAREER PIVOT - FORCE FORMAT B (Strategic Hybrid):**
+This application is a career pivot. Use Format B: place a robust Skills/Summary section at the top framing capabilities and bridge skills, then work history.${input.pivotContext.pivotStrategy ? ` Strategy: ${input.pivotContext.pivotStrategy}` : ""}${input.pivotContext.transferableStrengths?.length ? ` Highlight: ${input.pivotContext.transferableStrengths.join(", ")}` : ""}
+`
+    : "";
+
   const userPrompt = `**JOB DESCRIPTION:**
 ${input.jobDescription}
 
 **COMPANY:** ${input.companyName}
 **ROLE:** ${input.roleTitle}
-
+${pivotBlock}
 **USER PROFILE:**
 Name: ${input.userProfile.fullName}
 Email: ${input.userProfile.email}
@@ -127,6 +166,7 @@ ${edu.institution}, ${edu.graduationYear}
 ---
 
 **INSTRUCTIONS:**
+0. Classify the job persona (Federal, Tech, Creative, Healthcare, Skilled Trades, Corporate) and select the appropriate format (A, B, or C) per the rules above. Apply the matching sectoral and regional rules to your output.
 1. Extract key requirements and keywords from the JD
 2. Select the most relevant achievements from the user's experience
 3. Rewrite each achievement in CAR format with quantified results

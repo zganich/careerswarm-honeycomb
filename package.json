@@ -11,9 +11,11 @@
     "format": "prettier --write .",
     "test": "vitest run",
     "db:push": "drizzle-kit generate && drizzle-kit migrate",
+    "db:migrate": "node scripts/run-migrate.mjs",
     "precommit": "git secrets --scan",
     "seed": "tsx scripts/seed.ts",
-    "validate": "tsx scripts/validate-production.mjs"
+    "validate": "tsx scripts/validate-production.mjs",
+    "verify-env": "node scripts/verify-env.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.693.0",

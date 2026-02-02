@@ -15,16 +15,21 @@ import {
 } from "lucide-react";
 import { PSYCH_COPY } from "./CopyConstants";
 
-export function TransformationHero() {
+type TransformationHeroProps = {
+  onCtaPrimary?: () => void;
+  onCtaSecondary?: () => void;
+};
+
+export function TransformationHero({ onCtaPrimary, onCtaSecondary }: TransformationHeroProps = {}) {
   return (
     <section className="relative min-h-[70vh] flex items-center justify-center px-4 pt-20 md:pt-24 pb-8 overflow-hidden bg-gradient-to-b from-slate-50 to-white">
       
       {/* Main Content */}
       <div className="max-w-6xl mx-auto text-center">
         
-        {/* Headline */}
+        {/* Headline — responsive: 320px, 768px, 1024px, 1920px */}
         <motion.h1 
-          className="text-5xl md:text-7xl font-bold text-slate-900 mb-3 mt-0"
+          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-slate-900 mb-4 mt-8 break-words"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -33,7 +38,7 @@ export function TransformationHero() {
         </motion.h1>
         
         <motion.p 
-          className="text-xl md:text-2xl text-slate-600 mb-6 max-w-3xl mx-auto"
+          className="text-lg sm:text-xl md:text-2xl text-slate-600 mb-12 max-w-3xl mx-auto break-words"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
@@ -190,13 +195,21 @@ export function TransformationHero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.6 }}
         >
-          <button className="group relative px-7 py-3.5 bg-orange-500 hover:bg-orange-600 text-white text-lg font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+          <button
+            type="button"
+            onClick={onCtaPrimary}
+            className="group relative px-8 py-4 bg-orange-500 hover:bg-orange-600 text-white text-lg font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+          >
             <span className="relative z-10">{PSYCH_COPY.hero.ctaPrimary}</span>
             {/* Heartbeat Animation */}
             <span className="absolute inset-0 rounded-xl bg-orange-400 animate-ping opacity-20" />
           </button>
           
-          <button className="px-7 py-3.5 bg-white hover:bg-slate-50 text-slate-700 text-lg font-medium rounded-xl border-2 border-slate-200 transition-all duration-300">
+          <button
+            type="button"
+            onClick={onCtaSecondary}
+            className="px-8 py-4 bg-white hover:bg-slate-50 text-slate-700 text-lg font-medium rounded-xl border-2 border-slate-200 transition-all duration-300"
+          >
             {PSYCH_COPY.hero.ctaSecondary}
           </button>
         </motion.div>

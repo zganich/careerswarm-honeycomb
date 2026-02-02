@@ -60,3 +60,19 @@ export function getTierFeatures(tier: "free" | "pro") {
 export function getTierPrice(tier: "free" | "pro") {
   return SUBSCRIPTION_TIERS[tier.toUpperCase() as SubscriptionTier].price;
 }
+
+/** B2B Job Description Builder tiers (for recruiters/corporations) */
+export const B2B_JD_TIERS = {
+  RECRUITER: {
+    name: "Recruiter",
+    price: 199,
+    priceId: process.env.STRIPE_RECRUITER_PRICE_ID ?? "price_recruiter_monthly",
+    jdsPerMonth: 20,
+  },
+  CORPORATE: {
+    name: "Corporate",
+    price: 499,
+    priceId: process.env.STRIPE_CORPORATE_PRICE_ID ?? "price_corporate_monthly",
+    jdsPerMonth: 50,
+  },
+} as const;
