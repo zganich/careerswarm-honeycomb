@@ -1158,3 +1158,14 @@ See TEST_RESULTS.md for comprehensive documentation.
 - [x] Include feature comparison table
 - [x] Add FAQ section about pricing
 
+
+---
+
+## 🐛 HERO SECTION VISUAL OVERLAP (Feb 1, 2026)
+
+### Icon Overlap Issue ✅ FIXED
+- [x] Fix spacing between "scattered career data" icons and CTA buttons
+- [x] Increase margin-bottom on visual card containers (mb-12 md:mb-16)
+- [x] Test on desktop, tablet, and mobile viewports
+- [x] Ensure no overlap at any breakpoint
+

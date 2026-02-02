@@ -43,7 +43,7 @@ export function TransformationHero() {
 
         {/* Split-Screen Transformation Visual */}
         <motion.div 
-          className="flex flex-col md:flex-row items-center justify-center gap-6 mb-6"
+          className="flex flex-col md:flex-row items-center justify-center gap-6 mb-12 md:mb-16"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.4 }}
