@@ -1132,3 +1132,29 @@ See TEST_RESULTS.md for comprehensive documentation.
 - [x] Fix routing to properly redirect to next onboarding step (added /onboarding/welcome alias)
 - [x] Test complete onboarding flow (Welcome → Upload → Extraction → Review → Preferences)
 
+
+---
+
+## 🐛 HOMEPAGE NAVIGATION FIXES (Feb 1, 2026)
+
+### Navigation Links Not Working ✅ FIXED
+- [x] Fix Technology nav link (scrolls to #features section)
+- [x] Fix Evidence Engine nav link (scrolls to #proof section)
+- [x] Fix Enterprise nav link (goes to /pricing page)
+- [x] Fix Resume Roast nav link (goes to /roast)
+
+### Missing Login Link ✅ FIXED
+- [x] Add "Sign In" button to navigation
+- [x] Link to Manus OAuth login flow
+- [x] Style consistently with existing navigation
+
+### Tagline Line Break Issue ✅ FIXED
+- [x] Fix "You Sleep" to stay on same line using non-breaking spaces
+- [x] Adjust responsive breakpoints if needed
+- [x] Test on mobile, tablet, and desktop viewports
+
+### Pricing Information Missing ✅ FIXED
+- [x] Add pricing tiers to /pricing page (Free, Pro, Enterprise)
+- [x] Include feature comparison table
+- [x] Add FAQ section about pricing
+

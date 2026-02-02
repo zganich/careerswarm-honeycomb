@@ -4,7 +4,7 @@ export const PSYCH_COPY = {
   // Hero Section
   hero: {
     headline: "Stop Rewriting Your Resume.",
-    subheadline: "Build One Master Profile. Auto-Apply to Hundreds of Jobs While You Sleep.",
+    subheadline: "Build One Master Profile. Auto-Apply to Hundreds of Jobs While\u00A0You\u00A0Sleep.",
     ctaPrimary: "Build My Master Profile",
     ctaSecondary: "See a Sample Profile",
   },

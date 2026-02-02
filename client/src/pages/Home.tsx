@@ -21,17 +21,25 @@ const Home = () => {
             <span className="text-xl font-bold tracking-tight text-slate-900">CareerSwarm</span>
           </div>
           <div className="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-600">
-            <a href="#features" className="hover:text-orange-600 transition-colors">Technology</a>
-            <a href="#proof" className="hover:text-orange-600 transition-colors">Evidence Engine</a>
-            <a href="#pricing" className="hover:text-orange-600 transition-colors">Enterprise</a>
+            <a href="#features" className="hover:text-orange-600 transition-colors cursor-pointer">Technology</a>
+            <a href="#proof" className="hover:text-orange-600 transition-colors cursor-pointer">Evidence Engine</a>
+            <button onClick={() => setLocation('/pricing')} className="hover:text-orange-600 transition-colors">Enterprise</button>
             <button onClick={() => setLocation('/roast')} className="hover:text-orange-600 transition-colors">Resume Roast</button>
           </div>
-          <button 
-            onClick={() => setLocation('/onboarding/welcome')}
-            className="bg-slate-900 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-orange-600 transition-all shadow-lg shadow-orange-500/20"
-          >
-            Build My Master Profile
-          </button>
+          <div className="flex items-center space-x-4">
+            <button 
+              onClick={() => window.location.href = `${import.meta.env.VITE_OAUTH_PORTAL_URL}?app_id=${import.meta.env.VITE_APP_ID}&redirect_uri=${window.location.origin}/api/oauth/callback`}
+              className="text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors"
+            >
+              Sign In
+            </button>
+            <button 
+              onClick={() => setLocation('/onboarding/welcome')}
+              className="bg-slate-900 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-orange-600 transition-all shadow-lg shadow-orange-500/20"
+            >
+              Build My Master Profile
+            </button>
+          </div>
         </div>
       </nav>
 
