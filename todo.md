@@ -1151,3 +1151,14 @@ See TEST_RESULTS.md for comprehensive documentation.
 - [ ] Review onboarding step sequence based on file timestamps
 - [ ] Ensure logical flow: Welcome → Upload → Extraction → Review → Preferences
 - [ ] Verify all steps are accessible and functional
+
+## 🎯 OPTION C: CTA ABOVE + BELOW ANIMATION (Feb 2, 2026)
+
+### Implementation Tasks
+- [x] Simplify SwarmNarrative animation for 2026+ conversion-focused design
+- [x] Reduce visual complexity - focus on transformation moment vs showing all 7 agents
+- [x] Add bottom CTA section below animation (duplicate CTAs + safety latch)
+- [x] Add motion cue when animation completes to draw attention to bottom CTA
+- [x] Test conversion flow: immediate CTA vs educated CTA after animation
+- [ ] Verify both CTA sets track conversions separately in PostHog (requires analytics setup)
+- [ ] Mobile optimization for dual CTA layout (test on 375px viewport)
