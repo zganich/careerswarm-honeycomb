@@ -44,7 +44,7 @@ const Home = () => {
       </nav>
 
       {/* --- HERO: 7-AGENT ASSEMBLY LINE --- */}
-      <section className="relative min-h-[95vh] flex items-center justify-center px-6 pt-20 pb-12 overflow-hidden bg-gradient-to-b from-slate-50 to-white">
+      <section className="relative min-h-[90vh] flex items-center justify-center px-6 pt-16 pb-8 overflow-hidden bg-gradient-to-b from-slate-50 to-white">
         {/* Dot Grid Background */}
         <div className="absolute inset-0 opacity-30" style={{
           backgroundImage: 'radial-gradient(circle, #e2e8f0 1px, transparent 1px)',
@@ -55,21 +55,21 @@ const Home = () => {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-gradient-to-br from-orange-200/20 via-orange-100/10 to-transparent rounded-full blur-3xl"></div>
 
         {/* Content */}
-        <div className="relative z-10 flex flex-col items-center justify-center text-center gap-6 max-w-7xl mx-auto w-full">
+        <div className="relative z-10 flex flex-col items-center justify-center text-center gap-4 max-w-7xl mx-auto w-full">
           
           {/* Headline Group */}
-          <div className="space-y-2 max-w-3xl">
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-slate-900 leading-tight">
+          <div className="space-y-2 max-w-4xl">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight whitespace-nowrap">
               Stop Applying. <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-600">Start Infiltrating.</span>
             </h1>
             
-            <p className="text-lg md:text-xl text-slate-600 leading-relaxed">
+            <p className="text-base md:text-lg text-slate-600 leading-relaxed">
               The average job seeker applies to <strong className="text-slate-900">100 black holes</strong>. The Swarm scouts the role, profiles the company, and hunts the hiring manager so you can <strong className="text-orange-600">skip the line</strong>.
             </p>
           </div>
 
           {/* Action Group - MOVED ABOVE ANIMATION */}
-          <div className="space-y-3">
+          <div className="space-y-2">
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <button 
@@ -85,7 +85,7 @@ const Home = () => {
             </div>
 
             {/* Safety Latch - De-Risking */}
-            <div className="flex items-center justify-center gap-2 text-xs text-slate-400 mt-4">
+            <div className="flex items-center justify-center gap-2 text-xs text-slate-400 mt-2">
               <span className="text-base">🔒</span>
               <span>Read-Only Access • No Credit Card • We never post to LinkedIn</span>
             </div>

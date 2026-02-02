@@ -1168,3 +1168,9 @@ See TEST_RESULTS.md for comprehensive documentation.
 - [x] Keep dual CTA structure (above + below animation)
 - [x] Ensure animation graphics are above the fold
 - [x] Reduce hero section spacing to fit everything in viewport (min-h-[95vh], gap-8, space-y-3)
+
+### URGENT: Headline and Above-Fold Fix (Feb 2, 2026)
+- [x] Force headline to single line (added whitespace-nowrap, reduced to text-4xl/5xl/6xl)
+- [x] Aggressively reduce all vertical spacing (gap-4, space-y-2, pt-16, pb-8, min-h-90vh)
+- [x] Reduce animation height (320px min-height, gap-6)
+- [x] Verified headline is single line and content more compact
