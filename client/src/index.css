@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&display=swap');
 @import "tailwindcss";
 @import "./styles/PsychologicalAnimations.css";
 
@@ -72,6 +72,15 @@
   --color-action-orange: #F97316;
   --color-soft-gray: #F9FAFB;
   --color-border-gray: #D1D5DB;
+  
+  /* Organic Intelligence / Swarm Color Palette */
+  --color-swarm-base: #F9F7F2;
+  --color-swarm-ink: #1F1E1C;
+  --color-swarm-honey: #D98C28;
+  --color-swarm-honey-hover: #B6731F;
+  --color-swarm-sage: #4A5D4F;
+  --color-swarm-pollen: #F2D06B;
+  --color-swarm-clay: #C25B45;
   
   /* Animation Keyframes */
   @keyframes scan {
@@ -150,9 +159,9 @@
 }
 
 :root {
-  /* Primary Palette - Vibrant Matte Orange (energetic action) */
-  --primary: #F97316;
-  --primary-foreground: #FFFFFF;
+  /* Primary Palette - Deep Amber/Honey (energetic action) */
+  --primary: #D98C28;
+  --primary-foreground: #F9F7F2;
   
   /* Secondary Palette - Soft Amber (subtle actions) */
   --secondary: #D4A574;
@@ -166,17 +175,17 @@
   --muted: #F8FAFC;
   --muted-foreground: #6B7280;
   
-  /* Background - Pure White (Lab aesthetic) */
-  --background: #FFFFFF;
-  --foreground: #111827;
+  /* Background - Warm unbleached paper (Organic aesthetic) */
+  --background: #F9F7F2;
+  --foreground: #1F1E1C;
   
-  /* Card - Pure White (content containers) */
-  --card: #FFFFFF;
-  --card-foreground: #111827;
+  /* Card - Warm base (content containers) */
+  --card: #F9F7F2;
+  --card-foreground: #1F1E1C;
   
   /* Popover */
-  --popover: #FFFFFF;
-  --popover-foreground: #111827;
+  --popover: #F9F7F2;
+  --popover-foreground: #1F1E1C;
   
   /* Destructive - Soft Coral */
   --destructive: #F5E3E0;
@@ -195,10 +204,10 @@
   --chart-5: #E8D399; /* Honey Gold */
   
   /* Sidebar */
-  --sidebar: #FFFFFF;
-  --sidebar-foreground: #111827;
-  --sidebar-primary: #F97316;
-  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar: #F9F7F2;
+  --sidebar-foreground: #1F1E1C;
+  --sidebar-primary: #D98C28;
+  --sidebar-primary-foreground: #F9F7F2;
   --sidebar-accent: #FED7AA;
   --sidebar-accent-foreground: #111827;
   --sidebar-border: rgba(249, 115, 22, 0.2);
@@ -270,7 +279,7 @@
   }
   
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'Fraunces', Georgia, serif;
     font-weight: 700;
     line-height: 1.1;
     letter-spacing: -0.02em;
@@ -352,6 +361,19 @@
   .swarm-pattern {
     background-image: radial-gradient(circle, rgba(244, 229, 161, 0.15) 1px, transparent 1px);
     background-size: 20px 20px;
+  }
+  
+  /* Organic Intelligence Texture Overlay - Subtle grain for depth */
+  .texture-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 50;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
   }
   
   /* Entropy to Order - Animated Honeycomb Flow */

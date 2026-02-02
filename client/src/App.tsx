@@ -92,6 +92,8 @@ function App() {
     <ErrorBoundary>
       <ThemeProvider defaultTheme="light">
         <TooltipProvider>
+          {/* Organic Intelligence Texture Overlay */}
+          <div className="texture-overlay" aria-hidden="true" />
           <Toaster />
           <Router />
         </TooltipProvider>
