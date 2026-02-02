@@ -71,8 +71,8 @@ npx playwright test
 
 | Doc | Purpose |
 |-----|---------|
+| [**DEPLOY_WITH_MANUS.md**](./DEPLOY_WITH_MANUS.md) | **Deploy with Manus (copy-paste prompt)** |
 | [**SETUP_GUIDE.md**](./SETUP_GUIDE.md) | Quick start (5 min setup) |
-| [**docs/SHIP_STEP_BY_STEP.md**](./docs/SHIP_STEP_BY_STEP.md) | Deployment guide |
 | [**docs/SHIP_CHECKLIST.md**](./docs/SHIP_CHECKLIST.md) | Pre-deploy checklist |
 | [**PROJECT_SUMMARY.md**](./PROJECT_SUMMARY.md) | Technical architecture |
 | [**CHANGELOG.md**](./CHANGELOG.md) | Version history |
