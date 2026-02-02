@@ -17,7 +17,7 @@ export default function DevLogin() {
       
       if (data.success && data.sessionToken) {
         // Store token in localStorage as fallback
-        localStorage.setItem('dev_session_token', data.sessionToken);
+        localStorage.setItem('auth_token', data.sessionToken);
         console.log('Dev session token stored');
         
         // Redirect to homepage
