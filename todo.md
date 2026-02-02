@@ -1169,3 +1169,17 @@ See TEST_RESULTS.md for comprehensive documentation.
 - [x] Test on desktop, tablet, and mobile viewports
 - [x] Ensure no overlap at any breakpoint
 
+
+---
+
+## 🐛 GREEN BADGE OVERLAP & COPY UPDATE (Feb 1, 2026)
+
+### Green Badge Overlap Issue ✅ FIXED
+- [x] Fix "Saves 4+ hours" badge overlapping with LinkedIn message text
+- [x] Adjust badge positioning or card height to prevent overlap (increased h-72 to h-80)
+- [x] Update badge text from "Saves 4+ hours" to "Saves 2+ hours"
+
+### Time Savings Copy Update ✅ FIXED
+- [x] Change trust signal from "Average user saves 5+ hours per application" to "Average user saves over 2 hours per application"
+- [x] Update CopyConstants.ts with new time savings messaging
+

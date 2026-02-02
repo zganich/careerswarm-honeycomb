@@ -116,7 +116,7 @@ export function TransformationHero() {
           </motion.div>
 
           {/* RIGHT: Order (After) */}
-          <div className="relative w-64 h-72 bg-green-50 rounded-2xl p-5 border-2 border-green-200">
+          <div className="relative w-64 h-80 bg-green-50 rounded-2xl p-5 border-2 border-green-200">
             <h3 className="text-sm font-semibold text-green-700 mb-4 uppercase tracking-wide">
               AI-Generated Application Package
             </h3>
@@ -178,7 +178,7 @@ export function TransformationHero() {
               animate={{ scale: [1, 1.05, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
             >
-              Saves 4+ hours
+              Saves 2+ hours
             </motion.div>
           </div>
         </motion.div>
