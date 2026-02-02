@@ -813,11 +813,11 @@ Each superpower should:
         db.getEducation(user.id),
         db.getCertifications(user.id),
         db.getAwards(user.id),
-        db.getLanguages(user.id),
-        db.getVolunteerExperiences(user.id),
-        db.getProjects(user.id),
-        db.getPublications(user.id),
-        db.getSecurityClearances(user.id),
+        db.getUserLanguages(user.id),
+        db.getUserVolunteerExperiences(user.id),
+        db.getUserProjects(user.id),
+        db.getUserPublications(user.id),
+        db.getUserSecurityClearances(user.id),
       ]);
 
       return {
@@ -1091,7 +1091,7 @@ Each superpower should:
         db.getAchievements(user.id),
         db.getSkills(user.id),
         db.getTargetPreferences(user.id),
-        db.getLanguages(user.id),
+        db.getUserLanguages(user.id),
       ]);
 
       // Calculate completeness score (0-100)
@@ -1675,9 +1675,9 @@ Each superpower should:
               jobDescription: opportunity.jobDescription || "",
               companyName: opportunity.companyName,
               roleTitle: opportunity.roleTitle,
-              ...(application.pivotAnalysis && {
-                pivotContext: application.pivotAnalysis,
-              }),
+              ...(application.pivotAnalysis != null && typeof application.pivotAnalysis === 'object'
+                ? { pivotContext: application.pivotAnalysis }
+                : {}),
             }, {
               applicationId: application.id,
               userId: user.id,

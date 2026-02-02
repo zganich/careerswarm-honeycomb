@@ -371,6 +371,9 @@ export const applications = mysqlTable("applications", {
   rejectionReason: text("rejectionReason"),
   outcomeNotes: text("outcomeNotes"),
   
+  // Pivot analysis (JSON from Pivot Analyzer agent)
+  pivotAnalysis: json("pivotAnalysis"),
+  
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
