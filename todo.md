@@ -144,3 +144,12 @@
 - Remaining tasks are optional enhancements
 - Focus should be on user testing and feedback collection
 - OAuth issues are Manus platform constraints, not CareerSwarm bugs
+
+
+## 🚨 CRITICAL BUG (Feb 2, 2026 - 7:58 AM)
+
+### P0 - Authentication Broken
+- [x] **OAuth Redirect Loop** - Fixed: Changed cookie sameSite from 'none' to 'lax' (line 45 cookies.ts)
+  - Root cause: sameSite='none' was preventing cookie from being set on OAuth redirect
+  - Solution: sameSite='lax' allows cookie to persist on same-site redirects after OAuth
+  - Added debug logging to OAuth callback (lines 45-51 oauth.ts) for future troubleshooting
