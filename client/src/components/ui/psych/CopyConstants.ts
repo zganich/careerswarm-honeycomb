@@ -3,8 +3,8 @@
 export const PSYCH_COPY = {
   // Hero Section
   hero: {
-    headline: "Your Job Search, Supercharged",
-    subheadline: "A 7-agent swarm that researches, targets, and builds your application package. You save 3.5 hours per job. You just hit 'Send'.",
+    headline: "Stop Blindly Applying. Start Infiltrating.",
+    subheadline: "The average job seeker applies to 100 black holes. The Swarm scouts the role, profiles the company, and hunts the hiring manager so you can skip the line.",
     ctaPrimary: "Start Free Trial",
     ctaSecondary: "Import from LinkedIn",
   },

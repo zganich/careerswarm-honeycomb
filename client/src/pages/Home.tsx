@@ -3,6 +3,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight, Hexagon, ShieldCheck, Zap, Database, Check, Upload, Sparkles, Shield } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { SwarmNarrative } from '@/components/SwarmNarrative';
+import { TrustStrip } from '@/components/TrustStrip';
 
 const Home = () => {
   const { scrollY } = useScroll();
@@ -60,15 +61,14 @@ const Home = () => {
           {/* Headline Group */}
           <div className="space-y-4 max-w-3xl">
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-slate-900 leading-tight">
-              Your Career,<br/>
+              Stop Blindly Applying.<br/>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-600">
-                Supercharged
+                Start Infiltrating.
               </span>
             </h1>
             
             <p className="text-lg md:text-xl text-slate-600 leading-relaxed">
-              A <strong className="text-slate-900">7-agent swarm</strong> that researches, targets, and builds your application package. 
-              You save <strong className="text-orange-600">3.5 hours per job</strong>. You just hit "Send".
+              The average job seeker applies to <strong className="text-slate-900">100 black holes</strong>. The Swarm scouts the role, profiles the company, and hunts the hiring manager so you can <strong className="text-orange-600">skip the line</strong>.
             </p>
           </div>
 
@@ -91,14 +91,18 @@ const Home = () => {
               </button>
             </div>
 
-            {/* Trust Signal */}
-            <p className="text-sm text-slate-500">
-              🔒 Free account • No credit card • 7 AI agents working for you
-            </p>
+            {/* Safety Latch - De-Risking */}
+            <div className="flex items-center justify-center gap-2 text-xs text-slate-400 mt-4">
+              <span className="text-base">🔒</span>
+              <span>Read-Only Access • No Credit Card • We never post to LinkedIn</span>
+            </div>
           </div>
 
         </div>
       </section>
+
+      {/* --- TRUST STRIP: SOCIAL PROOF --- */}
+      <TrustStrip />
 
       {/* --- FEATURE CARDS: LAB AESTHETIC --- */}
       <section id="features" className="py-24 bg-white relative">

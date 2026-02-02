@@ -20,7 +20,7 @@ export function SwarmNarrative() {
       
       // Phase 1: Intelligence
       setPhase("INTELLIGENCE");
-      await delay(3000);
+      await delay(1200);
       setCompletedStages(prev => [...prev, {
         id: "intelligence",
         title: "1. DEEP RESEARCH",
@@ -33,7 +33,7 @@ export function SwarmNarrative() {
       
       // Phase 2: Targeting
       setPhase("TARGETING");
-      await delay(3000);
+      await delay(1200);
       setCompletedStages(prev => [...prev, {
         id: "targeting",
         title: "2. TARGETING",
@@ -44,7 +44,7 @@ export function SwarmNarrative() {
       
       // Phase 3: Production
       setPhase("PRODUCTION");
-      await delay(3000);
+      await delay(1200);
       setCompletedStages(prev => [...prev, {
         id: "production",
         title: "3. PRODUCTION",
@@ -238,7 +238,7 @@ export function SwarmNarrative() {
               <motion.div
                 key="complete"
                 initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 1, scale: 1 }}
+                animate={{ opacity: 1, scale: 1.05 }}
                 transition={{ duration: 0.6, type: "spring" }}
                 className="relative bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 shadow-2xl border-4 border-green-300 w-full max-w-lg"
               >
