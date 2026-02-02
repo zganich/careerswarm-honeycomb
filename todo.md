@@ -980,3 +980,77 @@ See TEST_RESULTS.md for comprehensive documentation.
 - [ ] Fix critical blocking issues
 - [ ] Verify complete flow works end-to-end
 
+
+
+---
+
+## 🧪 E2E PLAYWRIGHT TESTS (Feb 2, 2026)
+
+### Onboarding Flow E2E Tests
+- [ ] Create test resume files (PDF, DOCX, TXT) for upload testing
+- [ ] Implement E2E test for Step 1: Welcome page navigation
+- [ ] Implement E2E test for Step 2: Resume upload with file handling
+- [ ] Implement E2E test for Step 3: Extraction progress and completion
+- [ ] Implement E2E test for Step 4: Review page data display and editing
+- [ ] Implement E2E test for Step 5: Preferences form submission
+- [ ] Implement complete flow E2E test (all 5 steps end-to-end)
+- [ ] Run all E2E tests and validate results
+- [ ] Fix any issues discovered during testing
+
+
+---
+
+## 🎨 HOMEPAGE MESSAGING & AUTH UX IMPROVEMENTS (Feb 2, 2026)
+
+### Homepage Hero Section Updates
+- [ ] Update hero copy to remove "auto-apply while you sleep" (misleading)
+- [ ] Change to "AI-assisted Quick Apply in 5 minutes" (accurate)
+- [ ] Add 5-task time savings breakdown (including job matching)
+- [ ] Update "Saves 2+ hours" to "Saves 3.5 hours per application"
+- [ ] Emphasize "AI matches you to best jobs" not "auto-apply"
+
+### TaskComparisonCard Component
+- [ ] Create TaskComparisonCard component showing 5 tasks
+- [ ] Task 1: Finding relevant jobs (30-45 min → Scout Agent)
+- [ ] Task 2: Sifting through resume bullets (30-45 min → Tailor Agent)
+- [ ] Task 3: ATS formatting (45-60 min → Tailor Agent)
+- [ ] Task 4: Finding hiring managers (30-45 min → Hunter Agent)
+- [ ] Task 5: Writing outreach (60-90 min → Scribe Agent)
+- [ ] Show total: 3-4 hours → 5-10 minutes
+- [ ] Display "You save 3.5 hours per application"
+
+### Pre-Auth Modal
+- [ ] Create PreAuthModal component
+- [ ] Explain what happens during OAuth redirect
+- [ ] List benefits: Master Profile, job matching, AI materials
+- [ ] Show "What you'll do" vs "What CareerSwarm does"
+- [ ] Add security reassurance (OAuth, 30 seconds)
+- [ ] Trigger modal BEFORE OAuth redirect on homepage
+
+### Post-Auth Welcome Modal
+- [ ] Create PostAuthWelcomeModal component
+- [ ] Show "Welcome to CareerSwarm!" confirmation
+- [ ] List 3-step onboarding process
+- [ ] Smooth transition to Upload page
+- [ ] Display after OAuth callback redirect
+
+### Testing
+- [ ] Test complete auth flow with new modals
+- [ ] Verify messaging accuracy throughout
+- [ ] Check mobile responsiveness of new components
+
+
+---
+
+## 🎨 ASSEMBLY LINE HERO VISUAL (Feb 2, 2026) ✅ COMPLETE
+
+- [x] Create SwarmAssemblyLine.tsx component
+- [x] Implement 3 glass container stages (Deep Research, Targeting, Production)
+- [x] Add animated SVG arrows between stages
+- [x] Add pulsing radar effect for Hunter agent
+- [x] Create output package card with glowing badge
+- [x] Update hero section to use SwarmAssemblyLine component
+- [x] Update headline to "Your Career, Supercharged"
+- [x] Update subheadline with 7-agent swarm messaging
+- [x] Test responsive layout (mobile/desktop)
+- [x] Test animations and hover effects

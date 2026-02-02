@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight, Hexagon, ShieldCheck, Zap, Database, Check, Upload, Sparkles, Shield } from 'lucide-react';
 import { useLocation } from 'wouter';
-import { TransformationHero } from '@/components/ui/psych';
+import { SwarmAssemblyLine } from '@/components/SwarmAssemblyLine';
 
 const Home = () => {
   const { scrollY } = useScroll();
@@ -43,8 +43,62 @@ const Home = () => {
         </div>
       </nav>
 
-      {/* --- HERO: TRANSFORMATION (Pillar 4) --- */}
-      <TransformationHero />
+      {/* --- HERO: 7-AGENT ASSEMBLY LINE --- */}
+      <section className="relative min-h-screen flex items-center justify-center px-6 pt-24 pb-16 overflow-hidden bg-gradient-to-b from-slate-50 to-white">
+        {/* Dot Grid Background */}
+        <div className="absolute inset-0 opacity-30" style={{
+          backgroundImage: 'radial-gradient(circle, #e2e8f0 1px, transparent 1px)',
+          backgroundSize: '24px 24px'
+        }}></div>
+
+        {/* Gradient Orb */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-gradient-to-br from-orange-200/20 via-orange-100/10 to-transparent rounded-full blur-3xl"></div>
+
+        {/* Content */}
+        <div className="relative z-10 flex flex-col items-center justify-center text-center gap-12 max-w-7xl mx-auto w-full">
+          
+          {/* Headline Group */}
+          <div className="space-y-4 max-w-3xl">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-slate-900 leading-tight">
+              Your Career,<br/>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-600">
+                Supercharged
+              </span>
+            </h1>
+            
+            <p className="text-lg md:text-xl text-slate-600 leading-relaxed">
+              A <strong className="text-slate-900">7-agent swarm</strong> that researches, targets, and builds your application package. 
+              You save <strong className="text-orange-600">3.5 hours per job</strong>. You just hit "Send".
+            </p>
+          </div>
+
+          {/* Assembly Line Visual */}
+          <SwarmAssemblyLine />
+
+          {/* Action Group */}
+          <div className="space-y-4">
+            {/* CTAs */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+              <button 
+                onClick={() => setLocation('/onboarding/welcome')}
+                className="group relative px-8 py-3.5 bg-orange-500 hover:bg-orange-600 text-white text-lg font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+              >
+                <span className="relative z-10">Start Free Trial</span>
+              </button>
+              
+              <button className="px-8 py-3.5 bg-white hover:bg-slate-50 text-slate-700 text-lg font-medium rounded-xl border-2 border-slate-200 transition-all duration-300">
+                Import from LinkedIn
+              </button>
+            </div>
+
+            {/* Trust Signal */}
+            <p className="text-sm text-slate-500">
+              🔒 Free account • No credit card • 7 AI agents working for you
+            </p>
+          </div>
+
+        </div>
+      </section>
 
       {/* --- FEATURE CARDS: LAB AESTHETIC --- */}
       <section id="features" className="py-24 bg-white relative">

@@ -3,10 +3,10 @@
 export const PSYCH_COPY = {
   // Hero Section
   hero: {
-    headline: "Stop Rewriting Your Resume.",
-    subheadline: "Build One Master Profile. Auto-Apply to Hundreds of Jobs While\u00A0You\u00A0Sleep.",
-    ctaPrimary: "Build My Master Profile",
-    ctaSecondary: "See a Sample Profile",
+    headline: "Your Career, Supercharged",
+    subheadline: "A 7-agent swarm that researches, targets, and builds your application package. You save 3.5 hours per job. You just hit 'Send'.",
+    ctaPrimary: "Start Free Trial",
+    ctaSecondary: "Import from LinkedIn",
   },
   
   // Onboarding
@@ -54,7 +54,7 @@ export const PSYCH_COPY = {
   
   // Trust Signals
   trust: {
-    timeSaved: "Average user saves over 2 hours per application",
+    timeSaved: "Average user saves 3.5 hours per application",
     usersCount: "Join 12,847 professionals using CareerSwarm",
     responseRate: "45% average response rate (2x industry average)",
   },

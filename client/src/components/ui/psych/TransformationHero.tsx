@@ -178,7 +178,7 @@ export function TransformationHero() {
               animate={{ scale: [1, 1.05, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
             >
-              Saves 2+ hours
+              Saves 3.5 hours
             </motion.div>
           </div>
         </motion.div>
