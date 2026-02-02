@@ -54,7 +54,7 @@ export const PSYCH_COPY = {
   
   // Trust Signals
   trust: {
-    timeSaved: "Average user saves 5+ hours per application",
+    timeSaved: "Average user saves 3.5 hours per application",
     usersCount: "Join 12,847 professionals using CareerSwarm",
     responseRate: "45% average response rate (2x industry average)",
   },

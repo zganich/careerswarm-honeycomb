@@ -54,6 +54,15 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
 
+    /* Chromium Standalone - For tests with auth-bypass (no setup dependency) */
+    {
+      name: 'chromium-standalone',
+      use: {
+        ...devices['Desktop Chrome'],
+      },
+      testMatch: /onboarding-flow\.spec\.ts/,
+    },
+
     /* Chromium Mobile - Mobile responsive testing */
     {
       name: 'chromium-mobile',

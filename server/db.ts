@@ -1,4 +1,4 @@
-import { eq, and, desc, sql, isNull } from "drizzle-orm";
+import { eq, and, desc, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { 
   InsertUser, users, achievements, skills,
@@ -6,13 +6,17 @@ import {
   uploadedResumes, targetPreferences,
   opportunities, applications, agentExecutionLogs, notifications,
   certifications, education, awards, savedOpportunities, applicationNotes,
-  languages, volunteerExperiences, projects, publications, securityClearances,
-  b2bLeads, gtmRuns, gtmContent, outreachDrafts, jdDrafts, jdUsage, gtmJobRuns,
+  agentMetrics, languages, volunteerExperiences, projects, publications, securityClearances,
   type Achievement, type Skill, type WorkExperience, type UserProfile,
   type Superpower, type UploadedResume, type TargetPreferences,
   type Opportunity, type Application, type AgentExecutionLog, type Notification,
   type Certification, type Education, type Award, type SavedOpportunity, type ApplicationNote,
-  type InsertB2BLead, type InsertJdDraft
+  type AgentMetric, type InsertAgentMetric,
+  type Language, type InsertLanguage,
+  type VolunteerExperience, type InsertVolunteerExperience,
+  type Project, type InsertProject,
+  type Publication, type InsertPublication,
+  type SecurityClearance, type InsertSecurityClearance
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -66,34 +70,6 @@ export async function updateUserOnboardingStep(userId: number, step: number, com
   await db.update(users)
     .set({ onboardingStep: step, onboardingCompleted: completed })
     .where(eq(users.id, userId));
-}
-
-/** Set referredByUserId for a user (call when user lands with ref=referrerUserId). Only set if not already set. */
-export async function setUserReferredBy(userId: number, referrerUserId: number): Promise<void> {
-  const db = await getDb();
-  if (!db) return;
-  const [u] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
-  if (!u || u.referredByUserId != null) return;
-  if (referrerUserId === userId) return; // no self-referral
-  await db.update(users).set({ referredByUserId: referrerUserId }).where(eq(users.id, userId));
-}
-
-/** Flywheel: grant referrer 30 days Pro when referred user completes first resume ingestion (onboarding complete). */
-export async function grantReferrer30DaysProIfReferred(newUserId: number): Promise<void> {
-  const db = await getDb();
-  if (!db) return;
-  const [newUser] = await db.select().from(users).where(eq(users.id, newUserId)).limit(1);
-  if (!newUser?.referredByUserId) return;
-  const referrerId = newUser.referredByUserId;
-  const [referrer] = await db.select().from(users).where(eq(users.id, referrerId)).limit(1);
-  if (!referrer) return;
-  const now = new Date();
-  const thirtyDaysLater = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
-  const existingEnd = referrer.subscriptionEndDate ? new Date(referrer.subscriptionEndDate).getTime() : 0;
-  const newEnd = existingEnd > now.getTime() ? new Date(existingEnd + 30 * 24 * 60 * 60 * 1000) : thirtyDaysLater;
-  await db.update(users)
-    .set({ subscriptionTier: "pro", subscriptionEndDate: newEnd })
-    .where(eq(users.id, referrerId));
 }
 
 // ================================================================
@@ -505,122 +481,6 @@ export async function getAwards(userId: number) {
     .orderBy(desc(awards.year));
 }
 
-// ================================================================
-// LANGUAGES
-// ================================================================
-
-export async function createLanguage(data: { userId: number; language: string; proficiency?: string; isNative?: boolean }) {
-  const db = await getDb();
-  if (!db) return null;
-  const result: any = await db.insert(languages).values(data as any);
-  return result.insertId;
-}
-
-export async function getLanguages(userId: number) {
-  const db = await getDb();
-  if (!db) return [];
-  return db.select().from(languages).where(eq(languages.userId, userId));
-}
-
-// ================================================================
-// VOLUNTEER EXPERIENCES
-// ================================================================
-
-export async function createVolunteerExperience(data: {
-  userId: number;
-  organization: string;
-  role?: string;
-  startDate?: string;
-  endDate?: string;
-  description?: string;
-}) {
-  const db = await getDb();
-  if (!db) return null;
-  const result: any = await db.insert(volunteerExperiences).values(data as any);
-  return result.insertId;
-}
-
-export async function getVolunteerExperiences(userId: number) {
-  const db = await getDb();
-  if (!db) return [];
-  return db.select().from(volunteerExperiences)
-    .where(eq(volunteerExperiences.userId, userId));
-}
-
-// ================================================================
-// PROJECTS
-// ================================================================
-
-export async function createProject(data: {
-  userId: number;
-  name: string;
-  description?: string;
-  url?: string;
-  role?: string;
-  startDate?: string;
-  endDate?: string;
-}) {
-  const db = await getDb();
-  if (!db) return null;
-  const result: any = await db.insert(projects).values(data as any);
-  return result.insertId;
-}
-
-export async function getProjects(userId: number) {
-  const db = await getDb();
-  if (!db) return [];
-  return db.select().from(projects).where(eq(projects.userId, userId));
-}
-
-// ================================================================
-// PUBLICATIONS
-// ================================================================
-
-export async function createPublication(data: {
-  userId: number;
-  title: string;
-  publisherOrVenue?: string;
-  year?: number;
-  url?: string;
-  context?: string;
-}) {
-  const db = await getDb();
-  if (!db) return null;
-  const result: any = await db.insert(publications).values(data as any);
-  return result.insertId;
-}
-
-export async function getPublications(userId: number) {
-  const db = await getDb();
-  if (!db) return [];
-  return db.select().from(publications)
-    .where(eq(publications.userId, userId))
-    .orderBy(desc(publications.year));
-}
-
-// ================================================================
-// SECURITY CLEARANCES
-// ================================================================
-
-export async function createSecurityClearance(data: {
-  userId: number;
-  clearanceType: string;
-  level?: string;
-  expiryDate?: string;
-}) {
-  const db = await getDb();
-  if (!db) return null;
-  const result: any = await db.insert(securityClearances).values(data as any);
-  return result.insertId;
-}
-
-export async function getSecurityClearances(userId: number) {
-  const db = await getDb();
-  if (!db) return [];
-  return db.select().from(securityClearances)
-    .where(eq(securityClearances.userId, userId));
-}
-
 // Note: Superpower operations are already defined earlier in this file
 // Note: Update/Delete operations for work experiences, achievements, and skills are already defined earlier in this file
 
@@ -796,148 +656,278 @@ export async function updateTargetPreferences(
   return userId;
 }
 
+
 // ================================================================
-// GTM & B2B LEADS
+// AGENT METRICS OPERATIONS (Production Monitoring)
 // ================================================================
 
-export async function createB2BLead(data: InsertB2BLead) {
+export async function insertAgentMetric(metric: InsertAgentMetric): Promise<void> {
   const db = await getDb();
-  if (!db) return null;
-  const result = await db.insert(b2bLeads).values(data);
-  return result[0].insertId;
+  if (!db) return;
+  
+  await db.insert(agentMetrics).values(metric);
 }
 
-export async function upsertB2BLeadByKey(data: InsertB2BLead & { idempotencyKey: string }) {
-  const db = await getDb();
-  if (!db) return null;
-  const existing = await db.select().from(b2bLeads).where(eq(b2bLeads.idempotencyKey!, data.idempotencyKey)).limit(1);
-  if (existing[0]) {
-    await db.update(b2bLeads).set(data).where(eq(b2bLeads.id, existing[0].id));
-    return existing[0].id;
-  }
-  const result = await db.insert(b2bLeads).values(data);
-  return result[0].insertId;
-}
-
-export async function getB2BLeads(limit = 100, outreachStatus?: string) {
+export async function getAgentMetrics(options?: {
+  agentType?: string;
+  startDate?: Date;
+  endDate?: Date;
+  limit?: number;
+}): Promise<AgentMetric[]> {
   const db = await getDb();
   if (!db) return [];
-  if (outreachStatus) {
-    return db.select().from(b2bLeads).where(eq(b2bLeads.outreachStatus, outreachStatus as any)).orderBy(desc(b2bLeads.firstSeenAt)).limit(limit);
+  
+  let query = db.select().from(agentMetrics);
+  
+  // Apply filters if provided
+  const conditions = [];
+  if (options?.agentType) {
+    conditions.push(eq(agentMetrics.agentType, options.agentType));
   }
-  return db.select().from(b2bLeads).orderBy(desc(b2bLeads.firstSeenAt)).limit(limit);
+  if (options?.startDate) {
+    conditions.push(sql`${agentMetrics.createdAt} >= ${options.startDate}`);
+  }
+  if (options?.endDate) {
+    conditions.push(sql`${agentMetrics.createdAt} <= ${options.endDate}`);
+  }
+  
+  if (conditions.length > 0) {
+    query = query.where(and(...conditions)) as any;
+  }
+  
+  query = query.orderBy(desc(agentMetrics.createdAt)) as any;
+  
+  if (options?.limit) {
+    query = query.limit(options.limit) as any;
+  }
+  
+  return await query;
 }
 
-export async function updateB2BLead(id: number, data: Partial<typeof b2bLeads.$inferInsert>) {
+export async function getAgentPerformanceStats(agentType?: string) {
   const db = await getDb();
-  if (!db) return;
-  await db.update(b2bLeads).set(data).where(eq(b2bLeads.id, id));
+  if (!db) return null;
+  
+  const last24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  
+  let query = sql`
+    SELECT 
+      agentType,
+      COUNT(*) as totalExecutions,
+      SUM(CASE WHEN success = 1 THEN 1 ELSE 0 END) as successfulExecutions,
+      AVG(duration) as avgDuration,
+      MIN(duration) as minDuration,
+      MAX(duration) as maxDuration,
+      (SUM(CASE WHEN success = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*)) as successRate
+    FROM agentMetrics
+    WHERE createdAt >= ${last24h}
+  `;
+  
+  if (agentType) {
+    query = sql`${query} AND agentType = ${agentType}`;
+  }
+  
+  query = sql`${query} GROUP BY agentType`;
+  
+  const result = await db.execute(query);
+  return result;
 }
 
 // ================================================================
-// GTM RUNS & CONTENT
+// MASTER PROFILE - ADDITIONAL SECTIONS
 // ================================================================
 
-export async function createGtmRun(runType: string, inputJson: unknown, outputJson: unknown, status: "success" | "failed" | "partial", errorMessage?: string) {
-  const db = await getDb();
-  if (!db) return null;
-  const result = await db.insert(gtmRuns).values({ runType, inputJson: inputJson as any, outputJson: outputJson as any, status, errorMessage });
-  return result[0].insertId;
-}
-
-export async function createGtmContent(data: { runId?: number; channel: string; contentType?: string; title?: string; body?: string; metadata?: unknown }) {
-  const db = await getDb();
-  if (!db) return null;
-  const result = await db.insert(gtmContent).values(data as any);
-  return result[0].insertId;
-}
-
-export async function createOutreachDraft(leadId: number, channel: string, subject: string | null, body: string, campaignId?: string) {
-  const db = await getDb();
-  if (!db) return null;
-  const result = await db.insert(outreachDrafts).values({ leadId, channel, subject, body, campaignId });
-  return result[0].insertId;
-}
-
-export async function getOutreachDraftsUnsent(limit = 50) {
+// Languages
+export async function getUserLanguages(userId: number) {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(outreachDrafts).where(isNull(outreachDrafts.sentAt)).limit(limit);
+  
+  return await db
+    .select()
+    .from(languages)
+    .where(eq(languages.userId, userId))
+    .orderBy(desc(languages.createdAt));
 }
 
-export async function markOutreachDraftSent(id: number) {
-  const db = await getDb();
-  if (!db) return;
-  await db.update(outreachDrafts).set({ sentAt: new Date() }).where(eq(outreachDrafts.id, id));
-}
-
-// ================================================================
-// JD BUILDER (B2B)
-// ================================================================
-
-export async function createJdDraft(data: InsertJdDraft) {
+export async function insertLanguage(data: InsertLanguage) {
   const db = await getDb();
   if (!db) return null;
-  const result = await db.insert(jdDrafts).values(data);
-  return result[0].insertId;
+  
+  const result = await db.insert(languages).values(data);
+  return result;
 }
 
-export async function getJdDraftsByUserId(userId: number, limit = 50) {
+export async function updateLanguage(id: number, userId: number, data: Partial<InsertLanguage>) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  return await db
+    .update(languages)
+    .set(data)
+    .where(and(eq(languages.id, id), eq(languages.userId, userId)));
+}
+
+export async function deleteLanguage(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  return await db
+    .delete(languages)
+    .where(and(eq(languages.id, id), eq(languages.userId, userId)));
+}
+
+// Volunteer Experiences
+export async function getUserVolunteerExperiences(userId: number) {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(jdDrafts).where(eq(jdDrafts.userId, userId)).orderBy(desc(jdDrafts.createdAt)).limit(limit);
+  
+  return await db
+    .select()
+    .from(volunteerExperiences)
+    .where(eq(volunteerExperiences.userId, userId))
+    .orderBy(desc(volunteerExperiences.createdAt));
 }
 
-export async function getJdDraftById(id: number, userId: number) {
+export async function insertVolunteerExperience(data: InsertVolunteerExperience) {
   const db = await getDb();
   if (!db) return null;
-  const result = await db.select().from(jdDrafts).where(and(eq(jdDrafts.id, id), eq(jdDrafts.userId, userId))).limit(1);
-  return result[0] || null;
+  
+  const result = await db.insert(volunteerExperiences).values(data);
+  return result;
 }
 
-export async function getJdUsageForPeriod(userId: number, periodStart: string, periodEnd: string) {
-  const db = await getDb();
-  if (!db) return 0;
-  const start = new Date(periodStart);
-  const end = new Date(periodEnd);
-  const result = await db.select().from(jdUsage).where(
-    and(eq(jdUsage.userId, userId), eq(jdUsage.periodStart, start), eq(jdUsage.periodEnd, end))
-  ).limit(1);
-  return result[0]?.jdsGenerated ?? 0;
-}
-
-export async function incrementJdUsage(userId: number, companyId: number | null, periodStart: string, periodEnd: string) {
-  const db = await getDb();
-  if (!db) return;
-  const start = new Date(periodStart);
-  const end = new Date(periodEnd);
-  const existing = await db.select().from(jdUsage).where(
-    and(eq(jdUsage.userId, userId), eq(jdUsage.periodStart, start), eq(jdUsage.periodEnd, end))
-  ).limit(1);
-  if (existing[0]) {
-    await db.update(jdUsage).set({ jdsGenerated: existing[0].jdsGenerated + 1 }).where(eq(jdUsage.id, existing[0].id));
-  } else {
-    await db.insert(jdUsage).values({ userId, companyId, periodStart: start, periodEnd: end, jdsGenerated: 1 });
-  }
-}
-
-// ================================================================
-// GTM JOB RUNS (Observability)
-// ================================================================
-
-export async function createGtmJobRun(jobType: string, channel: string | null, jobId?: string) {
+export async function updateVolunteerExperience(id: number, userId: number, data: Partial<InsertVolunteerExperience>) {
   const db = await getDb();
   if (!db) return null;
-  const result = await db.insert(gtmJobRuns).values({ jobType, channel, jobId, status: "running" });
-  return result[0].insertId;
+  
+  return await db
+    .update(volunteerExperiences)
+    .set(data)
+    .where(and(eq(volunteerExperiences.id, id), eq(volunteerExperiences.userId, userId)));
 }
 
-export async function finishGtmJobRun(id: number, status: "success" | "failed" | "skipped", errorMessage?: string, payloadSummary?: string) {
+export async function deleteVolunteerExperience(id: number, userId: number) {
   const db = await getDb();
-  if (!db) return;
-  const run = await db.select().from(gtmJobRuns).where(eq(gtmJobRuns.id, id)).limit(1);
-  if (!run[0]) return;
-  const startedAt = run[0].startedAt ? new Date(run[0].startedAt).getTime() : Date.now();
-  const durationMs = Date.now() - startedAt;
-  await db.update(gtmJobRuns).set({ finishedAt: new Date(), status, errorMessage, payloadSummary, durationMs }).where(eq(gtmJobRuns.id, id));
+  if (!db) return null;
+  
+  return await db
+    .delete(volunteerExperiences)
+    .where(and(eq(volunteerExperiences.id, id), eq(volunteerExperiences.userId, userId)));
+}
+
+// Projects
+export async function getUserProjects(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db
+    .select()
+    .from(projects)
+    .where(eq(projects.userId, userId))
+    .orderBy(desc(projects.createdAt));
+}
+
+export async function insertProject(data: InsertProject) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.insert(projects).values(data);
+  return result;
+}
+
+export async function updateProject(id: number, userId: number, data: Partial<InsertProject>) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  return await db
+    .update(projects)
+    .set(data)
+    .where(and(eq(projects.id, id), eq(projects.userId, userId)));
+}
+
+export async function deleteProject(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  return await db
+    .delete(projects)
+    .where(and(eq(projects.id, id), eq(projects.userId, userId)));
+}
+
+// Publications
+export async function getUserPublications(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db
+    .select()
+    .from(publications)
+    .where(eq(publications.userId, userId))
+    .orderBy(desc(publications.createdAt));
+}
+
+export async function insertPublication(data: InsertPublication) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.insert(publications).values(data);
+  return result;
+}
+
+export async function updatePublication(id: number, userId: number, data: Partial<InsertPublication>) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  return await db
+    .update(publications)
+    .set(data)
+    .where(and(eq(publications.id, id), eq(publications.userId, userId)));
+}
+
+export async function deletePublication(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  return await db
+    .delete(publications)
+    .where(and(eq(publications.id, id), eq(publications.userId, userId)));
+}
+
+// Security Clearances
+export async function getUserSecurityClearances(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db
+    .select()
+    .from(securityClearances)
+    .where(eq(securityClearances.userId, userId))
+    .orderBy(desc(securityClearances.createdAt));
+}
+
+export async function insertSecurityClearance(data: InsertSecurityClearance) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.insert(securityClearances).values(data);
+  return result;
+}
+
+export async function updateSecurityClearance(id: number, userId: number, data: Partial<InsertSecurityClearance>) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  return await db
+    .update(securityClearances)
+    .set(data)
+    .where(and(eq(securityClearances.id, id), eq(securityClearances.userId, userId)));
+}
+
+export async function deleteSecurityClearance(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  return await db
+    .delete(securityClearances)
+    .where(and(eq(securityClearances.id, id), eq(securityClearances.userId, userId)));
 }

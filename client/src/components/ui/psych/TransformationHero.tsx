@@ -22,7 +22,7 @@ type TransformationHeroProps = {
 
 export function TransformationHero({ onCtaPrimary, onCtaSecondary }: TransformationHeroProps = {}) {
   return (
-    <section className="relative min-h-[80vh] flex items-center justify-center px-4 pt-32 md:pt-40 pb-16 overflow-hidden bg-gradient-to-b from-slate-50 to-white">
+    <section className="relative min-h-[70vh] flex items-center justify-center px-4 pt-20 md:pt-24 pb-8 overflow-hidden bg-gradient-to-b from-slate-50 to-white">
       
       {/* Main Content */}
       <div className="max-w-6xl mx-auto text-center">
@@ -48,14 +48,14 @@ export function TransformationHero({ onCtaPrimary, onCtaSecondary }: Transformat
 
         {/* Split-Screen Transformation Visual */}
         <motion.div 
-          className="flex flex-col md:flex-row items-center justify-center gap-8 mb-12"
+          className="flex flex-col md:flex-row items-center justify-center gap-6 mb-12 md:mb-16"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.4 }}
         >
           
           {/* LEFT: Chaos (Before) */}
-          <div className="relative w-72 h-80 bg-slate-100 rounded-2xl p-6 border-2 border-dashed border-slate-300">
+          <div className="relative w-64 h-72 bg-slate-100 rounded-2xl p-5 border-2 border-dashed border-slate-300">
             <h3 className="text-sm font-semibold text-slate-500 mb-4 uppercase tracking-wide">
               Your Scattered Career Data
             </h3>
@@ -121,7 +121,7 @@ export function TransformationHero({ onCtaPrimary, onCtaSecondary }: Transformat
           </motion.div>
 
           {/* RIGHT: Order (After) */}
-          <div className="relative w-72 h-80 bg-green-50 rounded-2xl p-6 border-2 border-green-200">
+          <div className="relative w-64 h-80 bg-green-50 rounded-2xl p-5 border-2 border-green-200">
             <h3 className="text-sm font-semibold text-green-700 mb-4 uppercase tracking-wide">
               AI-Generated Application Package
             </h3>
@@ -183,14 +183,14 @@ export function TransformationHero({ onCtaPrimary, onCtaSecondary }: Transformat
               animate={{ scale: [1, 1.05, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
             >
-              Saves 4+ hours
+              Saves 3.5 hours
             </motion.div>
           </div>
         </motion.div>
 
         {/* CTAs */}
         <motion.div 
-          className="flex flex-col sm:flex-row items-center justify-center gap-4"
+          className="flex flex-col sm:flex-row items-center justify-center gap-3"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.6 }}
@@ -216,7 +216,7 @@ export function TransformationHero({ onCtaPrimary, onCtaSecondary }: Transformat
 
         {/* Trust Signal */}
         <motion.p 
-          className="mt-8 text-slate-500"
+          className="mt-4 text-slate-600 text-lg font-semibold"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}

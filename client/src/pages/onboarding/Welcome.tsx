@@ -1,13 +1,99 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Award, Upload, Sparkles, Target, CheckCircle } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Award, Upload, Sparkles, Target, CheckCircle, Lock } from "lucide-react";
 import { useLocation } from "wouter";
+import { useAuth } from "@/_core/hooks/useAuth";
+import { getLoginUrl } from "@/const";
+import { useState, useEffect } from "react";
 
 export default function Welcome() {
   const [, setLocation] = useLocation();
+  const { user, loading } = useAuth();
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
+  // Check authentication status when component mounts
+  useEffect(() => {
+    if (!loading && !user) {
+      // User is not authenticated, show login modal
+      setShowLoginModal(true);
+    }
+  }, [user, loading]);
+
+  const handleContinue = () => {
+    if (!user) {
+      // Show login modal if not authenticated
+      setShowLoginModal(true);
+    } else {
+      // User is authenticated, proceed to next step
+      setLocation("/onboarding/upload");
+    }
+  };
+
+  const handleLogin = () => {
+    // Redirect to OAuth login with returnTo parameter to come back to onboarding
+    const loginUrl = getLoginUrl('/onboarding/welcome');
+    window.location.href = loginUrl;
+  };
+
+  // Show loading state while checking auth
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
+      {/* OAuth Login Modal */}
+      <Dialog open={showLoginModal} onOpenChange={setShowLoginModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="flex items-center gap-2 mb-2">
+              <Lock className="h-5 w-5 text-primary" />
+              <DialogTitle>Sign In Required</DialogTitle>
+            </div>
+            <DialogDescription className="space-y-3 pt-2">
+              <p>
+                To build your Master Profile and save your career data securely, you need to create a free account.
+              </p>
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 text-sm">
+                <p className="font-medium text-orange-900 mb-1">Why sign in?</p>
+                <ul className="text-orange-800 space-y-1 text-xs">
+                  <li>• Save your profile securely in the cloud</li>
+                  <li>• Access your data from any device</li>
+                  <li>• Track your application history</li>
+                  <li>• Get personalized job recommendations</li>
+                </ul>
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-3 pt-4">
+            <Button 
+              size="lg" 
+              className="w-full"
+              onClick={handleLogin}
+            >
+              Sign In to CareerSwarm
+            </Button>
+            <p className="text-xs text-center text-muted-foreground">
+              Free forever • No credit card required • Takes 30 seconds
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Header */}
       <header className="border-b bg-white">
         <div className="container flex h-16 items-center justify-between">
@@ -137,7 +223,7 @@ export default function Welcome() {
           <Button 
             size="lg" 
             className="text-lg px-12"
-            onClick={() => setLocation("/onboarding/upload")}
+            onClick={handleContinue}
           >
             Let's Build Your Profile →
           </Button>

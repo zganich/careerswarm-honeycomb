@@ -46,6 +46,11 @@ export function registerOAuthRoutes(app: Express) {
   });
 
   app.get("/api/oauth/callback", async (req: Request, res: Response) => {
+    console.log('[OAuth] Callback hit!', { 
+      query: req.query,
+      origin: req.headers.origin,
+      host: req.headers.host 
+    });
     const code = getQueryParam(req, "code");
     const state = getQueryParam(req, "state");
 
@@ -76,20 +81,31 @@ export function registerOAuthRoutes(app: Express) {
         expiresInMs: ONE_YEAR_MS,
       });
 
-      const cookieOptions = getSessionCookieOptions(req);
-      res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
-
-      let returnTo = "/";
+      // Decode state parameter to extract returnTo path
+      let redirectUrl = "/";
       try {
-        const raw = Buffer.from(state, "base64").toString("utf-8");
-        const parsed = JSON.parse(raw) as { returnTo?: string };
-        if (typeof parsed?.returnTo === "string" && parsed.returnTo.startsWith("/")) {
-          returnTo = parsed.returnTo;
+        const stateData = JSON.parse(Buffer.from(state, 'base64').toString('utf-8'));
+        if (stateData.returnTo && typeof stateData.returnTo === 'string' && stateData.returnTo.startsWith('/')) {
+          redirectUrl = stateData.returnTo;
         }
-      } catch {
-        /* state was legacy plain redirectUri */
+      } catch (e) {
+        // If state decoding fails, fall back to homepage
+        console.warn('[OAuth] Failed to decode state parameter:', e);
       }
-      res.redirect(302, returnTo);
+
+      const cookieOptions = getSessionCookieOptions(req);
+      console.log('[OAuth] Setting cookie with options:', {
+        cookieName: COOKIE_NAME,
+        options: { ...cookieOptions, maxAge: ONE_YEAR_MS },
+        hostname: req.hostname,
+        protocol: req.protocol,
+        headers: { host: req.headers.host, 'x-forwarded-proto': req.headers['x-forwarded-proto'] },
+        redirectUrl
+      });
+      res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
+      console.log('[OAuth] Cookie set successfully, redirecting to:', redirectUrl);
+
+      res.redirect(302, redirectUrl);
     } catch (error) {
       console.error("[OAuth] Callback failed", error);
       res.status(500).json({ error: "OAuth callback failed" });

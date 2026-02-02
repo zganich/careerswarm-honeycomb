@@ -10,10 +10,8 @@ export const users = mysqlTable("users", {
   name: text("name"),
   email: varchar("email", { length: 320 }),
   loginMethod: varchar("loginMethod", { length: 64 }),
-  role: mysqlEnum("role", ["user", "admin", "recruiter", "company_admin"]).default("user").notNull(),
-  companyId: int("companyId"), // B2B: link to company account when role is recruiter or company_admin
-  referredByUserId: int("referredByUserId"), // Flywheel: referrer gets 30 days Pro when referred user completes first resume ingestion
-
+  role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
+  
   // Subscription and billing
   subscriptionTier: mysqlEnum("subscriptionTier", ["free", "pro"]).default("free").notNull(),
   stripeCustomerId: varchar("stripeCustomerId", { length: 255 }),
@@ -48,13 +46,13 @@ export const userProfiles = mysqlTable("userProfiles", {
   // Work Preferences
   workPreference: json("workPreference").$type<string[]>(), // ['remote', 'hybrid', 'in-office']
   
-  // Master Profile extended (from resume parse)
-  professionalSummary: text("professionalSummary"),
-  portfolioUrls: json("portfolioUrls").$type<Array<{ label: string; url: string }>>(),
-  parsedContactFromResume: json("parsedContactFromResume").$type<{ fullName?: string; email?: string; phone?: string; city?: string; linkedIn?: string }>(),
-  
   // Profile Completeness
   profileCompleteness: int("profileCompleteness").default(0), // 0-100
+  
+  // Professional Summary & Portfolio
+  professionalSummary: text("professionalSummary"),
+  portfolioUrls: json("portfolioUrls").$type<string[]>(),
+  parsedContactFromResume: json("parsedContactFromResume").$type<Record<string, any>>(),
   
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
@@ -195,59 +193,6 @@ export const superpowers = mysqlTable("superpowers", {
   
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
-
-// Master Profile extended sections (from resume parse)
-export const languages = mysqlTable("languages", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
-  language: varchar("language", { length: 100 }).notNull(),
-  proficiency: varchar("proficiency", { length: 50 }),
-  isNative: boolean("isNative").default(false),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-});
-
-export const volunteerExperiences = mysqlTable("volunteerExperiences", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
-  organization: varchar("organization", { length: 255 }).notNull(),
-  role: varchar("role", { length: 255 }),
-  startDate: varchar("startDate", { length: 20 }),
-  endDate: varchar("endDate", { length: 20 }),
-  description: text("description"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-});
-
-export const projects = mysqlTable("projects", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
-  name: varchar("name", { length: 255 }).notNull(),
-  description: text("description"),
-  url: text("url"),
-  role: varchar("role", { length: 255 }),
-  startDate: varchar("startDate", { length: 20 }),
-  endDate: varchar("endDate", { length: 20 }),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-});
-
-export const publications = mysqlTable("publications", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
-  title: varchar("title", { length: 500 }).notNull(),
-  publisherOrVenue: varchar("publisherOrVenue", { length: 255 }),
-  year: int("year"),
-  url: text("url"),
-  context: text("context"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-});
-
-export const securityClearances = mysqlTable("securityClearances", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
-  clearanceType: varchar("clearanceType", { length: 100 }).notNull(),
-  level: varchar("level", { length: 100 }),
-  expiryDate: varchar("expiryDate", { length: 20 }),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
 // ================================================================
@@ -407,10 +352,6 @@ export const applications = mysqlTable("applications", {
   // Achievements Used
   achievementsUsed: json("achievementsUsed").$type<number[]>(), // Array of achievement IDs
   
-  // Intelligence (Pivot Analyzer, Success Predictor, Skill Gap)
-  analytics: json("analytics").$type<{ successPrediction?: unknown; skillGap?: unknown }>(),
-  pivotAnalysis: json("pivotAnalysis").$type<{ bridgeSkills?: Array<{ skill: string; toContext: string }>; pivotStrategy?: string; transferableStrengths?: string[] }>(),
-  
   // Application Dates
   appliedAt: timestamp("appliedAt"),
   appliedVia: varchar("appliedVia", { length: 100 }), // 'Greenhouse', 'Lever', 'Email', 'LinkedIn'
@@ -515,128 +456,69 @@ export const applicationNotes = mysqlTable("applicationNotes", {
 });
 
 // ================================================================
-// GTM & B2B LEADS
+// ADDITIONAL PROFILE SECTIONS
 // ================================================================
 
-export const b2bLeads = mysqlTable("b2b_leads", {
-  id: int("id").autoincrement().primaryKey(),
-  leadType: mysqlEnum("leadType", [
-    "recruiter_inhouse",
-    "recruiter_agency",
-    "hr_leader",
-    "hiring_manager",
-    "startup",
-    "company",
-  ]).notNull(),
-  name: varchar("name", { length: 255 }),
-  title: varchar("title", { length: 255 }),
-  companyName: varchar("companyName", { length: 255 }),
-  companyDomain: varchar("companyDomain", { length: 255 }),
-  linkedinUrl: text("linkedinUrl"),
-  email: varchar("email", { length: 320 }),
-  sourceUrl: text("sourceUrl"),
-  sourceChannel: mysqlEnum("sourceChannel", [
-    "linkedin",
-    "reddit",
-    "twitter",
-    "company_site",
-    "job_board",
-    "newsletter",
-    "event",
-  ]),
-  industry: varchar("industry", { length: 100 }),
-  companySize: varchar("companySize", { length: 50 }), // bucket: '1-10', '11-50', etc
-  geography: varchar("geography", { length: 100 }),
-  signals: text("signals"), // JSON or free text e.g. "posted 5 roles in 30 days"
-  vertical: varchar("vertical", { length: 100 }), // buyer type / industry tag
-  priority: mysqlEnum("priority", ["high", "medium", "low"]).default("medium"),
-  score: int("score"), // 0-100 optional numeric score
-  firstSeenAt: timestamp("firstSeenAt").defaultNow().notNull(),
-  lastEnrichedAt: timestamp("lastEnrichedAt"),
-  outreachStatus: mysqlEnum("outreachStatus", ["none", "drafted", "sent", "replied", "converted"]).default("none"),
-  idempotencyKey: varchar("idempotencyKey", { length: 255 }).unique(), // linkedinUrl or email for dedupe
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
-
-export const gtmRuns = mysqlTable("gtm_runs", {
-  id: int("id").autoincrement().primaryKey(),
-  runType: varchar("runType", { length: 50 }).notNull(), // 'strategy', 'content', 'report'
-  inputJson: json("inputJson"),
-  outputJson: json("outputJson"),
-  status: mysqlEnum("status", ["success", "failed", "partial"]).notNull(),
-  errorMessage: text("errorMessage"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-});
-
-export const gtmContent = mysqlTable("gtm_content", {
-  id: int("id").autoincrement().primaryKey(),
-  runId: int("runId"),
-  channel: varchar("channel", { length: 50 }).notNull(), // 'linkedin', 'reddit', 'x', 'tiktok', 'email'
-  contentType: varchar("contentType", { length: 50 }), // 'post', 'outreach_draft', 'email'
-  title: varchar("title", { length: 255 }),
-  body: text("body"),
-  metadata: json("metadata"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-});
-
-export const outreachDrafts = mysqlTable("outreach_drafts", {
-  id: int("id").autoincrement().primaryKey(),
-  leadId: int("leadId").notNull(),
-  channel: varchar("channel", { length: 50 }).notNull(), // 'email', 'linkedin'
-  subject: varchar("subject", { length: 500 }),
-  body: text("body").notNull(),
-  campaignId: varchar("campaignId", { length: 100 }),
-  sentAt: timestamp("sentAt"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-});
-
-// ================================================================
-// JOB DESCRIPTION BUILDER (B2B)
-// ================================================================
-
-export const jdDrafts = mysqlTable("jd_drafts", {
+export const languages = mysqlTable("languages", {
   id: int("id").autoincrement().primaryKey(),
   userId: int("userId").notNull(),
-  companyId: int("companyId"),
-  roleTitle: varchar("roleTitle", { length: 255 }).notNull(),
-  companyName: varchar("companyName", { length: 255 }),
-  department: varchar("department", { length: 100 }),
-  inputJson: json("inputJson"), // must-haves, nice-to-haves, level, location
-  outputSummary: text("outputSummary"),
-  outputResponsibilities: text("outputResponsibilities"),
-  outputRequirements: text("outputRequirements"),
-  outputBenefits: text("outputBenefits"),
-  fullText: text("fullText"),
+  
+  language: varchar("language", { length: 100 }).notNull(),
+  proficiency: varchar("proficiency", { length: 50 }),
+  isNative: boolean("isNative").default(false),
+  
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
 
-export const jdUsage = mysqlTable("jd_usage", {
+export const volunteerExperiences = mysqlTable("volunteerExperiences", {
   id: int("id").autoincrement().primaryKey(),
   userId: int("userId").notNull(),
-  companyId: int("companyId"),
-  periodStart: date("periodStart").notNull(),
-  periodEnd: date("periodEnd").notNull(),
-  jdsGenerated: int("jdsGenerated").default(0).notNull(),
+  
+  organization: varchar("organization", { length: 255 }).notNull(),
+  role: varchar("role", { length: 255 }),
+  startDate: varchar("startDate", { length: 20 }),
+  endDate: varchar("endDate", { length: 20 }),
+  description: text("description"),
+  
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
-// ================================================================
-// GTM JOB RUNS (Observability)
-// ================================================================
-
-export const gtmJobRuns = mysqlTable("gtm_job_runs", {
+export const projects = mysqlTable("projects", {
   id: int("id").autoincrement().primaryKey(),
-  jobId: varchar("jobId", { length: 255 }),
-  jobType: varchar("jobType", { length: 50 }).notNull(), // 'strategy', 'lead_discovery', 'scoring', 'outreach_draft', 'outreach_send', 'content', 'report'
-  channel: varchar("channel", { length: 50 }),
-  startedAt: timestamp("startedAt").defaultNow().notNull(),
-  finishedAt: timestamp("finishedAt"),
-  status: mysqlEnum("status", ["running", "success", "failed", "skipped"]).notNull(),
-  payloadSummary: text("payloadSummary"),
-  errorMessage: text("errorMessage"),
-  durationMs: int("durationMs"),
+  userId: int("userId").notNull(),
+  
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  url: text("url"),
+  role: varchar("role", { length: 255 }),
+  startDate: varchar("startDate", { length: 20 }),
+  endDate: varchar("endDate", { length: 20 }),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export const publications = mysqlTable("publications", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  
+  title: varchar("title", { length: 500 }).notNull(),
+  publisherOrVenue: varchar("publisherOrVenue", { length: 255 }),
+  year: int("year"),
+  url: text("url"),
+  context: text("context"),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export const securityClearances = mysqlTable("securityClearances", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  
+  clearanceType: varchar("clearanceType", { length: 100 }).notNull(),
+  level: varchar("level", { length: 100 }),
+  expiryDate: varchar("expiryDate", { length: 20 }),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
 // ================================================================
@@ -663,12 +545,41 @@ export type Notification = typeof notifications.$inferSelect;
 export type SavedOpportunity = typeof savedOpportunities.$inferSelect;
 export type ApplicationNote = typeof applicationNotes.$inferSelect;
 export type InsertApplicationNote = typeof applicationNotes.$inferInsert;
-export type B2BLead = typeof b2bLeads.$inferSelect;
-export type InsertB2BLead = typeof b2bLeads.$inferInsert;
-export type GtmRun = typeof gtmRuns.$inferSelect;
-export type GtmContent = typeof gtmContent.$inferSelect;
-export type OutreachDraft = typeof outreachDrafts.$inferSelect;
-export type JdDraft = typeof jdDrafts.$inferSelect;
-export type InsertJdDraft = typeof jdDrafts.$inferInsert;
-export type JdUsage = typeof jdUsage.$inferSelect;
-export type GtmJobRun = typeof gtmJobRuns.$inferSelect;
+export type Language = typeof languages.$inferSelect;
+export type InsertLanguage = typeof languages.$inferInsert;
+export type VolunteerExperience = typeof volunteerExperiences.$inferSelect;
+export type InsertVolunteerExperience = typeof volunteerExperiences.$inferInsert;
+export type Project = typeof projects.$inferSelect;
+export type InsertProject = typeof projects.$inferInsert;
+export type Publication = typeof publications.$inferSelect;
+export type InsertPublication = typeof publications.$inferInsert;
+export type SecurityClearance = typeof securityClearances.$inferSelect;
+export type InsertSecurityClearance = typeof securityClearances.$inferInsert;
+
+// ================================================================
+// AGENT METRICS (Production Monitoring)
+// ================================================================
+
+export const agentMetrics = mysqlTable("agentMetrics", {
+  id: int("id").autoincrement().primaryKey(),
+  
+  // Agent identification
+  agentType: varchar("agentType", { length: 50 }).notNull(), // 'tailor', 'scribe', 'assembler'
+  
+  // Performance metrics
+  duration: int("duration").notNull(), // milliseconds
+  success: boolean("success").notNull(),
+  errorMessage: text("errorMessage"),
+  
+  // Related entities
+  applicationId: int("applicationId"),
+  userId: int("userId"),
+  
+  // Additional metadata
+  metadata: json("metadata").$type<Record<string, any>>(), // Agent-specific data (e.g., keyword count, confidence score)
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type AgentMetric = typeof agentMetrics.$inferSelect;
+export type InsertAgentMetric = typeof agentMetrics.$inferInsert;

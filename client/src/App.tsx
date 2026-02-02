@@ -7,12 +7,12 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 
 // Landing & Public Pages
 import Home from "./pages/Home";
+import ResumeRoast from "./pages/ResumeRoast";
+import Recruiters from "./pages/Recruiters";
 import Pricing from "./pages/Pricing";
 import FAQ from "./pages/FAQ";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
-import ResumeRoast from "./pages/ResumeRoast";
-import ForRecruiters from "./pages/ForRecruiters";
 import DevLogin from "./pages/DevLogin";
 
 // Onboarding Flow (5 steps)
@@ -26,6 +26,7 @@ import OnboardingPreferences from "./pages/onboarding/Preferences";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import ProfileEdit from "./pages/ProfileEdit";
+import ProfileSections from "./pages/ProfileSections";
 
 // Jobs & Applications
 import Jobs from "./pages/Jobs";
@@ -36,6 +37,7 @@ import ApplicationDetail from "./pages/ApplicationDetail";
 
 // Analytics
 import Analytics from "./pages/Analytics";
+import Metrics from "./pages/Metrics";
 
 // Activity Feed
 import Activity from "./pages/Activity";
@@ -45,9 +47,9 @@ function Router() {
     <Switch>
       {/* Public Pages */}
       <Route path="/" component={Home} />
-      <Route path="/roast" component={ResumeRoast} />
-      <Route path="/for-recruiters" component={ForRecruiters} />
       <Route path="/login" component={DevLogin} />
+      <Route path="/roast" component={ResumeRoast} />
+      <Route path="/recruiters" component={Recruiters} />
       <Route path="/pricing" component={Pricing} />
       <Route path="/faq" component={FAQ} />
       <Route path="/privacy" component={Privacy} />
@@ -70,6 +72,7 @@ function Router() {
       {/* Master Profile */}
       <Route path="/profile" component={Profile} />
       <Route path="/profile/edit" component={ProfileEdit} />
+      <Route path="/profile/sections" component={ProfileSections} />
       {/* Jobs & Opportunities */}
       <Route path="/jobs" component={Jobs} />
       <Route path="/saved" component={SavedOpportunities} />
@@ -79,6 +82,7 @@ function Router() {
 
       {/* Analytics */}
       <Route path="/analytics" component={Analytics} />
+      <Route path="/metrics" component={Metrics} />
 
       {/* 404 */}
       <Route path="/404" component={NotFound} />
@@ -92,6 +96,8 @@ function App() {
     <ErrorBoundary>
       <ThemeProvider defaultTheme="light">
         <TooltipProvider>
+          {/* Organic Intelligence Texture Overlay */}
+          <div className="texture-overlay" aria-hidden="true" />
           <Toaster />
           <Router />
         </TooltipProvider>

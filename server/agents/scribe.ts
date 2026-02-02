@@ -1,4 +1,5 @@
 import { invokeLLM } from "../_core/llm";
+import { insertAgentMetric } from '../db';
 
 interface ScribeInput {
   userProfile: {
@@ -17,7 +18,10 @@ interface ScribeOutput {
   linkedInMessage: string;
 }
 
-export async function generateOutreach(input: ScribeInput): Promise<ScribeOutput> {
+export async function generateOutreach(input: ScribeInput, options?: { applicationId?: number; userId?: number }): Promise<ScribeOutput> {
+  const startTime = Date.now();
+  
+  try {
   const systemPrompt = `You are a peer-level candidate writing to a Hiring Manager.
 
 **Your task:** Write a cover letter and LinkedIn connection message.
@@ -112,8 +116,42 @@ ${input.userProfile.topAchievements.map((a, i) => `${i + 1}. ${a}`).join('\n')}
   const coverLetter = coverLetterMatch ? coverLetterMatch[1].trim() : '';
   const linkedInMessage = linkedInMatch ? linkedInMatch[1].trim() : '';
 
-  return {
-    coverLetter,
-    linkedInMessage,
-  };
+    const duration = Date.now() - startTime;
+    
+    // Log success metric
+    if (options?.applicationId || options?.userId) {
+      await insertAgentMetric({
+        agentType: 'scribe',
+        duration,
+        success: true,
+        applicationId: options.applicationId,
+        userId: options.userId,
+        metadata: {
+          coverLetterLength: coverLetter.length,
+          linkedInMessageLength: linkedInMessage.length,
+        },
+      });
+    }
+    
+    return {
+      coverLetter,
+      linkedInMessage,
+    };
+  } catch (error) {
+    const duration = Date.now() - startTime;
+    
+    // Log error metric
+    if (options?.applicationId || options?.userId) {
+      await insertAgentMetric({
+        agentType: 'scribe',
+        duration,
+        success: false,
+        errorMessage: error instanceof Error ? error.message : String(error),
+        applicationId: options.applicationId,
+        userId: options.userId,
+      });
+    }
+    
+    throw error;
+  }
 }

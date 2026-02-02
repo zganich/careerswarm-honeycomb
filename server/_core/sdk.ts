@@ -263,7 +263,37 @@ class SDKServer {
   }
 
   async authenticateRequest(req: Request): Promise<User> {
-    // Regular authentication flow
+    // Check for Bearer token in Authorization header (dev login)
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.substring(7);
+      const session = await this.verifySession(token);
+      
+      if (session) {
+        const sessionUserId = session.openId;
+        const signedInAt = new Date();
+        let user = await db.getUserByOpenId(sessionUserId);
+        
+        if (!user) {
+          // Create user from session
+          await db.upsertUser({
+            openId: sessionUserId,
+            name: session.name || 'Test User',
+            email: sessionUserId.includes('@') ? sessionUserId : undefined,
+            lastSignedIn: signedInAt,
+          });
+          user = await db.getUserByOpenId(sessionUserId);
+        }
+        
+        if (!user) {
+          throw ForbiddenError("Failed to create user");
+        }
+        
+        return user;
+      }
+    }
+    
+    // Regular cookie-based authentication flow
     const cookies = this.parseCookies(req.headers.cookie);
     const sessionCookie = cookies.get(COOKIE_NAME);
     const session = await this.verifySession(sessionCookie);

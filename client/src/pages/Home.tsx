@@ -2,7 +2,10 @@ import React from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight, Hexagon, ShieldCheck, Zap, Database, Check, Upload, Sparkles, Shield } from 'lucide-react';
 import { useLocation } from 'wouter';
-import { TransformationHero } from '@/components/ui/psych';
+import { getLoginUrl } from '@/const';
+import { TransformationHero } from '@/components/ui/psych/TransformationHero';
+import { SwarmNarrative } from '@/components/SwarmNarrative';
+import { TrustStrip } from '@/components/TrustStrip';
 
 const Home = () => {
   const { scrollY } = useScroll();
@@ -21,23 +24,26 @@ const Home = () => {
             <span className="text-xl font-bold tracking-tight text-slate-900">CareerSwarm</span>
           </div>
           <div className="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-600">
-            <a href="#features" className="hover:text-orange-600 transition-colors">Technology</a>
-            <a href="#proof" className="hover:text-orange-600 transition-colors">Evidence Engine</a>
-            <a href="#pricing" className="hover:text-orange-600 transition-colors">Enterprise</a>
+            <button type="button" onClick={() => setLocation('/pricing')} className="hover:text-orange-600 transition-colors">Pricing</button>
+            <button type="button" onClick={() => setLocation('/recruiters')} className="hover:text-orange-600 transition-colors">For Recruiters</button>
+            <button type="button" onClick={() => setLocation('/roast')} className="hover:text-orange-600 transition-colors">Resume Roast</button>
+          </div>
+          <div className="flex items-center space-x-4">
             <button
               type="button"
-              onClick={() => setLocation("/roast")}
-              className="hover:text-orange-600 transition-colors"
+              onClick={() => { const u = getLoginUrl(); if (u && u !== '#') window.location.href = u; else setLocation('/login'); }}
+              className="text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors"
             >
-              Resume Roast
+              Sign In
+            </button>
+            <button
+              type="button"
+              onClick={() => setLocation('/onboarding/welcome')}
+              className="bg-slate-900 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-orange-600 transition-all shadow-lg shadow-orange-500/20"
+            >
+              Build My Master Profile
             </button>
           </div>
-          <button 
-            onClick={() => setLocation('/onboarding/welcome')}
-            className="bg-slate-900 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-orange-600 transition-all shadow-lg shadow-orange-500/20"
-          >
-            Build My Master Profile
-          </button>
         </div>
       </nav>
 
@@ -50,6 +56,9 @@ const Home = () => {
       {/* --- FEATURE CARDS: LAB AESTHETIC --- */}
       <section id="features" className="py-24 bg-white relative">
         <div className="max-w-7xl mx-auto px-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 text-center mb-12">
+            How CareerSwarm Works
+          </h2>
           <div className="grid md:grid-cols-3 gap-8">
             
             {/* Card 1 */}

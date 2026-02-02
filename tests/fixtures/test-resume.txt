@@ -1,0 +1,47 @@
+MICHAEL CHEN
+michael.chen@email.com | (555) 123-7890 | Seattle, WA
+LinkedIn: linkedin.com/in/michaelchen | Portfolio: michaelchen.dev
+
+PROFESSIONAL SUMMARY
+Full-Stack Software Engineer with 6+ years of experience building scalable web applications. Expert in React, Node.js, and cloud infrastructure. Passionate about clean code, performance optimization, and mentoring junior developers.
+
+WORK EXPERIENCE
+
+Senior Software Engineer | CloudTech Solutions | Mar 2021 - Present
+- Architected microservices platform handling 5M+ requests per day with 99.9% uptime
+- Reduced page load time by 70% through code splitting and lazy loading optimization
+- Led team of 5 engineers to deliver customer dashboard used by 10K+ daily active users
+- Implemented CI/CD pipeline reducing deployment time from 2 hours to 15 minutes
+
+Software Engineer | StartupHub | Jun 2018 - Feb 2021
+- Built real-time collaboration features supporting 50K+ concurrent users
+- Increased API performance by 80% through database query optimization and caching
+- Developed automated testing framework reducing bugs in production by 60%
+- Mentored 3 junior engineers on best practices and code review
+
+Junior Software Engineer | WebDev Corp | Jan 2017 - May 2018
+- Developed responsive web applications using React and TypeScript
+- Integrated third-party APIs for payment processing and analytics
+- Improved code coverage from 40% to 85% through comprehensive unit testing
+
+SKILLS
+JavaScript, TypeScript, React, Node.js, Express, PostgreSQL, MongoDB, Redis, AWS, Docker, Kubernetes, GraphQL, REST APIs, Git, CI/CD, Jest, Playwright, Agile/Scrum
+
+EDUCATION
+BS, Computer Science | University of Washington | 2016
+Minor in Mathematics
+
+CERTIFICATIONS
+AWS Certified Solutions Architect - Associate | Amazon Web Services | 2022
+Certified Kubernetes Administrator (CKA) | Cloud Native Computing Foundation | 2021
+
+PROJECTS
+Open Source Contributions | github.com/michaelchen
+- Contributed to React core with 15+ merged pull requests
+- Maintained popular npm package with 50K+ weekly downloads
+- Active contributor to TypeScript community
+
+Personal Portfolio | michaelchen.dev
+- Built with Next.js, TypeScript, and Tailwind CSS
+- Features interactive code playground and technical blog
+- 10K+ monthly visitors

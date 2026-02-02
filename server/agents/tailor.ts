@@ -1,4 +1,5 @@
-import { invokeLLM } from "../_core/llm";
+import { invokeLLM } from '../_core/llm';
+import { insertAgentMetric } from '../db';
 
 interface TailorInput {
   userProfile: {
@@ -53,7 +54,10 @@ function extractKeywords(text: string): string[] {
   return Array.from(new Set(words));
 }
 
-export async function tailorResume(input: TailorInput): Promise<TailorOutput> {
+export async function tailorResume(input: TailorInput, options?: { applicationId?: number; userId?: number }): Promise<TailorOutput> {
+  const startTime = Date.now();
+  
+  try {
   const systemPrompt = `You are an expert Executive Recruiter and Resume Strategist.
 
 Your task is to rewrite the user's resume to align perfectly with the target Job Description (JD).
@@ -201,9 +205,44 @@ ${edu.institution}, ${edu.graduationYear}
     : 0;
   const confidence = Math.min(matchRate, 100);
 
-  return {
-    resumeMarkdown,
-    keywordMatches,
-    confidence,
-  };
+    const duration = Date.now() - startTime;
+    
+    // Log success metric
+    if (options?.applicationId || options?.userId) {
+      await insertAgentMetric({
+        agentType: 'tailor',
+        duration,
+        success: true,
+        applicationId: options.applicationId,
+        userId: options.userId,
+        metadata: {
+          keywordCount: keywordMatches.length,
+          confidence: Math.round(confidence * 100) / 100,
+          jdKeywordCount: jdKeywords.length,
+        },
+      });
+    }
+    
+    return {
+      resumeMarkdown,
+      keywordMatches,
+      confidence,
+    };
+  } catch (error) {
+    const duration = Date.now() - startTime;
+    
+    // Log error metric
+    if (options?.applicationId || options?.userId) {
+      await insertAgentMetric({
+        agentType: 'tailor',
+        duration,
+        success: false,
+        errorMessage: error instanceof Error ? error.message : String(error),
+        applicationId: options.applicationId,
+        userId: options.userId,
+      });
+    }
+    
+    throw error;
+  }
 }

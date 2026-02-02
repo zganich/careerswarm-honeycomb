@@ -118,7 +118,7 @@ export default function ResumeRoast() {
             <div>
               <p className="text-sm font-semibold text-slate-700 mb-3">3 Million-Dollar Mistakes</p>
               <ul className="space-y-4">
-                {result.mistakes.map((m, i) => (
+                {result.mistakes.map((m: { title?: string; explanation?: string; fix?: string }, i: number) => (
                   <li key={i} className="p-4 bg-white border border-slate-200 rounded-xl">
                     <p className="font-medium text-slate-900">{m.title}</p>
                     <p className="text-sm text-slate-600 mt-1">{m.explanation}</p>

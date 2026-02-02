@@ -8,6 +8,7 @@ import * as db from "./db";
 import { invokeLLM } from "./_core/llm";
 import { storagePut, storageGet } from "./storage";
 import { extractTextFromResume, parseResumeWithLLM, consolidateResumes, generateSuperpowers } from "./resumeParser";
+import { profileRouter } from "./routers/profile";
 
 // ================================================================
 // CAREERSWARM - MASTER PROFILE & 7-AGENT SYSTEM
@@ -38,6 +39,7 @@ Output JSON only: score (0-100), verdict (one short sentence), brutalTruth (2-4 
 
 export const appRouter = router({
   system: systemRouter,
+  profileSections: profileRouter,
 
   public: router({
     roast: publicProcedure
@@ -1667,6 +1669,9 @@ Each superpower should:
               ...(application.pivotAnalysis && {
                 pivotContext: application.pivotAnalysis,
               }),
+            }, {
+              applicationId: application.id,
+              userId: user.id,
             });
 
             // Run Profiler for company insights (optional; fallback to empty if it fails)
@@ -1688,6 +1693,9 @@ Each superpower should:
               companyName: opportunity.companyName,
               roleTitle: opportunity.roleTitle,
               strategicMemo,
+            }, {
+              applicationId: application.id,
+              userId: user.id,
             });
 
             // Assemble package
@@ -1699,6 +1707,9 @@ Each superpower should:
               userFullName: user.name || "User",
               companyName: opportunity.companyName,
               roleTitle: opportunity.roleTitle,
+            }, {
+              applicationId: application.id,
+              userId: user.id,
             });
 
             // Update application with package URLs
@@ -1865,6 +1876,49 @@ Each superpower should:
         insights: [], // TODO: Generate AI insights
       };
     }),
+
+    // Get agent performance metrics
+    getAgentMetrics: protectedProcedure
+      .input(z.object({
+        agentType: z.enum(['tailor', 'scribe', 'assembler']).optional(),
+        hours: z.number().default(24), // Last N hours
+      }))
+      .query(async ({ input }) => {
+        const startDate = new Date(Date.now() - input.hours * 60 * 60 * 1000);
+        
+        const stats = await db.getAgentPerformanceStats(input.agentType);
+        
+        return stats;
+      }),
+
+    // Get package generation success rate
+    getPackageSuccessRate: protectedProcedure
+      .input(z.object({
+        hours: z.number().default(24), // Last N hours
+      }))
+      .query(async ({ ctx, input }) => {
+        const user = await db.getUserByOpenId(ctx.user.openId);
+        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        
+        const startDate = new Date(Date.now() - input.hours * 60 * 60 * 1000);
+        
+        const applications = await db.getApplications(user.id, {});
+        const recentApplications = applications.filter(
+          (app) => app.createdAt && new Date(app.createdAt).getTime() >= startDate.getTime()
+        );
+        
+        const totalAttempts = recentApplications.length;
+        const successful = recentApplications.filter((app) => app.packageZipUrl).length;
+        const successRate = totalAttempts > 0 ? (successful / totalAttempts) * 100 : 0;
+        
+        return {
+          totalAttempts,
+          successful,
+          failed: totalAttempts - successful,
+          successRate: Math.round(successRate * 10) / 10, // Round to 1 decimal
+          timeRange: `Last ${input.hours} hours`,
+        };
+      }),
   }),
 
   // ================================================================
