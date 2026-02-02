@@ -35,8 +35,11 @@ cp .env.example .env
 # Create database
 mysql -u root -p -e "CREATE DATABASE careerswarm_dev;"
 
-# Run migrations
-pnpm db:push
+# Run migrations (applies all pending migrations from drizzle/)
+pnpm db:migrate
+
+# Or: generate new migrations from schema changes, then apply (may prompt)
+# pnpm db:push
 
 # Seed reference data (optional)
 pnpm seed
