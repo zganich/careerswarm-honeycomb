@@ -71,7 +71,7 @@ export function SwarmNarrative() {
 
   return (
     <div className="w-full max-w-6xl mx-auto">
-      <div className="flex flex-col lg:flex-row gap-8 items-start justify-center min-h-[500px]">
+      <div className="flex flex-col lg:flex-row gap-8 items-start justify-center min-h-[380px]">
         
         {/* LEFT COLUMN: History Stack */}
         <div className="w-full lg:w-64 space-y-4">

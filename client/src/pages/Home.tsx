@@ -55,15 +55,12 @@ const Home = () => {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-gradient-to-br from-orange-200/20 via-orange-100/10 to-transparent rounded-full blur-3xl"></div>
 
         {/* Content */}
-        <div className="relative z-10 flex flex-col items-center justify-center text-center gap-8 max-w-7xl mx-auto w-full">
+        <div className="relative z-10 flex flex-col items-center justify-center text-center gap-6 max-w-7xl mx-auto w-full">
           
           {/* Headline Group */}
-          <div className="space-y-3 max-w-3xl">
+          <div className="space-y-2 max-w-3xl">
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-slate-900 leading-tight">
-              Stop Blindly Applying.<br/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-600">
-                Start Infiltrating.
-              </span>
+              Stop Applying. <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-600">Start Infiltrating.</span>
             </h1>
             
             <p className="text-lg md:text-xl text-slate-600 leading-relaxed">
@@ -72,7 +69,7 @@ const Home = () => {
           </div>
 
           {/* Action Group - MOVED ABOVE ANIMATION */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <button 
