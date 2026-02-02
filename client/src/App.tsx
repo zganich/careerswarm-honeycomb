@@ -56,6 +56,7 @@ function Router() {
 
       {/* Onboarding Flow */}
       <Route path="/onboarding" component={OnboardingWelcome} />
+      <Route path="/onboarding/welcome" component={OnboardingWelcome} />
       <Route path="/onboarding/upload" component={OnboardingUpload} />
       <Route path="/onboarding/extraction" component={OnboardingExtraction} />
       <Route path="/onboarding/review" component={OnboardingReview} />

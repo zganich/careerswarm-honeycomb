@@ -1120,3 +1120,15 @@ See TEST_RESULTS.md for comprehensive documentation.
 - **Resume Parser:** Enhanced to extract languages, volunteer work, projects, publications, and security clearances from uploaded resumes
 - **Database:** All 5 new tables operational with full CRUD support
 
+
+---
+
+## 🐛 URGENT BUG FIX (Feb 1, 2026)
+
+### Onboarding 404 Error After Resume Upload ✅ FIXED
+- [x] Investigate why /onboarding/welcome returns 404 after resume upload
+- [x] Check App.tsx routing configuration for onboarding routes
+- [x] Verify navigation logic in Upload.tsx and Extraction.tsx
+- [x] Fix routing to properly redirect to next onboarding step (added /onboarding/welcome alias)
+- [x] Test complete onboarding flow (Welcome → Upload → Extraction → Review → Preferences)
+
