@@ -183,7 +183,7 @@
 ### Testing (Recommended)
 - [ ] Write vitest tests for resume parser
 - [ ] Write vitest tests for each agent
-- [ ] Write vitest tests for onboarding flow APIs
+- [x] Write vitest tests for onboarding flow APIs
 - [ ] Write E2E tests for Quick Apply workflow
 - [ ] Test with real PDF/DOCX resume files
 
@@ -965,4 +965,18 @@ See TEST_RESULTS.md for comprehensive documentation.
 ### Time Savings Copy Update ✅ FIXED
 - [x] Change trust signal from "Average user saves 5+ hours per application" to "Average user saves over 2 hours per application"
 - [x] Update CopyConstants.ts with new time savings messaging
+
+
+## 🧪 ONBOARDING FLOW E2E TESTING (Feb 2, 2026)
+
+### Complete Flow Test: Welcome → Upload → Extraction → Review → Preferences
+- [ ] Test Welcome page loads and displays correctly
+- [ ] Test "Get Started" button navigates to Upload page
+- [ ] Test Upload page file upload functionality
+- [ ] Test Extraction page shows progress and completes parsing
+- [ ] Test Review page displays extracted data correctly
+- [ ] Test Preferences page saves user preferences
+- [ ] Document any bugs or issues found
+- [ ] Fix critical blocking issues
+- [ ] Verify complete flow works end-to-end
 
