@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight, Hexagon, ShieldCheck, Zap, Database, Check, Upload, Sparkles, Shield } from 'lucide-react';
 import { useLocation } from 'wouter';
-import { SwarmAssemblyLine } from '@/components/SwarmAssemblyLine';
+import { SwarmNarrative } from '@/components/SwarmNarrative';
 
 const Home = () => {
   const { scrollY } = useScroll();
@@ -72,8 +72,8 @@ const Home = () => {
             </p>
           </div>
 
-          {/* Assembly Line Visual */}
-          <SwarmAssemblyLine />
+          {/* Swarm Narrative Animation */}
+          <SwarmNarrative />
 
           {/* Action Group */}
           <div className="space-y-4">
