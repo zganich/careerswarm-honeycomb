@@ -1162,3 +1162,9 @@ See TEST_RESULTS.md for comprehensive documentation.
 - [x] Test conversion flow: immediate CTA vs educated CTA after animation
 - [ ] Verify both CTA sets track conversions separately in PostHog (requires analytics setup)
 - [ ] Mobile optimization for dual CTA layout (test on 375px viewport)
+
+### URGENT FIX: Restore SwarmNarrative Graphics (Feb 2, 2026)
+- [x] Restore previous assembly line visualization with history stack
+- [x] Keep dual CTA structure (above + below animation)
+- [x] Ensure animation graphics are above the fold
+- [x] Reduce hero section spacing to fit everything in viewport (min-h-[95vh], gap-8, space-y-3)

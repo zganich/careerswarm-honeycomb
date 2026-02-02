@@ -44,7 +44,7 @@ const Home = () => {
       </nav>
 
       {/* --- HERO: 7-AGENT ASSEMBLY LINE --- */}
-      <section className="relative min-h-screen flex items-center justify-center px-6 pt-24 pb-16 overflow-hidden bg-gradient-to-b from-slate-50 to-white">
+      <section className="relative min-h-[95vh] flex items-center justify-center px-6 pt-20 pb-12 overflow-hidden bg-gradient-to-b from-slate-50 to-white">
         {/* Dot Grid Background */}
         <div className="absolute inset-0 opacity-30" style={{
           backgroundImage: 'radial-gradient(circle, #e2e8f0 1px, transparent 1px)',
@@ -55,10 +55,10 @@ const Home = () => {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-gradient-to-br from-orange-200/20 via-orange-100/10 to-transparent rounded-full blur-3xl"></div>
 
         {/* Content */}
-        <div className="relative z-10 flex flex-col items-center justify-center text-center gap-12 max-w-7xl mx-auto w-full">
+        <div className="relative z-10 flex flex-col items-center justify-center text-center gap-8 max-w-7xl mx-auto w-full">
           
           {/* Headline Group */}
-          <div className="space-y-4 max-w-3xl">
+          <div className="space-y-3 max-w-3xl">
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-slate-900 leading-tight">
               Stop Blindly Applying.<br/>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-600">
