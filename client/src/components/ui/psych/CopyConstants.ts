@@ -3,7 +3,7 @@
 export const PSYCH_COPY = {
   // Hero Section
   hero: {
-    headline: "Your Career, Supercharged",
+    headline: "Your Job Search, Supercharged",
     subheadline: "A 7-agent swarm that researches, targets, and builds your application package. You save 3.5 hours per job. You just hit 'Send'.",
     ctaPrimary: "Start Free Trial",
     ctaSecondary: "Import from LinkedIn",

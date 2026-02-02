@@ -1098,3 +1098,13 @@ See TEST_RESULTS.md for comprehensive documentation.
 ### Part 3: Meta-Description Strategy
 - [ ] Update homepage meta description with "Pollinate your career" messaging
 - [ ] Implement dynamic meta descriptions for job listing pages
+
+
+---
+
+### 🔄 REVERT TYPOGRAPHY (Feb 2, 2026) ✅ COMPLETE
+- [x] Revert heading font from Fraunces serif to Instrument Sans
+- [x] Remove Fraunces font import from Google Fonts
+- [x] Keep warm color palette (swarm colors)
+- [x] Keep texture overlay
+- [x] Update hero headline from "Your Career, Supercharged" to "Your Job Search, Supercharged"
