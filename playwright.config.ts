@@ -46,41 +46,24 @@ export default defineConfig({
   },
 
   /* Configure projects for major browsers and devices */
+  /* Tests use auth-bypass (bypassLogin) in beforeEach; no global storageState required */
   projects: [
-    /* Setup project for authentication */
-    {
-      name: 'setup',
-      testMatch: /.*\.setup\.ts/,
-    },
-
     /* Chromium Desktop - Primary test environment */
     {
       name: 'chromium-desktop',
-      use: {
-        ...devices['Desktop Chrome'],
-        storageState: 'playwright/.auth/user.json',
-      },
-      dependencies: ['setup'],
+      use: { ...devices['Desktop Chrome'] },
     },
 
     /* Chromium Mobile - Mobile responsive testing */
     {
       name: 'chromium-mobile',
-      use: {
-        ...devices['Pixel 5'],
-        storageState: 'playwright/.auth/user.json',
-      },
-      dependencies: ['setup'],
+      use: { ...devices['Pixel 5'] },
     },
 
     /* Firefox Desktop - Critical flows only */
     {
       name: 'firefox-desktop',
-      use: {
-        ...devices['Desktop Firefox'],
-        storageState: 'playwright/.auth/user.json',
-      },
-      dependencies: ['setup'],
+      use: { ...devices['Desktop Firefox'] },
       testMatch: /critical_.*\.spec\.ts/,
     },
   ],

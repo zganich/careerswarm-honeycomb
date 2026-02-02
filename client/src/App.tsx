@@ -13,6 +13,7 @@ import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import ResumeRoast from "./pages/ResumeRoast";
 import ForRecruiters from "./pages/ForRecruiters";
+import DevLogin from "./pages/DevLogin";
 
 // Onboarding Flow (5 steps)
 import OnboardingWelcome from "./pages/onboarding/Welcome";
@@ -46,6 +47,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/roast" component={ResumeRoast} />
       <Route path="/for-recruiters" component={ForRecruiters} />
+      <Route path="/login" component={DevLogin} />
       <Route path="/pricing" component={Pricing} />
       <Route path="/faq" component={FAQ} />
       <Route path="/privacy" component={Privacy} />

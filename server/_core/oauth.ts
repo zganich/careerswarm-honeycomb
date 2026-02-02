@@ -9,7 +9,42 @@ function getQueryParam(req: Request, key: string): string | undefined {
   return typeof value === "string" ? value : undefined;
 }
 
+/** Dev-only: enable test-login when not production OR ENABLE_DEV_LOGIN=true */
+function isDevLoginEnabled(): boolean {
+  if (process.env.ENABLE_DEV_LOGIN === "true") return true;
+  return process.env.NODE_ENV !== "production";
+}
+
 export function registerOAuthRoutes(app: Express) {
+  // Dev login: bypass OAuth when cookies/redirect don't work (local, preview URLs)
+  app.post("/api/auth/test-login", async (req: Request, res: Response) => {
+    if (!isDevLoginEnabled()) {
+      res.status(403).json({ error: "Dev login is disabled in production" });
+      return;
+    }
+    const email = typeof req.body?.email === "string" ? req.body.email.trim() : "";
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      res.status(400).json({ error: "Valid email is required" });
+      return;
+    }
+    const openId = `dev-${email}`;
+    await db.upsertUser({
+      openId,
+      name: email.split("@")[0],
+      email,
+      loginMethod: "dev",
+      lastSignedIn: new Date(),
+    });
+    const sessionToken = await sdk.createSessionToken(openId, {
+      name: email.split("@")[0],
+      expiresInMs: ONE_YEAR_MS,
+    });
+    const cookieOptions = getSessionCookieOptions(req);
+    res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
+    const returnTo = typeof req.body?.returnTo === "string" ? req.body.returnTo : "/dashboard";
+    res.status(200).json({ success: true, redirect: returnTo });
+  });
+
   app.get("/api/oauth/callback", async (req: Request, res: Response) => {
     const code = getQueryParam(req, "code");
     const state = getQueryParam(req, "state");
@@ -44,7 +79,17 @@ export function registerOAuthRoutes(app: Express) {
       const cookieOptions = getSessionCookieOptions(req);
       res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
 
-      res.redirect(302, "/");
+      let returnTo = "/";
+      try {
+        const raw = Buffer.from(state, "base64").toString("utf-8");
+        const parsed = JSON.parse(raw) as { returnTo?: string };
+        if (typeof parsed?.returnTo === "string" && parsed.returnTo.startsWith("/")) {
+          returnTo = parsed.returnTo;
+        }
+      } catch {
+        /* state was legacy plain redirectUri */
+      }
+      res.redirect(302, returnTo);
     } catch (error) {
       console.error("[OAuth] Callback failed", error);
       res.status(500).json({ error: "OAuth callback failed" });

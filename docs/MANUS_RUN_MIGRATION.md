@@ -4,6 +4,16 @@
 
 ---
 
+## Where the migration file is
+
+The migration file **is in the repo** at:
+
+**`drizzle/0015_master_profile_new_sections.sql`**
+
+It adds: 3 columns to `userProfiles`, 1 column to `certifications`, and 5 new tables (`languages`, `volunteerExperiences`, `projects`, `publications`, `securityClearances`). After pulling the latest `main`, it will be in the `drizzle/` folder. Drizzle’s `pnpm db:migrate` uses this file (and any other pending migrations in `drizzle/`) automatically.
+
+---
+
 ## What to run
 
 From the **CareerSwarm repo root** (where `package.json` and `.env` live), with **MySQL running** and **`DATABASE_URL`** set in `.env`:

@@ -166,8 +166,9 @@ export const appRouter = router({
     }),
 
     logout: protectedProcedure.mutation(async ({ ctx }) => {
-      // Logout is handled by clearing the session cookie
-      // This is just a placeholder procedure
+      const { COOKIE_NAME } = await import("@shared/const");
+      const { getSessionCookieOptions } = await import("./_core/cookies");
+      ctx.res.clearCookie(COOKIE_NAME, { ...getSessionCookieOptions(ctx.req), maxAge: 0 });
       return { success: true };
     }),
   }),

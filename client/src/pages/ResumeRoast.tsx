@@ -1,16 +1,21 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { Flame, ArrowLeft, Loader2 } from "lucide-react";
+import { Flame, ArrowLeft, Loader2, ThumbsUp, ThumbsDown } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
+import { trackEvent, EVENTS } from "@/lib/posthog";
 
 const MIN_LENGTH = 50;
 
 export default function ResumeRoast() {
   const [, setLocation] = useLocation();
   const [resumeText, setResumeText] = useState("");
+  const [feedback, setFeedback] = useState<"helpful" | "not-helpful" | null>(null);
 
   const roastMutation = trpc.public.roast.useMutation({
+    onSuccess: (data) => {
+      trackEvent(EVENTS.RESUME_ROASTED, { score: data?.score });
+    },
     onError: (err) => {
       console.error("[Resume Roast]", err);
     },
@@ -18,6 +23,15 @@ export default function ResumeRoast() {
 
   const result = roastMutation.data;
   const canSubmit = resumeText.trim().length >= MIN_LENGTH && !roastMutation.isPending;
+
+  const handleFeedback = (helpful: boolean) => {
+    if (feedback !== null) return;
+    setFeedback(helpful ? "helpful" : "not-helpful");
+    trackEvent(EVENTS.RESUME_ROAST_FEEDBACK, {
+      helpful,
+      score: result?.score,
+    });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,6 +133,46 @@ export default function ResumeRoast() {
             <p className="text-xs text-slate-500">
               {result.wordCount} words · {result.characterCount} characters
             </p>
+
+            {/* Feedback: humor quality */}
+            <div className="flex items-center gap-4 pt-4 border-t border-slate-200">
+              <span className="text-sm font-medium text-slate-700">Was this helpful?</span>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleFeedback(true)}
+                  disabled={feedback !== null}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                    feedback === "helpful"
+                      ? "bg-emerald-100 text-emerald-800"
+                      : feedback === null
+                        ? "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                        : "bg-slate-50 text-slate-400 cursor-default"
+                  }`}
+                >
+                  <ThumbsUp className="w-4 h-4" />
+                  Yes
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleFeedback(false)}
+                  disabled={feedback !== null}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                    feedback === "not-helpful"
+                      ? "bg-amber-100 text-amber-800"
+                      : feedback === null
+                        ? "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                        : "bg-slate-50 text-slate-400 cursor-default"
+                  }`}
+                >
+                  <ThumbsDown className="w-4 h-4" />
+                  Not really
+                </button>
+              </div>
+              {feedback !== null && (
+                <span className="text-xs text-slate-500">Thanks for the feedback</span>
+              )}
+            </div>
 
             {/* Lead magnet → onboarding conversion */}
             <div className="mt-8 p-6 bg-slate-900 rounded-2xl text-center">

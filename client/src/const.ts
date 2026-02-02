@@ -1,11 +1,17 @@
 export { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 
+/** OAuth state payload: redirectUri for Manus, returnTo for post-login redirect */
+export type OAuthState = { redirectUri: string; returnTo: string };
+
 // Generate login URL at runtime so redirect URI reflects the current origin.
-export const getLoginUrl = () => {
+// returnTo: path to redirect after OAuth (default "/"). Use for deep-linking.
+export const getLoginUrl = (returnTo?: string) => {
   const oauthPortalUrl = import.meta.env.VITE_OAUTH_PORTAL_URL;
   const appId = import.meta.env.VITE_APP_ID;
   const redirectUri = `${window.location.origin}/api/oauth/callback`;
-  const state = btoa(redirectUri);
+  const returnPath = returnTo && returnTo.startsWith("/") ? returnTo : "/";
+  const statePayload: OAuthState = { redirectUri, returnTo: returnPath };
+  const state = btoa(JSON.stringify(statePayload));
 
   // Gracefully handle missing or invalid VITE_OAUTH_PORTAL_URL
   if (!oauthPortalUrl) {

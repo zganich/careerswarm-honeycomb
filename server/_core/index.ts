@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import "dotenv/config";
 import * as Sentry from "@sentry/node";
 import express from "express";
 import { createServer } from "http";

@@ -27,9 +27,9 @@ export function TransformationHero({ onCtaPrimary, onCtaSecondary }: Transformat
       {/* Main Content */}
       <div className="max-w-6xl mx-auto text-center">
         
-        {/* Headline */}
+        {/* Headline — responsive: 320px, 768px, 1024px, 1920px */}
         <motion.h1 
-          className="text-5xl md:text-7xl font-bold text-slate-900 mb-4 mt-8"
+          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-slate-900 mb-4 mt-8 break-words"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -38,7 +38,7 @@ export function TransformationHero({ onCtaPrimary, onCtaSecondary }: Transformat
         </motion.h1>
         
         <motion.p 
-          className="text-xl md:text-2xl text-slate-600 mb-12 max-w-3xl mx-auto"
+          className="text-lg sm:text-xl md:text-2xl text-slate-600 mb-12 max-w-3xl mx-auto break-words"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
