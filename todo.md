@@ -1229,3 +1229,14 @@ See TEST_RESULTS.md for comprehensive documentation.
 - **Failed:** 3+ (Upload, Extraction, Auth setup)
 - **Errors:** Multiple test.describe() import errors
 - **Status:** ❌ Tests not passing - requires fixes
+
+
+## Playwright Test Fixes (Feb 2, 2026)
+- [x] Run vitest unit tests to verify backend tRPC procedures (145+ passing, 8 failing, 23 skipped)
+- [x] Fix auth.setup.ts OAuth flow timeout (14s) - Replaced with OAuth gate modal
+- [x] Update OAuth selectors to match actual Manus OAuth UI - Using branded modal instead
+- [ ] Fix onboarding upload test file upload functionality
+- [ ] Fix onboarding extraction test assertions
+- [ ] Re-run all 102 Playwright tests
+- [ ] Verify all tests pass with no failures
+- [ ] Update PLAYWRIGHT_ERRORS.md with resolution status
