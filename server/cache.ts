@@ -4,22 +4,33 @@ import Redis from "ioredis";
 let redis: Redis | null = null;
 let cacheRedis: Redis | null = null;
 
+const hasRedisConfig =
+  (process.env.REDIS_URL && process.env.REDIS_URL.trim() !== "") ||
+  (process.env.REDIS_HOST && process.env.REDIS_HOST.trim() !== "");
+
 try {
-  redis = new Redis({
-    host: process.env.REDIS_HOST || "localhost",
-    port: parseInt(process.env.REDIS_PORT || "6379"),
-    maxRetriesPerRequest: null,
-    lazyConnect: true,
-    retryStrategy: () => null, // Don't retry, fail fast
-  });
-  
-    cacheRedis = new Redis({
-    host: process.env.REDIS_HOST || "localhost",
-    port: parseInt(process.env.REDIS_PORT || "6379"),
-    maxRetriesPerRequest: 3,
-    lazyConnect: true,
-    retryStrategy: () => null,
-  });
+  if (hasRedisConfig) {
+    const commonOpts = {
+      maxRetriesPerRequest: null as number | null,
+      lazyConnect: true,
+      retryStrategy: () => null as number | null,
+    };
+    if (process.env.REDIS_URL) {
+      redis = new Redis(process.env.REDIS_URL, { ...commonOpts });
+      cacheRedis = new Redis(process.env.REDIS_URL, {
+        ...commonOpts,
+        maxRetriesPerRequest: 3,
+      });
+    } else {
+      const hostOpts = {
+        host: process.env.REDIS_HOST || "localhost",
+        port: parseInt(process.env.REDIS_PORT || "6379"),
+        ...commonOpts,
+      };
+      redis = new Redis(hostOpts);
+      cacheRedis = new Redis({ ...hostOpts, maxRetriesPerRequest: 3 });
+    }
+  }
 } catch (err) {
   console.warn("[Cache] Redis unavailable, using in-memory fallback");
 }
