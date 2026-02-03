@@ -1,16 +1,25 @@
 # Railway Deployment Handoff
 
 **Created:** February 2, 2026  
-**Status:** In Progress - App deploying
+**Updated:** February 3, 2026  
+**Status:** DEPLOYED - App running, custom domain configured
+
+---
+
+## Deployment Summary
+
+**App is LIVE at:** https://careerswarm-app-production.up.railway.app
+
+**Custom domains configured (need DNS records):**
+- careerswarm.com
+- www.careerswarm.com
 
 ---
 
 ## Copy This to New Chat
 
 ```
-Continue Railway deployment for CareerSwarm.
-
-Read RAILWAY_DEPLOYMENT_HANDOFF.md for full context, but here's the summary:
+CareerSwarm is deployed on Railway.
 
 Railway Project:
 - Project ID: 8c2e7522-d90a-4778-bcf0-2b65319f8441
@@ -18,35 +27,42 @@ Railway Project:
 - Account: jknight3@gmail.com (workspace: zganich's Projects)
 
 Services:
-- MySQL-E6eq (database): Running, ID 14ec0aaf-89a4-4cfe-ba33-2a6352bd9032
-- MySQL (app - bad name): ID b71d87a1-167e-42c9-90b3-655d2286915f, deploying
+- MySQL-E6eq (database): Running ✅
+- careerswarm-app: Running ✅
 
-Environment Variables (already set on app service):
-- DATABASE_URL=mysql://root:DwpMaixblXLpJjQlaOgaomKnMkwdcIyJ@mysql.railway.internal:3306/railway
-- JWT_SECRET=careerswarm-jwt-secret-2026-railway-prod-x9k2m
-- VITE_APP_ID=careerswarm
-- NODE_ENV=production
-- ENABLE_DEV_LOGIN=true
-- PORT=3000
+Live URL: https://careerswarm-app-production.up.railway.app
 
-Files added:
-- railway.json (sets start command to "pnpm start")
+Custom domains (need DNS setup):
+- careerswarm.com → CNAME @ → 9kk93aeq.up.railway.app
+- www.careerswarm.com → CNAME www → zkuoi33r.up.railway.app
 
-Custom domain: careerswarm.com (not yet configured)
+Status:
+- App deployed and running ✅
+- Database migrations applied ✅
+- Custom domains configured (pending DNS) ✅
+- Redis not configured (GTM worker disabled, not critical)
 
-Next steps:
-1. Check deployment status: railway logs
-2. If still showing MySQL logs, the service config is wrong - may need to delete and recreate app service
-3. Add custom domain: railway domain add careerswarm.com
-4. Configure DNS: Add CNAME record pointing careerswarm.com to railway domain
-5. Run migrations: railway run pnpm db:migrate
-6. Test the app at careerswarm.com
-
-If the app service keeps running MySQL instead of Node.js, we may need to:
-- Delete the "MySQL" app service 
-- Create a new service with a different name
-- Redeploy
+To-do:
+1. Set up DNS records for careerswarm.com
+2. Delete old "MySQL" service from dashboard (misconfigured)
+3. Set real BUILT_IN_FORGE_API_KEY for AI features
+4. Optionally add Redis for GTM pipeline worker
 ```
+
+---
+
+## DNS Records Needed
+
+Add these records at your domain registrar for careerswarm.com:
+
+| Type | Name | Value |
+|------|------|-------|
+| CNAME | @ | 9kk93aeq.up.railway.app |
+| CNAME | www | zkuoi33r.up.railway.app |
+
+**Note:** Some registrars don't allow CNAME on root (@). In that case:
+- Use an ALIAS or ANAME record if available
+- Or use a service like Cloudflare that supports CNAME flattening
 
 ---
 
@@ -54,27 +70,40 @@ If the app service keeps running MySQL instead of Node.js, we may need to:
 
 ### Database Connection
 ```
-Host: mysql.railway.internal (internal) or nozomi.proxy.rlwy.net:23775 (external)
-User: root
-Password: DwpMaixblXLpJjQlaOgaomKnMkwdcIyJ
-Database: railway
+Internal: mysql://root:GRXepLWiqebMoTgMiCEemFWmkCDITWCz@mysql-e6eq.railway.internal:3306/railway
+External: mysql://root:GRXepLWiqebMoTgMiCEemFWmkCDITWCz@trolley.proxy.rlwy.net:50885/railway
 ```
 
-### Known Issue
-The app service was accidentally named "MySQL" and Railway may be treating it as a database instead of a Node.js app. The `railway.json` file should override this, but if not:
+### Environment Variables (on careerswarm-app)
+- DATABASE_URL: ✅ (internal MySQL URL)
+- JWT_SECRET: ✅
+- VITE_APP_ID: ✅
+- NODE_ENV: production
+- ENABLE_DEV_LOGIN: true (allows test login without Manus OAuth)
+- PORT: 3000
+- OAUTH_SERVER_URL: https://oauth.manus.im
+- BUILT_IN_FORGE_API_KEY: placeholder (set real key for AI features)
 
-1. Delete the app service in Railway dashboard
-2. Run `railway add` and create an "Empty Project" service
-3. Rename it to "careerswarm-app"
-4. Link to it: `railway link -s careerswarm-app`
-5. Redeploy: `railway up`
+### Service IDs
+- careerswarm-app: 05251ccb-a203-4403-bee5-022e7e0a63fb
+- MySQL-E6eq (database): 14ec0aaf-89a4-4cfe-ba33-2a6352bd9032
+- MySQL (DELETE THIS): b71d87a1-167e-42c9-90b3-655d2286915f
 
-### Commands Reference
+### Code Changes Made
+Fixed `server/_core/vite.ts` to handle Node.js 18 compatibility:
+- Made vite/viteConfig imports dynamic (only loaded in development)
+- Used process.cwd() for production static file paths
+- Wrapped import.meta.url in lazy function to avoid bundling issues
+
+---
+
+## Commands Reference
 ```bash
 railway whoami          # Check logged in account
 railway status          # Check current project/service
+railway service status  # Check deployment status
 railway logs            # View logs
-railway variables       # View env vars
+railway variable list   # View env vars
 railway domain          # Generate/add domain
 railway run <cmd>       # Run command in Railway env
 railway up              # Deploy
@@ -83,13 +112,23 @@ railway open            # Open dashboard in browser
 
 ---
 
-## DNS Setup for careerswarm.com
+## Cleanup Needed
 
-Once Railway generates a domain (e.g., `careerswarm-app-production-xxxx.up.railway.app`), add these DNS records at your domain registrar:
+**Delete the old "MySQL" service** from the Railway dashboard:
+1. Go to https://railway.com/project/8c2e7522-d90a-4778-bcf0-2b65319f8441
+2. Click on the "MySQL" service (NOT MySQL-E6eq which is the database)
+3. Go to Settings → Delete Service
 
-| Type | Name | Value |
-|------|------|-------|
-| CNAME | @ | careerswarm-app-production-xxxx.up.railway.app |
-| CNAME | www | careerswarm-app-production-xxxx.up.railway.app |
+This service was misconfigured and is running an actual MySQL database instead of our app.
 
-Or use Railway's custom domain feature which provides the exact records needed.
+---
+
+## Optional: Add Redis for GTM Pipeline
+
+If you want the GTM pipeline worker to function:
+
+1. Add Redis service: `railway add -d redis`
+2. Link REDIS_URL to the app service
+3. Redeploy
+
+The app works without Redis - it just logs warnings about the GTM worker not starting.

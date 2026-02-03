@@ -3,10 +3,23 @@ import fs from "fs";
 import { type Server } from "http";
 import { nanoid } from "nanoid";
 import path from "path";
-import { createServer as createViteServer } from "vite";
-import viteConfig from "../../vite.config";
+import { fileURLToPath } from "url";
+
+// Get __dirname equivalent for ESM
+// Lazy evaluation to avoid issues with import.meta.url in bundled production code
+function getModuleDir(): string {
+  if (process.env.NODE_ENV === "production") {
+    return process.cwd();
+  }
+  // Development mode - use import.meta.url
+  return path.dirname(fileURLToPath(import.meta.url));
+}
 
 export async function setupVite(app: Express, server: Server) {
+  // Dynamic imports to avoid loading vite/viteConfig in production bundles
+  const { createServer: createViteServer } = await import("vite");
+  const viteConfig = (await import("../../vite.config")).default;
+  
   const serverOptions = {
     middlewareMode: true,
     hmr: { server },
@@ -26,7 +39,7 @@ export async function setupVite(app: Express, server: Server) {
 
     try {
       const clientTemplate = path.resolve(
-        import.meta.dirname,
+        getModuleDir(),
         "../..",
         "client",
         "index.html"
@@ -48,10 +61,12 @@ export async function setupVite(app: Express, server: Server) {
 }
 
 export function serveStatic(app: Express) {
+  // In production, files are served from dist/public relative to cwd
+  // In development, we also use dist/public but need to go up from server/_core
   const distPath =
-    process.env.NODE_ENV === "development"
-      ? path.resolve(import.meta.dirname, "../..", "dist", "public")
-      : path.resolve(import.meta.dirname, "public");
+    process.env.NODE_ENV === "production"
+      ? path.join(process.cwd(), "dist", "public")
+      : path.resolve(getModuleDir(), "../..", "dist", "public");
   if (!fs.existsSync(distPath)) {
     console.error(
       `Could not find the build directory: ${distPath}, make sure to build the client first`
