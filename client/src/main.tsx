@@ -12,6 +12,29 @@ import { formatTRPCError } from "./lib/error-formatting";
 import { toast } from "sonner";
 import "./index.css";
 
+function injectAnalyticsScript() {
+  if (typeof document === "undefined") return;
+
+  const endpoint = import.meta.env.VITE_ANALYTICS_ENDPOINT?.trim();
+  const websiteId = import.meta.env.VITE_ANALYTICS_WEBSITE_ID?.trim();
+
+  if (!endpoint || !websiteId) {
+    return;
+  }
+
+  const existing = document.getElementById("umami-analytics");
+  if (existing) return;
+
+  const script = document.createElement("script");
+  script.id = "umami-analytics";
+  script.defer = true;
+  script.async = true;
+  script.src = `${endpoint.replace(/\/$/, "")}/umami`;
+  script.dataset.websiteId = websiteId;
+
+  document.body.appendChild(script);
+}
+
 // Initialize monitoring (Sentry + PostHog) dynamically from backend config
 // This workaround is needed because custom VITE_ env vars aren't injected by Manus platform
 async function initializeMonitoring() {
@@ -61,6 +84,7 @@ async function initializeMonitoring() {
 
 // Initialize monitoring asynchronously
 initializeMonitoring();
+injectAnalyticsScript();
 
 const queryClient = new QueryClient({
   defaultOptions: {
