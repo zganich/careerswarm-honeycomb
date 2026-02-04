@@ -4,6 +4,17 @@
 
 ---
 
+## Auth (Sign-in / Login)
+
+**We can use whatever authentication is necessary.** Current setup:
+
+- **Production:** OAuth (Manus) when `VITE_OAUTH_PORTAL_URL` is set. Users hit `/api/oauth/callback` after sign-in; `returnTo` is passed in OAuth state so they can land back on e.g. `/onboarding/welcome` (e.g. from Resume Roast → Build my Master Profile).
+- **Dev / Preview:** Dev Login at `/login` when OAuth isn’t configured or `ENABLE_DEV_LOGIN=true`. `?returnTo=/onboarding/welcome` is sent to the test-login API; the response `redirect` is used so users return to the right page after sign-in.
+
+Both paths set a session cookie and support deep links (Roast → Onboarding → Sign in → back to Onboarding). To switch to another provider (e.g. NextAuth, Clerk, magic link), replace the OAuth routes and/or Dev Login while keeping the same `returnTo`/redirect behavior.
+
+---
+
 ## 1. OPENAI_API_KEY (Required for AI Features)
 
 **Impact:** All AI features (Resume Roast, Tailor, Scribe, etc.) will fail without this.
@@ -15,10 +26,10 @@
 
 ### Verify:
 ```bash
-# After deployment, test the Resume Roast endpoint
+# After deployment, test the Resume Roast endpoint (resumeText must be ≥50 chars)
 curl -X POST https://careerswarm.com/api/trpc/public.roast \
   -H "Content-Type: application/json" \
-  -d '{"json": {"resumeText": "Test resume content"}}'
+  -d '{"json": {"resumeText": "Software Engineer with 5 years experience. Led team of 8. Increased performance by 40%."}}'
 ```
 
 ---

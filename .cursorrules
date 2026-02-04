@@ -191,16 +191,18 @@ print(Fernet.generate_key().decode())
 
 ## Context Window Management
 
-**Monitor and manage chat context to maintain efficiency:**
+**CRITICAL: Monitor and manage chat context proactively:**
 
-- **Notification threshold:** Alert user when context usage approaches **65%**
-- **Reset timing:**
-  - **After each component/feature completion** (required)
-  - **At 60% usage** (preferred proactive reset point)
-  - User should start a new chat to reset context window
-- **When resetting:** Save all changes, commit progress, and reference current state in new chat if needed
+- **Summarize threshold:** At **50-60% context usage**, proactively summarize the session
+- **Action at threshold:**
+  1. Summarize all work done in the session
+  2. Update `CONTEXT_FOR_NEW_CHAT.md` with current state
+  3. Commit all changes
+  4. Inform user to start a new chat
+- **After each feature completion:** Save progress, update docs, commit
+- **Never wait until degradation** - proactive resets maintain quality
 
-**Rationale:** Prevents context degradation and maintains AI assistant performance throughout development cycles.
+**Rationale:** Prevents context degradation, maintains AI assistant performance, and ensures no work is lost.
 
 ---
 

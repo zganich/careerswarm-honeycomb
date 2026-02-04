@@ -3,7 +3,7 @@
 export const PSYCH_COPY = {
   // Hero Section
   hero: {
-    headline: "Stop Rewriting Your Resume.",
+    headline: "Stop Applying. Start Infiltrating.",
     subheadline: "Build One Master Profile. Auto-Apply to Hundreds of Jobs While You Sleep.",
     ctaPrimary: "Build My Master Profile",
     ctaSecondary: "Get free feedback (Resume Roast)",

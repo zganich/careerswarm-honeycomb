@@ -11,6 +11,7 @@ import { extractTextFromResume, parseResumeWithLLM, consolidateResumes, generate
 import { profileRouter } from "./routers/profile";
 import { stripeRouter } from "./stripe-router";
 import { setResumeProgress } from "./resumeProgress";
+import { runRoast } from "./roast";
 
 // ================================================================
 // CAREERSWARM - MASTER PROFILE & 7-AGENT SYSTEM
@@ -19,32 +20,12 @@ import { setResumeProgress } from "./resumeProgress";
 // ================================================================
 // PUBLIC ROUTES (no auth) - Resume Roast, etc.
 // ================================================================
-const ROAST_SYSTEM_PROMPT = `You are a cynical VC recruiter who has reviewed 10,000+ resumes this week. You don't sugarcoat. Ever.
-
-Your job: Roast the resume. Give a 0-100 score and exactly 3 "Million-Dollar Mistakes" — specific, brutal, actionable.
-
-What you hate:
-- Buzzwords without metrics (spearheaded, orchestrated, leverage, synergy, utilize, facilitate, robust)
-- "Responsibilities included..." — who cares what they were supposed to do?
-- Vague achievements ("improved efficiency", "enhanced performance")
-- Generic summaries that could apply to any human with a pulse
-- Formatting disasters (walls of text, inconsistent styling)
-- Skills lists that read like keyword dumps
-
-What impresses you (rarely):
-- Specific numbers: "$2.3M ARR", "47% reduction", "3x improvement"
-- Clear cause-and-effect: "Did X, which resulted in Y"
-- Evidence of actual ownership and decision-making
-- Brevity. They have 6 seconds. Make them count.
-
-Output JSON only: score (0-100), verdict (one short sentence), brutalTruth (2-4 sentences of direct critique), and exactly 3 mistakes, each with title, explanation, and fix.`;
 
 export const appRouter = router({
   system: systemRouter,
   profileSections: profileRouter,
 
   public: router({
-    // Monitoring configuration for frontend (Sentry, PostHog)
     getMonitoringConfig: publicProcedure.query(() => {
       return {
         sentryDsn: process.env.SENTRY_DSN || null,
@@ -54,109 +35,14 @@ export const appRouter = router({
     }),
 
     roast: publicProcedure
-      .input(
-        z.object({
-          resumeText: z.string().min(50, "Resume must be at least 50 characters"),
-        })
-      )
+      .input(z.object({ resumeText: z.string().min(50, "Resume must be at least 50 characters") }))
       .mutation(async ({ input }) => {
-        const resumeText = input.resumeText.trim();
-        const characterCount = resumeText.length;
-        const wordCount = resumeText.split(/\s+/).filter(Boolean).length;
-
-        let response;
-        try {
-          response = await invokeLLM({
-          messages: [
-            { role: "system", content: ROAST_SYSTEM_PROMPT },
-            { role: "user", content: `Roast this resume:\n\n${resumeText}` },
-          ],
-          response_format: {
-            type: "json_schema",
-            json_schema: {
-              name: "resume_roast",
-              strict: true,
-              schema: {
-                type: "object",
-                properties: {
-                  score: { type: "number" },
-                  verdict: { type: "string" },
-                  brutalTruth: { type: "string" },
-                  mistakes: {
-                    type: "array",
-                    items: {
-                      type: "object",
-                      properties: {
-                        title: { type: "string" },
-                        explanation: { type: "string" },
-                        fix: { type: "string" },
-                      },
-                      required: ["title", "explanation", "fix"],
-                      additionalProperties: false,
-                    },
-                    minItems: 3,
-                    maxItems: 3,
-                  },
-                },
-                required: ["score", "verdict", "brutalTruth", "mistakes"],
-                additionalProperties: false,
-              },
-            },
-          },
+        const outcome = await runRoast(input.resumeText);
+        if (outcome.ok) return outcome.data;
+        throw new TRPCError({
+          code: "SERVICE_UNAVAILABLE",
+          message: outcome.message,
         });
-        } catch (err) {
-          const message = err instanceof Error ? err.message : "Resume roast failed. Please try again.";
-          const cause = err instanceof Error ? err.cause : undefined;
-          console.error("[Resume Roast] LLM failed:", message, cause ? { cause: String(cause) } : "");
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: message.includes("timed out") ? message : "Resume roast failed. Please try again in a moment.",
-          });
-        }
-
-        const raw = response.choices[0].message.content;
-        const rawStr = typeof raw === "string" ? raw : "";
-        // Strip markdown code blocks if LLM wrapped JSON in ```json ... ```
-        const jsonStr = rawStr
-          .replace(/^```(?:json)?\s*/i, "")
-          .replace(/\s*```\s*$/i, "")
-          .trim();
-        let parsed: {
-          score?: number;
-          verdict?: string;
-          brutalTruth?: string;
-          mistakes?: Array<{ title?: string; explanation?: string; fix?: string }>;
-        } = {};
-        try {
-          parsed = JSON.parse(jsonStr || "{}") as typeof parsed;
-        } catch {
-          console.warn("[Resume Roast] LLM response was not valid JSON, using fallback");
-          parsed = {
-            score: 50,
-            verdict: "Could not parse detailed feedback.",
-            brutalTruth: "The analysis could not be structured. Try again or paste plain text only.",
-            mistakes: [
-              { title: "Parse issue", explanation: "Response format was unexpected.", fix: "Retry with resume text only." },
-              { title: "—", explanation: "—", fix: "—" },
-              { title: "—", explanation: "—", fix: "—" },
-            ],
-          };
-        }
-
-        const score = Math.max(0, Math.min(100, Math.round(Number(parsed.score) || 0)));
-
-        return {
-          score,
-          verdict: String(parsed.verdict ?? "").trim() || "See feedback below.",
-          brutalTruth: String(parsed.brutalTruth ?? "").trim() || "Review the mistakes and improve your resume.",
-          mistakes: (parsed.mistakes ?? []).slice(0, 3).map((m) => ({
-            title: String(m.title ?? "").trim() || "Mistake",
-            explanation: String(m.explanation ?? "").trim() || "",
-            fix: String(m.fix ?? "").trim() || "",
-          })),
-          characterCount,
-          wordCount,
-        };
       }),
 
     estimateQualification: publicProcedure

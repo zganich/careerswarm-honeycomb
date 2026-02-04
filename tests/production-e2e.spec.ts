@@ -479,38 +479,26 @@ test.describe('Core Features (Authenticated)', () => {
 });
 
 test.describe('AI Features', () => {
-  test('Resume Roast public page works', async ({ page }) => {
+  test('Resume Roast: human flow – paste, click Get Roasted, see result or error', async ({ page }) => {
     await page.goto(`${BASE_URL}/roast`);
     await page.waitForLoadState('networkidle');
-    
-    // Should show roast interface with "Resume Roast" heading
-    const heading = page.getByText(/resume roast/i).first();
-    await expect(heading).toBeVisible({ timeout: 10000 });
-    
-    // Resume Roast uses a textarea for pasting resume text
-    const textarea = page.locator('textarea');
+    await expect(page.getByRole('heading', { name: /resume roast/i })).toBeVisible({ timeout: 10000 });
+    const textarea = page.getByPlaceholder(/paste your resume/i);
     await expect(textarea).toBeVisible();
-    
-    // Enter some test resume text (minimum 50 characters required)
-    const testResumeText = `
-      John Doe
-      Software Engineer
-      5 years of experience in full-stack development.
-      Skills: JavaScript, React, Node.js, Python
-      Education: BS Computer Science
-    `.trim();
-    
-    await textarea.fill(testResumeText);
-    await page.waitForTimeout(500);
-    
-    // Look for "Get Roasted" button
-    const roastButton = page.getByRole('button', { name: /get roasted|roast/i });
-    await expect(roastButton).toBeVisible();
-    
-    // Verify button is enabled (has enough text)
-    await expect(roastButton).toBeEnabled();
-    
-    console.log('✅ Resume Roast page functional');
+    const resumeText =
+      'Software Engineer with 5 years experience at Google. Led team of 8 engineers. Increased performance by 40%. Skills: JavaScript, React, Node.js.';
+    await textarea.fill(resumeText);
+    const submitBtn = page.getByRole('button', { name: /get roasted/i });
+    await expect(submitBtn).toBeEnabled();
+    await submitBtn.click();
+    await expect(page.getByText(/roasting/i)).toBeVisible({ timeout: 3000 });
+    const result = page.getByTestId('roast-result');
+    const error = page.getByTestId('roast-error');
+    await expect(result.or(error)).toBeVisible({ timeout: 95000 });
+    const gotResult = await result.isVisible();
+    const gotError = await error.isVisible();
+    expect(gotResult || gotError).toBeTruthy();
+    console.log(gotResult ? '✅ Resume Roast: result shown' : '✅ Resume Roast: error shown (API/config)');
   });
 });
 

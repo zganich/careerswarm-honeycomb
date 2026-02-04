@@ -380,3 +380,36 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
 
   throw lastError ?? new Error("LLM invoke failed after retries");
 }
+
+const CHECK_TIMEOUT_MS = 8_000;
+
+/** Optional startup check: verify OpenAI key + egress. Log only; does not throw. */
+export async function checkOpenAIReachable(): Promise<{ ok: boolean; message: string }> {
+  const key = ENV.openaiApiKey?.trim() ?? "";
+  if (!key || key.length < 20) {
+    return { ok: false, message: "OPENAI_API_KEY not set or too short" };
+  }
+  try {
+    const controller = new AbortController();
+    const t = setTimeout(() => controller.abort(), CHECK_TIMEOUT_MS);
+    const res = await fetch(OPENAI_CHAT_URL, {
+      method: "POST",
+      headers: { "content-type": "application/json", authorization: `Bearer ${key}` },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        messages: [{ role: "user", content: "Say OK" }],
+        max_tokens: 5,
+      }),
+      signal: controller.signal,
+    });
+    clearTimeout(t);
+    if (res.ok) return { ok: true, message: "OK" };
+    const text = await res.text();
+    return { ok: false, message: `${res.status} ${res.statusText} – ${text.slice(0, 120)}` };
+  } catch (e) {
+    const err = e instanceof Error ? e : new Error(String(e));
+    const code = (err as NodeJS.ErrnoException).code ?? (err.cause as NodeJS.ErrnoException)?.code;
+    const msg = code ? `fetch failed: ${code}` : err.message;
+    return { ok: false, message: msg };
+  }
+}

@@ -13,6 +13,7 @@ import { registerOAuthRoutes } from "./oauth";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { verifyEnv } from "./env";
+import { checkOpenAIReachable } from "./llm";
 import { serveStatic, setupVite } from "./vite";
 
 // Fail fast in production if required env vars are missing
@@ -75,7 +76,7 @@ async function startServer() {
     "https://www.careerswarm.com",
   ];
   if (process.env.NODE_ENV !== "production") {
-    allowedOrigins.push("http://localhost:3000", "http://localhost:5173");
+    allowedOrigins.push("http://localhost:3000", "http://localhost:3001", "http://localhost:5173");
   }
   app.use(cors({
     origin: (origin, callback) => {
@@ -178,6 +179,11 @@ async function startServer() {
 
   server.listen(port, async () => {
     console.log(`Server running on http://localhost:${port}/`);
+
+    // Optional: verify OpenAI key + egress (log only; use railway logs to debug roast 500s)
+    checkOpenAIReachable()
+      .then((r) => console.log(r.ok ? "✓ OpenAI reachable" : `✗ OpenAI: ${r.message}`))
+      .catch(() => console.log("✗ OpenAI check failed"));
 
     // Start GTM pipeline worker if Redis available
     try {

@@ -9,6 +9,8 @@ function getQueryParam(req: Request, key: string): string | undefined {
   return typeof value === "string" ? value : undefined;
 }
 
+/** Auth is swappable: we can use whatever sign-in/login is necessary (OAuth, Dev Login, or another provider). */
+
 /** Dev-only: enable test-login when not production OR ENABLE_DEV_LOGIN=true */
 function isDevLoginEnabled(): boolean {
   if (process.env.ENABLE_DEV_LOGIN === "true") return true;

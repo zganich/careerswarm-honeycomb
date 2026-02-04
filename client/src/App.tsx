@@ -42,6 +42,9 @@ import Metrics from "./pages/Metrics";
 // Activity Feed
 import Activity from "./pages/Activity";
 
+// Achievements
+import Achievements from "./pages/Achievements";
+
 function Router() {
   return (
     <Switch>
@@ -57,6 +60,9 @@ function Router() {
 
       {/* Activity Feed */}
       <Route path="/activity" component={Activity} />
+
+      {/* Achievements */}
+      <Route path="/achievements" component={Achievements} />
 
       {/* Onboarding Flow */}
       <Route path="/onboarding" component={OnboardingWelcome} />
