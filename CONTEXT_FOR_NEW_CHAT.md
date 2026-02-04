@@ -19,19 +19,27 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 
 ## Live & Docs
 
-- **App:** https://careerswarm-app-production.up.railway.app
-- **Handoff:** [RAILWAY_DEPLOYMENT_HANDOFF.md](./RAILWAY_DEPLOYMENT_HANDOFF.md) – deployment summary, DNS CNAMEs, env vars, Railway CLI (`railway login`, `railway link`), and **“If you see errors”** (set real `BUILT_IN_FORGE_API_KEY` in Railway Variables).
+- **App:** https://careerswarm.com
+- **Handoff:** [RAILWAY_DEPLOYMENT_HANDOFF.md](./RAILWAY_DEPLOYMENT_HANDOFF.md)
 
-## Recent Session (Env & Handoff Fixes)
+## Recent Session (E2E Testing - Feb 4)
 
-- **Production env validation:** App refuses to start in production if `BUILT_IN_FORGE_API_KEY` is a placeholder (`placeholder`, `your-forge-api-key-here`, or any value containing `"placeholder"`). Startup error points to Railway Variables and the handoff doc.
-- **Scripts:** [server/_core/env.ts](server/_core/env.ts) `verifyEnv()`; [scripts/verify-env.mjs](scripts/verify-env.mjs) and [scripts/validate-production.mjs](scripts/validate-production.mjs) use the same placeholder check so `pnpm verify-env` and `pnpm validate` fail early with a clear message.
-- **Handoff doc:** [RAILWAY_DEPLOYMENT_HANDOFF.md](RAILWAY_DEPLOYMENT_HANDOFF.md) updated with “If you see errors” at top, Railway CLI install/login/link, and date.
+- **Production E2E Tests:** 18/18 passing (Auth, Onboarding, Core Features, AI, Payment)
+- **Production Smoke Tests:** 22/22 passing (all public pages, desktop + mobile)
+- **Test Files:** `tests/production-e2e.spec.ts`, `tests/production-smoke.spec.ts`
+- **Config:** `playwright.production.config.ts`
 
 ## Still To Do (Manual)
 
 - Set real **BUILT_IN_FORGE_API_KEY** in Railway (careerswarm-app → Variables) and redeploy so AI features work.
-- Optional: DNS for careerswarm.com / www; delete old “MySQL” service in Railway; add Redis for GTM worker.
+- Optional: DNS for careerswarm.com / www; delete old "MySQL" service in Railway; add Redis for GTM worker.
+
+## High Priority Next Steps
+
+1. **CI/CD:** Add E2E tests to GitHub Actions pipeline
+2. **Integration Tests:** Resume Roast API call, Stripe checkout (test mode)
+3. **Onboarding Flow:** Complete E2E test (upload → extraction → review → dashboard)
+4. **WebSocket:** Real-time progress updates for resume processing
 
 ## Key Paths
 
@@ -41,6 +49,7 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 | API        | `server/routers.ts` |
 | DB         | `drizzle/schema.ts`, `drizzle/` migrations |
 | Client     | `client/src/` |
+| Tests      | `tests/production-e2e.spec.ts`, `tests/production-smoke.spec.ts` |
 | Handoff    | [RAILWAY_DEPLOYMENT_HANDOFF.md](RAILWAY_DEPLOYMENT_HANDOFF.md) |
 
 ## Commands
@@ -49,10 +58,11 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 pnpm dev          # Dev server
 pnpm build        # Production build
 pnpm start        # Run production server
-pnpm test         # Vitest
-pnpm validate     # Production validation (env, DB, Stripe, tRPC)
-pnpm verify-env   # Env vars only (including placeholder check)
-pnpm db:migrate   # Run migrations
+pnpm test         # Vitest unit tests
+
+# E2E Tests (Production)
+npx playwright test tests/production-smoke.spec.ts --config=playwright.production.config.ts
+npx playwright test tests/production-e2e.spec.ts --config=playwright.production.config.ts
 ```
 
 ---

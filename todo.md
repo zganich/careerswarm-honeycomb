@@ -11,13 +11,18 @@
 |-------|--------|
 | TypeScript (`pnpm check`) | 0 errors |
 | Build (`pnpm build`) | Passing |
-| Tests (`pnpm test`) | 129 passed, 42 skipped |
+| Unit Tests (`pnpm test`) | 129 passed, 42 skipped |
+| E2E Tests (Production) | 18/18 passed |
+| Smoke Tests (Production) | 22/22 passed |
 | Migrations (`pnpm db:migrate`) | All 16 migrations applied |
 
 ---
 
 ## Completed (February 4, 2026)
 
+- [x] Production E2E test suite - all 18 tests passing
+- [x] Production smoke tests - all 22 tests passing (desktop + mobile)
+- [x] Fixed 12 E2E test failures (UI selectors, Playwright locator methods)
 - [x] Production env validation: reject placeholder `BUILT_IN_FORGE_API_KEY` (server/_core/env.ts)
 - [x] Placeholder check in scripts/verify-env.mjs and scripts/validate-production.mjs
 - [x] RAILWAY_DEPLOYMENT_HANDOFF.md: "If you see errors" section, Railway CLI install/login note
@@ -49,14 +54,29 @@ See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md) for full deployment guide
 
 ---
 
-## Future Enhancements (Backlog)
+## High Priority Next Steps
 
-### High Priority
+### Testing & CI/CD
+- [ ] Add E2E tests to CI/CD pipeline (GitHub Actions)
+- [ ] Resume Roast integration test (actual API call, verify response)
+- [ ] Stripe checkout flow test (test mode)
+- [ ] Onboarding complete flow test (upload → extraction → review → preferences → dashboard)
+
+### Features
 - [ ] Real-time progress updates (WebSocket for resume processing)
-- [x] Retry logic for LLM calls (handle transient failures)
 - [ ] Production metrics dashboard (see PRODUCTION_METRICS.md)
 
+### Infrastructure
+- [ ] Set real `BUILT_IN_FORGE_API_KEY` in Railway Variables (manual)
+- [ ] DNS setup for careerswarm.com / www
+- [ ] Redis for GTM worker (optional)
+
+---
+
+## Future Enhancements (Backlog)
+
 ### Medium Priority
+- [x] Retry logic for LLM calls (handle transient failures)
 - [ ] Profile completeness indicator
 - [ ] Achievement detail modal
 - [ ] Superpower editing UI
