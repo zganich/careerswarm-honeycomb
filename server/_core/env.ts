@@ -58,6 +58,8 @@ export const ENV = {
   isProduction: process.env.NODE_ENV === "production",
   forgeApiUrl: process.env.BUILT_IN_FORGE_API_URL ?? "",
   forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY ?? "",
+  // Monitoring
+  sentryDsn: process.env.SENTRY_DSN ?? "",
   // Development bypass for OAuth testing
   testUserEmail: process.env.TEST_USER_EMAIL ?? "",
   testUserPassword: process.env.TEST_USER_PASSWORD ?? "",

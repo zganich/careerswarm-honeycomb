@@ -2,6 +2,9 @@
 import "dotenv/config";
 import * as Sentry from "@sentry/node";
 import express from "express";
+import helmet from "helmet";
+import cors from "cors";
+import rateLimit from "express-rate-limit";
 import { createServer } from "http";
 import net from "net";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
@@ -49,10 +52,68 @@ async function startServer() {
   const app = express();
   const server = createServer(app);
   
-  // Sentry error handler setup (must be called before routes)
-  if (process.env.SENTRY_DSN) {
-    Sentry.setupExpressErrorHandler(app);
+  // Security middleware
+  app.use(helmet({
+    contentSecurityPolicy: process.env.NODE_ENV === "production" ? {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // Required for Vite/React
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:", "blob:", "https:"],
+        fontSrc: ["'self'", "data:"],
+        connectSrc: ["'self'", "https://api.stripe.com", "https://*.sentry.io"],
+        frameSrc: ["'self'", "https://js.stripe.com"],
+      },
+    } : false, // Disable CSP in development for Vite HMR
+    crossOriginEmbedderPolicy: false, // Required for some external resources
+  }));
+  
+  // CORS configuration
+  const allowedOrigins = [
+    process.env.APP_URL || "https://careerswarm.com",
+    "https://www.careerswarm.com",
+  ];
+  if (process.env.NODE_ENV !== "production") {
+    allowedOrigins.push("http://localhost:3000", "http://localhost:5173");
   }
+  app.use(cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (mobile apps, Postman, etc.)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  }));
+  
+  // Rate limiting - general API protection
+  const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // 100 requests per window per IP
+    message: { error: "Too many requests, please try again later." },
+    standardHeaders: true,
+    legacyHeaders: false,
+    skip: (req) => {
+      // Skip rate limiting for health checks and static assets
+      return req.path === "/health" || req.path.startsWith("/assets");
+    },
+  });
+  
+  // Stricter rate limit for auth endpoints
+  const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 20, // 20 auth attempts per window
+    message: { error: "Too many authentication attempts, please try again later." },
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+  
+  // Apply rate limiters
+  app.use("/api/trpc", apiLimiter);
+  app.use("/api/oauth", authLimiter);
   
   // Stripe webhook MUST come before express.json() for signature verification
   app.post(
@@ -89,7 +150,11 @@ async function startServer() {
     })
   );
   
-  // Sentry error handler is already set up via setupExpressErrorHandler above
+  // Sentry error handler (must be after all routes)
+  if (process.env.SENTRY_DSN) {
+    Sentry.setupExpressErrorHandler(app);
+  }
+  
   // development mode uses Vite, production mode uses static files
   if (process.env.NODE_ENV === "development") {
     await setupVite(app, server);
