@@ -73,7 +73,7 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 | Auth | `server/_core/oauth.ts`, `client/src/pages/DevLogin.tsx` (Sign in), `client/src/_core/hooks/useAuth.ts` |
 | Server / env / LLM | `server/_core/index.ts`, `server/_core/env.ts`, `server/_core/llm.ts` |
 | Database | `drizzle/schema.ts`, `server/db.ts`, `drizzle/` migrations |
-| Tests | Unit: `pnpm test` (Vitest, 122 passing / 51 skipped). E2E: `tests/production-smoke.spec.ts`, `tests/production-e2e.spec.ts` (Playwright vs production). Roast unit: `server/roaster.test.ts` |
+| Tests | Unit: `pnpm test` (Vitest, 122 passing / 51 skipped). E2E: `tests/production-smoke.spec.ts` (22), `tests/production-e2e.spec.ts` (25), `tests/playbook-whats-broken.spec.ts` (8). Roast unit: `server/roaster.test.ts`. Human testing report: [docs/HUMAN_TESTING_REPORT.md](./docs/HUMAN_TESTING_REPORT.md). |
 | CI/CD | `.github/workflows/ci.yml` |
 | Docs | `docs/` (active); `.archive/` (obsolete) |
 
@@ -114,6 +114,7 @@ pnpm test
 
 npx playwright test tests/production-smoke.spec.ts --config=playwright.production.config.ts
 npx playwright test tests/production-e2e.spec.ts --config=playwright.production.config.ts
+npx playwright test tests/playbook-whats-broken.spec.ts --config=playwright.config.ts
 
 railway status | logs | variable list | redeploy | up | open
 ```
@@ -131,8 +132,13 @@ railway status | logs | variable list | redeploy | up | open
 4. **E2E** – “From Roast: Build my Master Profile → welcome” fixed (data-testid on Roast page, fallback if CTA not visible). Playwright production reporter outputFolder → `playwright-report-production` to avoid path clash.
 
 ### Status:
-- **pnpm check / pnpm test / pnpm build**: passing. **Production smoke**: 11 passed. **Production E2E**: all passing (Roast test uses CTA when visible, else navigates to `/onboarding/welcome`).
-- **Auth**: Email-only at `/login`; no OAuth/Manus required. Optional OAuth if `OAUTH_SERVER_URL` and `VITE_OAUTH_PORTAL_URL` set.
+- **pnpm check / pnpm test / pnpm build**: passing. **Production smoke**: 22 passed. **Production E2E**: 25 passed. **Playbook (local)**: 8 passed. Human testing report: [docs/HUMAN_TESTING_REPORT.md](./docs/HUMAN_TESTING_REPORT.md).
+- **Auth**: Email-only at `/login`; returnTo supported. Optional OAuth if `OAUTH_SERVER_URL` and `VITE_OAUTH_PORTAL_URL` set.
+
+### Next Steps (for new chat)
+- Run check + build + test and production smoke + E2E before deploy.
+- Optional: fix or document `tests/onboarding-flow.spec.ts` (auth-bypass mock user; see HUMAN_TESTING_REPORT.md).
+- Backlog: profile completeness, achievement modal, superpower UI, Redis/Sentry (optional).
 
 ### Production checklist (unchanged)
 - OPENAI_API_KEY in Railway + redeploy; DATABASE_URL for MySQL. See [docs/CRITICAL_SETUP_CHECKLIST.md](./docs/CRITICAL_SETUP_CHECKLIST.md).
