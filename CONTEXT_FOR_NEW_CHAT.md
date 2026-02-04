@@ -26,31 +26,30 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 - **App:** https://careerswarm.com
 - **Handoff:** [RAILWAY_DEPLOYMENT_HANDOFF.md](./RAILWAY_DEPLOYMENT_HANDOFF.md)
 
-## Recent Session (Dockerfile & OPENAI-only LLM - Feb 4)
+## Recent Session (Resume Roast, E2E, CLI-first docs - Feb 4)
 
 ### Completed This Session
-1. **Added Dockerfile for Node 20**:
-   - Railway was using Nixpacks with Node 18; Vite 7 requires Node 20+
-   - New builds were failing; old deployment (Node 18) kept running
-   - Added `Dockerfile` using `node:20-alpine` — Railway now uses Dockerfile instead of Nixpacks
-   - Added `.dockerignore` to optimize build context
+1. **Resume Roast debugging**:
+   - `server/_core/llm.ts`: Enrich "fetch failed" with error cause (ECONNREFUSED, ENOTFOUND, etc.) so Railway logs show root cause
+   - `server/routers.ts`: `console.error("[Resume Roast] LLM failed:", ...)` for server-side debugging
+   - Production roast still returns 500 until `OPENAI_API_KEY`/egress verified; use `railway logs` after deploy to see enriched error
 
-2. **LLM uses ONLY OPENAI_API_KEY** (no Forge fallback):
-   - `server/_core/llm.ts`: Removed `resolveApiUrl()` and Forge fallback; calls `api.openai.com` directly
-   - `server/_core/env.ts`: Validation checks only `OPENAI_API_KEY` (not `BUILT_IN_FORGE_API_KEY`)
-   - Startup message: `✓ LLM: OPENAI_API_KEY configured`
+2. **Build My Master Profile entry points**:
+   - `client/src/pages/ResumeRoast.tsx`: Added persistent "Build my Master Profile" button in header (next to Back) so users can go to onboarding from Roast without completing a roast
+   - E2E: New describe "Build My Master Profile entry points" — From Home and From Roast tests; From Roast requires the button (no try/catch fallback), so test fails until Roast page with header button is deployed
 
-3. **Fixed validation scripts** (trim-first logic):
-   - `scripts/verify-env.mjs`: Trims value before checking length (matches env.ts behavior)
-   - `scripts/setup-checklist.mjs`: Updated to check `OPENAI_API_KEY` only
-   - `scripts/validate-production.mjs`: Updated to check `OPENAI_API_KEY` only
+3. **Sign In / Sign up E2E**:
+   - New auth tests: Sign In (Dev Login → redirect), Sign up (new user), Sign In from Home (lands on login or OAuth), plus existing session/logout tests
+   - All run against production with Dev Login
 
-4. **Deployed**:
-   - Commit `bd5d6fb`: "fix: add Dockerfile for Node 20, use OPENAI_API_KEY only for LLM"
-   - Pushed to `main`, triggered `railway up`
-   - Build ID: `7add5e12-d0ed-408d-b7b6-a9849def8f67`
+4. **CLI-first documentation**:
+   - CONTEXT_FOR_NEW_CHAT.md, RAILWAY_DEPLOYMENT_HANDOFF.md, docs/CRITICAL_SETUP_CHECKLIST.md, docs/OPTIONAL_INFRASTRUCTURE.md: "Use CLI when you can"; prefer `railway logs`, `railway redeploy`, `railway variable list`; dashboard only when CLI can't (e.g. set variables)
+   - Replaced invalid `railway deployment list` with `railway status` + `railway logs` (CLI has no deployment list command)
+
+5. **From Roast test**: Removed try-catch fallback; test now fails if "Build my Master Profile" button is missing or doesn't navigate (no silent pass).
 
 ### Prior Sessions
+- Dockerfile for Node 20, LLM OPENAI_API_KEY only, validation scripts
 - LLM migration from Manus Forge to OpenAI
 - Security middleware (helmet, cors, rate limiting)
 - CI/CD pipeline with E2E tests
@@ -72,10 +71,13 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 
 ## Verify Deployment
 
+Use CLI when you can (`railway`, `curl`); use the dashboard only when the CLI doesn’t support the action.
+
 After build succeeds:
 ```bash
-# Check deployment status
-railway deployment list
+# Check deployment status (CLI)
+railway status          # Current project/service
+railway logs            # View deployment logs (build + runtime)
 
 # Check logs for LLM confirmation
 railway logs | grep "LLM"
@@ -122,13 +124,13 @@ npx playwright test tests/production-e2e.spec.ts --config=playwright.production.
 # Railway CLI
 railway status           # Current project/service
 railway variable list    # List env vars
-railway logs             # View deployment logs
-railway deployment list  # List recent deployments
+railway logs             # View deployment logs (build + runtime)
+railway redeploy         # Redeploy without new code
 railway up               # Deploy from local
 railway open             # Open dashboard (when CLI can't do it)
 ```
 
 ---
 
-*Last updated: 2026-02-04 (Added Dockerfile for Node 20, LLM uses OPENAI_API_KEY only, deployed).*  
-*Last verified: 2026-02-04 — `pnpm check` ✓, `pnpm test` 122 passed (51 skipped), production smoke 22/22 ✓.*
+*Last updated: 2026-02-04 (Resume Roast debug logging, Build My Master Profile Roast CTA + E2E, sign in/sign up E2E, CLI-first docs, Railway command fix, From Roast test no fallback).*  
+*Last verified: 2026-02-04 — `pnpm check` ✓, production E2E Auth + Build My Master Profile (From Home passes; From Roast requires deployed Roast header button).*

@@ -8,14 +8,16 @@
 
 ## If you see errors (AI features / Resume Roast / Tailor / Scribe)
 
+**Use CLI when you can.** Prefer `railway logs`, `railway redeploy`, `railway variable list`; use the dashboard only when the CLI doesn’t support the action (e.g. setting variables).
+
 AI features will fail without a valid LLM API key. If you see **LLM / 401 / API errors** when using Resume Roast or generating resumes:
 
-1. **Set the variable** (Railway CLI cannot set variables; use `railway open` → Variables or [Railway API](https://docs.railway.app/guides/manage-variables)):
+1. **Set the variable** (CLI cannot set variables; use dashboard or [Railway API](https://docs.railway.app/guides/manage-variables)):
    ```bash
-   railway open   # → careerswarm-app → Variables
+   railway open   # → careerswarm-app → Variables (dashboard only when needed)
    ```
    Add **OPENAI_API_KEY** = your OpenAI API key (from [platform.openai.com](https://platform.openai.com/api-keys)). Save.
-2. **Redeploy from CLI:**
+2. **Redeploy (CLI):**
    ```bash
    railway redeploy
    railway logs   # Confirm app starts without placeholder error
@@ -112,18 +114,21 @@ Fixed `server/_core/vite.ts` to handle Node.js 18 compatibility:
 
 ## Commands Reference
 
+**Use CLI first;** open the dashboard only when the CLI can’t do the action (e.g. set variables, delete a service).
+
 Install CLI: `brew install railway` or `npm i -g @railway/cli`. Then `railway login` (opens browser) and from this repo run `railway link` to attach the project.
 
 ```bash
 railway whoami          # Check logged in account
 railway status          # Check current project/service
 railway service status  # Check deployment status
-railway logs            # View logs
+railway logs            # View logs (prefer over dashboard)
 railway variable list   # View env vars
 railway domain          # Generate/add domain
 railway run <cmd>       # Run command in Railway env
 railway up              # Deploy
-railway open            # Open dashboard in browser
+railway redeploy        # Redeploy without new code
+railway open            # Dashboard only when CLI can't do it (e.g. set vars)
 ```
 
 ---

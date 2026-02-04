@@ -10,9 +10,8 @@
 
 ### Steps:
 1. Get your OpenAI API key from [platform.openai.com](https://platform.openai.com/api-keys)
-2. Set via Railway CLI or dashboard: `railway open` → careerswarm-app → Variables
-3. Add `OPENAI_API_KEY=sk-...` (or replace if placeholder)
-4. Redeploy: `railway redeploy`
+2. **Use CLI when you can.** Set the variable via dashboard or [Railway API](https://docs.railway.app/guides/manage-variables) (CLI cannot set variables): `railway open` → careerswarm-app → Variables. Add `OPENAI_API_KEY=sk-...` (or replace if placeholder).
+3. Redeploy via CLI: `railway redeploy`
 
 ### Verify:
 ```bash
@@ -62,14 +61,12 @@ After adding secrets, push a commit to main. The CI workflow should:
    - Platform: Node.js (Express)
    - Project name: `careerswarm-production`
 3. Copy the DSN from Settings → Client Keys (DSN)
-4. Go to [Railway Dashboard](https://railway.app) → careerswarm-app → Variables
-5. Add: `SENTRY_DSN=https://xxx@xxx.ingest.sentry.io/xxx`
-6. Click "Deploy" to redeploy
+4. **Use CLI when you can.** Set variable via dashboard or Railway API (CLI cannot set variables): `railway open` → careerswarm-app → Variables. Add: `SENTRY_DSN=https://xxx@xxx.ingest.sentry.io/xxx`
+5. Redeploy via CLI: `railway redeploy`
 
-### Verify:
-After deployment, check Railway logs for:
-```
-Sentry initialized
+### Verify (CLI):
+```bash
+railway logs | grep -i sentry   # Should show "Sentry initialized" on startup
 ```
 
 ### Recommended Alerts (in Sentry Dashboard → Alerts):

@@ -1,6 +1,6 @@
 # Optional Infrastructure
 
-These items are not required for core app operation but improve production reliability and features. **Use CLI every time there is access** (Railway, Sentry, etc.); use the dashboard only when CLI/API does not support the action.
+These items are not required for core app operation but improve production reliability and features. **Use CLI when you can** (e.g. `railway logs`, `railway redeploy`, `railway variable list`). Use the dashboard or Railway API only when the CLI doesn’t support the action (e.g. setting variables).
 
 ## Prerequisites: Railway CLI
 

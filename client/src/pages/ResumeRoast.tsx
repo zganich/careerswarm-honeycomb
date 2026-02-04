@@ -42,14 +42,25 @@ export default function ResumeRoast() {
   return (
     <div className="min-h-screen bg-slate-50 font-inter text-slate-900">
       <div className="max-w-2xl mx-auto px-6 py-12">
-        <button
-          type="button"
-          onClick={() => setLocation("/")}
-          className="flex items-center gap-2 text-sm text-slate-600 hover:text-orange-600 mb-8"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back
-        </button>
+        <div className="flex items-center justify-between gap-4 mb-8">
+          <button
+            type="button"
+            onClick={() => setLocation("/")}
+            className="flex items-center gap-2 text-sm text-slate-600 hover:text-orange-600"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back
+          </button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setLocation("/onboarding/welcome")}
+            className="text-slate-600"
+          >
+            Build my Master Profile
+          </Button>
+        </div>
 
         <div className="flex items-center gap-3 mb-6">
           <div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center">

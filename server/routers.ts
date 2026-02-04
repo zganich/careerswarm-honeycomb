@@ -106,6 +106,8 @@ export const appRouter = router({
         });
         } catch (err) {
           const message = err instanceof Error ? err.message : "Resume roast failed. Please try again.";
+          const cause = err instanceof Error ? err.cause : undefined;
+          console.error("[Resume Roast] LLM failed:", message, cause ? { cause: String(cause) } : "");
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
             message: message.includes("timed out") ? message : "Resume roast failed. Please try again in a moment.",

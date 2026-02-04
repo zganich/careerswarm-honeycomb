@@ -22,23 +22,52 @@ const __dirname = path.dirname(__filename);
 const BASE_URL = PRODUCTION_URL;
 
 test.describe('Authentication Flow', () => {
-  test('Can login via Dev Login', async ({ page }) => {
-    // Navigate to login page
+  test('Sign In: Dev Login → email → redirect to dashboard or onboarding', async ({ page }) => {
     await page.goto(`${BASE_URL}/login`);
     await page.waitForLoadState('networkidle');
-    
-    // Fill email and submit
+    await expect(page.getByRole('heading', { name: /dev login|sign in/i })).toBeVisible({ timeout: 10000 });
     const email = getUniqueTestEmail();
     await page.locator('input[type="email"]').fill(email);
     await page.locator('button[type="submit"]').click();
-    
-    // Should redirect to dashboard or onboarding
     await page.waitForURL(/\/(dashboard|onboarding)/, { timeout: 30000 });
-    
+    expect(page.url()).toMatch(/\/(dashboard|onboarding)/);
+    console.log('✅ Sign In: redirected to', page.url());
+  });
+
+  test('Sign up (new user): Dev Login with new email → account created → redirect', async ({ page }) => {
+    await page.goto(`${BASE_URL}/login`);
+    await page.waitForLoadState('networkidle');
+    const email = getUniqueTestEmail();
+    await page.locator('input[type="email"]').fill(email);
+    await page.locator('button[type="submit"]').click();
+    await page.waitForURL(/\/(dashboard|onboarding)/, { timeout: 30000 });
+    expect(page.url()).toMatch(/\/(dashboard|onboarding)/);
+    console.log('✅ Sign up (new user): account created, redirected to', page.url());
+  });
+
+  test('Sign In from Home: click Sign In → lands on login or OAuth', async ({ page }) => {
+    await page.goto(BASE_URL);
+    await page.waitForLoadState('networkidle');
+    const signInBtn = page.getByRole('button', { name: /sign in/i }).first();
+    await signInBtn.waitFor({ state: 'visible', timeout: 10000 });
+    await signInBtn.click();
+    await page.waitForLoadState('networkidle');
     const url = page.url();
-    expect(url).toMatch(/\/(dashboard|onboarding)/);
-    
-    console.log(`✅ Logged in successfully, redirected to: ${url}`);
+    const onLogin = url.includes('/login');
+    const leftSite = !url.startsWith(BASE_URL);
+    expect(onLogin || leftSite).toBeTruthy();
+    console.log('✅ Sign In from Home: landed on', url);
+  });
+
+  test('Can login via Dev Login', async ({ page }) => {
+    await page.goto(`${BASE_URL}/login`);
+    await page.waitForLoadState('networkidle');
+    const email = getUniqueTestEmail();
+    await page.locator('input[type="email"]').fill(email);
+    await page.locator('button[type="submit"]').click();
+    await page.waitForURL(/\/(dashboard|onboarding)/, { timeout: 30000 });
+    expect(page.url()).toMatch(/\/(dashboard|onboarding)/);
+    console.log('✅ Logged in successfully, redirected to:', page.url());
   });
 
   test('Session persists after page refresh', async ({ page }) => {
@@ -84,6 +113,37 @@ test.describe('Authentication Flow', () => {
     expect(url).toBeTruthy();
     
     console.log('✅ Logout successful - session cleared');
+  });
+});
+
+test.describe('Build My Master Profile entry points', () => {
+  test.beforeEach(async ({ page }) => {
+    const email = getUniqueTestEmail();
+    await loginViaDevLogin(page, email);
+  });
+
+  test('From Home: Build My Master Profile → welcome', async ({ page }) => {
+    await page.goto(BASE_URL);
+    await page.waitForLoadState('networkidle');
+    const cta = page.getByRole('button', { name: /build my master profile/i }).first();
+    await cta.waitFor({ state: 'visible', timeout: 10000 });
+    await cta.scrollIntoViewIfNeeded();
+    await cta.click();
+    await expect(page).toHaveURL(/\/onboarding\/welcome/, { timeout: 15000 });
+    await expect(page.getByText(/welcome to careerswarm|step 1 of 5/i).first()).toBeVisible({ timeout: 5000 });
+    console.log('✅ Home → Build My Master Profile → welcome');
+  });
+
+  test('From Roast: Build my Master Profile → welcome', async ({ page }) => {
+    await page.goto(`${BASE_URL}/roast`);
+    await page.waitForLoadState('networkidle');
+    const cta = page.getByRole('button', { name: /build my master profile/i }).first();
+    await cta.waitFor({ state: 'visible', timeout: 10000 });
+    await cta.scrollIntoViewIfNeeded();
+    await cta.click();
+    await expect(page).toHaveURL(/\/onboarding\/welcome/, { timeout: 15000 });
+    await expect(page.getByText(/welcome to careerswarm|step 1 of 5/i).first()).toBeVisible({ timeout: 5000 });
+    console.log('✅ Roast → Build my Master Profile → welcome');
   });
 });
 

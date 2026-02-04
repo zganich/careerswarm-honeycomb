@@ -359,8 +359,19 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
         if (attempt === LLM_MAX_RETRIES) throw timeoutErr;
         lastError = timeoutErr;
       } else {
-        if (attempt === LLM_MAX_RETRIES) throw err;
-        lastError = err;
+        // Enrich "fetch failed" with cause so logs show root cause (e.g. ECONNREFUSED, ENOTFOUND, invalid API key)
+        const cause = err.cause as NodeJS.ErrnoException | undefined;
+        const code = cause?.code ?? (err as NodeJS.ErrnoException).code;
+        const enrichedMessage =
+          err.message === "fetch failed" && (code || cause?.message)
+            ? `LLM fetch failed: ${[code, cause?.message].filter(Boolean).join(" – ")}`
+            : err.message;
+        const enrichedErr =
+          enrichedMessage !== err.message
+            ? Object.assign(new Error(enrichedMessage), { cause: err.cause ?? err, stack: err.stack })
+            : err;
+        if (attempt === LLM_MAX_RETRIES) throw enrichedErr;
+        lastError = enrichedErr;
       }
       const delayMs = LLM_RETRY_DELAYS_MS[attempt] ?? 4000;
       await new Promise((r) => setTimeout(r, delayMs));
