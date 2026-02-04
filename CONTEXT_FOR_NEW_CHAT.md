@@ -95,6 +95,7 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 | Tests      | `tests/production-e2e.spec.ts`, `tests/production-smoke.spec.ts` |
 | CI/CD      | `.github/workflows/ci.yml` |
 | Scripts    | `scripts/setup-checklist.mjs`, `scripts/validate-production.mjs` |
+| Docs       | `docs/` (active); `.archive/` (obsolete, see .archive/README.md) |
 
 ## Commands
 
@@ -123,4 +124,4 @@ railway open           # Open project in browser when UI is needed
 
 ---
 
-*Last updated: 2026-02-04 (High-priority: E2E in CI, Roast/Stripe tests, onboarding E2E, SSE progress, metrics nav, optional infra docs).*
+*Last updated: 2026-02-04 (Cleanup: archived obsolete scripts/docs, updated docs to OPENAI_API_KEY, consolidated .archive).*

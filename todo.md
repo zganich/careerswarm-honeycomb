@@ -20,6 +20,9 @@
 
 ## Completed (February 4, 2026)
 
+- [x] Archive cleanup: obsolete scripts (test-e2e, test-payment, etc.), docs (DEPLOY_WITH_MANUS, PROJECT_SUMMARY, etc.), root SQL, docs/archive → .archive
+- [x] Updated docs to OPENAI_API_KEY (CRITICAL_SETUP_CHECKLIST, SHIP_STEP_BY_STEP, SETUP_GUIDE, README, RAILWAY_DEPLOYMENT_HANDOFF, .env.example)
+- [x] Fixed broken doc references (HANDOFF_AUTO_SESSION, MANUS_RUN_MIGRATION, OAUTH_WHITELIST_MANUS, PROJECT_SUMMARY)
 - [x] Production E2E test suite - all 18 tests passing
 - [x] Production smoke tests - all 22 tests passing (desktop + mobile)
 - [x] Fixed 12 E2E test failures (UI selectors, Playwright locator methods)

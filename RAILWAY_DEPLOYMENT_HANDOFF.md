@@ -8,18 +8,13 @@
 
 ## If you see errors (AI features / Resume Roast / Tailor / Scribe)
 
-The app will **refuse to start in production** if `BUILT_IN_FORGE_API_KEY` is still a placeholder. If you see:
-
-- **"BUILT_IN_FORGE_API_KEY is set to a placeholder"** at startup, or  
-- **LLM / 401 / API errors** when using Resume Roast or generating resumes,
-
-do this (use CLI every time there is access):
+AI features will fail without a valid LLM API key. If you see **LLM / 401 / API errors** when using Resume Roast or generating resumes:
 
 1. **Set the variable** (Railway CLI cannot set variables; use `railway open` → Variables or [Railway API](https://docs.railway.app/guides/manage-variables)):
    ```bash
    railway open   # → careerswarm-app → Variables
    ```
-   Set **BUILT_IN_FORGE_API_KEY** to your real key (from https://forge.manus.ai or Manus dashboard). Save.
+   Add **OPENAI_API_KEY** = your OpenAI API key (from [platform.openai.com](https://platform.openai.com/api-keys)). Save.
 2. **Redeploy from CLI:**
    ```bash
    railway redeploy
@@ -68,7 +63,7 @@ Status:
 To-do:
 1. Set up DNS records for careerswarm.com
 2. Delete old "MySQL" service from dashboard (misconfigured)
-3. Set real BUILT_IN_FORGE_API_KEY for AI features
+3. Set real OPENAI_API_KEY for AI features
 4. Optionally add Redis for GTM pipeline worker
 ```
 
@@ -76,12 +71,7 @@ To-do:
 
 ## DNS Records Needed
 
-Add these records at your domain registrar for careerswarm.com:
-
-| Type | Name | Value |
-|------|------|-------|
-| CNAME | @ | 9kk93aeq.up.railway.app |
-| CNAME | www | zkuoi33r.up.railway.app |
+See [docs/CLOUDFLARE_DNS.md](./docs/CLOUDFLARE_DNS.md) for Cloudflare API (curl) or dashboard steps. Railway target: `careerswarm-app-production.up.railway.app`.
 
 **Note:** Some registrars don't allow CNAME on root (@). In that case:
 - Use an ALIAS or ANAME record if available
@@ -105,7 +95,7 @@ External: mysql://root:GRXepLWiqebMoTgMiCEemFWmkCDITWCz@trolley.proxy.rlwy.net:5
 - ENABLE_DEV_LOGIN: true (allows test login without Manus OAuth)
 - PORT: 3000
 - OAUTH_SERVER_URL: https://oauth.manus.im
-- BUILT_IN_FORGE_API_KEY: placeholder (set real key for AI features)
+- OPENAI_API_KEY: placeholder (set real key for AI features)
 
 ### Service IDs
 - careerswarm-app: 05251ccb-a203-4403-bee5-022e7e0a63fb

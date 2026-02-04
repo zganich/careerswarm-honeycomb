@@ -9,8 +9,8 @@
 ## Before deploy
 
 - [ ] **MySQL available** — App and migrations need a running MySQL instance and `DATABASE_URL` in `.env`.
-- [ ] **Run migrations** — From repo root: `pnpm db:migrate`. See [MANUS_RUN_MIGRATION.md](./MANUS_RUN_MIGRATION.md).
-- [ ] **OAuth redirect URIs** — Production (and preview, if needed) callback URL whitelisted on Manus. See [OAUTH_WHITELIST_MANUS.md](./OAUTH_WHITELIST_MANUS.md).
+- [ ] **Run migrations** — From repo root: `pnpm db:migrate`.
+- [ ] **OAuth redirect URIs** — Production callback URL whitelisted in Manus. See [SHIP_STEP_BY_STEP.md](./SHIP_STEP_BY_STEP.md) Step 5.
 - [ ] **Env vars** — Copy from `.env.example`, set `DATABASE_URL`, `OAUTH_SERVER_URL`, `VITE_OAUTH_PORTAL_URL`, `VITE_APP_ID`, and any PostHog/AI keys. Optional: `pnpm run verify-env` (if script exists).
 
 ---
@@ -36,6 +36,6 @@
 
 | Task | Doc / Command |
 |------|----------------|
-| DB migration when MySQL is up | [MANUS_RUN_MIGRATION.md](./MANUS_RUN_MIGRATION.md) — `pnpm db:migrate` |
-| OAuth redirect loop / whitelist | [OAUTH_WHITELIST_MANUS.md](./OAUTH_WHITELIST_MANUS.md) |
-| Dev login (preview / local) | [HANDOFF_AUTO_SESSION.md](./HANDOFF_AUTO_SESSION.md) — `/login` |
+| DB migration when MySQL is up | `pnpm db:migrate` |
+| OAuth redirect loop / whitelist | [SHIP_STEP_BY_STEP.md](./SHIP_STEP_BY_STEP.md) Step 5 |
+| Dev login (preview / local) | `/login` (Dev Login enabled when `ENABLE_DEV_LOGIN=true` or non-production) |

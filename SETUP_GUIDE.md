@@ -25,7 +25,7 @@ cp .env.example .env
 - `DATABASE_URL` - MySQL/TiDB connection string
 - `JWT_SECRET` - Secret for session tokens (min 32 chars)
 - `OAUTH_SERVER_URL` - Manus OAuth server URL
-- `BUILT_IN_FORGE_API_KEY` - Manus Forge API key for LLM
+- `OPENAI_API_KEY` - OpenAI API key for LLM (primary)
 - `STRIPE_SECRET_KEY` - Stripe test mode key
 - `STRIPE_WEBHOOK_SECRET` - Stripe webhook secret
 
@@ -81,9 +81,8 @@ Get these from your Manus deployment dashboard:
 
 ### AI Integration (Manus Forge)
 
-Get your Forge API key from Manus:
-- `BUILT_IN_FORGE_API_URL` - https://forge.manus.ai
-- `BUILT_IN_FORGE_API_KEY` - Your API key
+Get your API key from [platform.openai.com](https://platform.openai.com/api-keys):
+- `OPENAI_API_KEY` - Your OpenAI API key (sk-...)
 
 ### Stripe Integration
 
@@ -197,6 +196,6 @@ See [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) for production deployment instr
 ## 📚 Additional Documentation
 
 - [README.md](./README.md) - Project overview
-- [PROJECT_SUMMARY.md](./PROJECT_SUMMARY.md) - Technical details
+- [CONTEXT_FOR_NEW_CHAT.md](./CONTEXT_FOR_NEW_CHAT.md) - Technical context
 - [todo.md](./todo.md) - Feature tracking
 - [CHANGELOG.md](./CHANGELOG.md) - Version history

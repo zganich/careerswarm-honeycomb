@@ -61,7 +61,7 @@ npx playwright test
 **Backend:** Express 4 + tRPC 11 + Drizzle ORM  
 **Database:** MySQL/TiDB (14 tables)  
 **Auth:** Manus OAuth  
-**AI:** Manus Forge API (LLM integration)  
+**AI:** OpenAI API (GPT-4o-mini default)  
 **Storage:** S3 for file uploads  
 **Testing:** Vitest (127 tests) + Playwright (20 E2E tests)
 
@@ -71,12 +71,12 @@ npx playwright test
 
 | Doc | Purpose |
 |-----|---------|
-| [**DEPLOY_WITH_MANUS.md**](./DEPLOY_WITH_MANUS.md) | **Deploy with Manus (copy-paste prompt)** |
+| [**CONTEXT_FOR_NEW_CHAT.md**](./CONTEXT_FOR_NEW_CHAT.md) | **Project context and handoff** |
+| [**RAILWAY_DEPLOYMENT_HANDOFF.md**](./RAILWAY_DEPLOYMENT_HANDOFF.md) | Deployment (Railway) |
 | [**SETUP_GUIDE.md**](./SETUP_GUIDE.md) | Quick start (5 min setup) |
 | [**docs/SHIP_CHECKLIST.md**](./docs/SHIP_CHECKLIST.md) | Pre-deploy checklist |
-| [**PROJECT_SUMMARY.md**](./PROJECT_SUMMARY.md) | Technical architecture |
+| [**docs/OPTIONAL_INFRASTRUCTURE.md**](./docs/OPTIONAL_INFRASTRUCTURE.md) | DNS, Sentry, Redis |
 | [**CHANGELOG.md**](./CHANGELOG.md) | Version history |
-| [**docs/GTM_PLAN.md**](./docs/GTM_PLAN.md) | Go-to-market strategy |
 
 ---
 
@@ -127,29 +127,23 @@ careerswarm/
 
 ## 🔑 Environment Variables
 
-All required environment variables are pre-configured by Manus:
+Required environment variables:
 
 - `DATABASE_URL` - MySQL/TiDB connection
 - `JWT_SECRET` - Session signing
 - `OAUTH_SERVER_URL` - Manus OAuth
-- `BUILT_IN_FORGE_API_KEY` - LLM access
+- `OPENAI_API_KEY` - LLM access (AI features)
 - `STRIPE_SECRET_KEY` - Payment processing (test mode)
 
-No manual configuration needed!
+See [SETUP_GUIDE.md](./SETUP_GUIDE.md) and [docs/CRITICAL_SETUP_CHECKLIST.md](./docs/CRITICAL_SETUP_CHECKLIST.md).
 
 ---
 
 ## 🚢 Deployment
 
-**Manus Hosting (Recommended):**
-1. Save checkpoint in development
-2. Click "Publish" button in Management UI
-3. Configure custom domain (optional)
-
-**External Hosting:**
-- Compatible with Vercel, Railway, Render
-- May require environment variable configuration
-- See [PROJECT_SUMMARY.md](./PROJECT_SUMMARY.md) for details
+**Railway (Production):**
+- See [RAILWAY_DEPLOYMENT_HANDOFF.md](./RAILWAY_DEPLOYMENT_HANDOFF.md)
+- DNS: [docs/CLOUDFLARE_DNS.md](./docs/CLOUDFLARE_DNS.md)
 
 ---
 
@@ -158,7 +152,7 @@ No manual configuration needed!
 1. Create feature branch from `main`
 2. Update `todo.md` with tasks
 3. Implement changes with tests
-4. Update documentation (CHANGELOG.md, PROJECT_SUMMARY.md)
+4. Update documentation (CHANGELOG.md, CONTEXT_FOR_NEW_CHAT.md)
 5. Create checkpoint with descriptive message
 6. Push to GitHub and create PR
 
@@ -173,7 +167,7 @@ Proprietary - All Rights Reserved
 ## 🔗 Links
 
 - **GitHub**: https://github.com/zganich/careerswarm-honeycomb
-- **Documentation**: [PROJECT_SUMMARY.md](./PROJECT_SUMMARY.md)
+- **Context**: [CONTEXT_FOR_NEW_CHAT.md](./CONTEXT_FOR_NEW_CHAT.md)
 - **Changelog**: [CHANGELOG.md](./CHANGELOG.md)
 
 ---
@@ -189,4 +183,4 @@ Proprietary - All Rights Reserved
 
 ---
 
-Built with ❤️ using Manus
+Built with ❤️ | Deployed on Railway

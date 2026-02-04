@@ -4,16 +4,15 @@
 
 ---
 
-## 1. BUILT_IN_FORGE_API_KEY (Required for AI Features)
+## 1. OPENAI_API_KEY (Required for AI Features)
 
 **Impact:** All AI features (Resume Roast, Tailor, Scribe, etc.) will fail without this.
 
 ### Steps:
-1. Get your Manus Forge API key from the Manus dashboard
-2. Go to [Railway Dashboard](https://railway.app) → careerswarm-app → Variables
-3. Find `BUILT_IN_FORGE_API_KEY` (currently set to placeholder)
-4. Replace with your real API key
-5. Click "Deploy" to redeploy with new variable
+1. Get your OpenAI API key from [platform.openai.com](https://platform.openai.com/api-keys)
+2. Set via Railway CLI or dashboard: `railway open` → careerswarm-app → Variables
+3. Add `OPENAI_API_KEY=sk-...` (or replace if placeholder)
+4. Redeploy: `railway redeploy`
 
 ### Verify:
 ```bash
@@ -76,7 +75,7 @@ Sentry initialized
 ### Recommended Alerts (in Sentry Dashboard → Alerts):
 - **Error Spike:** >10 errors in 1 hour → Email
 - **New Issue:** Any new issue → Email
-- **AI Failure:** Message contains "LLM" or "Forge" → Email
+- **AI Failure:** Message contains "LLM" or "OpenAI" → Email
 
 See `docs/SENTRY_SETUP.md` for full alert configuration.
 
@@ -86,7 +85,7 @@ See `docs/SENTRY_SETUP.md` for full alert configuration.
 
 | Item | Where to Configure | Current Status |
 |------|-------------------|----------------|
-| BUILT_IN_FORGE_API_KEY | Railway Variables | ❌ Placeholder |
+| OPENAI_API_KEY | Railway Variables | ❌ Placeholder |
 | TEST_USER_EMAIL | GitHub Secrets | ❌ Missing |
 | TEST_USER_PASSWORD | GitHub Secrets | ❌ Missing |
 | SENTRY_DSN | Railway Variables | ❌ Missing |

@@ -182,7 +182,7 @@ When adding new features or fixing bugs:
 1. Update todo.md with tasks
 2. Implement changes with tests
 3. Update this CHANGELOG.md
-4. Update PROJECT_SUMMARY.md if architecture changes
+4. Update CONTEXT_FOR_NEW_CHAT.md if architecture changes
 5. Create checkpoint with descriptive message
 6. Push to GitHub
 

@@ -87,7 +87,7 @@ CareerSwarm helps job seekers **stop rewriting their resume for every job**. Use
 
 - **Repo:** `careerswarm-honeycomb` — https://github.com/zganich/careerswarm-honeycomb  
 - **Handoff / testing:** `CLAUDE_MANUS_HANDOFF.md`, `MANUS_UPDATE.md`  
-- **Product detail:** `PROJECT_SUMMARY.md`, `README.md`
+- **Product detail:** `README.md`, `CONTEXT_FOR_NEW_CHAT.md`
 
 ---
 

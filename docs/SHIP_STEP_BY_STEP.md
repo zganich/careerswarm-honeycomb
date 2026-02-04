@@ -107,7 +107,7 @@ Open `.env` and set these. Get the values from your Manus dashboard / team:
 |----------|------------------|--------|
 | `JWT_SECRET` | A long random string (at least 32 characters). Used to sign session cookies. | `JWT_SECRET="my-super-secret-key-at-least-32-chars-long"` |
 | `OAUTH_SERVER_URL` | Manus OAuth server URL. | `OAUTH_SERVER_URL="https://oauth.manus.im"` (or the URL Manus gives you) |
-| `BUILT_IN_FORGE_API_KEY` | Manus Forge API key (for LLM/Resume Roast, etc.). | `BUILT_IN_FORGE_API_KEY="your-forge-api-key"` |
+| `OPENAI_API_KEY` | OpenAI API key (for LLM/Resume Roast, etc.). | `OPENAI_API_KEY="sk-..."` |
 
 **Frontend (OAuth “Sign in” link):** So the app knows where to send users to log in:
 
@@ -116,7 +116,7 @@ Open `.env` and set these. Get the values from your Manus dashboard / team:
 | `VITE_OAUTH_PORTAL_URL` | Manus OAuth portal base URL (same “family” as OAUTH_SERVER_URL). | `VITE_OAUTH_PORTAL_URL="https://oauth.manus.im"` |
 | `VITE_APP_ID` | Your app id in Manus. | `VITE_APP_ID="careerswarm"` |
 
-If you skip `VITE_OAUTH_PORTAL_URL`, the app still runs; “Sign in” will not go to Manus and users can use **Dev Login** at `/login` (see HANDOFF_AUTO_SESSION.md).
+If you skip `VITE_OAUTH_PORTAL_URL`, the app still runs; “Sign in” will not go to Manus and users can use **Dev Login** at `/login`.
 
 ---
 
@@ -135,7 +135,7 @@ This fixes the OAuth redirect loop. Only you can do this in the Manus dashboard.
    - **Local dev (optional):** `http://localhost:3000/api/oauth/callback` (use the port your app uses).
 5. Save.
 
-If you don’t whitelist: the app still runs; use **Dev Login** at `/login` to sign in without OAuth (see HANDOFF_AUTO_SESSION.md).
+If you don’t whitelist: the app still runs; use **Dev Login** at `/login` to sign in without OAuth.
 
 ---
 
@@ -200,7 +200,7 @@ Use the same URL and port your server is configured for (e.g. `PORT=3000` in `.e
 
 ## More detail (if you need it)
 
-- **Database migration:** [MANUS_RUN_MIGRATION.md](./MANUS_RUN_MIGRATION.md)  
-- **OAuth redirect URIs:** [OAUTH_WHITELIST_MANUS.md](./OAUTH_WHITELIST_MANUS.md)  
-- **Dev Login and handoff context:** [HANDOFF_AUTO_SESSION.md](./HANDOFF_AUTO_SESSION.md)  
+- **Database migration:** `pnpm db:migrate`  
+- **OAuth redirect URIs:** Step 5 above  
+- **Handoff context:** [CONTEXT_FOR_NEW_CHAT.md](../CONTEXT_FOR_NEW_CHAT.md)  
 - **Short deploy checklist:** [SHIP_CHECKLIST.md](./SHIP_CHECKLIST.md)
