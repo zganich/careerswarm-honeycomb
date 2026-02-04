@@ -1,3 +1,4 @@
+// ENV validation for production - last updated 2026-02-04
 const requiredEnvVars = [
   { key: "DATABASE_URL", description: "MySQL connection string" },
   { key: "JWT_SECRET", description: "Session signing (min 32 chars)" },
