@@ -18,6 +18,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.1] - 2026-02-04
+
+### Fixed
+- **Production E2E Tests**: Fixed 12 failing tests with correct UI selectors
+  - Logout test: Fixed URL matching logic for post-logout redirect
+  - Onboarding tests: Fixed `isAttached()` → `count()` for Playwright locators
+  - Onboarding tests: Added ES module support for `__dirname` 
+  - Dashboard test: Made locators resilient with spinner wait and flexible content detection
+  - Core features tests: Added onboarding redirect handling for new users
+  - Resume Roast test: Changed from file upload to textarea (matches actual UI)
+  - Pricing test: Fixed button text matchers ("Start Pro Trial" vs "upgrade")
+
+### Tests
+- **Production E2E**: 18/18 passing
+- **Production Smoke**: 22/22 passing (desktop + mobile)
+- All public pages verified: Homepage, Login, Roast, Pricing, FAQ, Privacy, Terms, Recruiters
+
+---
+
 ## [1.4.0] - 2026-02-02
 
 ### Added
