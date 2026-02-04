@@ -15,6 +15,7 @@ interface DashboardHeroProps {
 const RESUME_MIME_TYPES = [
   'application/pdf',
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/msword', // .doc (legacy Word); must match accept attribute
   'text/plain',
 ];
 
@@ -104,7 +105,7 @@ export function DashboardHero({ swarmScore, profileStatus, onAction, onManualEnt
     // Validate file type (PDF, DOCX, TXT - same as onboarding upload)
     if (!RESUME_MIME_TYPES.includes(file.type)) {
       toast.error('Invalid file type', {
-        description: 'Please upload a PDF, DOCX, or TXT file',
+        description: 'Please upload a PDF, DOC, DOCX, or TXT file',
       });
       return;
     }
@@ -310,7 +311,7 @@ export function DashboardHero({ swarmScore, profileStatus, onAction, onManualEnt
       <input
         ref={fileInputRef}
         type="file"
-        accept=".pdf,.docx,.doc,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"
+        accept=".pdf,.docx,.doc,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword,text/plain"
         capture="environment"
         onChange={handleFileChange}
         className="hidden"
