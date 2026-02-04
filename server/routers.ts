@@ -1824,15 +1824,43 @@ Each superpower should:
 
       // Calculate metrics
       const totalApplications = applications.length;
+      const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+      const twoWeeksAgo = Date.now() - 14 * 24 * 60 * 60 * 1000;
+      
       const thisWeekApplications = applications.filter(
-        (app) => app.appliedAt && new Date(app.appliedAt).getTime() > Date.now() - 7 * 24 * 60 * 60 * 1000
+        (app) => app.appliedAt && new Date(app.appliedAt).getTime() > oneWeekAgo
       ).length;
+      
+      const lastWeekApplications = applications.filter(
+        (app) => app.appliedAt && 
+          new Date(app.appliedAt).getTime() > twoWeeksAgo &&
+          new Date(app.appliedAt).getTime() <= oneWeekAgo
+      );
 
       const respondedApplications = applications.filter(
         (app) => app.status !== "applied" && app.status !== "draft"
       );
       const responseRate = totalApplications > 0
         ? Math.round((respondedApplications.length / totalApplications) * 100)
+        : 0;
+      
+      // Calculate response rate change (this week vs last week)
+      const thisWeekResponded = applications.filter(
+        (app) => app.appliedAt && 
+          new Date(app.appliedAt).getTime() > oneWeekAgo &&
+          app.status !== "applied" && app.status !== "draft"
+      ).length;
+      const thisWeekTotal = thisWeekApplications;
+      const thisWeekRate = thisWeekTotal > 0 ? (thisWeekResponded / thisWeekTotal) * 100 : 0;
+      
+      const lastWeekResponded = lastWeekApplications.filter(
+        (app) => app.status !== "applied" && app.status !== "draft"
+      ).length;
+      const lastWeekTotal = lastWeekApplications.length;
+      const lastWeekRate = lastWeekTotal > 0 ? (lastWeekResponded / lastWeekTotal) * 100 : 0;
+      
+      const responseRateChange = lastWeekTotal > 0 
+        ? Math.round(thisWeekRate - lastWeekRate)
         : 0;
 
       const interviewingCount = applications.filter(
@@ -1882,18 +1910,60 @@ Each superpower should:
         .sort((a, b) => b.successRate - a.successRate)
         .slice(0, 5);
 
+      // Generate insights based on metrics
+      const insights: { type: 'positive' | 'negative' | 'neutral'; message: string }[] = [];
+      
+      // Response rate insights
+      if (responseRate >= 30) {
+        insights.push({ type: 'positive', message: `Your ${responseRate}% response rate is above average. Keep targeting similar roles!` });
+      } else if (responseRate > 0 && responseRate < 15) {
+        insights.push({ type: 'negative', message: 'Low response rate. Consider tailoring your resume more specifically to each job.' });
+      }
+      
+      // Response rate trend
+      if (responseRateChange > 10) {
+        insights.push({ type: 'positive', message: `Response rate up ${responseRateChange}% from last week. Your strategy is working!` });
+      } else if (responseRateChange < -10) {
+        insights.push({ type: 'negative', message: `Response rate down ${Math.abs(responseRateChange)}% from last week. Review recent applications.` });
+      }
+      
+      // Interview conversion
+      if (interviewRate >= 20) {
+        insights.push({ type: 'positive', message: `${interviewRate}% of applications reaching interviews. Excellent conversion!` });
+      }
+      
+      // Activity insights
+      if (thisWeekApplications === 0 && totalApplications > 0) {
+        insights.push({ type: 'neutral', message: 'No applications this week. Consistency helps - aim for 5-10 quality applications weekly.' });
+      } else if (thisWeekApplications >= 10) {
+        insights.push({ type: 'positive', message: `Strong activity with ${thisWeekApplications} applications this week!` });
+      }
+      
+      // Offer insights
+      if (offerCount > 0) {
+        insights.push({ type: 'positive', message: `You have ${offerCount} offer${offerCount > 1 ? 's' : ''} to consider. Congratulations!` });
+      }
+      
+      // Top achievement insight
+      if (topAchievements.length > 0 && topAchievements[0].successRate > 50) {
+        insights.push({ type: 'positive', message: `"${topAchievements[0].title.slice(0, 50)}..." has ${topAchievements[0].successRate}% success rate.` });
+      }
+      
+      // Limit to 3 most relevant insights
+      const limitedInsights = insights.slice(0, 3);
+
       return {
         totalApplications,
         thisWeekApplications,
         responseRate,
-        responseRateChange: 0, // TODO: Calculate from historical data
+        responseRateChange,
         avgResponseTime,
         interviewRate,
         interviewingCount,
         offerCount,
         rejectedCount,
         topAchievements,
-        insights: [], // TODO: Generate AI insights
+        insights: limitedInsights,
       };
     }),
 

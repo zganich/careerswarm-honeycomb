@@ -4,7 +4,12 @@ import { getDb } from './db';
 import { users, languages, volunteerExperiences, projects, publications, securityClearances } from '../drizzle/schema';
 import { eq } from 'drizzle-orm';
 
-describe('Profile Sections CRUD', () => {
+// These tests require a real database connection - skip in CI
+const hasRealDatabase = process.env.DATABASE_URL && 
+  !process.env.DATABASE_URL.includes('localhost:3306/test') &&
+  !process.env.CI;
+
+describe.skipIf(!hasRealDatabase)('Profile Sections CRUD', () => {
   let testUserId: number;
   const testOpenId = 'test-profile-sections-user-' + Date.now();
   

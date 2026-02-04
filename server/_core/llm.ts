@@ -210,16 +210,22 @@ const normalizeToolChoice = (
   return toolChoice;
 };
 
-const resolveApiUrl = () =>
-  ENV.forgeApiUrl && ENV.forgeApiUrl.trim().length > 0
-    ? `${ENV.forgeApiUrl.replace(/\/$/, "")}/v1/chat/completions`
-    : "https://forge.manus.im/v1/chat/completions";
+const resolveApiUrl = () => {
+  // Priority: custom URL > OpenAI direct
+  if (ENV.forgeApiUrl && ENV.forgeApiUrl.trim().length > 0) {
+    return `${ENV.forgeApiUrl.replace(/\/$/, "")}/v1/chat/completions`;
+  }
+  return "https://api.openai.com/v1/chat/completions";
+};
 
 const assertApiKey = () => {
-  if (!ENV.forgeApiKey) {
-    throw new Error("OPENAI_API_KEY is not configured");
+  const apiKey = ENV.openaiApiKey || ENV.forgeApiKey;
+  if (!apiKey) {
+    throw new Error("OPENAI_API_KEY is not configured. Set OPENAI_API_KEY in environment variables.");
   }
 };
+
+const getApiKey = () => ENV.openaiApiKey || ENV.forgeApiKey;
 
 const normalizeResponseFormat = ({
   responseFormat,
@@ -319,7 +325,7 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
   const url = resolveApiUrl();
   const headers = {
     "content-type": "application/json",
-    authorization: `Bearer ${ENV.forgeApiKey}`,
+    authorization: `Bearer ${getApiKey()}`,
   };
   const body = JSON.stringify(payload);
 

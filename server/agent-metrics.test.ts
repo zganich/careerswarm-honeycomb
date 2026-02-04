@@ -6,11 +6,15 @@ import { tailorResume } from './agents/tailor';
 import { generateOutreach } from './agents/scribe';
 import { assembleApplicationPackage } from './agents/assembler';
 
-// These tests require valid LLM API keys - skip if using placeholder keys
+// These tests require valid LLM API keys and a real database - skip in CI
 const hasValidApiKey = process.env.BUILT_IN_FORGE_API_KEY && 
-  !process.env.BUILT_IN_FORGE_API_KEY.includes('PLACEHOLDER');
+  !process.env.BUILT_IN_FORGE_API_KEY.includes('PLACEHOLDER') &&
+  !process.env.BUILT_IN_FORGE_API_KEY.includes('test-key');
+const hasRealDatabase = process.env.DATABASE_URL && 
+  !process.env.DATABASE_URL.includes('localhost:3306/test') &&
+  !process.env.CI;
 
-describe.skipIf(!hasValidApiKey)('Agent Metrics Tracking', () => {
+describe.skipIf(!hasValidApiKey || !hasRealDatabase)('Agent Metrics Tracking', () => {
   const testUserId = 999999;
   const testApplicationId = 999999;
 

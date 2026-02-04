@@ -16,32 +16,42 @@ const requiredEnvVars = [
   "STRIPE_SECRET_KEY",
   "STRIPE_WEBHOOK_SECRET",
   "OAUTH_SERVER_URL",
-  "BUILT_IN_FORGE_API_KEY",
 ];
 
-const forgePlaceholders = [
+const placeholders = [
   "placeholder",
+  "your-api-key",
   "your-forge-api-key",
   "your-forge-api-key-here",
   "PLACEHOLDER",
   "PLACEHOLDER_NEEDS_REAL_KEY",
 ];
-function isPlaceholderForgeKey(value) {
+function isPlaceholder(value) {
   if (!value || typeof value !== "string") return true;
   const v = value.trim().toLowerCase();
-  return forgePlaceholders.some((p) => v === p.toLowerCase()) || v.includes("placeholder");
+  return placeholders.some((p) => v === p.toLowerCase()) || v.includes("placeholder");
 }
 
 for (const envVar of requiredEnvVars) {
   if (!process.env[envVar]) {
     console.error(`   ❌ Missing: ${envVar}`);
     failedChecks++;
-  } else if (envVar === "BUILT_IN_FORGE_API_KEY" && isPlaceholderForgeKey(process.env[envVar])) {
-    console.error(`   ❌ ${envVar}: set to a placeholder. Set a real Manus Forge API key for production.`);
-    failedChecks++;
   } else {
     console.log(`   ✅ ${envVar}`);
   }
+}
+
+// Check LLM API key (OPENAI_API_KEY preferred, BUILT_IN_FORGE_API_KEY as fallback)
+const openaiKey = process.env.OPENAI_API_KEY;
+const forgeKey = process.env.BUILT_IN_FORGE_API_KEY;
+const hasValidLlmKey = (openaiKey && !isPlaceholder(openaiKey)) || (forgeKey && !isPlaceholder(forgeKey));
+
+if (!hasValidLlmKey) {
+  console.error(`   ❌ Missing LLM API key: Set OPENAI_API_KEY in Railway`);
+  failedChecks++;
+} else {
+  const provider = openaiKey && !isPlaceholder(openaiKey) ? "OpenAI" : "Manus Forge";
+  console.log(`   ✅ LLM API Key (${provider})`);
 }
 
 // 2. Check database connection
@@ -91,6 +101,24 @@ try {
 } catch (error) {
   console.error(`   ❌ tRPC router error: ${error.message}`);
   failedChecks++;
+}
+
+// 5. Check monitoring (Sentry)
+console.log("\n5️⃣  Checking monitoring configuration...");
+if (process.env.SENTRY_DSN) {
+  console.log("   ✅ SENTRY_DSN configured");
+} else {
+  console.warn("   ⚠️  SENTRY_DSN not set - error tracking disabled");
+  console.log("      → Set up at sentry.io, add DSN to Railway variables");
+}
+
+// 6. Check CI/CD test credentials
+console.log("\n6️⃣  Checking CI/CD test credentials...");
+if (process.env.TEST_USER_EMAIL && process.env.TEST_USER_PASSWORD) {
+  console.log("   ✅ E2E test credentials configured");
+} else {
+  console.warn("   ⚠️  TEST_USER_EMAIL/TEST_USER_PASSWORD not set - E2E tests will skip");
+  console.log("      → Add to GitHub Secrets for CI E2E tests");
 }
 
 // Summary

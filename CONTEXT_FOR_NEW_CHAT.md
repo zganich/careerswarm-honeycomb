@@ -2,6 +2,8 @@
 
 **Purpose:** Copy or reference this file when starting a new chat to restore project context quickly. Update it as the project and handoff state change.
 
+**Standing Instruction:** At 50-60% context usage, summarize the session's work and update this file before starting a new chat.
+
 ---
 
 ## What It Is
@@ -13,8 +15,8 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 - **Frontend:** React 19, Tailwind 4, tRPC, shadcn/ui
 - **Backend:** Express 4, tRPC 11, Drizzle ORM
 - **Database:** MySQL (Railway)
-- **Auth:** Manus OAuth
-- **AI:** Manus Forge API (`BUILT_IN_FORGE_API_KEY`)
+- **Auth:** Manus OAuth (Dev Login enabled for testing)
+- **AI:** OpenAI API (`OPENAI_API_KEY`) - GPT-4o-mini default
 - **Deploy:** Railway
 
 ## Live & Docs
@@ -22,34 +24,51 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 - **App:** https://careerswarm.com
 - **Handoff:** [RAILWAY_DEPLOYMENT_HANDOFF.md](./RAILWAY_DEPLOYMENT_HANDOFF.md)
 
-## Recent Session (Security & CI/CD - Feb 4)
+## Recent Session (LLM Migration & Production Setup - Feb 4)
 
 ### Completed This Session
-1. **Security Middleware** - Added to `server/_core/index.ts`:
-   - `helmet` (security headers, CSP in production)
-   - `cors` (configured for careerswarm.com + localhost dev)
-   - `express-rate-limit` (100 req/15min API, 20 req/15min auth)
+1. **Switched from Manus Forge to OpenAI**:
+   - Updated `server/_core/llm.ts` to use OpenAI API directly
+   - Updated `server/_core/env.ts` to support `OPENAI_API_KEY`
+   - Default model: GPT-4o-mini ($0.15/$0.60 per 1M tokens)
 
-2. **CI/CD Pipeline** - Created `.github/workflows/ci.yml`:
-   - Lint & type check on PRs
-   - Unit tests (vitest)
-   - Build verification
-   - E2E tests on main push (requires `TEST_USER_EMAIL`, `TEST_USER_PASSWORD` secrets)
+2. **Production Configuration**:
+   - ✅ Set `OPENAI_API_KEY` in Railway via CLI
+   - ✅ Set `TEST_USER_EMAIL` and `TEST_USER_PASSWORD` in GitHub Secrets
+   - ✅ All E2E tests passing (18/18)
+   - ✅ All smoke tests passing (11/11)
 
-3. **Documentation** - Added to `docs/`:
-   - `SENTRY_SETUP.md` - Alert configuration guide
-   - `BACKUP_RESTORE.md` - MySQL backup/restore procedures
+3. **Bug Fixes & Features**:
+   - Fixed CI test failures (DB-dependent tests skip gracefully)
+   - Implemented analytics `responseRateChange` calculation
+   - Added rule-based analytics insights
+   - Added manual entry fallback to onboarding wizard
 
-### Prior Session (E2E Testing)
-- Production E2E Tests: 18/18 passing
-- Production Smoke Tests: 22/22 passing
+4. **Scripts**:
+   - `scripts/setup-checklist.mjs` - Checks production config status
+   - Updated `scripts/validate-production.mjs` with LLM key check
 
-## Still To Do (Manual)
+### Prior Sessions
+- Security middleware (helmet, cors, rate limiting)
+- CI/CD pipeline with E2E tests
+- Sentry and backup documentation
 
-- **CRITICAL:** Set real `BUILT_IN_FORGE_API_KEY` in Railway → Variables → careerswarm-app, then redeploy
-- **Sentry:** Create project at sentry.io, add `SENTRY_DSN` to Railway
-- **GitHub Secrets:** Add `TEST_USER_EMAIL` and `TEST_USER_PASSWORD` for CI E2E tests
-- Optional: DNS for careerswarm.com / www; delete old "MySQL" service; add Redis for GTM worker
+## Production Status
+
+| Item | Status |
+|------|--------|
+| OpenAI API Key | ✅ Configured |
+| GitHub Secrets | ✅ Configured |
+| Dev Login | ✅ Enabled |
+| E2E Tests | ✅ 18/18 passing |
+| Smoke Tests | ✅ 11/11 passing |
+| Sentry | ⏭️ Optional (not configured) |
+
+## Optional To Do
+
+- **Sentry:** Create project at sentry.io, add `SENTRY_DSN` to Railway for error tracking
+- **DNS:** Custom domain for careerswarm.com / www
+- **Redis:** Add for GTM worker (optional feature)
 
 ## High Priority Next Steps
 
@@ -61,14 +80,15 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 
 | Area        | Paths |
 |------------|-------|
-| Server Entry | `server/_core/index.ts` (security middleware here) |
-| Env / LLM  | `server/_core/env.ts`, `server/_core/llm.ts` |
+| Server Entry | `server/_core/index.ts` (security middleware) |
+| Env / LLM  | `server/_core/env.ts`, `server/_core/llm.ts` (OpenAI integration) |
 | API        | `server/routers.ts` |
 | DB         | `drizzle/schema.ts`, `drizzle/` migrations |
 | Client     | `client/src/` |
+| Onboarding | `client/src/components/MagicOnboardingWizard.tsx` |
 | Tests      | `tests/production-e2e.spec.ts`, `tests/production-smoke.spec.ts` |
 | CI/CD      | `.github/workflows/ci.yml` |
-| Docs       | `docs/SENTRY_SETUP.md`, `docs/BACKUP_RESTORE.md` |
+| Scripts    | `scripts/setup-checklist.mjs`, `scripts/validate-production.mjs` |
 
 ## Commands
 
@@ -79,11 +99,19 @@ pnpm start        # Run production server
 pnpm test         # Vitest unit tests
 pnpm check        # TypeScript type check
 
+# Production Setup & Validation
+node scripts/setup-checklist.mjs   # Check production config status
+
 # E2E Tests (Production)
 npx playwright test tests/production-smoke.spec.ts --config=playwright.production.config.ts
 npx playwright test tests/production-e2e.spec.ts --config=playwright.production.config.ts
+
+# Railway CLI (if linked)
+railway variables    # List env vars
+railway logs         # View deployment logs
+railway redeploy     # Redeploy app
 ```
 
 ---
 
-*Last updated: 2026-02-04. Edit this file as the project and handoff state change.*
+*Last updated: 2026-02-04 (LLM migration to OpenAI, production setup complete).*

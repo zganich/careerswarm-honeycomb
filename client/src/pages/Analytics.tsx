@@ -207,13 +207,18 @@ export default function Analytics() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {analytics?.insights?.map((insight: string, index: number) => (
-              <div key={index} className="flex items-start gap-3 p-4 bg-muted rounded-lg">
-                <div className="flex-1">
-                  <p className="text-sm">{insight}</p>
+            {analytics?.insights && analytics.insights.length > 0 ? (
+              analytics.insights.map((insight: { type: 'positive' | 'negative' | 'neutral'; message: string }, index: number) => (
+                <div key={index} className="flex items-start gap-3 p-4 bg-muted rounded-lg">
+                  {insight.type === 'positive' && <TrendingUp className="h-5 w-5 text-green-500 mt-0.5" />}
+                  {insight.type === 'negative' && <TrendingDown className="h-5 w-5 text-red-500 mt-0.5" />}
+                  {insight.type === 'neutral' && <Target className="h-5 w-5 text-blue-500 mt-0.5" />}
+                  <div className="flex-1">
+                    <p className="text-sm">{insight.message}</p>
+                  </div>
                 </div>
-              </div>
-            )) || (
+              ))
+            ) : (
               <div className="space-y-4">
                 <div className="flex items-start gap-3 p-4 bg-muted rounded-lg">
                   <TrendingUp className="h-5 w-5 text-green-500 mt-0.5" />

@@ -1,9 +1,11 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, FileText, Sparkles, CheckCircle2, Loader2, AlertCircle } from "lucide-react";
+import { Upload, FileText, Sparkles, CheckCircle2, Loader2, AlertCircle, Plus, Trash2, PenLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 
@@ -11,7 +13,7 @@ interface MagicOnboardingWizardProps {
   onComplete: () => void;
 }
 
-type OnboardingStep = "upload" | "score" | "tailor" | "send";
+type OnboardingStep = "upload" | "manual" | "score" | "tailor" | "send";
 
 interface ParsedData {
   name?: string;
@@ -36,11 +38,22 @@ export function MagicOnboardingWizard({ onComplete }: MagicOnboardingWizardProps
   const [parsedData, setParsedData] = useState<ParsedData | null>(null);
   const [parseError, setParseError] = useState<string | null>(null);
   const [showManualEntry, setShowManualEntry] = useState(false);
+  
+  // Manual entry form state
+  const [manualForm, setManualForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    currentTitle: "",
+    currentCompany: "",
+    skills: [""],
+  });
 
   // Endowed progress: Start at 80%
   const baseProgress = 80;
   const stepProgress = {
     upload: 80,
+    manual: 82,
     score: 85,
     tailor: 90,
     send: 100,
@@ -261,10 +274,11 @@ export function MagicOnboardingWizard({ onComplete }: MagicOnboardingWizardProps
                     <Button
                       size="lg"
                       onClick={() => {
-                        toast.info("Manual entry coming soon!");
-                        // TODO: Show manual entry form
+                        setParseError(null);
+                        setCurrentStep("manual");
                       }}
                     >
+                      <PenLine className="h-4 w-4 mr-2" />
                       Enter Manually
                     </Button>
                   )}
@@ -281,6 +295,168 @@ export function MagicOnboardingWizard({ onComplete }: MagicOnboardingWizardProps
                 </span>
               </div>
             </div>
+          </motion.div>
+        )}
+
+        {currentStep === "manual" && (
+          <motion.div
+            key="manual"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="w-full max-w-2xl"
+          >
+            <Card className="p-8 md:p-12 shadow-2xl border-2 border-slate-200">
+              <div className="text-center mb-8">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", duration: 0.6 }}
+                  className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-orange-500 to-amber-500 mb-6"
+                >
+                  <PenLine className="h-10 w-10 text-white" />
+                </motion.div>
+                <h2 className="text-3xl md:text-4xl font-bold mb-3 bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
+                  Quick Profile Setup
+                </h2>
+                <p className="text-lg text-slate-600">
+                  Tell us about yourself to get started
+                </p>
+              </div>
+
+              <div className="space-y-6">
+                {/* Name and Email */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Full Name *</Label>
+                    <Input
+                      id="name"
+                      placeholder="John Doe"
+                      value={manualForm.name}
+                      onChange={(e) => setManualForm(prev => ({ ...prev, name: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email *</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="john@example.com"
+                      value={manualForm.email}
+                      onChange={(e) => setManualForm(prev => ({ ...prev, email: e.target.value }))}
+                    />
+                  </div>
+                </div>
+
+                {/* Current Role */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="currentTitle">Current Job Title</Label>
+                    <Input
+                      id="currentTitle"
+                      placeholder="Software Engineer"
+                      value={manualForm.currentTitle}
+                      onChange={(e) => setManualForm(prev => ({ ...prev, currentTitle: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="currentCompany">Current Company</Label>
+                    <Input
+                      id="currentCompany"
+                      placeholder="Acme Inc."
+                      value={manualForm.currentCompany}
+                      onChange={(e) => setManualForm(prev => ({ ...prev, currentCompany: e.target.value }))}
+                    />
+                  </div>
+                </div>
+
+                {/* Skills */}
+                <div className="space-y-2">
+                  <Label>Key Skills (add up to 5)</Label>
+                  <div className="space-y-2">
+                    {manualForm.skills.map((skill, index) => (
+                      <div key={index} className="flex gap-2">
+                        <Input
+                          placeholder={`Skill ${index + 1}, e.g., React, Python, Project Management`}
+                          value={skill}
+                          onChange={(e) => {
+                            const newSkills = [...manualForm.skills];
+                            newSkills[index] = e.target.value;
+                            setManualForm(prev => ({ ...prev, skills: newSkills }));
+                          }}
+                        />
+                        {manualForm.skills.length > 1 && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                              const newSkills = manualForm.skills.filter((_, i) => i !== index);
+                              setManualForm(prev => ({ ...prev, skills: newSkills }));
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4 text-slate-400" />
+                          </Button>
+                        )}
+                      </div>
+                    ))}
+                    {manualForm.skills.length < 5 && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setManualForm(prev => ({ ...prev, skills: [...prev.skills, ""] }))}
+                      >
+                        <Plus className="h-4 w-4 mr-1" />
+                        Add Skill
+                      </Button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Submit */}
+                <div className="flex gap-4 pt-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setCurrentStep("upload");
+                      setShowManualEntry(false);
+                    }}
+                  >
+                    Back
+                  </Button>
+                  <Button
+                    className="flex-1 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600"
+                    onClick={() => {
+                      if (!manualForm.name || !manualForm.email) {
+                        toast.error("Please enter your name and email");
+                        return;
+                      }
+                      
+                      // Create parsed data from manual form
+                      const manualParsedData: ParsedData = {
+                        name: manualForm.name,
+                        email: manualForm.email,
+                        phone: manualForm.phone,
+                        skills: manualForm.skills.filter(s => s.trim() !== ""),
+                        experiences: manualForm.currentTitle ? [{
+                          title: manualForm.currentTitle,
+                          company: manualForm.currentCompany || "Current",
+                          duration: "Present",
+                        }] : [],
+                        education: [],
+                      };
+                      
+                      setParsedData(manualParsedData);
+                      toast.success("Profile created! Let's continue.");
+                      setCurrentStep("score");
+                    }}
+                  >
+                    Continue
+                  </Button>
+                </div>
+              </div>
+            </Card>
           </motion.div>
         )}
 
