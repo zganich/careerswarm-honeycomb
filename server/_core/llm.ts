@@ -210,22 +210,16 @@ const normalizeToolChoice = (
   return toolChoice;
 };
 
-const resolveApiUrl = () => {
-  // Priority: custom URL > OpenAI direct
-  if (ENV.forgeApiUrl && ENV.forgeApiUrl.trim().length > 0) {
-    return `${ENV.forgeApiUrl.replace(/\/$/, "")}/v1/chat/completions`;
-  }
-  return "https://api.openai.com/v1/chat/completions";
-};
+// LLM uses only OPENAI_API_KEY and api.openai.com (no Forge fallback for chat).
+const OPENAI_CHAT_URL = "https://api.openai.com/v1/chat/completions";
 
 const assertApiKey = () => {
-  const apiKey = ENV.openaiApiKey || ENV.forgeApiKey;
-  if (!apiKey) {
+  if (!ENV.openaiApiKey || ENV.openaiApiKey.trim() === "") {
     throw new Error("OPENAI_API_KEY is not configured. Set OPENAI_API_KEY in environment variables.");
   }
 };
 
-const getApiKey = () => ENV.openaiApiKey || ENV.forgeApiKey;
+const getApiKey = () => ENV.openaiApiKey;
 
 const normalizeResponseFormat = ({
   responseFormat,
@@ -322,7 +316,6 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     payload.response_format = normalizedResponseFormat;
   }
 
-  const url = resolveApiUrl();
   const headers = {
     "content-type": "application/json",
     authorization: `Bearer ${getApiKey()}`,
@@ -332,7 +325,7 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
   let lastError: Error | null = null;
   for (let attempt = 0; attempt <= LLM_MAX_RETRIES; attempt++) {
     try {
-      const response = await fetch(url, { method: "POST", headers, body });
+      const response = await fetch(OPENAI_CHAT_URL, { method: "POST", headers, body });
 
       if (response.ok) {
         return (await response.json()) as InvokeResult;

@@ -6,10 +6,10 @@ import { tailorResume } from './agents/tailor';
 import { generateOutreach } from './agents/scribe';
 import { assembleApplicationPackage } from './agents/assembler';
 
-// These tests require valid LLM API keys and a real database - skip in CI
-const hasValidApiKey = process.env.BUILT_IN_FORGE_API_KEY && 
-  !process.env.BUILT_IN_FORGE_API_KEY.includes('PLACEHOLDER') &&
-  !process.env.BUILT_IN_FORGE_API_KEY.includes('test-key');
+// These tests require OPENAI_API_KEY and a real database - skip in CI
+const hasValidApiKey = process.env.OPENAI_API_KEY &&
+  process.env.OPENAI_API_KEY.length >= 20 &&
+  !process.env.OPENAI_API_KEY.toLowerCase().includes('placeholder');
 const hasRealDatabase = process.env.DATABASE_URL && 
   !process.env.DATABASE_URL.includes('localhost:3306/test') &&
   !process.env.CI;

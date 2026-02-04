@@ -1,0 +1,28 @@
+# Dependencies (installed fresh in container)
+node_modules
+
+# Git
+.git
+.gitignore
+
+# Development files
+.env
+.env.*
+!.env.example
+
+# Build artifacts (rebuilt in container)
+dist
+
+# IDE
+.vscode
+.idea
+.cursor
+
+# Test artifacts
+test-results
+playwright-report
+playwright/.cache
+
+# Archives and misc
+.archive
+*.log

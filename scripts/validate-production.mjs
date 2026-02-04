@@ -41,17 +41,15 @@ for (const envVar of requiredEnvVars) {
   }
 }
 
-// Check LLM API key (OPENAI_API_KEY preferred, BUILT_IN_FORGE_API_KEY as fallback)
+// LLM uses only OPENAI_API_KEY
 const openaiKey = process.env.OPENAI_API_KEY;
-const forgeKey = process.env.BUILT_IN_FORGE_API_KEY;
-const hasValidLlmKey = (openaiKey && !isPlaceholder(openaiKey)) || (forgeKey && !isPlaceholder(forgeKey));
+const hasValidLlmKey = openaiKey && !isPlaceholder(openaiKey);
 
 if (!hasValidLlmKey) {
   console.error(`   ❌ Missing LLM API key: Set OPENAI_API_KEY in Railway`);
   failedChecks++;
 } else {
-  const provider = openaiKey && !isPlaceholder(openaiKey) ? "OpenAI" : "Manus Forge";
-  console.log(`   ✅ LLM API Key (${provider})`);
+  console.log(`   ✅ OPENAI_API_KEY`);
 }
 
 // 2. Check database connection

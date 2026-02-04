@@ -17,7 +17,7 @@ const required = [
   { key: "DATABASE_URL", description: "MySQL connection string" },
   { key: "JWT_SECRET", description: "Session signing (min 32 chars)" },
   { key: "OAUTH_SERVER_URL", description: "Manus OAuth server URL" },
-  { key: "BUILT_IN_FORGE_API_KEY", description: "Manus Forge API key for LLM" },
+  { key: "OPENAI_API_KEY", description: "OpenAI API key for LLM (Resume Roast, Tailor, Scribe)" },
 ];
 
 const optional = [
@@ -29,17 +29,11 @@ const optional = [
   "SENTRY_DSN",
 ];
 
-const forgePlaceholders = [
-  "placeholder",
-  "your-forge-api-key",
-  "your-forge-api-key-here",
-  "PLACEHOLDER",
-  "PLACEHOLDER_NEEDS_REAL_KEY",
-];
-function isPlaceholderForgeKey(value) {
+function isPlaceholderOpenAIKey(value) {
   if (!value || typeof value !== "string") return true;
   const v = value.trim().toLowerCase();
-  return forgePlaceholders.some((p) => v === p.toLowerCase()) || v.includes("placeholder");
+  if (!v || v.length < 20) return true;
+  return v.includes("placeholder");
 }
 
 let failed = false;
@@ -48,8 +42,8 @@ for (const { key, description } of required) {
   if (!value || (typeof value === "string" && value.trim() === "")) {
     console.error(`Missing or empty: ${key} (${description})`);
     failed = true;
-  } else if (key === "BUILT_IN_FORGE_API_KEY" && isPlaceholderForgeKey(value)) {
-    console.error(`${key}: set to a placeholder. Use a real Manus Forge API key (see .env.example).`);
+  } else if (key === "OPENAI_API_KEY" && isPlaceholderOpenAIKey(value)) {
+    console.error(`${key}: set to a placeholder. Use a real OpenAI API key (see .env.example).`);
     failed = true;
   }
 }

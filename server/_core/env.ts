@@ -5,27 +5,17 @@ const requiredEnvVars = [
   { key: "OAUTH_SERVER_URL", description: "Manus OAuth server URL" },
 ] as const;
 
-// At least one of these must be set for LLM functionality
-const llmApiKeys = ["OPENAI_API_KEY", "BUILT_IN_FORGE_API_KEY"] as const;
+const OPENAI_PLACEHOLDERS = ["placeholder", "sk-placeholder", "PLACEHOLDER"];
 
-const FORGE_KEY_PLACEHOLDERS = [
-  "placeholder",
-  "your-forge-api-key",
-  "your-forge-api-key-here",
-  "PLACEHOLDER",
-  "PLACEHOLDER_NEEDS_REAL_KEY",
-];
-
-function isPlaceholderForgeKey(value: string): boolean {
+function isPlaceholderOpenAIKey(value: string): boolean {
   const v = value.trim().toLowerCase();
-  if (!v) return true;
-  return FORGE_KEY_PLACEHOLDERS.some((p) => v === p.toLowerCase() || v.includes("placeholder"));
+  if (!v || v.length < 20) return true;
+  return OPENAI_PLACEHOLDERS.some((p) => v.includes(p.toLowerCase()));
 }
 
 /**
  * Verifies required env vars are set. Call at production startup to fail fast.
- * In production, also rejects placeholder BUILT_IN_FORGE_API_KEY values.
- * Throws with a clear message if any check fails.
+ * LLM (Resume Roast, Tailor, Scribe) uses only OPENAI_API_KEY.
  */
 export function verifyEnv(): void {
   const missing: string[] = [];
@@ -41,22 +31,18 @@ export function verifyEnv(): void {
     );
   }
 
-  // Check for LLM API key (at least one must be valid)
+  // LLM uses only OPENAI_API_KEY (no Forge fallback)
   const openaiKey = process.env.OPENAI_API_KEY ?? "";
-  const forgeKey = process.env.BUILT_IN_FORGE_API_KEY ?? "";
-  const hasValidLlmKey = 
-    (openaiKey && !isPlaceholderForgeKey(openaiKey)) ||
-    (forgeKey && !isPlaceholderForgeKey(forgeKey));
+  const hasValidLlmKey = openaiKey && !isPlaceholderOpenAIKey(openaiKey);
 
   if (!hasValidLlmKey) {
     if (process.env.NODE_ENV === "production") {
       console.warn(
-        "⚠️  WARNING: No valid LLM API key found. AI features (Resume Roast, Tailor, Scribe) will NOT work. Set OPENAI_API_KEY in Railway variables."
+        "⚠️  WARNING: OPENAI_API_KEY missing or placeholder. AI features (Resume Roast, Tailor, Scribe) will NOT work. Set OPENAI_API_KEY in Railway variables."
       );
     }
   } else {
-    const provider = openaiKey && !isPlaceholderForgeKey(openaiKey) ? "OpenAI" : "Manus Forge";
-    console.log(`✓ LLM provider: ${provider}`);
+    console.log("✓ LLM: OPENAI_API_KEY configured");
   }
 }
 
@@ -67,8 +53,9 @@ export const ENV = {
   oAuthServerUrl: process.env.OAUTH_SERVER_URL ?? "",
   ownerOpenId: process.env.OWNER_OPEN_ID ?? "",
   isProduction: process.env.NODE_ENV === "production",
-  // LLM API keys (OPENAI_API_KEY preferred, BUILT_IN_FORGE_API_KEY as fallback)
+  // LLM (Resume Roast, Tailor, Scribe) uses only openaiApiKey + api.openai.com
   openaiApiKey: process.env.OPENAI_API_KEY ?? "",
+  // Forge key/URL only for legacy services (storage, voice, maps, etc.) — not used for LLM
   forgeApiUrl: process.env.BUILT_IN_FORGE_API_URL ?? "",
   forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY ?? "",
   // Monitoring

@@ -14,10 +14,8 @@ const checks = [
   {
     name: "OPENAI_API_KEY",
     check: () => {
-      const openaiKey = process.env.OPENAI_API_KEY || "";
-      const forgeKey = process.env.BUILT_IN_FORGE_API_KEY || "";
-      const hasValid = (key) => key && !key.toLowerCase().includes("placeholder");
-      return hasValid(openaiKey) || hasValid(forgeKey);
+      const key = process.env.OPENAI_API_KEY || "";
+      return key.length >= 20 && !key.toLowerCase().includes("placeholder");
     },
     status: "CRITICAL",
     instructions: `
