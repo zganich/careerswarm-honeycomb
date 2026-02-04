@@ -19,83 +19,89 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 - **Database:** MySQL (Railway)
 - **Auth:** Manus OAuth (Dev Login enabled for testing)
 - **AI:** OpenAI API (`OPENAI_API_KEY`) - GPT-4o-mini default
-- **Deploy:** Railway
+- **Deploy:** Railway (Dockerfile, Node 20)
 
 ## Live & Docs
 
 - **App:** https://careerswarm.com
 - **Handoff:** [RAILWAY_DEPLOYMENT_HANDOFF.md](./RAILWAY_DEPLOYMENT_HANDOFF.md)
 
-## Recent Session (LLM Migration & Production Setup - Feb 4)
+## Recent Session (Dockerfile & OPENAI-only LLM - Feb 4)
 
 ### Completed This Session
-1. **Switched from Manus Forge to OpenAI**:
-   - Updated `server/_core/llm.ts` to use OpenAI API directly
-   - Updated `server/_core/env.ts` to support `OPENAI_API_KEY`
-   - Default model: GPT-4o-mini ($0.15/$0.60 per 1M tokens)
+1. **Added Dockerfile for Node 20**:
+   - Railway was using Nixpacks with Node 18; Vite 7 requires Node 20+
+   - New builds were failing; old deployment (Node 18) kept running
+   - Added `Dockerfile` using `node:20-alpine` — Railway now uses Dockerfile instead of Nixpacks
+   - Added `.dockerignore` to optimize build context
 
-2. **Production Configuration**:
-   - ✅ Set `OPENAI_API_KEY` in Railway via CLI
-   - ✅ Set `TEST_USER_EMAIL` and `TEST_USER_PASSWORD` in GitHub Secrets
-   - ✅ All E2E tests passing (18/18)
-   - ✅ All smoke tests passing (11/11)
+2. **LLM uses ONLY OPENAI_API_KEY** (no Forge fallback):
+   - `server/_core/llm.ts`: Removed `resolveApiUrl()` and Forge fallback; calls `api.openai.com` directly
+   - `server/_core/env.ts`: Validation checks only `OPENAI_API_KEY` (not `BUILT_IN_FORGE_API_KEY`)
+   - Startup message: `✓ LLM: OPENAI_API_KEY configured`
 
-3. **Bug Fixes & Features**:
-   - Fixed CI test failures (DB-dependent tests skip gracefully)
-   - Implemented analytics `responseRateChange` calculation
-   - Added rule-based analytics insights
-   - Added manual entry fallback to onboarding wizard
-   - DashboardHero: real resume pipeline (upload → processResumes → parseResumes)
-   - Onboarding Extraction: call processResumes before parseResumes so flow works
+3. **Fixed validation scripts** (trim-first logic):
+   - `scripts/verify-env.mjs`: Trims value before checking length (matches env.ts behavior)
+   - `scripts/setup-checklist.mjs`: Updated to check `OPENAI_API_KEY` only
+   - `scripts/validate-production.mjs`: Updated to check `OPENAI_API_KEY` only
 
-4. **Scripts**:
-   - `scripts/setup-checklist.mjs` - Checks production config status
-   - Updated `scripts/validate-production.mjs` with LLM key check
+4. **Deployed**:
+   - Commit `bd5d6fb`: "fix: add Dockerfile for Node 20, use OPENAI_API_KEY only for LLM"
+   - Pushed to `main`, triggered `railway up`
+   - Build ID: `7add5e12-d0ed-408d-b7b6-a9849def8f67`
 
 ### Prior Sessions
+- LLM migration from Manus Forge to OpenAI
 - Security middleware (helmet, cors, rate limiting)
 - CI/CD pipeline with E2E tests
-- Sentry and backup documentation
+- Archived obsolete scripts/docs
 
 ## Production Status
 
 | Item | Status |
 |------|--------|
-| OpenAI API Key | ✅ Configured |
+| Dockerfile | ✅ Added (Node 20) |
+| OpenAI API Key | ✅ Configured in Railway |
 | GitHub Secrets | ✅ Configured |
 | Dev Login | ✅ Enabled |
 | E2E Tests | ✅ 18/18 passing |
-| Smoke Tests | ✅ 22/22 passing (desktop + mobile) |
+| Smoke Tests | ✅ 22/22 passing |
+| DNS | ✅ careerswarm.com configured |
 | Sentry | ⏭️ Optional (not configured) |
+| Redis | ⏭️ Optional (GTM worker) |
 
-## Optional To Do
+## Verify Deployment
 
-- **Sentry:** Create project at sentry.io, add `SENTRY_DSN` to Railway for error tracking
-- **DNS:** careerswarm.com / www configured (see docs/CLOUDFLARE_DNS.md)
-- **Redis:** Add for GTM worker (optional feature)
+After build succeeds:
+```bash
+# Check deployment status
+railway deployment list
 
-## High Priority Next Steps (completed 2026-02-04)
+# Check logs for LLM confirmation
+railway logs | grep "LLM"
+# Should show: ✓ LLM: OPENAI_API_KEY configured
 
-1. ~~Integration Tests: Resume Roast API call, Stripe checkout (test mode)~~ — Done: roaster.test.ts, stripe-router.test.ts, stripe router mounted at `appRouter.stripe`
-2. ~~Onboarding Flow: Complete E2E test~~ — Done: production-e2e.spec.ts "Complete onboarding flow"
-3. ~~Real-time progress for resume processing~~ — Done: SSE GET /api/resume-progress; DashboardHero and Extraction use EventSource
-4. **CI:** E2E runs on push to main, PRs targeting main, and workflow_dispatch
-5. **Production Metrics:** /metrics page + sidebar link; optional infra in docs/OPTIONAL_INFRASTRUCTURE.md
+# Test Resume Roast API
+curl -X POST https://careerswarm.com/api/trpc/public.roast \
+  -H "Content-Type: application/json" \
+  -d '{"json": {"resumeText": "Software Engineer with 5 years experience at Google. Led team of 8 engineers. Increased performance by 40%."}}'
+```
 
 ## Key Paths
 
 | Area        | Paths |
 |------------|-------|
+| Dockerfile | `Dockerfile`, `.dockerignore` |
 | Server Entry | `server/_core/index.ts` (security middleware) |
-| Env / LLM  | `server/_core/env.ts`, `server/_core/llm.ts` (OpenAI integration) |
+| Env / LLM  | `server/_core/env.ts`, `server/_core/llm.ts` (OpenAI only) |
 | API        | `server/routers.ts` |
 | DB         | `drizzle/schema.ts`, `drizzle/` migrations |
 | Client     | `client/src/` |
 | Onboarding | `client/src/components/MagicOnboardingWizard.tsx` |
 | Tests      | `tests/production-e2e.spec.ts`, `tests/production-smoke.spec.ts` |
 | CI/CD      | `.github/workflows/ci.yml` |
-| Scripts    | `scripts/setup-checklist.mjs`, `scripts/validate-production.mjs` |
-| Docs       | `docs/` (active); `.archive/` (obsolete, see .archive/README.md) |
+| Scripts    | `scripts/setup-checklist.mjs`, `scripts/validate-production.mjs`, `scripts/verify-env.mjs` |
+| Docs       | `docs/` (active); `.archive/` (obsolete) |
 
 ## Commands
 
@@ -113,15 +119,15 @@ node scripts/setup-checklist.mjs   # Check production config status
 npx playwright test tests/production-smoke.spec.ts --config=playwright.production.config.ts
 npx playwright test tests/production-e2e.spec.ts --config=playwright.production.config.ts
 
-# Railway CLI (if linked) — prefer CLI over dashboard where possible
-railway status         # Current project/service
-railway variable list  # List env vars (set vars via dashboard: railway open → Variables)
-railway logs           # View deployment logs
-railway redeploy       # Redeploy without new code (e.g. after changing vars)
-railway domain         # List/add domains
-railway open           # Open project in browser when UI is needed
+# Railway CLI
+railway status           # Current project/service
+railway variable list    # List env vars
+railway logs             # View deployment logs
+railway deployment list  # List recent deployments
+railway up               # Deploy from local
+railway open             # Open dashboard (when CLI can't do it)
 ```
 
 ---
 
-*Last updated: 2026-02-04 (Cleanup: archived obsolete scripts/docs, updated docs to OPENAI_API_KEY, consolidated .archive).*
+*Last updated: 2026-02-04 (Added Dockerfile for Node 20, LLM uses OPENAI_API_KEY only, deployed).*
