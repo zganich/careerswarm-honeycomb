@@ -10,7 +10,6 @@ import {
 import { Award, Upload, Sparkles, Target, CheckCircle, Lock } from "lucide-react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { getLoginUrl } from "@/const";
 import { useState, useEffect } from "react";
 
 export default function Welcome() {
@@ -37,14 +36,7 @@ export default function Welcome() {
   };
 
   const handleLogin = () => {
-    // Redirect to OAuth login with returnTo parameter to come back to onboarding
-    const loginUrl = getLoginUrl('/onboarding/welcome');
-    if (loginUrl && loginUrl !== '#') {
-      window.location.href = loginUrl;
-    } else {
-      // OAuth URL not configured (e.g. missing VITE_OAUTH_PORTAL_URL); use app login page (Dev Login)
-      setLocation('/login?returnTo=/onboarding/welcome');
-    }
+    setLocation("/login?returnTo=/onboarding/welcome");
   };
 
   // Show loading state while checking auth

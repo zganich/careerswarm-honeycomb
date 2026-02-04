@@ -2,7 +2,6 @@ import React from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight, Hexagon, ShieldCheck, Zap, Database, Check, Upload, Sparkles, Shield } from 'lucide-react';
 import { useLocation } from 'wouter';
-import { getLoginUrl } from '@/const';
 import { TransformationHero } from '@/components/ui/psych/TransformationHero';
 import { SwarmNarrative } from '@/components/SwarmNarrative';
 import { TrustStrip } from '@/components/TrustStrip';
@@ -31,7 +30,7 @@ const Home = () => {
           <div className="flex items-center space-x-4">
             <button
               type="button"
-              onClick={() => { const u = getLoginUrl(); if (u && u !== '#') window.location.href = u; else setLocation('/login'); }}
+              onClick={() => setLocation("/login")}
               className="text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors"
             >
               Sign In

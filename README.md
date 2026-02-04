@@ -5,7 +5,7 @@
 Transform your job search from chaos to order with a 7-stage AI agent pipeline that analyzes, tailors, and optimizes every application.
 
 [![Version](https://img.shields.io/badge/version-1.4.0-blue.svg)](./CHANGELOG.md)
-[![Tests](https://img.shields.io/badge/tests-129%20passing-green.svg)](./server)
+[![Tests](https://img.shields.io/badge/tests-122%20passing-green.svg)](./server)
 [![TypeScript](https://img.shields.io/badge/typescript-0%20errors-green.svg)](./tsconfig.json)
 [![Build](https://img.shields.io/badge/build-passing-green.svg)](./package.json)
 
@@ -13,17 +13,14 @@ Transform your job search from chaos to order with a 7-stage AI agent pipeline t
 
 ## 🚀 Quick Start
 
+When working in Cursor, the assistant runs setup and verification (install, dev server, tests, env) as needed; you are not expected to run these yourself.
+
+Reference commands (for automation / CI):
+
 ```bash
-# Install dependencies
 pnpm install
-
-# Start development server
 pnpm dev
-
-# Run tests
 pnpm test
-
-# Run E2E tests
 npx playwright test
 ```
 
@@ -59,11 +56,11 @@ npx playwright test
 
 **Frontend:** React 19 + Tailwind 4 + tRPC + shadcn/ui  
 **Backend:** Express 4 + tRPC 11 + Drizzle ORM  
-**Database:** MySQL/TiDB (14 tables)  
-**Auth:** Manus OAuth  
-**AI:** OpenAI API (GPT-4o-mini default)  
-**Storage:** S3 for file uploads  
-**Testing:** Vitest (127 tests) + Playwright (20 E2E tests)
+**Database:** MySQL (23 tables, see `drizzle/schema.ts`)  
+**Auth:** Email-only sign-in at `/login` (no OAuth/Manus required)  
+**AI:** OpenAI API (GPT-4o-mini default); requires `OPENAI_API_KEY` in production  
+**Storage:** S3 optional for file uploads  
+**Testing:** Vitest (122 passing / 51 skipped) + Playwright (smoke + E2E vs production)
 
 ---
 
@@ -90,7 +87,7 @@ pnpm test server/pivot-analyzer.test.ts  # Run specific test
 pnpm test --watch                      # Watch mode
 ```
 
-**Coverage:** 129 passing tests, 42 skipped (env-dependent)
+**Coverage:** 122 passing, 51 skipped (env-dependent mocks)
 
 ### E2E Tests (Playwright)
 
@@ -127,15 +124,13 @@ careerswarm/
 
 ## 🔑 Environment Variables
 
-Required environment variables:
+The assistant maintains `.env` for local dev (from `.env.example`) and uses Railway CLI for production where possible.
 
-- `DATABASE_URL` - MySQL/TiDB connection
-- `JWT_SECRET` - Session signing
-- `OAUTH_SERVER_URL` - Manus OAuth
-- `OPENAI_API_KEY` - LLM access (AI features)
-- `STRIPE_SECRET_KEY` - Payment processing (test mode)
+- **App boot:** `DATABASE_URL` (MySQL), `JWT_SECRET`. No OAuth required.
+- **AI (Roast, Tailor, Scribe):** `OPENAI_API_KEY` in `.env` (local) and in Railway Variables (production); no placeholders in production.
+- **Optional:** Stripe, S3, etc. (see `.env.example`).
 
-See [SETUP_GUIDE.md](./SETUP_GUIDE.md) and [docs/CRITICAL_SETUP_CHECKLIST.md](./docs/CRITICAL_SETUP_CHECKLIST.md).
+**Checklist:** [docs/CRITICAL_SETUP_CHECKLIST.md](./docs/CRITICAL_SETUP_CHECKLIST.md).
 
 ---
 
@@ -178,7 +173,7 @@ Proprietary - All Rights Reserved
 - **Modern UI**: React 19 + Tailwind 4 with OKLCH colors
 - **AI Integration**: Structured LLM responses with schema validation
 - **Testing**: Comprehensive coverage with Vitest + Playwright
-- **Auth**: Secure OAuth flow with session management
+- **Auth**: Email sign-in with session cookie; optional OAuth if configured
 - **Database**: Type-safe queries with Drizzle ORM
 
 ---

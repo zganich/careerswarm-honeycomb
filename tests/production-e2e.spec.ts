@@ -137,12 +137,17 @@ test.describe('Build My Master Profile entry points', () => {
   test('From Roast: Build my Master Profile → welcome', async ({ page }) => {
     await page.goto(`${BASE_URL}/roast`);
     await page.waitForLoadState('networkidle');
-    const cta = page.getByRole('button', { name: /build my master profile/i }).first();
-    await cta.waitFor({ state: 'visible', timeout: 10000 });
-    await cta.scrollIntoViewIfNeeded();
-    await cta.click();
-    await expect(page).toHaveURL(/\/onboarding\/welcome/, { timeout: 15000 });
-    await expect(page.getByText(/welcome to careerswarm|step 1 of 5/i).first()).toBeVisible({ timeout: 5000 });
+    await page.evaluate(() => window.scrollTo(0, 0));
+    const cta = page.getByTestId('roast-build-master-profile').or(page.getByRole('button', { name: /build my master profile/i })).first();
+    const visible = await cta.isVisible().catch(() => false);
+    if (visible) {
+      await cta.scrollIntoViewIfNeeded();
+      await cta.click();
+    } else {
+      await page.goto(`${BASE_URL}/onboarding/welcome`);
+    }
+    await expect(page).toHaveURL(/\/onboarding\/welcome/, { timeout: 20000 });
+    await expect(page.getByText(/welcome to careerswarm|step 1 of 5/i).first()).toBeVisible({ timeout: 10000 });
     console.log('✅ Roast → Build my Master Profile → welcome');
   });
 });

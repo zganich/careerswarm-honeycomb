@@ -38,6 +38,7 @@ export default function ResumeRoast() {
             size="sm"
             onClick={() => setLocation("/onboarding/welcome")}
             className="text-slate-600"
+            data-testid="roast-build-master-profile"
           >
             Build my Master Profile
           </Button>

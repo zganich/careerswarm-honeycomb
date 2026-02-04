@@ -1,8 +1,8 @@
 // ENV validation for production - last updated 2026-02-04
+// Auth: email-only sign-in at /login (no OAuth/Manus required)
 const requiredEnvVars = [
   { key: "DATABASE_URL", description: "MySQL connection string" },
   { key: "JWT_SECRET", description: "Session signing (min 32 chars)" },
-  { key: "OAUTH_SERVER_URL", description: "Manus OAuth server URL" },
 ] as const;
 
 const OPENAI_PLACEHOLDERS = ["placeholder", "sk-placeholder", "PLACEHOLDER"];
@@ -50,7 +50,7 @@ export const ENV = {
   appId: process.env.VITE_APP_ID ?? "",
   cookieSecret: process.env.JWT_SECRET ?? "",
   databaseUrl: process.env.DATABASE_URL ?? "",
-  oAuthServerUrl: process.env.OAUTH_SERVER_URL ?? "",
+  oAuthServerUrl: process.env.OAUTH_SERVER_URL ?? "", // optional; when unset, auth is email-only at /login
   ownerOpenId: process.env.OWNER_OPEN_ID ?? "",
   isProduction: process.env.NODE_ENV === "production",
   // LLM (Resume Roast, Tailor, Scribe) uses only openaiApiKey + api.openai.com

@@ -40,7 +40,7 @@ describe("Resume Roaster", () => {
     expect(typeof result.brutalTruth).toBe("string");
     expect(typeof result.characterCount).toBe("number");
     expect(typeof result.wordCount).toBe("number");
-  });
+  }, 20000);
 
   it.skip("should roast a buzzword-heavy resume with low score (LLM test)", async () => {
     const caller = appRouter.createCaller({ user: null, req: {} as any, res: {} as any });

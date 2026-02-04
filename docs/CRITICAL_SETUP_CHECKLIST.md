@@ -1,17 +1,17 @@
 # Critical Setup Checklist
 
-**Status:** All code is ready. These items require manual configuration in external services.
+**Status:** All code is ready. These items require manual configuration in external services.  
+**Why this matters:** Missing or placeholder `OPENAI_API_KEY` / DB causes AI features to fail in production while you still pay for infra; completing this once avoids repeated failures and wasted spend.
 
 ---
 
 ## Auth (Sign-in / Login)
 
-**We can use whatever authentication is necessary.** Current setup:
+**Email-only auth.** No OAuth or Manus required.
 
-- **Production:** OAuth (Manus) when `VITE_OAUTH_PORTAL_URL` is set. Users hit `/api/oauth/callback` after sign-in; `returnTo` is passed in OAuth state so they can land back on e.g. `/onboarding/welcome` (e.g. from Resume Roast → Build my Master Profile).
-- **Dev / Preview:** Dev Login at `/login` when OAuth isn’t configured or `ENABLE_DEV_LOGIN=true`. `?returnTo=/onboarding/welcome` is sent to the test-login API; the response `redirect` is used so users return to the right page after sign-in.
+- Users sign in at **`/login`**: enter email → `POST /api/auth/test-login` → session cookie set → redirect to `returnTo` (e.g. `/onboarding/welcome`, `/dashboard`). First-time emails create an account automatically.
+- Optional: if you set `OAUTH_SERVER_URL` and `VITE_OAUTH_PORTAL_URL`, OAuth can be used; when unset, the app uses email sign-in only.
 
-Both paths set a session cookie and support deep links (Roast → Onboarding → Sign in → back to Onboarding). To switch to another provider (e.g. NextAuth, Clerk, magic link), replace the OAuth routes and/or Dev Login while keeping the same `returnTo`/redirect behavior.
 
 ---
 

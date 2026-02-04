@@ -1,6 +1,5 @@
 /**
- * Dev Login — bypasses OAuth when cookies/redirect don't work (local, preview URLs).
- * Only shown when VITE_OAUTH_PORTAL_URL is unset or ENABLE_DEV_LOGIN=true.
+ * Sign in — email-only auth. No OAuth/Manus required.
  */
 import { useState } from "react";
 import { useLocation } from "wouter";
@@ -49,9 +48,9 @@ export default function DevLogin() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/30">
       <div className="w-full max-w-sm rounded-lg border bg-card p-6 shadow-sm">
-        <h1 className="text-xl font-semibold">Dev Login</h1>
+        <h1 className="text-xl font-semibold">Sign in</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Use any email to sign in without OAuth (dev/preview only).
+          Enter your email to sign in. We’ll create your account if it’s your first time.
         </p>
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>

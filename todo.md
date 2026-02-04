@@ -11,10 +11,12 @@
 |-------|--------|
 | TypeScript (`pnpm check`) | 0 errors |
 | Build (`pnpm build`) | Passing |
-| Unit Tests (`pnpm test`) | 120 passed, 51 skipped |
+| Unit Tests (`pnpm test`) | 122 passed, 51 skipped |
 | E2E Tests (Production) | 18/18 passed |
 | Smoke Tests (Production) | 22/22 passed |
 | Migrations (`pnpm db:migrate`) | All 16 migrations applied |
+
+The assistant runs these checks when finishing work; no need for the user to run them.
 
 ---
 
@@ -39,6 +41,7 @@
 - [x] Set TEST_USER_EMAIL and TEST_USER_PASSWORD in GitHub Secrets
 - [x] Created scripts/setup-checklist.mjs for production config validation
 - [x] All E2E tests passing (18/18), all smoke tests passing (11/11)
+- [x] Docs/rules finished: CONTEXT_FOR_NEW_CHAT.md, README, .cursorrules aligned; OPENAI_API_KEY in .env (local); "do not hand off technical work" rule; roaster integration test timeout 20s; todo.md and CONTEXT Last Session updated
 
 ## Completed (February 2, 2026)
 
@@ -54,15 +57,14 @@
 
 ## Production Checklist
 
-Before deploying:
+The assistant runs these when finishing or before deploy; user does not run them.
 
-- [ ] Run `pnpm db:migrate` (applies all pending migrations)
-- [ ] Verify `pnpm check` passes (0 TypeScript errors)
-- [ ] Verify `pnpm build` passes
-- [ ] Verify `pnpm test` passes
-- [ ] Configure OAuth redirect URI in Manus dashboard
+- [x] `pnpm check` (0 TypeScript errors)
+- [x] `pnpm test` (122 passed, 51 skipped)
+- [ ] `pnpm db:migrate` when schema/migrations change
+- [ ] `pnpm build` before deploy
 
-See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md) for full deployment guide.
+See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md) for full deployment guide. Auth is email-only at `/login` (no OAuth/Manus).
 
 ---
 
@@ -82,6 +84,7 @@ See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md) for full deployment guide
 - [x] Set `OPENAI_API_KEY` in Railway Variables (switched from Manus Forge to OpenAI)
 - [x] GitHub Secrets configured for CI E2E tests
 - [x] DNS setup for careerswarm.com / www (optional) — see docs/CLOUDFLARE_DNS.md
+- [x] Auth: email-only sign-in at /login (removed Manus/OAuth requirement)
 - [ ] Redis for GTM worker (optional) — see docs/OPTIONAL_INFRASTRUCTURE.md
 - [ ] Sentry for error tracking (optional) — see docs/OPTIONAL_INFRASTRUCTURE.md
 
@@ -109,8 +112,8 @@ See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md) for full deployment guide
 **Stack:**
 - Frontend: React 19 + Tailwind 4 + tRPC + shadcn/ui
 - Backend: Express 4 + tRPC 11 + Drizzle ORM
-- Database: MySQL (16 migrations, 14+ tables)
-- Auth: Manus OAuth
+- Database: MySQL (16 migrations, 23 tables)
+- Auth: Email-only at /login (no OAuth/Manus required)
 - AI: OpenAI API (GPT-4o-mini default)
 
 **7-Stage Agent Pipeline:**

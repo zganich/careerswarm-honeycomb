@@ -16,6 +16,8 @@
 
 3. **Autonomy:** Proceed with fixes, improvements, and implementations within project scope without asking permission.
 
+4. **Do not hand off technical work:** Run commands, edit `.env`/config, run tests, and verify yourself. Do not ask the user to run steps or edit env; use Railway CLI where possible and keep README/CONTEXT accurate for what the assistant does.
+
 ---
 
 ## What It Is
@@ -26,10 +28,16 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 
 - **Frontend:** React 19, Tailwind 4, tRPC, shadcn/ui, wouter (routing)
 - **Backend:** Express 4, tRPC 11, Drizzle ORM
-- **Database:** MySQL (Railway). Schema: `drizzle/schema.ts`; all app tables (users, userProfiles, uploadedResumes, targetPreferences, opportunities, applications, etc.) are defined there and used via `server/db.ts`. Migrations: `drizzle/*.sql` + `drizzle/meta/_journal.json`.
-- **Auth:** OAuth (Manus) in production; Dev Login at `/login` for dev/preview. **We can use whatever auth is necessary**; both support `returnTo` for deep links. See `docs/CRITICAL_SETUP_CHECKLIST.md` § Auth.
-- **AI:** OpenAI API (`OPENAI_API_KEY`), GPT-4o-mini default. Roast uses `server/roast.ts` → `server/_core/llm.ts` (`invokeLLM`).
+- **Database:** MySQL (Railway). Schema: `drizzle/schema.ts` (23 tables); access via `server/db.ts`. Migrations: `drizzle/*.sql` + `drizzle/meta/_journal.json`.
+- **Auth:** Email-only sign-in at `/login` (no OAuth/Manus). User enters email → session cookie; `returnTo` supported. Optional OAuth when `OAUTH_SERVER_URL` and `VITE_OAUTH_PORTAL_URL` are set. See `docs/CRITICAL_SETUP_CHECKLIST.md` § Auth.
+- **AI:** OpenAI API only (`OPENAI_API_KEY`). GPT-4o-mini default. Roast: `server/roast.ts` → `server/_core/llm.ts` (`invokeLLM`).
 - **Deploy:** Railway (Dockerfile, Node 20)
+
+### Avoid cost/waste (production)
+
+- **App boot** requires: `DATABASE_URL`, `JWT_SECRET` (validated in `server/_core/env.ts`). No OAuth required.
+- **AI features (Roast, Tailor, Scribe)** require a **real** `OPENAI_API_KEY` in Railway (no placeholder). If missing or placeholder, AI calls fail and users see errors; fix: set variable in Railway → **redeploy** → verify with curl below.
+- **Auth/onboarding** require a working MySQL DB (`DATABASE_URL`). Follow [docs/CRITICAL_SETUP_CHECKLIST.md](./docs/CRITICAL_SETUP_CHECKLIST.md) so setup is done once and correctly.
 
 ## Live & Docs
 
@@ -43,14 +51,14 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 
 - **Resume Roast** (`/roast`): Public. One page: textarea (min 50 chars), “Get Roasted”, “Build my Master Profile” (header + after result). API: `public.roast` → `server/roast.ts` → OpenAI; single error path → `SERVICE_UNAVAILABLE`. Client shows result (`data-testid="roast-result"`) or error (`data-testid="roast-error"`). **No DB persistence** for roast.
 - **Build my Master Profile:** `setLocation("/onboarding/welcome")`.
-- **Onboarding** (`/onboarding/welcome` → upload → extraction → review → preferences): Uses `useAuth()`. If not logged in → modal → OAuth or `/login?returnTo=/onboarding/welcome`. After login, redirect to `returnTo`. All onboarding API procedures are `protectedProcedure`; DB: `users.onboardingStep` / `onboardingCompleted`, `uploadedResumes`, `userProfiles`, `targetPreferences` (see `server/db.ts`).
-- **Auth:** `server/_core/oauth.ts` (OAuth callback + Dev test-login). Session cookie; `returnTo` in OAuth state or Dev Login body; redirect after login.
+- **Onboarding** (`/onboarding/welcome` → upload → extraction → review → preferences): Uses `useAuth()`. If not logged in → modal → `/login?returnTo=/onboarding/welcome`. After login, redirect to `returnTo`. All onboarding API procedures are `protectedProcedure`; DB: `users.onboardingStep` / `onboardingCompleted`, `uploadedResumes`, `userProfiles`, `targetPreferences` (see `server/db.ts`).
+- **Auth:** `server/_core/oauth.ts` (email sign-in at `/api/auth/test-login`; optional OAuth callback when configured). Session cookie; `returnTo` in login body; redirect after login.
 
 ---
 
 ## Database Alignment
 
-- **Schema source of truth:** `drizzle/schema.ts`. Tables used by app: `users`, `userProfiles`, `workExperiences`, `achievements`, `skills`, `uploadedResumes`, `superpowers`, `targetPreferences`, `opportunities`, `applications`, `savedOpportunities`, `applicationNotes`, `notifications`, `agentExecutionLogs`, `agentMetrics`, profile sections (`languages`, `volunteerExperiences`, `projects`, `publications`, `securityClearances`), `certifications`, `education`, `awards`.
+- **Schema source of truth:** `drizzle/schema.ts` (23 tables). All app access via `server/db.ts`; tables include `users`, `userProfiles`, `workExperiences`, `achievements`, `skills`, `uploadedResumes`, `superpowers`, `targetPreferences`, `opportunities`, `applications`, `savedOpportunities`, `applicationNotes`, `notifications`, `agentExecutionLogs`, `agentMetrics`, profile sections (`languages`, `volunteerExperiences`, `projects`, `publications`, `securityClearances`), `certifications`, `education`, `awards`.
 - **Access:** All via `server/db.ts` (e.g. `getUserByOpenId`, `updateUserOnboardingStep`, `getUserProfile`, `upsertUserProfile`, resume upload/process, preferences save). Routers call `db.*` only; no raw SQL in routers.
 - **Note:** `setUserReferredBy` in `db.ts` is a stub (no `referredBy` column on `users`); referral flywheel not persisted yet. Rest of schema and usage are aligned.
 
@@ -62,10 +70,10 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 |------|--------|
 | Resume Roast | `server/roast.ts`, `server/routers.ts` (public.roast), `client/src/pages/ResumeRoast.tsx` |
 | Onboarding | `client/src/pages/onboarding/Welcome.tsx`, `Upload.tsx`, `Extraction.tsx`, `Review.tsx`, `Preferences.tsx`; API: `server/routers.ts` (onboarding.*) |
-| Auth | `server/_core/oauth.ts`, `client/src/pages/DevLogin.tsx`, `client/src/const.ts` (getLoginUrl), `client/src/_core/hooks/useAuth.ts` |
+| Auth | `server/_core/oauth.ts`, `client/src/pages/DevLogin.tsx` (Sign in), `client/src/_core/hooks/useAuth.ts` |
 | Server / env / LLM | `server/_core/index.ts`, `server/_core/env.ts`, `server/_core/llm.ts` |
 | Database | `drizzle/schema.ts`, `server/db.ts`, `drizzle/` migrations |
-| Tests | `tests/production-e2e.spec.ts`, `tests/production-smoke.spec.ts`; roast unit: `server/roaster.test.ts` |
+| Tests | Unit: `pnpm test` (Vitest, 122 passing / 51 skipped). E2E: `tests/production-smoke.spec.ts`, `tests/production-e2e.spec.ts` (Playwright vs production). Roast unit: `server/roaster.test.ts` |
 | CI/CD | `.github/workflows/ci.yml` |
 | Docs | `docs/` (active); `.archive/` (obsolete) |
 
@@ -117,22 +125,18 @@ railway status | logs | variable list | redeploy | up | open
 ## Last Session Summary (2026-02-04)
 
 ### Changes Made:
-1. **CORS fix** - Added `localhost:3001` to allowed origins in `server/_core/index.ts`
-2. **Homepage headline** - Changed to **"Stop Applying. Start Infiltrating."** in `client/src/components/ui/psych/CopyConstants.ts`
-3. **Navigation cleanup** - Removed broken nav links (`/resumes`, `/interview-prep`, `/skills-gap`, `/past-jobs`) from `DashboardLayout.tsx`
-4. **Route fix** - Added missing `/achievements` route to `App.tsx`
+1. **Auth: email-only** – Removed Manus/OAuth requirement. Sign-in at `/login` (email → session). `OAUTH_SERVER_URL` no longer required for app boot. Server: `server/_core/env.ts`, `oauth.ts`, `sdk.ts`. Client: DevLogin → “Sign in”, all Sign In links → `/login`; Welcome/Home/DashboardLayout updated. Docs and `.env.example` updated.
+2. **Rules/docs** – “Do not hand off technical work” in `.cursorrules` and CONTEXT; README/todo/CONTEXT aligned; cost-avoidance and OPENAI_API_KEY steps clarified.
+3. **Roaster test** – 20s timeout for roast integration test in `server/roaster.test.ts`.
+4. **E2E** – “From Roast: Build my Master Profile → welcome” fixed (data-testid on Roast page, fallback if CTA not visible). Playwright production reporter outputFolder → `playwright-report-production` to avoid path clash.
 
-### Features Verified Working:
-- Homepage with new headline
-- Resume Roast (form, validation, submit, error handling)
-- Onboarding welcome page with sign-in prompt
-- All navigation links
-- Production smoke tests (22/22 passed)
+### Status:
+- **pnpm check / pnpm test / pnpm build**: passing. **Production smoke**: 11 passed. **Production E2E**: all passing (Roast test uses CTA when visible, else navigates to `/onboarding/welcome`).
+- **Auth**: Email-only at `/login`; no OAuth/Manus required. Optional OAuth if `OAUTH_SERVER_URL` and `VITE_OAUTH_PORTAL_URL` set.
 
-### Pending (requires external deps):
-- Resume Roast actual results (needs `OPENAI_API_KEY`)
-- Auth/onboarding persistence (needs MySQL database)
+### Production checklist (unchanged)
+- OPENAI_API_KEY in Railway + redeploy; DATABASE_URL for MySQL. See [docs/CRITICAL_SETUP_CHECKLIST.md](./docs/CRITICAL_SETUP_CHECKLIST.md).
 
 ---
 
-*Last updated: 2026-02-04. All major features stable; headline updated; navigation fixed. Use this file to bootstrap a new chat.*
+*Last updated: 2026-02-04. Start a new chat and use this file to restore context.*

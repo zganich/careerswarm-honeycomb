@@ -9,19 +9,21 @@ function getQueryParam(req: Request, key: string): string | undefined {
   return typeof value === "string" ? value : undefined;
 }
 
-/** Auth is swappable: we can use whatever sign-in/login is necessary (OAuth, Dev Login, or another provider). */
+/** Auth: email-only sign-in at /login (no OAuth/Manus). Optional OAuth when OAUTH_SERVER_URL is set. */
 
-/** Dev-only: enable test-login when not production OR ENABLE_DEV_LOGIN=true */
-function isDevLoginEnabled(): boolean {
+/** Email login: always enabled when OAuth is not configured; otherwise enabled in dev or when ENABLE_DEV_LOGIN=true */
+function isEmailLoginEnabled(): boolean {
+  const hasOAuth = !!process.env.OAUTH_SERVER_URL?.trim();
+  if (!hasOAuth) return true;
   if (process.env.ENABLE_DEV_LOGIN === "true") return true;
   return process.env.NODE_ENV !== "production";
 }
 
 export function registerOAuthRoutes(app: Express) {
-  // Dev login: bypass OAuth when cookies/redirect don't work (local, preview URLs)
+  // Email sign-in: create/lookup user by email, set session cookie (primary auth when no OAuth)
   app.post("/api/auth/test-login", async (req: Request, res: Response) => {
-    if (!isDevLoginEnabled()) {
-      res.status(403).json({ error: "Dev login is disabled in production" });
+    if (!isEmailLoginEnabled()) {
+      res.status(403).json({ error: "Email login is not enabled" });
       return;
     }
     const email = typeof req.body?.email === "string" ? req.body.email.trim() : "";
@@ -48,19 +50,17 @@ export function registerOAuthRoutes(app: Express) {
   });
 
   app.get("/api/oauth/callback", async (req: Request, res: Response) => {
-    console.log('[OAuth] Callback hit!', { 
-      query: req.query,
-      origin: req.headers.origin,
-      host: req.headers.host 
-    });
+    const oauthUrl = process.env.OAUTH_SERVER_URL?.trim();
+    if (!oauthUrl) {
+      res.status(404).json({ error: "OAuth is not configured; use email sign-in at /login" });
+      return;
+    }
     const code = getQueryParam(req, "code");
     const state = getQueryParam(req, "state");
-
     if (!code || !state) {
       res.status(400).json({ error: "code and state are required" });
       return;
     }
-
     try {
       const tokenResponse = await sdk.exchangeCodeForToken(code, state);
       const userInfo = await sdk.getUserInfo(tokenResponse.accessToken);

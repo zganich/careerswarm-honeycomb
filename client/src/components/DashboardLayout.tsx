@@ -19,7 +19,6 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
 import { LayoutDashboard, LogOut, PanelLeft, Award, Briefcase, Search, BarChart3 } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
@@ -78,26 +77,13 @@ export default function DashboardLayout({
           <div className="flex flex-col gap-3 w-full">
             <Button
               onClick={() => {
-                const url = getLoginUrl(returnTo);
-                if (url && url !== "#") window.location.href = url;
-                else window.location.href = `/login?returnTo=${encodeURIComponent(returnTo)}`;
+                window.location.href = `/login?returnTo=${encodeURIComponent(returnTo)}`;
               }}
               size="lg"
               className="w-full shadow-lg hover:shadow-xl transition-all"
             >
               Sign in
             </Button>
-            {(!import.meta.env.VITE_OAUTH_PORTAL_URL || import.meta.env.DEV) && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  window.location.href = `/login?returnTo=${encodeURIComponent(returnTo)}`;
-                }}
-              >
-                Dev Login (bypass OAuth)
-              </Button>
-            )}
           </div>
         </div>
       </div>

@@ -30,12 +30,10 @@ const GET_USER_INFO_WITH_JWT_PATH = `/webdev.v1.WebDevAuthPublicService/GetUserI
 
 class OAuthService {
   constructor(private client: ReturnType<typeof axios.create>) {
-    console.log("[OAuth] Initialized with baseURL:", ENV.oAuthServerUrl);
-    if (!ENV.oAuthServerUrl) {
-      console.error(
-        "[OAuth] ERROR: OAUTH_SERVER_URL is not configured! Set OAUTH_SERVER_URL environment variable."
-      );
+    if (ENV.oAuthServerUrl) {
+      console.log("[OAuth] Initialized with baseURL:", ENV.oAuthServerUrl);
     }
+    // When unset, auth is email-only at /login (no OAuth)
   }
 
   /** Decode state: supports JSON { redirectUri, returnTo } or legacy plain redirectUri */
@@ -306,33 +304,46 @@ class SDKServer {
     const signedInAt = new Date();
     let user = await db.getUserByOpenId(sessionUserId);
 
-    // If user not in DB, sync from OAuth server or create test user
+    // If user not in DB: without OAuth we create from session; with OAuth we sync from provider
     if (!user) {
-      try {
-        const userInfo = await this.getUserInfoWithJwt(sessionCookie ?? "");
+      if (!ENV.oAuthServerUrl) {
+        // Email-only auth: create user from session (openId e.g. dev-email@example.com, test-user-*)
+        const email =
+          sessionUserId.startsWith("dev-") ? sessionUserId.replace(/^dev-/, "") : null;
         await db.upsertUser({
-          openId: userInfo.openId,
-          name: userInfo.name || null,
-          email: userInfo.email ?? null,
-          loginMethod: userInfo.loginMethod ?? userInfo.platform ?? null,
+          openId: sessionUserId,
+          name: session.name || "User",
+          email,
+          loginMethod: sessionUserId.startsWith("test-user-") ? "test" : "email",
           lastSignedIn: signedInAt,
         });
-        user = await db.getUserByOpenId(userInfo.openId);
-      } catch (error) {
-        // E2E test users: allow test-user-* openIds without Manus (auth-bypass)
-        if (sessionUserId.startsWith("test-user-")) {
+        user = await db.getUserByOpenId(sessionUserId);
+      } else {
+        try {
+          const userInfo = await this.getUserInfoWithJwt(sessionCookie ?? "");
           await db.upsertUser({
-            openId: sessionUserId,
-            name: session.name || "Playwright Test User",
-            email: null,
-            loginMethod: "test",
+            openId: userInfo.openId,
+            name: userInfo.name || null,
+            email: userInfo.email ?? null,
+            loginMethod: userInfo.loginMethod ?? userInfo.platform ?? null,
             lastSignedIn: signedInAt,
           });
-          user = await db.getUserByOpenId(sessionUserId);
-        }
-        if (!user) {
-          console.error("[Auth] Failed to sync user from OAuth:", error);
-          throw ForbiddenError("Failed to sync user info");
+          user = await db.getUserByOpenId(userInfo.openId);
+        } catch (error) {
+          if (sessionUserId.startsWith("test-user-") || sessionUserId.startsWith("dev-")) {
+            await db.upsertUser({
+              openId: sessionUserId,
+              name: session.name || "User",
+              email: sessionUserId.startsWith("dev-") ? sessionUserId.replace(/^dev-/, "") : null,
+              loginMethod: sessionUserId.startsWith("test-user-") ? "test" : "email",
+              lastSignedIn: signedInAt,
+            });
+            user = await db.getUserByOpenId(sessionUserId);
+          }
+          if (!user) {
+            console.error("[Auth] Failed to sync user:", error);
+            throw ForbiddenError("Failed to sync user info");
+          }
         }
       }
     }

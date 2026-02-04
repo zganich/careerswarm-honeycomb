@@ -25,8 +25,8 @@ export default defineConfig({
   /* Single worker for production to avoid overwhelming the server */
   workers: 1,
   
-  /* Reporter configuration */
-  reporter: [['list'], ['html', { outputFolder: 'test-results/production' }]],
+  /* Reporter configuration - use subdir to avoid clash with test-results */
+  reporter: [['list'], ['html', { outputFolder: 'playwright-report-production' }]],
   
   /* Shared settings for all projects */
   use: {
