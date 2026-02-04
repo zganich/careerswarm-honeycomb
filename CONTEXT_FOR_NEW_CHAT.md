@@ -43,6 +43,8 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
    - Implemented analytics `responseRateChange` calculation
    - Added rule-based analytics insights
    - Added manual entry fallback to onboarding wizard
+   - DashboardHero: real resume pipeline (upload → processResumes → parseResumes)
+   - Onboarding Extraction: call processResumes before parseResumes so flow works
 
 4. **Scripts**:
    - `scripts/setup-checklist.mjs` - Checks production config status
@@ -61,7 +63,7 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 | GitHub Secrets | ✅ Configured |
 | Dev Login | ✅ Enabled |
 | E2E Tests | ✅ 18/18 passing |
-| Smoke Tests | ✅ 11/11 passing |
+| Smoke Tests | ✅ 22/22 passing (desktop + mobile) |
 | Sentry | ⏭️ Optional (not configured) |
 
 ## Optional To Do
@@ -114,4 +116,4 @@ railway redeploy     # Redeploy app
 
 ---
 
-*Last updated: 2026-02-04 (LLM migration to OpenAI, production setup complete).*
+*Last updated: 2026-02-04 (DashboardHero real pipeline, Extraction processResumes, context sync).*

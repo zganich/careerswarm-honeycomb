@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from 'react';
 import { Upload, CheckCircle, Plus } from 'lucide-react';
 import { ManualAchievementEntry } from './ManualAchievementEntry';
 import { toast } from 'sonner';
+import { trpc } from '@/lib/trpc';
 
 interface DashboardHeroProps {
   swarmScore: number; // 0-100
@@ -11,11 +12,20 @@ interface DashboardHeroProps {
   onManualEntry?: (achievements: Array<{situation: string; task: string; action: string; result: string}>) => void;
 }
 
+const RESUME_MIME_TYPES = [
+  'application/pdf',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'text/plain',
+];
+
 export function DashboardHero({ swarmScore, profileStatus, onAction, onManualEntry }: DashboardHeroProps) {
   const [displayScore, setDisplayScore] = useState(0);
   const [showManualEntry, setShowManualEntry] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const uploadMutation = trpc.onboarding.uploadResume.useMutation();
+  const processResumesMutation = trpc.onboarding.processResumes.useMutation();
+  const parseResumesMutation = trpc.onboarding.parseResumes.useMutation();
 
   // Animate score counting up
   useEffect(() => {
@@ -91,36 +101,40 @@ export function DashboardHero({ swarmScore, profileStatus, onAction, onManualEnt
       return;
     }
 
-    // Validate file type
-    const validTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/heic'];
-    if (!validTypes.includes(file.type)) {
+    // Validate file type (PDF, DOCX, TXT - same as onboarding upload)
+    if (!RESUME_MIME_TYPES.includes(file.type)) {
       toast.error('Invalid file type', {
-        description: 'Please upload a PDF or image file',
+        description: 'Please upload a PDF, DOCX, or TXT file',
       });
       return;
     }
 
     setIsProcessing(true);
     try {
-      // TODO: Replace with actual parsing logic
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Simulate parsing failure (50% chance for demo)
-      const parseFailed = Math.random() > 0.5;
-      
-      if (parseFailed) {
-        toast.error('Unable to parse file', {
-          description: 'Let\'s add your achievements manually instead',
-        });
-        setShowManualEntry(true);
-      } else {
-        // Success - call original action
-        onAction();
-        toast.success('Resume imported successfully!');
-      }
-    } catch (error) {
-      toast.error('Import failed', {
-        description: 'Let\'s add your achievements manually',
+      const fileData = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve((reader.result as string).split(',')[1] ?? '');
+        reader.onerror = () => reject(new Error('Failed to read file'));
+        reader.readAsDataURL(file);
+      });
+
+      await uploadMutation.mutateAsync({
+        filename: file.name,
+        fileData,
+        mimeType: file.type,
+      });
+
+      await processResumesMutation.mutateAsync();
+      await parseResumesMutation.mutateAsync();
+
+      onAction();
+      toast.success('Resume imported successfully!');
+    } catch (error: unknown) {
+      const message = error && typeof error === 'object' && 'message' in error
+        ? String((error as { message?: string }).message)
+        : 'Import failed';
+      toast.error('Unable to parse file', {
+        description: message.includes('No processed resumes') ? 'Upload succeeded but extraction failed. Try again or add achievements manually.' : "Let's add your achievements manually instead",
       });
       setShowManualEntry(true);
     } finally {
@@ -296,7 +310,7 @@ export function DashboardHero({ swarmScore, profileStatus, onAction, onManualEnt
       <input
         ref={fileInputRef}
         type="file"
-        accept=".pdf,image/*"
+        accept=".pdf,.docx,.doc,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"
         capture="environment"
         onChange={handleFileChange}
         className="hidden"

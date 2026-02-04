@@ -12,6 +12,7 @@ export default function Extraction() {
   const [currentStep, setCurrentStep] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const processResumesMutation = trpc.onboarding.processResumes.useMutation();
   const parseResumesMutation = trpc.onboarding.parseResumes.useMutation();
   const stepIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -35,6 +36,7 @@ export default function Extraction() {
           setCurrentStep((prev) => (prev < steps.length - 1 ? prev + 1 : prev));
         }, 1500);
 
+        await processResumesMutation.mutateAsync();
         await parseResumesMutation.mutateAsync();
 
         if (cancelled) return;
