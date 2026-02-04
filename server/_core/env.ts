@@ -5,9 +5,24 @@ const requiredEnvVars = [
   { key: "BUILT_IN_FORGE_API_KEY", description: "Manus Forge API key for LLM" },
 ] as const;
 
+const FORGE_KEY_PLACEHOLDERS = [
+  "placeholder",
+  "your-forge-api-key",
+  "your-forge-api-key-here",
+  "PLACEHOLDER",
+  "PLACEHOLDER_NEEDS_REAL_KEY",
+];
+
+function isPlaceholderForgeKey(value: string): boolean {
+  const v = value.trim().toLowerCase();
+  if (!v) return true;
+  return FORGE_KEY_PLACEHOLDERS.some((p) => v === p.toLowerCase() || v.includes("placeholder"));
+}
+
 /**
  * Verifies required env vars are set. Call at production startup to fail fast.
- * Throws with a clear message if any required var is missing or empty.
+ * In production, also rejects placeholder BUILT_IN_FORGE_API_KEY values.
+ * Throws with a clear message if any check fails.
  */
 export function verifyEnv(): void {
   const missing: string[] = [];
@@ -21,6 +36,16 @@ export function verifyEnv(): void {
     throw new Error(
       `Missing or empty required env: ${missing.join(", ")}. Set in .env (see .env.example).`
     );
+  }
+
+  if (process.env.NODE_ENV === "production") {
+    const forgeKey = process.env.BUILT_IN_FORGE_API_KEY ?? "";
+    if (isPlaceholderForgeKey(forgeKey)) {
+      // Warn instead of throw - allows server to start but AI features won't work
+      console.warn(
+        "⚠️  WARNING: BUILT_IN_FORGE_API_KEY is set to a placeholder. AI features (Resume Roast, Tailor, Scribe) will NOT work until you set a real Manus Forge API key in Railway (Variables → careerswarm-app). See RAILWAY_DEPLOYMENT_HANDOFF.md."
+      );
+    }
   }
 }
 

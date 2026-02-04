@@ -42,6 +42,15 @@ export const appRouter = router({
   profileSections: profileRouter,
 
   public: router({
+    // Monitoring configuration for frontend (Sentry, PostHog)
+    getMonitoringConfig: publicProcedure.query(() => {
+      return {
+        sentryDsn: process.env.SENTRY_DSN || null,
+        posthogKey: process.env.POSTHOG_KEY || null,
+        posthogHost: process.env.POSTHOG_HOST || 'https://us.posthog.com',
+      };
+    }),
+
     roast: publicProcedure
       .input(
         z.object({

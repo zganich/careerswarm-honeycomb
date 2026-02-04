@@ -29,11 +29,27 @@ const optional = [
   "SENTRY_DSN",
 ];
 
+const forgePlaceholders = [
+  "placeholder",
+  "your-forge-api-key",
+  "your-forge-api-key-here",
+  "PLACEHOLDER",
+  "PLACEHOLDER_NEEDS_REAL_KEY",
+];
+function isPlaceholderForgeKey(value) {
+  if (!value || typeof value !== "string") return true;
+  const v = value.trim().toLowerCase();
+  return forgePlaceholders.some((p) => v === p.toLowerCase()) || v.includes("placeholder");
+}
+
 let failed = false;
 for (const { key, description } of required) {
   const value = process.env[key];
   if (!value || (typeof value === "string" && value.trim() === "")) {
     console.error(`Missing or empty: ${key} (${description})`);
+    failed = true;
+  } else if (key === "BUILT_IN_FORGE_API_KEY" && isPlaceholderForgeKey(value)) {
+    console.error(`${key}: set to a placeholder. Use a real Manus Forge API key (see .env.example).`);
     failed = true;
   }
 }

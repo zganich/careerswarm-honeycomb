@@ -1,8 +1,29 @@
 # Railway Deployment Handoff
 
 **Created:** February 2, 2026  
-**Updated:** February 3, 2026  
+**Updated:** February 4, 2026  
 **Status:** DEPLOYED - App running, custom domain configured
+
+---
+
+## If you see errors (AI features / Resume Roast / Tailor / Scribe)
+
+The app will **refuse to start in production** if `BUILT_IN_FORGE_API_KEY` is still a placeholder. If you see:
+
+- **"BUILT_IN_FORGE_API_KEY is set to a placeholder"** at startup, or  
+- **LLM / 401 / API errors** when using Resume Roast or generating resumes,
+
+do this:
+
+1. Open [Railway](https://railway.com/project/8c2e7522-d90a-4778-bcf0-2b65319f8441) → **careerswarm-app** service → **Variables**.
+2. Set **BUILT_IN_FORGE_API_KEY** to your real Manus Forge API key (from https://forge.manus.ai or your Manus dashboard).
+3. Save; Railway will redeploy. AI features will work after deploy.
+
+Optional follow-ups (not required for AI to work):
+
+- **DNS:** Add the CNAME records below at your domain registrar so careerswarm.com and www point to the app.
+- **Cleanup:** Delete the old "MySQL" service from the dashboard (see Cleanup Needed below).
+- **Redis:** Only if you want the GTM pipeline worker (optional).
 
 ---
 
@@ -98,6 +119,9 @@ Fixed `server/_core/vite.ts` to handle Node.js 18 compatibility:
 ---
 
 ## Commands Reference
+
+Install CLI: `brew install railway` or `npm i -g @railway/cli`. Then `railway login` (opens browser) and from this repo run `railway link` to attach the project.
+
 ```bash
 railway whoami          # Check logged in account
 railway status          # Check current project/service

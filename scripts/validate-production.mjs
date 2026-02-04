@@ -19,9 +19,25 @@ const requiredEnvVars = [
   "BUILT_IN_FORGE_API_KEY",
 ];
 
+const forgePlaceholders = [
+  "placeholder",
+  "your-forge-api-key",
+  "your-forge-api-key-here",
+  "PLACEHOLDER",
+  "PLACEHOLDER_NEEDS_REAL_KEY",
+];
+function isPlaceholderForgeKey(value) {
+  if (!value || typeof value !== "string") return true;
+  const v = value.trim().toLowerCase();
+  return forgePlaceholders.some((p) => v === p.toLowerCase()) || v.includes("placeholder");
+}
+
 for (const envVar of requiredEnvVars) {
   if (!process.env[envVar]) {
     console.error(`   ❌ Missing: ${envVar}`);
+    failedChecks++;
+  } else if (envVar === "BUILT_IN_FORGE_API_KEY" && isPlaceholderForgeKey(process.env[envVar])) {
+    console.error(`   ❌ ${envVar}: set to a placeholder. Set a real Manus Forge API key for production.`);
     failedChecks++;
   } else {
     console.log(`   ✅ ${envVar}`);

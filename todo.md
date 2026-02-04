@@ -1,6 +1,6 @@
 # CareerSwarm TODO
 
-**Last Updated:** February 2, 2026  
+**Last Updated:** February 4, 2026  
 **Status:** Production-ready, all checks passing
 
 ---
@@ -15,6 +15,13 @@
 | Migrations (`pnpm db:migrate`) | All 16 migrations applied |
 
 ---
+
+## Completed (February 4, 2026)
+
+- [x] Production env validation: reject placeholder `BUILT_IN_FORGE_API_KEY` (server/_core/env.ts)
+- [x] Placeholder check in scripts/verify-env.mjs and scripts/validate-production.mjs
+- [x] RAILWAY_DEPLOYMENT_HANDOFF.md: "If you see errors" section, Railway CLI install/login note
+- [x] CONTEXT_FOR_NEW_CHAT.md for new chat context and handoff reference
 
 ## Completed (February 2, 2026)
 
@@ -46,7 +53,7 @@ See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md) for full deployment guide
 
 ### High Priority
 - [ ] Real-time progress updates (WebSocket for resume processing)
-- [ ] Retry logic for LLM calls (handle transient failures)
+- [x] Retry logic for LLM calls (handle transient failures)
 - [ ] Production metrics dashboard (see PRODUCTION_METRICS.md)
 
 ### Medium Priority
