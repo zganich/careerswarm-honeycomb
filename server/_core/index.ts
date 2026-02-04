@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// Server entry point - build 2026-02-04
 import "dotenv/config";
 import * as Sentry from "@sentry/node";
 import express from "express";
