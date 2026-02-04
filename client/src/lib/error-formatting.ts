@@ -20,10 +20,10 @@ export function formatTRPCError(error: unknown): FormattedError {
   if (error instanceof TRPCClientError) {
     const code = error.data?.code || "UNKNOWN_ERROR";
     
-    // Network errors
+    // Network errors (often proxy/connection timeout in production, e.g. Railway 60s keep-alive)
     if (error.message.includes("fetch failed") || error.message.includes("NetworkError")) {
       return {
-        message: "Please check your internet connection and try again",
+        message: "The request was interrupted—often when the AI takes too long. Please try again with a shorter paste or in a moment.",
         code: "NETWORK_ERROR",
         isUserFriendly: true,
       };
@@ -47,10 +47,10 @@ export function formatTRPCError(error: unknown): FormattedError {
       };
     }
     
-    // Not found errors
-    if (code === "NOT_FOUND") {
+    // Not found errors (code or HTTP 404 message)
+    if (code === "NOT_FOUND" || error.message.includes("404") || /HTTP ERROR 404/i.test(error.message)) {
       return {
-        message: "The requested resource was not found",
+        message: "Resume Roast couldn't be reached. Check your connection or try again.",
         code: "NOT_FOUND",
         isUserFriendly: true,
       };
@@ -78,6 +78,15 @@ export function formatTRPCError(error: unknown): FormattedError {
       return {
         message: "Something went wrong on our end. Please try again later.",
         code: "INTERNAL_SERVER_ERROR",
+        isUserFriendly: true,
+      };
+    }
+    
+    // Service unavailable (e.g. roast LLM timeout or OpenAI down)
+    if (code === "SERVICE_UNAVAILABLE" || code === "TIMEOUT") {
+      return {
+        message: error.message || "Resume Roast isn't available right now. Please try again in a moment.",
+        code: code as string,
         isUserFriendly: true,
       };
     }

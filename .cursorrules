@@ -18,6 +18,9 @@ Build a multi-agent system that automates job searching by scraping opportunitie
 - Automatically create necessary files, directories, and infrastructure to complete features
 - Apply fixes, improvements, and optimizations proactively
 
+### Production Debugging (saves time and tokens)
+- **Works locally, fails in production:** Check [docs/DEBUGGING.md](docs/DEBUGGING.md) first. Do **not** add instrumentation or large changes until you've checked platform limits (e.g. Railway 60s keep-alive) and env (`railway variable list`, `railway logs`). Fix: usually a timeout cap or env; then document.
+
 ### Do Not Hand Off Technical Work to the User
 - **Never ask the user to run commands, edit config, or perform setup.** The assistant does technical work: run commands, edit `.env` / config, run tests, and verify.
 - When env or secrets are needed: add or update variables in `.env` (with a clear placeholder if the real value must be supplied elsewhere), run `pnpm dev` / `pnpm test` / curl as needed, and update docs. For production, use Railway CLI where possible (`railway status`, `railway logs`, `railway variable list`, `railway redeploy`); only when the CLI cannot do something (e.g. set a secret), document the single exact step and then run any follow-up verify/redeploy yourself.

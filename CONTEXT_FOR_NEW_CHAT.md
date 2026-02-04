@@ -43,7 +43,12 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 
 - **App:** https://careerswarm.com
 - **Checklist (env, auth, Sentry):** [docs/CRITICAL_SETUP_CHECKLIST.md](./docs/CRITICAL_SETUP_CHECKLIST.md)
+- **Debugging (production-only, platform limits):** [docs/DEBUGGING.md](./docs/DEBUGGING.md)
 - **Handoff:** [RAILWAY_DEPLOYMENT_HANDOFF.md](./RAILWAY_DEPLOYMENT_HANDOFF.md)
+
+### Production-only failures
+
+**Check [docs/DEBUGGING.md](./docs/DEBUGGING.md) first.** Rule: platform limits → env → minimal fix → instrumentation only if still stuck.
 
 ---
 

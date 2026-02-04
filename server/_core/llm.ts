@@ -322,7 +322,8 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
   };
   const body = JSON.stringify(payload);
 
-  const LLM_REQUEST_TIMEOUT_MS = 90_000; // 90s for long-running roast/analysis
+  // Platform: Railway proxy keep-alive 60s. Cap under 60s or production shows "fetch failed". See docs/DEBUGGING.md.
+  const LLM_REQUEST_TIMEOUT_MS = 55_000;
   let lastError: Error | null = null;
   for (let attempt = 0; attempt <= LLM_MAX_RETRIES; attempt++) {
     try {

@@ -56,7 +56,6 @@ export async function runRoast(resumeText: string): Promise<RoastOutcome> {
   const trimmed = resumeText.trim();
   const characterCount = trimmed.length;
   const wordCount = trimmed.split(/\s+/).filter(Boolean).length;
-
   let response: Awaited<ReturnType<typeof invokeLLM>>;
   try {
     response = await invokeLLM({

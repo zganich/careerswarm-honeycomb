@@ -24,6 +24,8 @@ AI features will fail without a valid LLM API key. If you see **LLM / 401 / API 
    ```
 3. **Optional:** `railway variable list` to confirm vars; add DNS records (see below); delete old MySQL service (see Cleanup); add Redis only if you want the GTM worker.
 
+**"Fetch failed" / connection closed:** Railway’s proxy keep-alive is 60s. The app caps LLM request timeout at 55s so the server responds before the proxy closes the connection. If Roast still times out, the user sees a clear message; do not increase the LLM timeout above ~55s without checking Railway docs. Full runbook: [docs/DEBUGGING.md](./docs/DEBUGGING.md).
+
 ---
 
 ## Deployment Summary

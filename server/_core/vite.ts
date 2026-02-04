@@ -33,30 +33,43 @@ export async function setupVite(app: Express, server: Server) {
     appType: "custom",
   });
 
-  app.use(vite.middlewares);
-  app.use("*", async (req, res, next) => {
-    const url = req.originalUrl;
+  const clientTemplatePath = path.resolve(
+    getModuleDir(),
+    "../..",
+    "client",
+    "index.html"
+  );
 
+  async function serveIndexHtml(req: express.Request, res: express.Response, next: express.NextFunction) {
     try {
-      const clientTemplate = path.resolve(
-        getModuleDir(),
-        "../..",
-        "client",
-        "index.html"
-      );
-
-      // always reload the index.html file from disk incase it changes
-      let template = await fs.promises.readFile(clientTemplate, "utf-8");
+      let template = await fs.promises.readFile(clientTemplatePath, "utf-8");
       template = template.replace(
         `src="/src/main.tsx"`,
         `src="/src/main.tsx?v=${nanoid()}"`
       );
-      const page = await vite.transformIndexHtml(url, template);
+      const page = await vite.transformIndexHtml(req.originalUrl, template);
       res.status(200).set({ "Content-Type": "text/html" }).end(page);
     } catch (e) {
       vite.ssrFixStacktrace(e as Error);
       next(e);
     }
+  }
+
+  // SPA fallback BEFORE Vite: in middleware mode Vite does not serve index.html for paths like /roast,
+  // so we handle GET requests that look like app routes (no file extension) and serve index.html first.
+  app.use((req, res, next) => {
+    if (req.method !== "GET") return next();
+    if (req.path.startsWith("/api")) return next();
+    if (req.path.startsWith("/__manus__")) return next();
+    if (req.path.startsWith("/@")) return next();
+    // Paths with a dot are likely assets or scripts (e.g. /src/main.tsx) — let Vite handle them
+    if (req.path.includes(".")) return next();
+    serveIndexHtml(req, res, next);
+  });
+
+  app.use(vite.middlewares);
+  app.use("*", (req, res, next) => {
+    serveIndexHtml(req, res, next);
   });
 }
 

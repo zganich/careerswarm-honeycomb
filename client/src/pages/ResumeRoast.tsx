@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import { Flame, ArrowLeft, Loader2 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { getUserFriendlyMessage } from "@/lib/error-formatting";
 import { Button } from "@/components/ui/button";
 
 const MIN_LENGTH = 50;
@@ -90,7 +91,7 @@ export default function ResumeRoast() {
             className="mt-6 p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-800"
             data-testid="roast-error"
           >
-            {roast.error.message}
+            {getUserFriendlyMessage(roast.error)}
           </div>
         )}
 
