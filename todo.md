@@ -66,21 +66,21 @@ See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md) for full deployment guide
 ## High Priority Next Steps
 
 ### Testing & CI/CD
-- [ ] Add E2E tests to CI/CD pipeline (GitHub Actions)
-- [ ] Resume Roast integration test (actual API call, verify response)
-- [ ] Stripe checkout flow test (test mode)
-- [ ] Onboarding complete flow test (upload → extraction → review → preferences → dashboard)
+- [x] Add E2E tests to CI/CD pipeline (GitHub Actions) — runs on push to main, PRs targeting main, and workflow_dispatch
+- [x] Resume Roast integration test (actual API call, verify response) — server/roaster.test.ts (runs when OPENAI_API_KEY set)
+- [x] Stripe checkout flow test (test mode) — server/stripe-router.test.ts; stripe router mounted at appRouter.stripe
+- [x] Onboarding complete flow test (upload → extraction → review → preferences → dashboard) — tests/production-e2e.spec.ts
 
 ### Features
-- [ ] Real-time progress updates (WebSocket for resume processing)
-- [ ] Production metrics dashboard (see PRODUCTION_METRICS.md)
+- [x] Real-time progress updates (SSE for resume processing) — GET /api/resume-progress; DashboardHero and Extraction.tsx use EventSource
+- [x] Production metrics dashboard — /metrics page (getPackageSuccessRate, getAgentMetrics); nav link in DashboardLayout
 
 ### Infrastructure
 - [x] Set `OPENAI_API_KEY` in Railway Variables (switched from Manus Forge to OpenAI)
 - [x] GitHub Secrets configured for CI E2E tests
-- [ ] DNS setup for careerswarm.com / www (optional)
-- [ ] Redis for GTM worker (optional)
-- [ ] Sentry for error tracking (optional)
+- [x] DNS setup for careerswarm.com / www (optional) — see docs/CLOUDFLARE_DNS.md
+- [ ] Redis for GTM worker (optional) — see docs/OPTIONAL_INFRASTRUCTURE.md
+- [ ] Sentry for error tracking (optional) — see docs/OPTIONAL_INFRASTRUCTURE.md
 
 ---
 

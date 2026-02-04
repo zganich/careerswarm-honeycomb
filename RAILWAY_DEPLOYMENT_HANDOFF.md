@@ -13,17 +13,19 @@ The app will **refuse to start in production** if `BUILT_IN_FORGE_API_KEY` is st
 - **"BUILT_IN_FORGE_API_KEY is set to a placeholder"** at startup, or  
 - **LLM / 401 / API errors** when using Resume Roast or generating resumes,
 
-do this:
+do this (use CLI every time there is access):
 
-1. Open [Railway](https://railway.com/project/8c2e7522-d90a-4778-bcf0-2b65319f8441) → **careerswarm-app** service → **Variables**.
-2. Set **BUILT_IN_FORGE_API_KEY** to your real Manus Forge API key (from https://forge.manus.ai or your Manus dashboard).
-3. Save; Railway will redeploy. AI features will work after deploy.
-
-Optional follow-ups (not required for AI to work):
-
-- **DNS:** Add the CNAME records below at your domain registrar so careerswarm.com and www point to the app.
-- **Cleanup:** Delete the old "MySQL" service from the dashboard (see Cleanup Needed below).
-- **Redis:** Only if you want the GTM pipeline worker (optional).
+1. **Set the variable** (Railway CLI cannot set variables; use `railway open` → Variables or [Railway API](https://docs.railway.app/guides/manage-variables)):
+   ```bash
+   railway open   # → careerswarm-app → Variables
+   ```
+   Set **BUILT_IN_FORGE_API_KEY** to your real key (from https://forge.manus.ai or Manus dashboard). Save.
+2. **Redeploy from CLI:**
+   ```bash
+   railway redeploy
+   railway logs   # Confirm app starts without placeholder error
+   ```
+3. **Optional:** `railway variable list` to confirm vars; add DNS records (see below); delete old MySQL service (see Cleanup); add Redis only if you want the GTM worker.
 
 ---
 
@@ -138,21 +140,24 @@ railway open            # Open dashboard in browser
 
 ## Cleanup Needed
 
-**Delete the old "MySQL" service** from the Railway dashboard:
-1. Go to https://railway.com/project/8c2e7522-d90a-4778-bcf0-2b65319f8441
-2. Click on the "MySQL" service (NOT MySQL-E6eq which is the database)
-3. Go to Settings → Delete Service
+**Delete the old "MySQL" service** (misconfigured; not the app DB). CLI doesn’t delete services; use the dashboard:
 
-This service was misconfigured and is running an actual MySQL database instead of our app.
+```bash
+railway open   # → Project → click "MySQL" (NOT MySQL-E6eq) → Settings → Delete Service
+```
+
+MySQL-E6eq is the real database; keep it.
 
 ---
 
 ## Optional: Add Redis for GTM Pipeline
 
-If you want the GTM pipeline worker to function:
+CLI (from repo):
 
-1. Add Redis service: `railway add -d redis`
-2. Link REDIS_URL to the app service
-3. Redeploy
+```bash
+railway add -d redis      # Add Redis; link REDIS_URL to careerswarm-app in UI if needed
+railway variable list     # Confirm REDIS_URL
+railway redeploy
+```
 
-The app works without Redis - it just logs warnings about the GTM worker not starting.
+The app works without Redis; it only logs warnings when the GTM worker can’t start.

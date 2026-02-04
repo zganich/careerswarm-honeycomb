@@ -2,7 +2,9 @@
 
 **Purpose:** Copy or reference this file when starting a new chat to restore project context quickly. Update it as the project and handoff state change.
 
-**Standing Instruction:** At 50-60% context usage, summarize the session's work and update this file before starting a new chat.
+**Standing Instructions:**  
+- **Use CLI every time there is access** (Railway, Cloudflare API, curl, etc.); use the dashboard only when the CLI/API does not support the action.  
+- At 50-60% context usage, summarize the session's work and update this file before starting a new chat.
 
 ---
 
@@ -69,14 +71,16 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 ## Optional To Do
 
 - **Sentry:** Create project at sentry.io, add `SENTRY_DSN` to Railway for error tracking
-- **DNS:** Custom domain for careerswarm.com / www
+- **DNS:** careerswarm.com / www configured (see docs/CLOUDFLARE_DNS.md)
 - **Redis:** Add for GTM worker (optional feature)
 
-## High Priority Next Steps
+## High Priority Next Steps (completed 2026-02-04)
 
-1. **Integration Tests:** Resume Roast API call, Stripe checkout (test mode)
-2. **Onboarding Flow:** Complete E2E test (upload → extraction → review → dashboard)
-3. **WebSocket:** Real-time progress updates for resume processing
+1. ~~Integration Tests: Resume Roast API call, Stripe checkout (test mode)~~ — Done: roaster.test.ts, stripe-router.test.ts, stripe router mounted at `appRouter.stripe`
+2. ~~Onboarding Flow: Complete E2E test~~ — Done: production-e2e.spec.ts "Complete onboarding flow"
+3. ~~Real-time progress for resume processing~~ — Done: SSE GET /api/resume-progress; DashboardHero and Extraction use EventSource
+4. **CI:** E2E runs on push to main, PRs targeting main, and workflow_dispatch
+5. **Production Metrics:** /metrics page + sidebar link; optional infra in docs/OPTIONAL_INFRASTRUCTURE.md
 
 ## Key Paths
 
@@ -108,12 +112,15 @@ node scripts/setup-checklist.mjs   # Check production config status
 npx playwright test tests/production-smoke.spec.ts --config=playwright.production.config.ts
 npx playwright test tests/production-e2e.spec.ts --config=playwright.production.config.ts
 
-# Railway CLI (if linked)
-railway variables    # List env vars
-railway logs         # View deployment logs
-railway redeploy     # Redeploy app
+# Railway CLI (if linked) — prefer CLI over dashboard where possible
+railway status         # Current project/service
+railway variable list  # List env vars (set vars via dashboard: railway open → Variables)
+railway logs           # View deployment logs
+railway redeploy       # Redeploy without new code (e.g. after changing vars)
+railway domain         # List/add domains
+railway open           # Open project in browser when UI is needed
 ```
 
 ---
 
-*Last updated: 2026-02-04 (DashboardHero real pipeline, Extraction processResumes, context sync).*
+*Last updated: 2026-02-04 (High-priority: E2E in CI, Roast/Stripe tests, onboarding E2E, SSE progress, metrics nav, optional infra docs).*

@@ -10,9 +10,13 @@ Railway automatically creates daily backups for MySQL databases on paid plans.
 
 ### Accessing Railway Backups
 
-1. Go to Railway Dashboard → Your Project → MySQL service
-2. Click "Backups" tab
-3. Download or restore from available snapshots
+**Use CLI every time there is access.** Railway CLI does not support backup download/restore; use the dashboard only when needed:
+
+```bash
+railway open   # → MySQL service → Backups tab → download or restore (dashboard fallback)
+```
+
+Prefer manual backup via CLI (see Option 1 below) for scriptable backups.
 
 ## Manual Backup
 
@@ -34,7 +38,14 @@ railway run mysqldump -u root -p$MYSQL_ROOT_PASSWORD $MYSQL_DATABASE > backup_$(
 
 ### Option 2: Direct mysqldump
 
-Get connection details from Railway → MySQL → Variables:
+Get connection details via CLI:
+
+```bash
+railway link    # Ensure linked to project; switch to MySQL service if needed
+railway variable list   # List MySQL vars (use railway open → MySQL → Variables only if CLI doesn't show them)
+```
+
+Then set the connection vars (from Railway MySQL service Variables):
 
 ```bash
 # Set connection vars (from Railway)

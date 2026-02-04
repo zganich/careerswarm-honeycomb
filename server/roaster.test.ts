@@ -10,6 +10,38 @@ describe("Resume Roaster", () => {
     ).rejects.toThrow("Resume must be at least 50 characters");
   });
 
+  it("should return valid roast shape (integration: requires OPENAI_API_KEY)", async () => {
+    if (!process.env.OPENAI_API_KEY) {
+      console.log("Skipping roast integration test: OPENAI_API_KEY not set");
+      return;
+    }
+    const caller = appRouter.createCaller({ user: null, req: {} as any, res: {} as any });
+    const resumeText = `
+    Jane Doe | jane.doe@email.com
+    Senior Product Manager at TechCorp (2020-Present)
+    - Launched payment feature that generated $2.3M ARR in first 6 months
+    - Reduced customer churn by 47% through data-driven retention strategy
+    - Led team of 8 engineers to ship 12 features on time, 0 critical bugs
+    EDUCATION: MBA, Stanford | BS Computer Science, MIT
+    `.trim();
+    const result = await caller.public.roast({ resumeText });
+    expect(result).toBeDefined();
+    expect(typeof result.score).toBe("number");
+    expect(result.score).toBeGreaterThanOrEqual(0);
+    expect(result.score).toBeLessThanOrEqual(100);
+    expect(typeof result.verdict).toBe("string");
+    expect(Array.isArray(result.mistakes)).toBe(true);
+    expect(result.mistakes.length).toBe(3);
+    result.mistakes.forEach((m: any) => {
+      expect(m).toHaveProperty("title");
+      expect(m).toHaveProperty("explanation");
+      expect(m).toHaveProperty("fix");
+    });
+    expect(typeof result.brutalTruth).toBe("string");
+    expect(typeof result.characterCount).toBe("number");
+    expect(typeof result.wordCount).toBe("number");
+  });
+
   it.skip("should roast a buzzword-heavy resume with low score (LLM test)", async () => {
     const caller = appRouter.createCaller({ user: null, req: {} as any, res: {} as any });
 

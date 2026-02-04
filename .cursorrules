@@ -9,6 +9,9 @@ Build a multi-agent system that automates job searching by scraping opportunitie
 
 ## DEVELOPMENT WORKFLOW
 
+### CLI-First
+- **Use CLI every time there is access** (Railway CLI, Cloudflare API, curl, Sentry CLI, etc.). Use the dashboard only when the CLI/API does not support the action.
+
 ### Autonomy and Scope
 - **Allow all changes that work within the scope of the project** - Proceed autonomously with implementation, refactoring, file organization, and improvements as long as they align with the spec and project goals
 - No need to ask for permission before making changes within project scope

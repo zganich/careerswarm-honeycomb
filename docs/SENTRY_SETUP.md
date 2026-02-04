@@ -1,30 +1,32 @@
 # Sentry Error Monitoring Setup
 
-CareerSwarm uses Sentry for error tracking and alerting on both frontend and backend.
+CareerSwarm uses Sentry for error tracking and alerting on both frontend and backend. **Use CLI every time there is access.** Railway: use CLI for redeploy, logs, variable list. Sentry project/DSN: one-time setup in Sentry UI (no CLI for project creation).
 
 ## Quick Setup
 
-### 1. Create Sentry Project
+### 1. Create Sentry Project (Sentry UI)
 
-1. Go to [sentry.io](https://sentry.io) and create an account
-2. Create a new project → Select "Express" (Node.js)
-3. Copy the DSN from the project settings
+1. Go to [sentry.io](https://sentry.io) and sign in (or create an account).
+2. Create a new project → choose **Express** (Node.js).
+3. In the project: **Settings → Client Keys (DSN)** and copy the DSN.
 
 ### 2. Configure Railway
 
-Add these environment variables in Railway (careerswarm-app → Variables):
+Railway CLI cannot set variables. Use dashboard (`railway open` → Variables) or [Railway API](https://docs.railway.app/guides/manage-variables); then redeploy via CLI:
 
-```
-SENTRY_DSN=https://xxx@xxx.ingest.sentry.io/xxx
-```
+```bash
+railway open    # Opens project in browser → select careerswarm-app → Variables
+# In the UI: add SENTRY_DSN = https://xxx@xxx.ingest.sentry.io/xxx
 
-Redeploy after adding.
+railway redeploy       # Redeploy so the app picks up the new variable
+railway logs           # Confirm "Sentry initialized" appears on startup
+railway variable list  # Optional: verify SENTRY_DSN is listed
+```
 
 ### 3. Verify Integration
 
-After deployment, trigger a test error:
-1. Check Sentry dashboard for incoming events
-2. The server logs `Sentry initialized` on startup when DSN is set
+- **CLI:** `railway logs` and look for `Sentry initialized` when the app starts.
+- **Sentry UI:** Trigger a test error and confirm the event appears in the Sentry project.
 
 ## Alert Configuration
 
@@ -89,12 +91,13 @@ Sentry.init({
 
 ## Testing Alerts
 
-Trigger a test error in production:
+Trigger a test error in production (CLI):
+
 ```bash
 curl -X POST https://careerswarm.com/api/trpc/test.triggerError
 ```
 
-Or add a temporary test route during development.
+Then check the Sentry project for the new event. For local/dev, add a temporary test route if needed.
 
 ## Cost Management
 

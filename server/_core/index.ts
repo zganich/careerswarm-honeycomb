@@ -114,7 +114,13 @@ async function startServer() {
   // Apply rate limiters
   app.use("/api/trpc", apiLimiter);
   app.use("/api/oauth", authLimiter);
-  
+
+  // SSE endpoint for resume processing progress (uses cookies for auth)
+  app.get("/api/resume-progress", async (req, res) => {
+    const { handleResumeProgress } = await import("./resumeProgressRoute");
+    return handleResumeProgress(req, res);
+  });
+
   // Stripe webhook MUST come before express.json() for signature verification
   app.post(
     "/api/stripe/webhook",

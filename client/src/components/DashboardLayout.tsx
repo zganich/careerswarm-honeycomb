@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/sidebar";
 import { getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { LayoutDashboard, LogOut, PanelLeft, Users, Award, Target, FileText, Briefcase, Search, GraduationCap, TrendingUp, Briefcase as BriefcaseIcon } from "lucide-react";
+import { LayoutDashboard, LogOut, PanelLeft, Users, Award, Target, FileText, Briefcase, Search, GraduationCap, TrendingUp, Briefcase as BriefcaseIcon, BarChart3 } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
@@ -36,6 +36,7 @@ const menuItems = [
   { icon: GraduationCap, label: "Interview Prep", path: "/interview-prep" },
   { icon: TrendingUp, label: "Skills Gap", path: "/skills-gap" },
   { icon: BriefcaseIcon, label: "Past Jobs", path: "/past-jobs" },
+  { icon: BarChart3, label: "Production Metrics", path: "/metrics" },
 ];
 
 const SIDEBAR_WIDTH_KEY = "sidebar-width";

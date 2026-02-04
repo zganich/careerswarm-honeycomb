@@ -10,11 +10,13 @@ import { LaborIllusion } from "@/components/ui/psych/LaborIllusion";
 export default function Extraction() {
   const [, setLocation] = useLocation();
   const [currentStep, setCurrentStep] = useState(0);
+  const [progressMessage, setProgressMessage] = useState<string | null>(null);
   const [isComplete, setIsComplete] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const processResumesMutation = trpc.onboarding.processResumes.useMutation();
   const parseResumesMutation = trpc.onboarding.parseResumes.useMutation();
   const stepIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const progressEventSourceRef = useRef<EventSource | null>(null);
 
   const steps = [
     "Parsing resume text...",
@@ -30,8 +32,20 @@ export default function Extraction() {
 
     const runExtraction = async () => {
       setError(null);
+      setProgressMessage(null);
       try {
-        // Advance steps every 1.5s while API runs
+        const progressUrl = `${window.location.origin}/api/resume-progress`;
+        const es = new EventSource(progressUrl);
+        progressEventSourceRef.current = es;
+        es.onmessage = (ev) => {
+          try {
+            const data = JSON.parse(ev.data) as { phase?: string; message?: string; current?: number; total?: number };
+            if (data.message) setProgressMessage(data.message);
+            if (data.phase === "done" || data.phase === "error") es.close();
+          } catch (_) {}
+        };
+        es.onerror = () => es.close();
+
         stepIntervalRef.current = setInterval(() => {
           setCurrentStep((prev) => (prev < steps.length - 1 ? prev + 1 : prev));
         }, 1500);
@@ -40,15 +54,20 @@ export default function Extraction() {
         await parseResumesMutation.mutateAsync();
 
         if (cancelled) return;
+        progressEventSourceRef.current?.close();
+        progressEventSourceRef.current = null;
         if (stepIntervalRef.current) {
           clearInterval(stepIntervalRef.current);
           stepIntervalRef.current = null;
         }
         setCurrentStep(steps.length - 1);
+        setProgressMessage("Profile saved.");
         setIsComplete(true);
         toast.success("Profile extracted successfully!");
       } catch (err: any) {
         if (cancelled) return;
+        progressEventSourceRef.current?.close();
+        progressEventSourceRef.current = null;
         if (stepIntervalRef.current) {
           clearInterval(stepIntervalRef.current);
           stepIntervalRef.current = null;
@@ -62,6 +81,7 @@ export default function Extraction() {
     runExtraction();
     return () => {
       cancelled = true;
+      progressEventSourceRef.current?.close();
       if (stepIntervalRef.current) clearInterval(stepIntervalRef.current);
     };
   }, []);
@@ -108,9 +128,9 @@ export default function Extraction() {
             {isComplete ? "Extraction Complete!" : "AI is Analyzing Your Resumes"}
           </h1>
           <p className="text-lg text-muted-foreground">
-            {isComplete 
+            {isComplete
               ? "Your Master Profile is ready for review"
-              : "This usually takes about 30 seconds..."
+              : progressMessage || "This usually takes about 30 seconds..."
             }
           </p>
         </div>

@@ -23,7 +23,9 @@ export function DashboardHero({ swarmScore, profileStatus, onAction, onManualEnt
   const [displayScore, setDisplayScore] = useState(0);
   const [showManualEntry, setShowManualEntry] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [progressMessage, setProgressMessage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const progressEventSourceRef = useRef<EventSource | null>(null);
   const uploadMutation = trpc.onboarding.uploadResume.useMutation();
   const processResumesMutation = trpc.onboarding.processResumes.useMutation();
   const parseResumesMutation = trpc.onboarding.parseResumes.useMutation();
@@ -111,6 +113,7 @@ export function DashboardHero({ swarmScore, profileStatus, onAction, onManualEnt
     }
 
     setIsProcessing(true);
+    setProgressMessage(null);
     try {
       const fileData = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
@@ -124,6 +127,21 @@ export function DashboardHero({ swarmScore, profileStatus, onAction, onManualEnt
         fileData,
         mimeType: file.type,
       });
+
+      const progressUrl = `${window.location.origin}/api/resume-progress`;
+      const es = new EventSource(progressUrl);
+      progressEventSourceRef.current = es;
+      es.onmessage = (ev) => {
+        try {
+          const data = JSON.parse(ev.data) as { phase?: string; message?: string; current?: number; total?: number };
+          if (data.message) setProgressMessage(data.message);
+          else if (data.phase === 'processing' && data.total != null && data.current != null)
+            setProgressMessage(`Processing ${data.current}/${data.total}...`);
+          else if (data.phase === 'parsing') setProgressMessage('Building your profile...');
+          else if (data.phase === 'done' || data.phase === 'error') es.close();
+        } catch (_) {}
+      };
+      es.onerror = () => es.close();
 
       await processResumesMutation.mutateAsync();
       await parseResumesMutation.mutateAsync();
@@ -139,11 +157,11 @@ export function DashboardHero({ swarmScore, profileStatus, onAction, onManualEnt
       });
       setShowManualEntry(true);
     } finally {
+      progressEventSourceRef.current?.close();
+      progressEventSourceRef.current = null;
+      setProgressMessage(null);
       setIsProcessing(false);
-      // Reset file input
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
@@ -283,7 +301,7 @@ export function DashboardHero({ swarmScore, profileStatus, onAction, onManualEnt
           {/* Button content */}
           <ButtonIcon className="h-8 w-8 relative z-10" />
           <span className="relative z-10">
-            {isProcessing ? 'Processing...' : buttonConfig.text}
+            {isProcessing ? (progressMessage || 'Processing...') : buttonConfig.text}
           </span>
 
           {/* Hover effect */}

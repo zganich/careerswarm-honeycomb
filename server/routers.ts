@@ -9,6 +9,8 @@ import { invokeLLM } from "./_core/llm";
 import { storagePut, storageGet } from "./storage";
 import { extractTextFromResume, parseResumeWithLLM, consolidateResumes, generateSuperpowers } from "./resumeParser";
 import { profileRouter } from "./routers/profile";
+import { stripeRouter } from "./stripe-router";
+import { setResumeProgress } from "./resumeProgress";
 
 // ================================================================
 // CAREERSWARM - MASTER PROFILE & 7-AGENT SYSTEM
@@ -265,9 +267,14 @@ export const appRouter = router({
         return { message: "No resumes to process" };
       }
 
+      const total = pendingResumes.length;
+      setResumeProgress(user.id, { phase: "processing", current: 0, total, message: "Starting..." });
+
       // Process each resume
-      for (const resume of pendingResumes) {
+      for (let i = 0; i < pendingResumes.length; i++) {
+        const resume = pendingResumes[i];
         try {
+          setResumeProgress(user.id, { phase: "processing", current: i + 1, total, message: `Processing ${resume.filename}...` });
           await db.updateResumeProcessingStatus(resume.id, 'processing');
 
           // Download file from S3
@@ -285,6 +292,7 @@ export const appRouter = router({
         }
       }
 
+      setResumeProgress(user.id, { phase: "parsing", message: "Extracting profile..." });
       return { processed: pendingResumes.length };
     }),
 
@@ -308,6 +316,8 @@ export const appRouter = router({
       if (completedResumes.length === 0) {
         throw new TRPCError({ code: "BAD_REQUEST", message: "No processed resumes found. Upload and process resumes first, then try again." });
       }
+
+      setResumeProgress(user.id, { phase: "parsing", message: "Building your profile..." });
 
       try {
       // Parse each resume with LLM
@@ -488,6 +498,8 @@ export const appRouter = router({
       // Update onboarding step
       await db.updateUserOnboardingStep(user.id, 3, false);
 
+      setResumeProgress(user.id, { phase: "done", message: "Profile saved." });
+
       return { 
         success: true, 
         workExperiences: consolidated.workExperiences.length,
@@ -496,6 +508,7 @@ export const appRouter = router({
         superpowers: superpowers,
       };
       } catch (err) {
+        setResumeProgress(user.id, { phase: "error", message: "Something went wrong." });
         console.error("[parseResumes] Failed to save profile:", err);
         const isDbError = err && typeof err === "object" && ("code" in err || "errno" in err);
         throw new TRPCError({
@@ -2041,6 +2054,7 @@ Each superpower should:
 
   gtm: gtmRouter,
   jdBuilder: jdBuilderRouter,
+  stripe: stripeRouter,
 });
 
 export type AppRouter = typeof appRouter;
