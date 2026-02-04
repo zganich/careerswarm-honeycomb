@@ -39,7 +39,12 @@ export default function Welcome() {
   const handleLogin = () => {
     // Redirect to OAuth login with returnTo parameter to come back to onboarding
     const loginUrl = getLoginUrl('/onboarding/welcome');
-    window.location.href = loginUrl;
+    if (loginUrl && loginUrl !== '#') {
+      window.location.href = loginUrl;
+    } else {
+      // OAuth URL not configured (e.g. missing VITE_OAUTH_PORTAL_URL); use app login page (Dev Login)
+      setLocation('/login?returnTo=/onboarding/welcome');
+    }
   };
 
   // Show loading state while checking auth

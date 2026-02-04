@@ -64,7 +64,9 @@ export const appRouter = router({
         const characterCount = resumeText.length;
         const wordCount = resumeText.split(/\s+/).filter(Boolean).length;
 
-        const response = await invokeLLM({
+        let response;
+        try {
+          response = await invokeLLM({
           messages: [
             { role: "system", content: ROAST_SYSTEM_PROMPT },
             { role: "user", content: `Roast this resume:\n\n${resumeText}` },
@@ -102,6 +104,13 @@ export const appRouter = router({
             },
           },
         });
+        } catch (err) {
+          const message = err instanceof Error ? err.message : "Resume roast failed. Please try again.";
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: message.includes("timed out") ? message : "Resume roast failed. Please try again in a moment.",
+          });
+        }
 
         const raw = response.choices[0].message.content;
         const rawStr = typeof raw === "string" ? raw : "";

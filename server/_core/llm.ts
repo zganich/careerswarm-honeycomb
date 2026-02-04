@@ -322,10 +322,19 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
   };
   const body = JSON.stringify(payload);
 
+  const LLM_REQUEST_TIMEOUT_MS = 90_000; // 90s for long-running roast/analysis
   let lastError: Error | null = null;
   for (let attempt = 0; attempt <= LLM_MAX_RETRIES; attempt++) {
     try {
-      const response = await fetch(OPENAI_CHAT_URL, { method: "POST", headers, body });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), LLM_REQUEST_TIMEOUT_MS);
+      const response = await fetch(OPENAI_CHAT_URL, {
+        method: "POST",
+        headers,
+        body,
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
 
       if (response.ok) {
         return (await response.json()) as InvokeResult;
@@ -344,8 +353,15 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
       const delayMs = LLM_RETRY_DELAYS_MS[attempt] ?? 4000;
       await new Promise((r) => setTimeout(r, delayMs));
     } catch (e) {
-      if (attempt === LLM_MAX_RETRIES) throw e;
-      lastError = e instanceof Error ? e : new Error(String(e));
+      const err = e instanceof Error ? e : new Error(String(e));
+      if (err.name === "AbortError") {
+        const timeoutErr = new Error("LLM request timed out. The AI is taking longer than expected—please try again.");
+        if (attempt === LLM_MAX_RETRIES) throw timeoutErr;
+        lastError = timeoutErr;
+      } else {
+        if (attempt === LLM_MAX_RETRIES) throw err;
+        lastError = err;
+      }
       const delayMs = LLM_RETRY_DELAYS_MS[attempt] ?? 4000;
       await new Promise((r) => setTimeout(r, delayMs));
     }

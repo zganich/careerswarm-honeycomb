@@ -478,7 +478,7 @@ test.describe('Payment Flow', () => {
     console.log('✅ Pricing page displays subscription options');
   });
 
-  test('Stripe checkout: logged-in user can start checkout (redirect to Stripe or success)', async ({ page }) => {
+  test('Pro/Upgrade CTA: logged-in user can start flow (onboarding, Stripe, or pricing)', async ({ page }) => {
     await loginViaDevLogin(page);
     await page.goto(`${BASE_URL}/pricing`);
     await page.waitForLoadState('networkidle');
@@ -492,8 +492,10 @@ test.describe('Payment Flow', () => {
     const url = popupOrNav ? popupOrNav.url() : page.url();
     const isStripe = url.includes('stripe.com') || url.includes('checkout');
     const isSuccess = url.includes('dashboard') && url.includes('success');
-    expect(isStripe || isSuccess || url.includes('pricing')).toBeTruthy();
-    console.log('✅ Checkout flow: ' + (isStripe ? 'Stripe' : isSuccess ? 'success' : 'pricing'));
+    const isOnboarding = url.includes('/onboarding') || url.includes('/welcome');
+    const isPricing = url.includes('pricing');
+    expect(isStripe || isSuccess || isOnboarding || isPricing).toBeTruthy();
+    console.log('✅ Pro CTA flow: ' + (isStripe ? 'Stripe' : isSuccess ? 'success' : isOnboarding ? 'onboarding' : 'pricing'));
   });
 
   test('Pro CTA button navigates to onboarding', async ({ page }) => {

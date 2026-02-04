@@ -93,7 +93,11 @@ export default function ResumeRoast() {
 
         {roastMutation.isError && (
           <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-800">
-            {roastMutation.error.message}
+            {roastMutation.error.message.includes("fetch failed") ||
+            roastMutation.error.message.includes("NetworkError") ||
+            roastMutation.error.message.includes("timed out")
+              ? "Resume roast request failed or timed out. Roasts can take up to a minute—please try again."
+              : roastMutation.error.message}
           </div>
         )}
 
