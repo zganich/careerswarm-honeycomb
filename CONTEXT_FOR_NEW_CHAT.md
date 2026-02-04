@@ -130,4 +130,5 @@ railway open             # Open dashboard (when CLI can't do it)
 
 ---
 
-*Last updated: 2026-02-04 (Added Dockerfile for Node 20, LLM uses OPENAI_API_KEY only, deployed).*
+*Last updated: 2026-02-04 (Added Dockerfile for Node 20, LLM uses OPENAI_API_KEY only, deployed).*  
+*Last verified: 2026-02-04 — `pnpm check` ✓, `pnpm test` 122 passed (51 skipped), production smoke 22/22 ✓.*
