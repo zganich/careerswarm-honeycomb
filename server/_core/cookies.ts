@@ -21,31 +21,23 @@ function isSecureRequest(req: Request) {
   return protoList.some(proto => proto.trim().toLowerCase() === "https");
 }
 
+/**
+ * Session cookie options. Use sameSiteForEmailLogin for email sign-in (same-site form POST)
+ * so the cookie is set and sent on redirect; use default for OAuth callback (cross-site redirect).
+ */
 export function getSessionCookieOptions(
-  req: Request
+  req: Request,
+  sameSiteForEmailLogin?: boolean
 ): Pick<CookieOptions, "domain" | "httpOnly" | "path" | "sameSite" | "secure"> {
-  // const hostname = req.hostname;
-  // const shouldSetDomain =
-  //   hostname &&
-  //   !LOCAL_HOSTS.has(hostname) &&
-  //   !isIpAddress(hostname) &&
-  //   hostname !== "127.0.0.1" &&
-  //   hostname !== "::1";
-
-  // const domain =
-  //   shouldSetDomain && !hostname.startsWith(".")
-  //     ? `.${hostname}`
-  //     : shouldSetDomain
-  //       ? hostname
-  //       : undefined;
-
-  // On localhost/HTTP, use lax + secure:false so the cookie persists (Dev Login).
-  // On HTTPS (production/preview), use none + secure:true for cross-site OAuth.
   const secure = isSecureRequest(req);
+  // Email login: same-site form POST → use "lax" so cookie is accepted and sent on next navigation.
+  // OAuth callback: cross-site redirect → use "none" so cookie is accepted when returning from IdP.
+  const sameSite =
+    sameSiteForEmailLogin || !secure ? "lax" : "none";
   return {
     httpOnly: true,
     path: "/",
-    sameSite: secure ? "none" : "lax",
+    sameSite,
     secure,
   };
 }

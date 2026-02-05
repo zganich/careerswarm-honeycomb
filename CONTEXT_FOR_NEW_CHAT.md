@@ -130,7 +130,10 @@ railway status | logs | variable list | redeploy | up | open
 
 ## Last Session Summary (2026-02-05)
 
-### Changes Made:
+### Most recent (ship everything)
+Verify → commit all → push → deploy: check/build/test + smoke passed. Committed DashboardLayout, Profile, SHIP_CHECKLIST, todo, .cursorrules, .cursor/ (.mdc), archive; .gitignore playwright-report-production/. Pushed 3fc4fe6, railway up; post-deploy smoke 22/22.
+
+### Changes Made (earlier):
 1. **Auth: email-only** – Removed Manus/OAuth requirement. Sign-in at `/login` (email → session). `OAUTH_SERVER_URL` no longer required for app boot. Server: `server/_core/env.ts`, `oauth.ts`, `sdk.ts`. Client: DevLogin → “Sign in”, all Sign In links → `/login`; Welcome/Home/DashboardLayout updated. Docs and `.env.example` updated.
 2. **Rules/docs** – “Do not hand off technical work” in `.cursorrules` and CONTEXT; README/todo/CONTEXT aligned; cost-avoidance and OPENAI_API_KEY steps clarified.
 3. **Roaster test** – 20s timeout for roast integration test in `server/roaster.test.ts`.

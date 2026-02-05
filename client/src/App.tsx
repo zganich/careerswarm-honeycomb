@@ -64,13 +64,13 @@ function Router() {
       {/* Achievements */}
       <Route path="/achievements" component={Achievements} />
 
-      {/* Onboarding Flow */}
-      <Route path="/onboarding" component={OnboardingWelcome} />
+      {/* Onboarding Flow — longer paths first so wouter matches correctly */}
       <Route path="/onboarding/welcome" component={OnboardingWelcome} />
       <Route path="/onboarding/upload" component={OnboardingUpload} />
       <Route path="/onboarding/extraction" component={OnboardingExtraction} />
       <Route path="/onboarding/review" component={OnboardingReview} />
       <Route path="/onboarding/preferences" component={OnboardingPreferences} />
+      <Route path="/onboarding" component={OnboardingWelcome} />
 
       {/* Dashboard */}
       <Route path="/dashboard" component={Dashboard} />

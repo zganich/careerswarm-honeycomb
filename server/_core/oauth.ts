@@ -43,7 +43,7 @@ export function registerOAuthRoutes(app: Express) {
       name: email.split("@")[0],
       expiresInMs: ONE_YEAR_MS,
     });
-    const cookieOptions = getSessionCookieOptions(req);
+    const cookieOptions = getSessionCookieOptions(req, true);
     res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
     const returnTo = typeof req.body?.returnTo === "string" ? req.body.returnTo : "/dashboard";
     res.status(200).json({ success: true, redirect: returnTo });

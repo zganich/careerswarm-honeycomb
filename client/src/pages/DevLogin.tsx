@@ -27,6 +27,7 @@ export default function DevLogin() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, returnTo }),
+        credentials: "include",
       });
       const data = (await res.json()) as { success?: boolean; redirect?: string; error?: string };
       if (!res.ok) {

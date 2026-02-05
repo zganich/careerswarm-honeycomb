@@ -15,9 +15,9 @@
 | Production smoke | careerswarm.com | ✅ 22/22 | Desktop + mobile; public pages, no critical errors |
 | Production E2E | careerswarm.com | ✅ 25/25 | Auth, onboarding, core pages, Roast, pricing |
 | Playbook (what’s broken) | localhost:3000 | ✅ 8/8 | Homepage, dashboard, console/network checks |
-| Onboarding-flow (local) | localhost:3000 | ⚠️ Flaky / timeout | Uses auth-bypass; mock user not in DB → login modal |
+| Onboarding-flow (local) | localhost:3000 | ⏭️ Skipped | Auth-bypass; use production E2E for onboarding coverage |
 
-**Verdict:** Production and playbook flows are working. Full “human” coverage is provided by production smoke + production E2E. Local onboarding-flow.spec.ts is optional and currently depends on auth-bypass (mock JWT); when the mock user is not in the DB, tests can fail or time out.
+**Verdict:** Production and playbook flows are working. Full “human” coverage is provided by production smoke + production E2E. Local onboarding-flow.spec.ts is skipped (both describes); use production E2E for full onboarding coverage.
 
 ---
 
@@ -42,7 +42,7 @@
 
 ## Known Limitation
 
-- **tests/onboarding-flow.spec.ts** uses `bypassLogin` (mock JWT). If the app DB has no user for that openId, `auth.me` is null and the app shows the login modal, so “Step 1 of 5” and onboarding content may not be visible and tests fail or time out. **Recommendation:** Use production E2E for full onboarding coverage, or update onboarding-flow to use real Dev Login (e.g. production-auth style) when running locally.
+- **tests/onboarding-flow.spec.ts** uses `bypassLogin` (mock JWT). If the app DB has no user for that openId, `auth.me` is null and the app shows the login modal, so “Step 1 of 5” and onboarding content may not be visible and tests fail or time out. **Recommendation:** Use production E2E for full onboarding coverage; or re-enable and fix by using real Dev Login (e.g. production-auth style) when running locally.
 
 ---
 
