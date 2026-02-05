@@ -55,6 +55,8 @@ jobs:
           JWT_SECRET: test-secret-minimum-32-characters-long
           OAUTH_SERVER_URL: https://test.example.com
           BUILT_IN_FORGE_API_KEY: test-key
+          # So stripe-router.getStripe() returns mock Stripe in stripe-router.test.ts
+          STRIPE_SECRET_KEY: sk_test_ci_placeholder
 
   build:
     name: Build
