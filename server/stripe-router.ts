@@ -5,9 +5,12 @@ import * as db from "./db";
 import { users } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
-  apiVersion: "2025-12-15.clover",
-});
+function getStripe(): Stripe | null {
+  const key = process.env.STRIPE_SECRET_KEY?.trim();
+  if (!key) return null;
+  return new Stripe(key, { apiVersion: "2025-12-15.clover" });
+}
+const stripe = getStripe();
 
 export const stripeRouter = router({
   /**
@@ -18,6 +21,7 @@ export const stripeRouter = router({
       priceId: z.string().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
+      if (!stripe) throw new Error("Stripe is not configured (STRIPE_SECRET_KEY missing)");
       const origin = ctx.req.headers.origin || "http://localhost:3000";
       
       // Use default Pro price if not provided
@@ -71,7 +75,7 @@ export const stripeRouter = router({
     if (!user) throw new Error("User not found");
 
     let stripeSubscription = null;
-    if (user.stripeSubscriptionId) {
+    if (stripe && user.stripeSubscriptionId) {
       try {
         stripeSubscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
       } catch (error) {
@@ -92,6 +96,7 @@ export const stripeRouter = router({
    * Create a billing portal session for managing subscription
    */
   createBillingPortalSession: protectedProcedure.mutation(async ({ ctx }) => {
+    if (!stripe) throw new Error("Stripe is not configured (STRIPE_SECRET_KEY missing)");
     const database = await db.getDb();
     if (!database) throw new Error("Database not available");
 
@@ -121,6 +126,7 @@ export const stripeRouter = router({
    * Cancel subscription
    */
   cancelSubscription: protectedProcedure.mutation(async ({ ctx }) => {
+    if (!stripe) throw new Error("Stripe is not configured (STRIPE_SECRET_KEY missing)");
     const database = await db.getDb();
     if (!database) throw new Error("Database not available");
 

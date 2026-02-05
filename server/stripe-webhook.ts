@@ -4,13 +4,12 @@ import * as db from "./db";
 import { users } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
-  apiVersion: "2025-12-15.clover",
-});
-
+const stripeKey = process.env.STRIPE_SECRET_KEY?.trim();
+const stripe = stripeKey ? new Stripe(stripeKey, { apiVersion: "2025-12-15.clover" }) : null;
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
 
 export async function handleStripeWebhook(req: Request, res: Response) {
+  if (!stripe) return res.status(503).send("Stripe not configured");
   const sig = req.headers["stripe-signature"];
 
   if (!sig) {
