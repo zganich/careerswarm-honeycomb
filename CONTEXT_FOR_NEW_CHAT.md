@@ -130,8 +130,9 @@ railway status | logs | variable list | redeploy | up | open
 
 ## Last Session Summary (2026-02-05)
 
-### Most recent (ship everything)
-Verify → commit all → push → deploy: check/build/test + smoke passed. Committed DashboardLayout, Profile, SHIP_CHECKLIST, todo, .cursorrules, .cursor/ (.mdc), archive; .gitignore playwright-report-production/. Pushed 3fc4fe6, railway up; post-deploy smoke 22/22.
+### Most recent
+- Docs/ship: SHIP_STEP_BY_STEP aligned with email-only auth (Manus/OAuth optional). onboarding-flow.spec.ts documented as skipped; SHIP_CHECKLIST quick ref added for full onboarding E2E (production-e2e.spec.ts).
+- Earlier: Verify → commit all → push → deploy: check/build/test + smoke passed. Committed DashboardLayout, Profile, SHIP_CHECKLIST, todo, .cursorrules, .cursor/ (.mdc), archive; .gitignore playwright-report-production/. Pushed 3fc4fe6, railway up; post-deploy smoke 22/22.
 
 ### Changes Made (earlier):
 1. **Auth: email-only** – Removed Manus/OAuth requirement. Sign-in at `/login` (email → session). `OAUTH_SERVER_URL` no longer required for app boot. Server: `server/_core/env.ts`, `oauth.ts`, `sdk.ts`. Client: DevLogin → “Sign in”, all Sign In links → `/login`; Welcome/Home/DashboardLayout updated. Docs and `.env.example` updated.
@@ -146,7 +147,8 @@ Verify → commit all → push → deploy: check/build/test + smoke passed. Comm
 
 ### Next Steps (for new chat)
 - Run check + build + test and production smoke + E2E before deploy.
-- Optional: fix or document `tests/onboarding-flow.spec.ts`; Sentry DSN in Railway; Redis for GTM.
+- Optional: Sentry DSN in Railway; Redis for GTM.
+- Onboarding E2E: use `tests/production-e2e.spec.ts`; `onboarding-flow.spec.ts` is documented as skipped (see SHIP_CHECKLIST, HUMAN_TESTING_REPORT).
 
 ### Production checklist (unchanged)
 - OPENAI_API_KEY in Railway + redeploy; DATABASE_URL for MySQL. See [docs/CRITICAL_SETUP_CHECKLIST.md](./docs/CRITICAL_SETUP_CHECKLIST.md).

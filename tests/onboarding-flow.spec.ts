@@ -3,16 +3,16 @@ import { bypassLogin } from './utils/auth-bypass';
 import path from 'path';
 
 /**
- * Onboarding Flow E2E Tests (local with auth-bypass)
+ * Onboarding Flow E2E Tests — SKIPPED (documented)
  *
- * SKIPPED: Auth-bypass injects a cookie for a user that does not exist in the local DB;
- * the app may redirect or show 404 for /onboarding routes. The full onboarding flow
- * is covered by production E2E (tests/production-e2e.spec.ts) with real Dev Login.
+ * This file is skipped because it uses auth-bypass (mock JWT) for a user that does not
+ * exist in the local DB; auth.me is null and the app shows the login modal, so onboarding
+ * content is not visible and tests would fail or time out.
  *
- * To run this file: use real login (e.g. TEST_USER_EMAIL) and ensure the user exists
- * in the local DB, or run production E2E against careerswarm.com.
+ * For full onboarding E2E coverage, use: tests/production-e2e.spec.ts (real Dev Login
+ * against careerswarm.com). See docs/SHIP_CHECKLIST.md and docs/HUMAN_TESTING_REPORT.md.
  */
-test.describe.skip('Onboarding Flow - Complete Journey (requires real auth or use production-e2e.spec.ts)', () => {
+test.describe.skip('Onboarding Flow - Complete Journey (use production-e2e.spec.ts for onboarding E2E)', () => {
   test.beforeEach(async ({ page }) => {
     await bypassLogin(page);
   });
@@ -365,7 +365,7 @@ test.describe.skip('Onboarding Flow - Complete Journey (requires real auth or us
   });
 });
 
-test.describe.skip('Onboarding Flow - Edge Cases (requires real auth or use production-e2e.spec.ts)', () => {
+test.describe.skip('Onboarding Flow - Edge Cases (use production-e2e.spec.ts for onboarding E2E)', () => {
   test.beforeEach(async ({ page }) => {
     await bypassLogin(page);
   });

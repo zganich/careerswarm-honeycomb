@@ -1,25 +1,21 @@
 # CareerSwarm — Step-by-Step: Get It Running and Shipped
 
-**Start here.** If other docs are confusing, follow this file only. Everything you can run is copy-paste below; the two things only you can do (MySQL and Manus whitelist) have exact step-by-step instructions.
+**Start here.** If other docs are confusing, follow this file only. Everything you can run is copy-paste below. The one thing only you must do is **MySQL + DATABASE_URL**; OAuth/Manus is optional and only needed if you enable it.
 
 ---
 
-## Two things that need you (plain English)
+## One thing that needs you (plain English)
 
-**1. A database for the app**
+**A database for the app**
 
-The app stores users, profiles, and jobs in a database. It uses a kind of database called **MySQL**. So you need:
+The app stores users, profiles, and jobs in a database. It uses **MySQL**. You need:
 
-- **A MySQL database running somewhere** (on your machine, in Docker, or a hosted one from Manus/your host), **and**
-- A connection string (URL) that tells the app how to reach it. You put that in `.env` as `DATABASE_URL`.
+- **A MySQL database running somewhere** (on your machine, in Docker, or a hosted one), **and**
+- A connection string in `.env` as `DATABASE_URL`.
 
-If you don't have MySQL yet, **Step 2** below gives you a one-line Docker command to start one, or how to use a URL someone gave you. After that, **Step 3** runs the migration so the app's tables exist.
+If you don't have MySQL yet, **Step 2** below gives you a one-line Docker command or how to use a URL someone gave you. **Step 3** runs the migration so the app's tables exist.
 
-**2. Telling Manus "this app is allowed to handle sign-in"**
-
-When someone clicks "Sign in" in CareerSwarm, they're sent to Manus to log in, then sent back to your app. Manus only sends them back to URLs you've said are allowed (for security). So you have to **add your app's callback URL to the list of allowed URLs in the Manus dashboard**. That's what "whitelisting the redirect URI" means.
-
-If you skip this, "Sign in" can loop or fail. You can still use the app by going to **/login** and using "Dev Login" (no Manus). **Step 5** below tells you exactly where to add the URL in Manus.
+**Sign-in:** The app uses **email-only sign-in** at `/login` by default. You do **not** need Manus or OAuth. If you later set `OAUTH_SERVER_URL` and `VITE_OAUTH_PORTAL_URL`, you can use OAuth; then you’d whitelist your callback URL in Manus (see Step 5, optional).
 
 ---
 
@@ -63,7 +59,7 @@ Then **open the file `.env`** in the project root (create it from `.env.example`
 DATABASE_URL="mysql://root:localdev@localhost:3306/careerswarm"
 ```
 
-### Option B — You already have a MySQL URL (e.g. from Manus/host)
+### Option B — You already have a MySQL URL (e.g. from a host)
 
 In `.env` set:
 
@@ -93,49 +89,46 @@ From the project root:
 pnpm db:migrate
 ```
 
-- If it succeeds: you’re done with DB. Go to Step 4.
+- If it succeeds: you're done with DB. Go to Step 4.
 - If you see **ECONNREFUSED**: MySQL is not running or `DATABASE_URL` is wrong. Check Step 2 (start MySQL or fix the URL).
 - If you see **DATABASE_URL is not set**: Make sure you saved `.env` in the project root and that the line `DATABASE_URL=...` has no spaces around `=`.
 
 ---
 
-## Step 4: Set the rest of the required env vars in `.env`
+## Step 4: Set the required env vars in `.env`
 
-Open `.env` and set these. Get the values from your Manus dashboard / team:
+Open `.env` and set these **required** variables:
 
 | Variable | What to put | Example |
 |----------|------------------|--------|
 | `JWT_SECRET` | A long random string (at least 32 characters). Used to sign session cookies. | `JWT_SECRET="my-super-secret-key-at-least-32-chars-long"` |
-| `OAUTH_SERVER_URL` | Manus OAuth server URL. | `OAUTH_SERVER_URL="https://oauth.manus.im"` (or the URL Manus gives you) |
-| `OPENAI_API_KEY` | OpenAI API key (for LLM/Resume Roast, etc.). | `OPENAI_API_KEY="sk-..."` |
+| `OPENAI_API_KEY` | OpenAI API key (for Resume Roast, Tailor, Scribe). | `OPENAI_API_KEY="sk-..."` |
 
-**Frontend (OAuth “Sign in” link):** So the app knows where to send users to log in:
+**Optional — only if you want OAuth (Manus) sign-in:** If you skip these, the app still runs and users sign in with **email at `/login`** (or Dev Login in non-production).
 
 | Variable | What to put | Example |
 |----------|------------------|--------|
-| `VITE_OAUTH_PORTAL_URL` | Manus OAuth portal base URL (same “family” as OAUTH_SERVER_URL). | `VITE_OAUTH_PORTAL_URL="https://oauth.manus.im"` |
+| `OAUTH_SERVER_URL` | Manus OAuth server URL. | `OAUTH_SERVER_URL="https://oauth.manus.im"` |
+| `VITE_OAUTH_PORTAL_URL` | Manus OAuth portal base URL. | `VITE_OAUTH_PORTAL_URL="https://oauth.manus.im"` |
 | `VITE_APP_ID` | Your app id in Manus. | `VITE_APP_ID="careerswarm"` |
 
-If you skip `VITE_OAUTH_PORTAL_URL`, the app still runs; “Sign in” will not go to Manus and users can use **Dev Login** at `/login`.
+Without OAuth vars, go to `/login` and sign in with any email (or use Dev Login when enabled).
 
 ---
 
-## Step 5: Whitelist the OAuth redirect URI in Manus (so “Sign in” works)
+## Step 5: (Optional) Whitelist the OAuth redirect URI in Manus
 
-This fixes the OAuth redirect loop. Only you can do this in the Manus dashboard.
+**Only if you set OAuth in Step 4.** If you're using email-only sign-in, skip this step.
 
-1. Log in to **Manus** (the place where you manage your app / OAuth).
+When OAuth is configured, Manus only sends users back to URLs you've allowed. Add your app's callback URL in the Manus dashboard:
+
+1. Log in to **Manus** (where you manage your app / OAuth).
 2. Open the **app** or **project** that is CareerSwarm.
-3. Find the **OAuth** or **Auth** or **Redirect URIs** / **Allowed callbacks** section (name may vary).
-4. Add this **exact** URL (replace the domain with your real app URL):
-   - **Production:** `https://YOUR_PRODUCTION_DOMAIN/api/oauth/callback`  
-     Example: `https://careerswarm.example.com/api/oauth/callback`
-   - **Preview (e.g. Manus preview):** `https://YOUR_PREVIEW_HOST/api/oauth/callback`  
-     Example: `https://careerswarm-abc123.manus.app/api/oauth/callback`
-   - **Local dev (optional):** `http://localhost:3000/api/oauth/callback` (use the port your app uses).
+3. Find **OAuth** / **Redirect URIs** / **Allowed callbacks**.
+4. Add: `https://YOUR_DOMAIN/api/oauth/callback` (production), or `http://localhost:3000/api/oauth/callback` (local), with your real domain/port.
 5. Save.
 
-If you don’t whitelist: the app still runs; use **Dev Login** at `/login` to sign in without OAuth.
+If you don't use OAuth: sign in at **/login** with email (or Dev Login).
 
 ---
 
@@ -174,9 +167,9 @@ pnpm test
 pnpm dev
 ```
 
-Then open the URL it prints (e.g. `http://localhost:3000`). Go to `/dashboard`; sign in with OAuth or use **Dev Login** at `/login` if OAuth isn’t set up yet.
+Then open the URL it prints (e.g. `http://localhost:3000`). Go to `/dashboard`; you'll be sent to **/login**. Sign in with your email (or use **Dev Login** at `/login` if enabled).
 
-**Production (after you’ve run `pnpm run build`):**
+**Production (after you've run `pnpm run build`):**
 
 ```bash
 pnpm start
@@ -190,10 +183,10 @@ Use the same URL and port your server is configured for (e.g. `PORT=3000` in `.e
 
 | I want to… | Do this |
 |------------|--------|
-| Run the app locally | Step 1 → 2 → 3 → 4 → 6 → 8 (Step 5 when you want OAuth). |
-| Fix “ECONNREFUSED” on migrate | Step 2: start MySQL or fix `DATABASE_URL`. |
-| Fix OAuth redirect loop | Step 5: whitelist `https://YOUR_DOMAIN/api/oauth/callback` in Manus. |
-| Sign in without OAuth (preview/local) | Use **Dev Login**: go to `/login`, enter any email. |
+| Run the app locally | Step 1 → 2 → 3 → 4 → 6 → 8. (Step 5 only if you use OAuth.) |
+| Fix "ECONNREFUSED" on migrate | Step 2: start MySQL or fix `DATABASE_URL`. |
+| Sign in (no OAuth) | Go to **/login**, enter your email (or use Dev Login when enabled). |
+| Fix OAuth redirect loop (if using OAuth) | Step 5: whitelist `https://YOUR_DOMAIN/api/oauth/callback` in Manus. |
 | See what env vars are required | Run `pnpm run verify-env` or read Step 4. |
 
 ---
@@ -201,6 +194,6 @@ Use the same URL and port your server is configured for (e.g. `PORT=3000` in `.e
 ## More detail (if you need it)
 
 - **Database migration:** `pnpm db:migrate`  
-- **OAuth redirect URIs:** Step 5 above  
+- **OAuth (optional):** Step 5 above  
 - **Handoff context:** [CONTEXT_FOR_NEW_CHAT.md](../CONTEXT_FOR_NEW_CHAT.md)  
 - **Short deploy checklist:** [SHIP_CHECKLIST.md](./SHIP_CHECKLIST.md)

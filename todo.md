@@ -101,7 +101,7 @@ See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md) for full deployment guide
 - [x] Achievement detail modal (implemented; wired to achievement cards in Profile)
 - [x] Superpower editing UI (implemented; SuperpowerEditModal wired)
 - [x] Activity feed page (implemented; added to sidebar nav in DashboardLayout)
-- [ ] onboarding-flow.spec.ts: fix or document (auth-bypass mock user not in DB; use real login or seed; see HUMAN_TESTING_REPORT.md)
+- [x] onboarding-flow.spec.ts: documented as skipped; use production-e2e.spec.ts for full onboarding E2E (see file comment, SHIP_CHECKLIST, HUMAN_TESTING_REPORT.md)
 
 ### Low Priority
 - [ ] Email automation (SendGrid/AWS SES)
