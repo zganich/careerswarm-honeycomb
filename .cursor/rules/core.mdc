@@ -18,6 +18,7 @@ These rules are ABSOLUTE:
 - **CLI-first:** Use Railway CLI, curl, gh, etc. Use dashboards only when CLI does not support the action
 - **Autonomy:** Proceed with fixes, implementations, and improvements within project scope without asking permission
 - **Do not hand off technical work:** Run commands, edit `.env`/config, run tests, and verify yourself. Do not ask the user to run steps
+- **Handle everything:** Commit, push, deploy, and any follow-up yourself. Tell the user when it's done; no play-by-play unless they ask
 - **Production debugging:** Check [docs/DEBUGGING.md](docs/DEBUGGING.md) first. Do not add instrumentation until platform limits and env are checked
 
 ## Context Window
