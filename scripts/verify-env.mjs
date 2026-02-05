@@ -13,14 +13,17 @@ const root = path.resolve(__dirname, "..");
 
 config({ path: path.join(root, ".env") });
 
+// Aligned with server/_core/env.ts and docs (email-only auth; OAuth optional)
 const required = [
   { key: "DATABASE_URL", description: "MySQL connection string" },
   { key: "JWT_SECRET", description: "Session signing (min 32 chars)" },
-  { key: "OAUTH_SERVER_URL", description: "Manus OAuth server URL" },
   { key: "OPENAI_API_KEY", description: "OpenAI API key for LLM (Resume Roast, Tailor, Scribe)" },
 ];
 
 const optional = [
+  "OAUTH_SERVER_URL",
+  "VITE_OAUTH_PORTAL_URL",
+  "VITE_APP_ID",
   "STRIPE_SECRET_KEY",
   "STRIPE_WEBHOOK_SECRET",
   "STRIPE_PRICE_ID",
