@@ -20,7 +20,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useIsMobile } from "@/hooks/useMobile";
-import { LayoutDashboard, LogOut, PanelLeft, Award, Briefcase, Search, BarChart3 } from "lucide-react";
+import { LayoutDashboard, LogOut, PanelLeft, Award, Briefcase, Search, BarChart3, Activity } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
@@ -31,6 +31,7 @@ const menuItems = [
   { icon: Award, label: "Achievements", path: "/achievements" },
   { icon: Search, label: "Job Search", path: "/jobs" },
   { icon: Briefcase, label: "Applications", path: "/applications" },
+  { icon: Activity, label: "Activity", path: "/activity" },
   { icon: BarChart3, label: "Production Metrics", path: "/metrics" },
 ];
 

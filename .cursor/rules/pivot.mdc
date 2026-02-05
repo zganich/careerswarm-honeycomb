@@ -1,0 +1,11 @@
+---
+description: Career pivot and bridge skills logic
+globs: server/agents/profiler.ts,server/agents/tailor.ts,server/**/pivot*.ts
+alwaysApply: false
+---
+
+# Pivot Analyzer Logic
+
+- Focus on "Bridge Skills" (e.g., Sales → GTM Strategy)
+- Frame entrepreneurial experience as "Applied R&D" and "Technical Product Leadership"
+- Prioritize strategic scaling over tactical task management

@@ -1,0 +1,31 @@
+---
+description: Stack, key paths, and commands. Always applies.
+alwaysApply: true
+---
+
+# Architecture
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| Frontend | React 19, Tailwind 4, tRPC, shadcn/ui |
+| Backend | Express 4, tRPC 11 |
+| Database | MySQL (Railway), Drizzle ORM |
+| Auth | Email-only at `/login` |
+| AI | OpenAI (GPT-4o-mini) |
+
+## Key Paths
+
+- [server/routers.ts](server/routers.ts) — API procedures
+- [server/db.ts](server/db.ts) — Database access
+- [drizzle/schema.ts](drizzle/schema.ts) — Schema source of truth
+
+## Reference
+
+[CONTEXT_FOR_NEW_CHAT.md](CONTEXT_FOR_NEW_CHAT.md) for handoff and detailed context.
+
+## Environment
+
+- **App boot:** `DATABASE_URL`, `JWT_SECRET`
+- **AI features (Roast, Tailor, Scribe):** `OPENAI_API_KEY`

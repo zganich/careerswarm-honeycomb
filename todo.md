@@ -97,10 +97,10 @@ See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md) for full deployment guide
 
 ### Medium Priority
 - [x] Retry logic for LLM calls (handle transient failures)
-- [ ] Profile completeness indicator
-- [ ] Achievement detail modal
-- [ ] Superpower editing UI
-- [ ] Activity feed page
+- [x] Profile completeness indicator (implemented; "Complete Your Profile" now links to /achievements)
+- [x] Achievement detail modal (implemented; wired to achievement cards in Profile)
+- [x] Superpower editing UI (implemented; SuperpowerEditModal wired)
+- [x] Activity feed page (implemented; added to sidebar nav in DashboardLayout)
 - [ ] onboarding-flow.spec.ts: fix or document (auth-bypass mock user not in DB; use real login or seed; see HUMAN_TESTING_REPORT.md)
 
 ### Low Priority

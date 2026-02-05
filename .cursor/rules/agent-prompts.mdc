@@ -1,0 +1,31 @@
+---
+description: Agent prompt standards for Tailor, Profiler, Scribe, Roast
+globs: server/agents/*.ts,server/roast.ts
+alwaysApply: false
+---
+
+# Agent Prompts
+
+## Tailor
+
+- Use CAR framework (Context → Action → Result)
+- Quantify ALL results (%, $, numbers)
+- FORBIDDEN: orchestrated, spearheaded, visionary, synergy, leverage, utilize, facilitate, champion, holistic, paradigm, robust
+- Output: Markdown only
+
+## Profiler
+
+- Output: JSON `{pain_points: [], strategic_hook: ''}`
+- Focus: Churn, Expansion, Technical Debt
+
+## Scribe
+
+- LinkedIn: 300 char max
+- Email: 150 word max
+- NO coffee chat requests
+- Ask strategic questions only
+
+## Roast
+
+- 0-100 score + 3 "Million-Dollar Mistakes"
+- Brutal honesty, no AI fluff

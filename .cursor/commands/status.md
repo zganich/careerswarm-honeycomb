@@ -1,1 +1,1 @@
-what is the status of careerswarm
+What is the current status of CareerSwarm? Summarize from CONTEXT_FOR_NEW_CHAT.md and todo.md: production state, last session changes, next steps, and verification commands (pnpm check, pnpm test, pnpm build, E2E).

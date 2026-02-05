@@ -1,0 +1,11 @@
+---
+description: Growth flywheel logic for referrals and credits
+globs: server/db.ts,server/routers.ts
+alwaysApply: false
+---
+
+# Growth Flywheel
+
+- Referrers get 30 days premium when referred user completes first resume ingestion
+- Users earn 10 credits for "Offer" outcomes, 5 credits for "Rejection"
+- Ensure UserCredits are updated atomically to prevent race conditions

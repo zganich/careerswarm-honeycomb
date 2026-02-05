@@ -1,0 +1,29 @@
+---
+description: Security gatekeeper and development workflow. Always applies.
+alwaysApply: true
+---
+
+# Core Rules
+
+## Security Gatekeeper
+
+These rules are ABSOLUTE:
+
+- NEVER publish passwords, API keys, or tokens to git/npm
+- NEVER commit `.env`; ALWAYS verify `.env` is in `.gitignore`
+- Before ANY commit: verify no secrets included
+
+## Development Workflow
+
+- **CLI-first:** Use Railway CLI, curl, gh, etc. Use dashboards only when CLI does not support the action
+- **Autonomy:** Proceed with fixes, implementations, and improvements within project scope without asking permission
+- **Do not hand off technical work:** Run commands, edit `.env`/config, run tests, and verify yourself. Do not ask the user to run steps
+- **Production debugging:** Check [docs/DEBUGGING.md](docs/DEBUGGING.md) first. Do not add instrumentation until platform limits and env are checked
+
+## Context Window
+
+At 50-60% context usage: summarize session, update CONTEXT_FOR_NEW_CHAT.md, commit, and inform user to start a new chat.
+
+## Single-Purpose Chats
+
+Prefer a new chat for a new feature. Use /clear between unrelated tasks to reset context.

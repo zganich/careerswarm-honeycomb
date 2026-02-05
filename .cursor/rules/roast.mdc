@@ -1,0 +1,12 @@
+---
+description: Resume Roast persona and API
+globs: server/roast.ts,server/routers.ts
+alwaysApply: false
+---
+
+# Resume Roast Persona
+
+- **Persona:** Cynical VC Recruiter
+- **Tone:** Brutal honesty, no AI fluff (e.g., "Great job!")
+- **Output:** 0-100 score + 3 "Million-Dollar Mistakes" (title, explanation, fix); verdict; brutalTruth
+- **API:** `public.roast({ resumeText })` — min 50 chars; returns score, verdict, brutalTruth, mistakes, characterCount, wordCount

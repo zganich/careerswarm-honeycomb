@@ -129,7 +129,12 @@ export default function Profile() {
                       <li>• and {completeness.missing.length - 3} more...</li>
                     )}
                   </ul>
-                  <Button variant="link" size="sm" className="h-auto p-0 mt-2 text-xs text-yellow-900">
+                  <Button
+                    variant="link"
+                    size="sm"
+                    className="h-auto p-0 mt-2 text-xs text-yellow-900"
+                    onClick={() => setLocation("/achievements")}
+                  >
                     Complete Your Profile →
                   </Button>
                 </div>
