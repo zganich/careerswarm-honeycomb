@@ -112,6 +112,8 @@ curl -s -X POST https://careerswarm.com/api/trpc/public.roast \
 
 ```bash
 pnpm dev
+pnpm run monitor        # GitHub CI, Railway, app health, Cloudflare (CLI)
+pnpm run monitor:watch  # Poll 60s, macOS notifications on failures
 pnpm build
 pnpm start
 pnpm check

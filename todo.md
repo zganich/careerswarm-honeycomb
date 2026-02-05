@@ -102,6 +102,7 @@ See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md) for full deployment guide
 - [x] Superpower editing UI (implemented; SuperpowerEditModal wired)
 - [x] Activity feed page (implemented; added to sidebar nav in DashboardLayout)
 - [x] onboarding-flow.spec.ts: documented as skipped; use production-e2e.spec.ts for full onboarding E2E (see file comment, SHIP_CHECKLIST, HUMAN_TESTING_REPORT.md)
+- [x] Live browser onboarding-flow tests: run production-e2e Onboarding Flow in headed mode with 5s human-like waits after each step; watch logs for errors
 
 ### Low Priority
 - [ ] Email automation (SendGrid/AWS SES)
@@ -139,4 +140,5 @@ pnpm check        # TypeScript check
 pnpm build        # Production build
 pnpm test         # Run tests
 pnpm db:migrate   # Apply migrations
+pnpm run monitor  # GitHub CI, Railway, app health (see docs/MONITORING.md)
 ```

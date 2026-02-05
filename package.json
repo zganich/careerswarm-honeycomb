@@ -18,7 +18,10 @@
     "precommit": "git secrets --scan",
     "seed": "tsx scripts/seed.ts",
     "validate": "tsx scripts/validate-production.mjs",
-    "verify-env": "node scripts/verify-env.mjs"
+    "verify-env": "node scripts/verify-env.mjs",
+    "monitor": "node scripts/monitor.mjs",
+    "monitor:watch": "node scripts/monitor.mjs --watch",
+    "test:cloudflare": "node scripts/test-cloudflare-api.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.693.0",

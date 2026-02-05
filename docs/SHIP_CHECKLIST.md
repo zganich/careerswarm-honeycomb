@@ -20,7 +20,20 @@
 - [ ] `pnpm check` — passes
 - [ ] `pnpm run build` — passes
 - [ ] `pnpm test` — Vitest passes (e.g. 122 passed, 51 skipped)
-- [ ] `npx playwright test` — E2E passes (production smoke + E2E vs careerswarm.com; see [HUMAN_TESTING_REPORT.md](./HUMAN_TESTING_REPORT.md))
+- [ ] `npx playwright test tests/production-smoke.spec.ts tests/production-e2e.spec.ts --config=playwright.production.config.ts` — E2E passes vs careerswarm.com (see [HUMAN_TESTING_REPORT.md](./HUMAN_TESTING_REPORT.md))
+
+**Before every deploy (copy-paste):**
+
+```bash
+pnpm check && pnpm run build && pnpm test
+npx playwright test tests/production-smoke.spec.ts tests/production-e2e.spec.ts --config=playwright.production.config.ts
+```
+
+**Run E2E in headed mode (live browser, human-like 5s waits after each step):**
+
+```bash
+npx playwright test tests/production-e2e.spec.ts --config=playwright.production.config.ts --headed --project=chromium-desktop
+```
 
 ---
 
@@ -41,3 +54,4 @@
 | OPENAI_API_KEY | Set in Railway Variables; redeploy required |
 | Dev login (preview / local) | `/login` (Dev Login enabled when `ENABLE_DEV_LOGIN=true` or non-production) |
 | Full onboarding E2E | Use `tests/production-e2e.spec.ts`; `tests/onboarding-flow.spec.ts` is skipped (auth-bypass user not in DB). |
+| CLI monitoring | `pnpm run monitor` — GitHub, Railway, app health, Cloudflare. [MONITORING.md](./MONITORING.md) |

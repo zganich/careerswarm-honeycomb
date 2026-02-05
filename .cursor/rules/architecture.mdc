@@ -25,6 +25,10 @@ alwaysApply: true
 
 [CONTEXT_FOR_NEW_CHAT.md](CONTEXT_FOR_NEW_CHAT.md) for handoff and detailed context.
 
+## Monitoring
+
+`pnpm run monitor` — GitHub CI, Railway status, app health, Cloudflare (CLI). See [docs/MONITORING.md](docs/MONITORING.md).
+
 ## Environment
 
 - **App boot:** `DATABASE_URL`, `JWT_SECRET`

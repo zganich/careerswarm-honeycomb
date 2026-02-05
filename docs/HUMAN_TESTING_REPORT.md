@@ -56,3 +56,19 @@ npx playwright test tests/playbook-whats-broken.spec.ts --config=playwright.conf
 ```
 
 For local playbook/onboarding-flow, the default config starts the dev server (`pnpm dev`) automatically.
+
+### Run E2E in headed mode (live browser, watch the flow)
+
+To see the browser and mimic human interaction (5s waits after each step), run:
+
+```bash
+npx playwright test tests/production-e2e.spec.ts --config=playwright.production.config.ts --headed --project=chromium-desktop
+```
+
+To run only onboarding flow tests in headed mode:
+
+```bash
+npx playwright test tests/production-e2e.spec.ts -g "Onboarding Flow" --config=playwright.production.config.ts --headed --project=chromium-desktop
+```
+
+Logs show `[Onboarding]`-prefixed steps so you can see exactly when an error occurs. Requires `TEST_USER_EMAIL` / `TEST_USER_PASSWORD` in CI; locally Dev Login accepts any email.

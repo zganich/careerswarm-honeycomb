@@ -15,7 +15,8 @@ These rules are ABSOLUTE:
 
 ## Development Workflow
 
-- **CLI-first:** Use Railway CLI, curl, gh, etc. Use dashboards only when CLI does not support the action
+- **CLI-first:** Use Railway CLI, curl, gh, Cloudflare API, etc. Use dashboards only when CLI does not support the action
+- **Monitoring:** Use `pnpm run monitor` for GitHub CI, Railway, app health, Cloudflare status; `pnpm run monitor:watch` for polling + notifications. See [docs/MONITORING.md](docs/MONITORING.md)
 - **Autonomy:** Proceed with fixes, implementations, and improvements within project scope without asking permission
 - **Do not hand off technical work:** Run commands, edit `.env`/config, run tests, and verify yourself. Do not ask the user to run steps
 - **Handle everything:** Commit, push, deploy, and any follow-up yourself. Tell the user when it's done; no play-by-play unless they ask

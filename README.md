@@ -72,6 +72,7 @@ npx playwright test
 | [**RAILWAY_DEPLOYMENT_HANDOFF.md**](./RAILWAY_DEPLOYMENT_HANDOFF.md) | Deployment (Railway) |
 | [**SETUP_GUIDE.md**](./SETUP_GUIDE.md) | Quick start (5 min setup) |
 | [**docs/SHIP_CHECKLIST.md**](./docs/SHIP_CHECKLIST.md) | Pre-deploy checklist |
+| [**docs/MONITORING.md**](./docs/MONITORING.md) | CLI monitoring (GitHub, Railway, Cloudflare) |
 | [**docs/OPTIONAL_INFRASTRUCTURE.md**](./docs/OPTIONAL_INFRASTRUCTURE.md) | DNS, Sentry, Redis |
 | [**CHANGELOG.md**](./CHANGELOG.md) | Version history |
 
@@ -96,6 +97,15 @@ npx playwright install chromium  # One-time browser install
 npx playwright test              # Run all tests
 npx playwright test --ui         # Interactive mode
 ```
+
+### Monitoring (CLI)
+
+```bash
+pnpm run monitor         # GitHub CI, Railway, app health, Cloudflare
+pnpm run monitor:watch   # Poll 60s; macOS notifications on failures
+```
+
+Requires `gh` and `railway` CLI. See [docs/MONITORING.md](./docs/MONITORING.md).
 
 ---
 

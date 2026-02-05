@@ -21,6 +21,14 @@ const __dirname = path.dirname(__filename);
 
 const BASE_URL = PRODUCTION_URL;
 
+/** Mimic human interaction: wait 5 seconds after each step when running live/headed tests */
+const HUMAN_STEP_DELAY_MS = 5000;
+
+function logStep(step: string, detail?: string): void {
+  const ts = new Date().toISOString().slice(11, 23);
+  console.log(`[${ts}] [Onboarding] ${step}${detail ? ` — ${detail}` : ''}`);
+}
+
 test.describe('Authentication Flow', () => {
   test('Sign In: Dev Login → email → redirect to dashboard or onboarding', async ({ page }) => {
     await page.goto(`${BASE_URL}/login`);
@@ -71,7 +79,9 @@ test.describe('Authentication Flow', () => {
   });
 
   test('Sign in and stay on dashboard for 5 seconds', async ({ page }) => {
-    await loginViaDevLogin(page);
+    // Use unique email for fresh session (shared default can cause redirect to login)
+    const email = getUniqueTestEmail();
+    await loginViaDevLogin(page, email);
     const urlAfterLogin = page.url();
     expect(urlAfterLogin).toMatch(/\/(dashboard|onboarding)/);
     await page.waitForTimeout(5000);
@@ -130,36 +140,51 @@ test.describe('Authentication Flow', () => {
 test.describe('Build My Master Profile entry points', () => {
   test.beforeEach(async ({ page }) => {
     const email = getUniqueTestEmail();
+    logStep('Build Profile entry', `logging in as ${email}`);
     await loginViaDevLogin(page, email);
+    await page.waitForTimeout(HUMAN_STEP_DELAY_MS);
   });
 
   test('From Home: Build My Master Profile → welcome', async ({ page }) => {
+    logStep('Build Profile', 'navigating to Home');
     await page.goto(BASE_URL);
     await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(HUMAN_STEP_DELAY_MS);
+
     const cta = page.getByRole('button', { name: /build my master profile/i }).first();
     await cta.waitFor({ state: 'visible', timeout: 10000 });
+    logStep('Build Profile', 'clicking Build My Master Profile');
     await cta.scrollIntoViewIfNeeded();
     await cta.click();
+    await page.waitForTimeout(HUMAN_STEP_DELAY_MS);
+
     await expect(page).toHaveURL(/\/onboarding\/welcome/, { timeout: 15000 });
     await expect(page.getByText(/welcome to careerswarm|step 1 of 5/i).first()).toBeVisible({ timeout: 5000 });
-    console.log('✅ Home → Build My Master Profile → welcome');
+    logStep('Build Profile', 'Home → Build My Master Profile → welcome');
   });
 
   test('From Roast: Build my Master Profile → welcome', async ({ page }) => {
+    logStep('Build Profile', 'navigating to Roast');
     await page.goto(`${BASE_URL}/roast`);
     await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(HUMAN_STEP_DELAY_MS);
+
     await page.evaluate(() => window.scrollTo(0, 0));
     const cta = page.getByTestId('roast-build-master-profile').or(page.getByRole('button', { name: /build my master profile/i })).first();
     const visible = await cta.isVisible().catch(() => false);
     if (visible) {
+      logStep('Build Profile', 'clicking Build my Master Profile on Roast page');
       await cta.scrollIntoViewIfNeeded();
       await cta.click();
     } else {
+      logStep('Build Profile', 'CTA not visible, navigating directly to welcome');
       await page.goto(`${BASE_URL}/onboarding/welcome`);
     }
+    await page.waitForTimeout(HUMAN_STEP_DELAY_MS);
+
     await expect(page).toHaveURL(/\/onboarding\/welcome/, { timeout: 20000 });
     await expect(page.getByText(/welcome to careerswarm|step 1 of 5/i).first()).toBeVisible({ timeout: 10000 });
-    console.log('✅ Roast → Build my Master Profile → welcome');
+    logStep('Build Profile', 'Roast → Build my Master Profile → welcome');
   });
 });
 
@@ -167,140 +192,176 @@ test.describe('Onboarding Flow', () => {
   test.beforeEach(async ({ page }) => {
     // Use a fresh test user for onboarding tests
     const email = getUniqueTestEmail();
+    logStep('beforeEach', `logging in as ${email}`);
     await loginViaDevLogin(page, email);
+    await page.waitForTimeout(HUMAN_STEP_DELAY_MS);
   });
 
   test('Step 1: Welcome page displays correctly', async ({ page }) => {
+    logStep('Step 1', 'navigating to /onboarding');
     await page.goto(`${BASE_URL}/onboarding`);
     await page.waitForLoadState('networkidle');
-    
+    await page.waitForTimeout(HUMAN_STEP_DELAY_MS);
+
     // Check for onboarding content - may redirect to a specific step
     expect(page.url()).toMatch(/\/onboarding|\/dashboard/);
-    
+    logStep('Step 1', `url=${page.url()}`);
+
     // The onboarding page shows upload interface or step content
     const pageContent = page.locator('main, body');
     await expect(pageContent).toBeVisible({ timeout: 10000 });
-    
+
     // Look for common onboarding elements - file upload zone or step indicator
     const uploadZone = page.locator('input[type="file"]');
     const stepText = page.getByText(/step.*of|upload|resume|master profile|drag.*drop/i).first();
-    
+
     // Either upload zone or step text should be present
     const uploadCount = await uploadZone.count();
     const hasStepText = await stepText.isVisible().catch(() => false);
-    
+
     expect(uploadCount > 0 || hasStepText).toBeTruthy();
-    
-    console.log('✅ Onboarding page displayed correctly');
+    logStep('Step 1', 'onboarding page displayed correctly');
   });
 
   test('Step 2: Upload page allows file selection', async ({ page }) => {
-    // First go to onboarding root (upload may be on the main page)
+    logStep('Step 2', 'navigating to /onboarding');
     await page.goto(`${BASE_URL}/onboarding`);
     await page.waitForLoadState('networkidle');
-    
+    await page.waitForTimeout(HUMAN_STEP_DELAY_MS);
+
     // The onboarding may be on /onboarding or /onboarding/upload
     // Check if file input exists on current page first
     let fileInput = page.locator('input[type="file"]');
     let fileInputCount = await fileInput.count();
-    
+
     // If not on main page, try upload subpage
     if (fileInputCount === 0) {
+      logStep('Step 2', 'no file input on welcome, navigating to /onboarding/upload');
       await page.goto(`${BASE_URL}/onboarding/upload`);
       await page.waitForLoadState('networkidle');
+      await page.waitForTimeout(HUMAN_STEP_DELAY_MS);
       fileInput = page.locator('input[type="file"]');
       fileInputCount = await fileInput.count();
     }
-    
+
     // File input should be available on one of the pages
     if (fileInputCount > 0) {
-      // Try uploading test resume
+      logStep('Step 2', 'uploading test-resume.txt');
       const testResumePath = path.join(__dirname, 'fixtures', 'test-resume.txt');
       await fileInput.setInputFiles(testResumePath);
-      await page.waitForTimeout(2000);
-      
-      console.log('✅ File upload interface working');
+      await page.waitForTimeout(HUMAN_STEP_DELAY_MS);
+
+      logStep('Step 2', 'file upload interface working');
     } else {
       // Onboarding might use a different flow (text paste, etc.)
       const textarea = page.locator('textarea');
       const textareaCount = await textarea.count();
       expect(textareaCount > 0 || fileInputCount > 0).toBeTruthy();
-      console.log('✅ Onboarding input interface available');
+      logStep('Step 2', 'onboarding input interface available');
     }
   });
 
   test('Can navigate through onboarding steps', async ({ page }) => {
-    // Start at welcome
+    logStep('Navigate', 'navigating to /onboarding');
     await page.goto(`${BASE_URL}/onboarding`);
     await page.waitForLoadState('networkidle');
-    
-    // Click to proceed
-    const startButton = page.getByRole('button', { name: /continue|start|next|build/i }).first();
+    await page.waitForTimeout(HUMAN_STEP_DELAY_MS);
+
+    const startButton = page.getByRole('button', { name: /continue|start|next|build|let's build/i }).first();
     if (await startButton.isVisible()) {
+      logStep('Navigate', 'clicking start/continue button');
       await startButton.click();
-      await page.waitForTimeout(2000);
-      
-      // Should move to upload step
+      await page.waitForTimeout(HUMAN_STEP_DELAY_MS);
+
       const url = page.url();
       expect(url).toMatch(/\/onboarding\/(upload|extraction|review|preferences)/);
-      console.log(`✅ Navigated from welcome to: ${url}`);
+      logStep('Navigate', `success — now at ${url}`);
     }
   });
 
   test('Complete onboarding flow: upload → extraction → review → preferences → dashboard', async ({ page }) => {
-    test.setTimeout(180000); // 3 min for LLM extraction
+    test.setTimeout(240000); // 4 min for LLM extraction + human-like delays
+    logStep('Complete flow', 'navigating to /onboarding');
     await page.goto(`${BASE_URL}/onboarding`);
     await page.waitForLoadState('networkidle');
-    const startBtn = page.getByRole('button', { name: /continue|start|next|build/i }).first();
-    if (await startBtn.isVisible()) await startBtn.click();
+    await page.waitForTimeout(HUMAN_STEP_DELAY_MS);
+
+    const startBtn = page.getByRole('button', { name: /continue|start|next|build|let's build/i }).first();
+    if (await startBtn.isVisible()) {
+      logStep('Complete flow', 'clicking start button');
+      await startBtn.click();
+      await page.waitForTimeout(HUMAN_STEP_DELAY_MS);
+    }
     await page.waitForURL(/\/onboarding\/upload/, { timeout: 15000 }).catch(() => {});
+
     const fileInput = page.locator('input[type="file"]');
     if ((await fileInput.count()) > 0) {
+      logStep('Complete flow', 'uploading test-resume.txt');
       const testResumePath = path.join(__dirname, 'fixtures', 'test-resume.txt');
       await fileInput.setInputFiles(testResumePath);
-      await page.waitForTimeout(2000);
+      await page.waitForTimeout(HUMAN_STEP_DELAY_MS);
+
       const cont = page.getByRole('button', { name: /continue/i });
-      if (await cont.isEnabled()) await cont.click();
+      if (await cont.isEnabled()) {
+        logStep('Complete flow', 'clicking continue after upload');
+        await cont.click();
+        await page.waitForTimeout(HUMAN_STEP_DELAY_MS);
+      }
     }
     await page.waitForURL(/\/onboarding\/extraction/, { timeout: 15000 }).catch(() => {});
+
+    logStep('Complete flow', 'waiting for extraction (LLM) — up to 90s');
     const reviewBtn = page.getByRole('button', { name: /continue|review|next/i });
     await reviewBtn.waitFor({ state: 'visible', timeout: 90000 }).catch(() => {});
+
     if (await reviewBtn.isVisible()) {
+      logStep('Complete flow', 'extraction done, clicking continue to review');
       await reviewBtn.click();
+      await page.waitForTimeout(HUMAN_STEP_DELAY_MS);
       await page.waitForURL(/\/onboarding\/review/, { timeout: 15000 }).catch(() => {});
+
       const nextBtn = page.getByRole('button', { name: /continue|next/i });
-      if (await nextBtn.isVisible()) await nextBtn.click();
+      if (await nextBtn.isVisible()) {
+        logStep('Complete flow', 'clicking continue to preferences');
+        await nextBtn.click();
+        await page.waitForTimeout(HUMAN_STEP_DELAY_MS);
+      }
       await page.waitForURL(/\/onboarding\/preferences/, { timeout: 15000 }).catch(() => {});
+
       const completeBtn = page.getByRole('button', { name: /complete|finish|done/i });
-      if (await completeBtn.isVisible()) await completeBtn.click();
+      if (await completeBtn.isVisible()) {
+        logStep('Complete flow', 'clicking complete');
+        await completeBtn.click();
+        await page.waitForTimeout(HUMAN_STEP_DELAY_MS);
+      }
       await page.waitForURL(/\/(dashboard|onboarding)/, { timeout: 15000 }).catch(() => {});
     }
+
     expect(page.url()).toMatch(/\/(dashboard|onboarding)/);
-    console.log('✅ Onboarding complete flow reached dashboard or final step');
+    logStep('Complete flow', `done — final url=${page.url()}`);
   });
 
   test('Step 3-5: Can access extraction, review, and preferences', async ({ page }) => {
-    // Test direct access to each step
     const steps = [
       { url: '/onboarding/extraction', name: 'Extraction' },
       { url: '/onboarding/review', name: 'Review' },
       { url: '/onboarding/preferences', name: 'Preferences' },
     ];
-    
+
     for (const step of steps) {
+      logStep(`Step 3-5`, `navigating to ${step.url}`);
       await page.goto(`${BASE_URL}${step.url}`);
       await page.waitForLoadState('networkidle');
-      
-      // Page should load without error
+      await page.waitForTimeout(HUMAN_STEP_DELAY_MS);
+
       const body = page.locator('body');
       await expect(body).toBeVisible();
-      
-      // Should show step content (not 404)
+
       const notFound = page.getByText(/not found|404|error/i);
       const hasError = await notFound.isVisible().catch(() => false);
       expect(hasError).toBeFalsy();
-      
-      console.log(`✅ ${step.name} page accessible`);
+
+      logStep(`Step 3-5`, `${step.name} page accessible`);
     }
   });
 });
