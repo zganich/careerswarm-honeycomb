@@ -70,6 +70,17 @@ test.describe('Authentication Flow', () => {
     console.log('✅ Logged in successfully, redirected to:', page.url());
   });
 
+  test('Sign in and stay on dashboard for 5 seconds', async ({ page }) => {
+    await loginViaDevLogin(page);
+    const urlAfterLogin = page.url();
+    expect(urlAfterLogin).toMatch(/\/(dashboard|onboarding)/);
+    await page.waitForTimeout(5000);
+    const urlAfter5s = page.url();
+    expect(urlAfter5s).toMatch(/\/(dashboard|onboarding)/);
+    expect(urlAfter5s).toBe(urlAfterLogin);
+    console.log('✅ Stayed on dashboard after 5s:', urlAfter5s);
+  });
+
   test('Session persists after page refresh', async ({ page }) => {
     // Login first
     await loginViaDevLogin(page);
