@@ -231,7 +231,11 @@ class SDKServer {
         name,
       };
     } catch (error) {
-      console.warn("[Auth] Session verification failed", String(error));
+      // Expected when cookie is old, signed with different JWT_SECRET, or corrupted; user will re-login
+      const msg = error instanceof Error ? error.message : String(error);
+      if (!msg.includes("signature") && !msg.includes("verification")) {
+        console.warn("[Auth] Session verification failed", msg);
+      }
       return null;
     }
   }
