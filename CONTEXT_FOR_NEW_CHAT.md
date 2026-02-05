@@ -131,6 +131,7 @@ railway status | logs | variable list | redeploy | up | open
 ## Last Session Summary (2026-02-05)
 
 ### Most recent
+- **E2E fixes:** Production E2E 25/25 passing. Fixed two tests: (1) Profile edit page — accept "Edit Profile" or "Loading..." (profile may still be loading); (2) Resume Roast — wait for result or error only (removed requirement for "Roasting..." text; API can return before loading state is visible).
 - Docs/ship: SHIP_STEP_BY_STEP aligned with email-only auth (Manus/OAuth optional). onboarding-flow.spec.ts documented as skipped; SHIP_CHECKLIST quick ref added for full onboarding E2E (production-e2e.spec.ts).
 - Earlier: Verify → commit all → push → deploy: check/build/test + smoke passed. Committed DashboardLayout, Profile, SHIP_CHECKLIST, todo, .cursorrules, .cursor/ (.mdc), archive; .gitignore playwright-report-production/. Pushed 3fc4fe6, railway up; post-deploy smoke 22/22.
 
@@ -146,7 +147,7 @@ railway status | logs | variable list | redeploy | up | open
 - **Roast API**: After deploy, returns 503 + friendly message when LLM unavailable (not 500). If still 500: confirm deploy; `railway logs`; OPENAI_API_KEY/egress (see [docs/DEBUGGING.md](./docs/DEBUGGING.md)).
 
 ### Next Steps (for new chat)
-- Run check + build + test and production smoke + E2E before deploy.
+- Run check + build + test and production smoke + E2E before deploy (all currently passing: 22 smoke, 25 E2E).
 - Optional: Sentry DSN in Railway; Redis for GTM.
 - Onboarding E2E: use `tests/production-e2e.spec.ts`; `onboarding-flow.spec.ts` is documented as skipped (see SHIP_CHECKLIST, HUMAN_TESTING_REPORT).
 

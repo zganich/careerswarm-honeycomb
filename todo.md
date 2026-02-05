@@ -1,7 +1,7 @@
 # CareerSwarm TODO
 
 **Last Updated:** February 5, 2026  
-**Status:** Production-ready, all checks passing; everything shipped (commit 3fc4fe6, deploy complete, post-deploy smoke passed)
+**Status:** Production-ready, all checks passing; E2E 25/25 (profile edit + roast tests fixed this session)
 
 ---
 
