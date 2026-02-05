@@ -91,7 +91,7 @@ Extract:
             </div>
 
             <p>To see your full career match analysis:</p>
-            <a href="https://3000-i9gyfqjd276sbiyfs99wv-0795b75c.us2.manus.computer/dashboard" 
+            <a href="${process.env.APP_URL || "https://careerswarm.com"}/dashboard" 
                style="display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 10px 0;">
               View Full Analysis
             </a>

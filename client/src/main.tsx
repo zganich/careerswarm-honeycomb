@@ -36,7 +36,7 @@ function injectAnalyticsScript() {
 }
 
 // Initialize monitoring (Sentry + PostHog) dynamically from backend config
-// This workaround is needed because custom VITE_ env vars aren't injected by Manus platform
+// Monitoring config is loaded from the backend so env is not required at build time
 async function initializeMonitoring() {
   try {
     const response = await fetch('/api/trpc/public.getMonitoringConfig');

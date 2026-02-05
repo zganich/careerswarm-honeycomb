@@ -99,8 +99,8 @@ export function PreAuthModal({ open, onClose, onContinue }: PreAuthModalProps) {
                   Secure OAuth Login
                 </p>
                 <p className="text-sm text-slate-600">
-                  You'll be securely signed in through Manus OAuth (takes 30 seconds). 
-                  We never see your password and you can revoke access anytime.
+                  You'll be securely signed in with your email (takes 30 seconds).
+                  We never see your password and you can sign out anytime.
                 </p>
               </div>
             </div>

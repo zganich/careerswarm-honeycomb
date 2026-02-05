@@ -1,6 +1,6 @@
 export { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 
-/** OAuth state payload: redirectUri for Manus, returnTo for post-login redirect */
+/** OAuth state payload: redirectUri for IdP, returnTo for post-login redirect */
 export type OAuthState = { redirectUri: string; returnTo: string };
 
 // Generate login URL at runtime so redirect URI reflects the current origin.

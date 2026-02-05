@@ -107,7 +107,7 @@ export default function Privacy() {
               We share data with trusted service providers who help us operate our platform:
             </p>
             <ul className="list-disc list-inside text-muted-foreground space-y-2 mb-4">
-              <li><strong>Manus Platform:</strong> Infrastructure, authentication, and database hosting</li>
+              <li><strong>Infrastructure:</strong> Hosting, authentication, and database</li>
               <li><strong>Stripe:</strong> Payment processing (PCI-compliant)</li>
               <li><strong>OpenAI/Anthropic:</strong> AI model providers for achievement transformation and job matching (data is not used for model training)</li>
             </ul>

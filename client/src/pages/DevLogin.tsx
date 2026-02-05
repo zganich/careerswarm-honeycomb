@@ -1,5 +1,5 @@
 /**
- * Sign in — email-only auth. No OAuth/Manus required.
+ * Sign in — email-only auth. No third-party OAuth required.
  */
 import { useState } from "react";
 import { useLocation } from "wouter";

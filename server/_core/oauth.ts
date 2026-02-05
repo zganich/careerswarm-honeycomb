@@ -9,7 +9,7 @@ function getQueryParam(req: Request, key: string): string | undefined {
   return typeof value === "string" ? value : undefined;
 }
 
-/** Auth: email-only sign-in at /login (no OAuth/Manus). Optional OAuth when OAUTH_SERVER_URL is set. */
+/** Auth: email-only sign-in at /login. Optional OAuth when OAUTH_SERVER_URL is set. */
 
 /** Email login: always enabled when OAuth is not configured; otherwise enabled in dev or when ENABLE_DEV_LOGIN=true */
 function isEmailLoginEnabled(): boolean {
