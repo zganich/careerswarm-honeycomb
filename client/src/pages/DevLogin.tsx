@@ -28,7 +28,12 @@ export default function DevLogin() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, returnTo }),
         credentials: "include",
+        redirect: "manual",
       });
+      if (res.type === "opaqueredirect" || res.status === 302) {
+        window.location.href = returnTo;
+        return;
+      }
       const data = (await res.json()) as { success?: boolean; redirect?: string; error?: string };
       if (!res.ok) {
         setError(data.error || "Login failed");

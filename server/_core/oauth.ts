@@ -46,7 +46,8 @@ export function registerOAuthRoutes(app: Express) {
     const cookieOptions = getSessionCookieOptions(req, true);
     res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
     const returnTo = typeof req.body?.returnTo === "string" ? req.body.returnTo : "/dashboard";
-    res.status(200).json({ success: true, redirect: returnTo });
+    // Server-side redirect so cookie is sent on the next request (more reliable than client redirect)
+    res.redirect(302, returnTo);
   });
 
   app.get("/api/oauth/callback", async (req: Request, res: Response) => {
