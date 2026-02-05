@@ -128,26 +128,26 @@ railway status | logs | variable list | redeploy | up | open
 
 ---
 
-## Last Session Summary (2026-02-04)
+## Last Session Summary (2026-02-05)
 
 ### Changes Made:
 1. **Auth: email-only** – Removed Manus/OAuth requirement. Sign-in at `/login` (email → session). `OAUTH_SERVER_URL` no longer required for app boot. Server: `server/_core/env.ts`, `oauth.ts`, `sdk.ts`. Client: DevLogin → “Sign in”, all Sign In links → `/login`; Welcome/Home/DashboardLayout updated. Docs and `.env.example` updated.
 2. **Rules/docs** – “Do not hand off technical work” in `.cursorrules` and CONTEXT; README/todo/CONTEXT aligned; cost-avoidance and OPENAI_API_KEY steps clarified.
 3. **Roaster test** – 20s timeout for roast integration test in `server/roaster.test.ts`.
-4. **E2E** – “From Roast: Build my Master Profile → welcome” fixed (data-testid on Roast page, fallback if CTA not visible). Playwright production reporter outputFolder → `playwright-report-production` to avoid path clash.
+4. **E2E** – "From Roast: Build my Master Profile → welcome" fixed (data-testid on Roast page, fallback if CTA not visible). Playwright production reporter outputFolder → `playwright-report-production` to avoid path clash.
+5. **Ship Readiness Plan** – Phase 1: SHIP_CHECKLIST updated. Phase 2: Activity in nav; Complete Your Profile links to /achievements; achievement modal and superpower save verified.
 
 ### Status:
-- **pnpm check / pnpm test / pnpm build**: passing. **Production smoke**: 22 passed. **Production E2E**: 25 passed. **Playbook (local)**: 8 passed. Human testing report: [docs/HUMAN_TESTING_REPORT.md](./docs/HUMAN_TESTING_REPORT.md).
-- **Auth**: Email-only at `/login`; returnTo supported. Optional OAuth if `OAUTH_SERVER_URL` and `VITE_OAUTH_PORTAL_URL` set.
+- **pnpm check / pnpm test / pnpm build**: passing. **Production smoke**: 22. **Production E2E**: 25. Roast E2E may timeout but passes on flow.
+- **Roast API**: After deploy, returns 503 + friendly message when LLM unavailable (not 500). If still 500: confirm deploy; `railway logs`; OPENAI_API_KEY/egress (see [docs/DEBUGGING.md](./docs/DEBUGGING.md)).
 
 ### Next Steps (for new chat)
 - Run check + build + test and production smoke + E2E before deploy.
-- Optional: fix or document `tests/onboarding-flow.spec.ts` (auth-bypass mock user; see HUMAN_TESTING_REPORT.md).
-- Backlog: profile completeness, achievement modal, superpower UI, Redis/Sentry (optional).
+- Optional: fix or document `tests/onboarding-flow.spec.ts`; Sentry DSN in Railway; Redis for GTM.
 
 ### Production checklist (unchanged)
 - OPENAI_API_KEY in Railway + redeploy; DATABASE_URL for MySQL. See [docs/CRITICAL_SETUP_CHECKLIST.md](./docs/CRITICAL_SETUP_CHECKLIST.md).
 
 ---
 
-*Last updated: 2026-02-04. Start a new chat and use this file to restore context.*
+*Last updated: 2026-02-05. Start a new chat and use this file to restore context.*

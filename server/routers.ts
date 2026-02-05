@@ -37,12 +37,21 @@ export const appRouter = router({
     roast: publicProcedure
       .input(z.object({ resumeText: z.string().min(50, "Resume must be at least 50 characters") }))
       .mutation(async ({ input }) => {
-        const outcome = await runRoast(input.resumeText);
-        if (outcome.ok) return outcome.data;
-        throw new TRPCError({
-          code: "SERVICE_UNAVAILABLE",
-          message: outcome.message,
-        });
+        try {
+          const outcome = await runRoast(input.resumeText);
+          if (outcome.ok) return outcome.data;
+          throw new TRPCError({
+            code: "SERVICE_UNAVAILABLE",
+            message: outcome.message,
+          });
+        } catch (e) {
+          if (e instanceof TRPCError) throw e;
+          // Any uncaught error (e.g. fetch failed from LLM) → friendly 503 so client never sees 500
+          throw new TRPCError({
+            code: "SERVICE_UNAVAILABLE",
+            message: "Resume roast isn't available right now. Please try again in a moment.",
+          });
+        }
       }),
 
     estimateQualification: publicProcedure

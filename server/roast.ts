@@ -74,7 +74,12 @@ export async function runRoast(resumeText: string): Promise<RoastOutcome> {
     return { ok: false, message: "Resume roast isn't available right now. Please try again in a moment." };
   }
 
-  const raw = response.choices[0]?.message?.content;
+  if (!response?.choices?.[0]?.message) {
+    console.error("[Roast] LLM returned empty or invalid response");
+    return { ok: false, message: "Resume roast isn't available right now. Please try again in a moment." };
+  }
+
+  const raw = response.choices[0].message.content;
   const rawStr = typeof raw === "string" ? raw : "";
   const jsonStr = rawStr.replace(/^```(?:json)?\s*/i, "").replace(/\s*```\s*$/i, "").trim();
   let parsed: { score?: number; verdict?: string; brutalTruth?: string; mistakes?: Array<{ title?: string; explanation?: string; fix?: string }> };
