@@ -79,6 +79,7 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 | Server / env / LLM | `server/_core/index.ts`, `server/_core/env.ts`, `server/_core/llm.ts` |
 | Database | `drizzle/schema.ts`, `server/db.ts`, `drizzle/` migrations |
 | Tests | Unit: `pnpm test` (Vitest, 122 passing / 51 skipped). E2E: `tests/production-smoke.spec.ts` (22), `tests/production-e2e.spec.ts` (25), `tests/playbook-whats-broken.spec.ts` (8). Roast unit: `server/roaster.test.ts`. Human testing report: [docs/HUMAN_TESTING_REPORT.md](./docs/HUMAN_TESTING_REPORT.md). |
+| Monitoring | `scripts/monitor.mjs`, `scripts/test-cloudflare-api.mjs`. See [docs/MONITORING.md](./docs/MONITORING.md). |
 | CI/CD | `.github/workflows/ci.yml` |
 | Docs | `docs/` (active); `.archive/` (obsolete) |
 
@@ -133,11 +134,11 @@ railway status | logs | variable list | redeploy | up | open
 ## Last Session Summary (2026-02-05)
 
 ### Most recent (this session)
-- **Auth:** Removed `[Auth] Missing session cookie` log in production (`server/_core/sdk.ts`) — expected for unauthenticated requests; was flooding Railway logs.
-- **CI:** Unit tests — set `STRIPE_SECRET_KEY` in CI workflow and made `stripe-router.test.ts` accept "Stripe is not configured" so unit tests pass in GitHub Actions.
-- **E2E:** Added test "Sign in and stay on dashboard for 5 seconds" (login → wait 5s → assert still on dashboard). All production E2E/playbook run against **live site** (https://careerswarm.com).
-- **Railway:** Logs show `OPENAI_API_KEY` 401 (incorrect key) — set valid key in Railway and redeploy for Roast/AI. GTM worker not started (no Redis); optional.
-- Earlier: E2E profile edit + roast test fixes; SHIP_STEP_BY_STEP, playbook verified 3x, redeploy.
+- **CLI monitoring:** Added `pnpm run monitor` and `pnpm run monitor:watch` (GitHub CI, Railway, app health, Cloudflare). Scripts: `scripts/monitor.mjs`.
+- **Cloudflare:** Added `scripts/test-cloudflare-api.mjs` and `pnpm run test:cloudflare`. CLOUDFLARE_ZONE_ID + CLOUDFLARE_API_TOKEN in .env.example. Fixed credential-like placeholders in MONITORING.md.
+- **Onboarding E2E:** 5s human-like waits and `logStep()` in production-e2e.spec.ts; fixed "Sign in and stay on dashboard" test (unique email).
+- **Railway:** Deleted duplicate careerswarm project (old Postgres/Redis/web/worker); one project now (careerswarm-app + MySQL-E6eq).
+- **Docs:** MONITORING.md, README, CONTEXT, cursor rules, SHIP_CHECKLIST, todo updated.
 
 ### Changes Made (earlier):
 1. **Auth: email-only** – Removed Manus/OAuth requirement. Sign-in at `/login` (email → session). `OAUTH_SERVER_URL` no longer required for app boot. Server: `server/_core/env.ts`, `oauth.ts`, `sdk.ts`. Client: DevLogin → “Sign in”, all Sign In links → `/login`; Welcome/Home/DashboardLayout updated. Docs and `.env.example` updated.
@@ -152,6 +153,7 @@ railway status | logs | variable list | redeploy | up | open
 
 ### Next Steps (for new chat)
 - Run check + build + test and production smoke + E2E before deploy (all currently passing: 22 smoke, 25 E2E).
+- Use `pnpm run monitor` for quick status; `pnpm run test:cloudflare` to verify Cloudflare API.
 - Optional: Sentry DSN in Railway; Redis for GTM.
 - Onboarding E2E: use `tests/production-e2e.spec.ts`; `onboarding-flow.spec.ts` is documented as skipped (see SHIP_CHECKLIST, HUMAN_TESTING_REPORT).
 

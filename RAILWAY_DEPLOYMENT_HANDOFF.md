@@ -1,8 +1,8 @@
 # Railway Deployment Handoff
 
 **Created:** February 2, 2026  
-**Updated:** February 4, 2026  
-**Status:** DEPLOYED - App running, custom domain configured
+**Updated:** February 5, 2026  
+**Status:** DEPLOYED - App running, custom domain configured. One Railway project (duplicate deleted Feb 2026).
 
 ---
 

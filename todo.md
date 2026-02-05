@@ -21,6 +21,12 @@ The assistant runs these checks when finishing work; no need for the user to run
 
 ---
 
+## Completed (February 5, 2026)
+
+- [x] CLI monitoring: `pnpm run monitor` / `monitor:watch` (GitHub, Railway, app health, Cloudflare) — scripts/monitor.mjs
+- [x] Cloudflare API test script (`pnpm run test:cloudflare`) — scripts/test-cloudflare-api.mjs
+- [x] Deleted duplicate Railway careerswarm project (one project now)
+
 ## Completed (February 4, 2026)
 
 - [x] Archive cleanup: obsolete scripts (test-e2e, test-payment, etc.), docs (DEPLOY_WITH_MANUS, PROJECT_SUMMARY, etc.), root SQL, docs/archive → .archive

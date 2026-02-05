@@ -2,6 +2,8 @@
 
 **Rule:** For **production-only** failures, check **platform limits and env first**. Do not add instrumentation or large code changes until you’ve done that.
 
+**Quick status check:** `pnpm run monitor` — GitHub CI, Railway, app health, Cloudflare. See [MONITORING.md](./MONITORING.md).
+
 ---
 
 ## Order of operations (production-only bugs)
