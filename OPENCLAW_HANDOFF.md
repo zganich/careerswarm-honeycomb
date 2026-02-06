@@ -25,13 +25,13 @@ When an OpenClaw agent finishes work and hands off, it can append a short summar
 
 **OpenClaw job assignments (run per TASKS.md and IDEAL_WORKFLOW_AND_ASSIGNMENTS.md):**
 
-| Agent   | Job | Instructions |
-|---------|-----|--------------|
-| **Ship** | monitor | Run `pnpm run monitor`. On failure: investigate per docs/DEBUGGING.md, minimal fix, re-run. Append result to this file (what ran, what failed, what changed). Do not commit. |
-| **Ship** | ship:check | Run `pnpm run ship:check`. On failure: fix per DEBUGGING.md, re-run. Append result here. Do not commit. |
-| **Ship** | ship:check:full (optional, before deploy) | Run `pnpm run ship:check:full` when preparing for deploy. Append result here. |
-| **Business** | future-shoestring | Read CONTEXT_FOR_NEW_CHAT.md, todo.md, docs/OPENCLAW_FUTURE_SHOESTRING.md. Suggest 3–5 shoestring improvements. Append summary to this file. Weekly cron or on-demand. |
-| **Docs** (optional) | sync-check | Read CONTEXT and todo; summarize current state + next steps. On-demand: "Summarize CONTEXT and todo." |
+| Agent               | Job                                       | Instructions                                                                                                                                                                 |
+| ------------------- | ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Ship**            | monitor                                   | Run `pnpm run monitor`. On failure: investigate per docs/DEBUGGING.md, minimal fix, re-run. Append result to this file (what ran, what failed, what changed). Do not commit. |
+| **Ship**            | ship:check                                | Run `pnpm run ship:check`. On failure: fix per DEBUGGING.md, re-run. Append result here. Do not commit.                                                                      |
+| **Ship**            | ship:check:full (optional, before deploy) | Run `pnpm run ship:check:full` when preparing for deploy. Append result here.                                                                                                |
+| **Business**        | future-shoestring                         | Read CONTEXT_FOR_NEW_CHAT.md, todo.md, docs/OPENCLAW_FUTURE_SHOESTRING.md. Suggest 3–5 shoestring improvements. Append summary to this file. Weekly cron or on-demand.       |
+| **Docs** (optional) | sync-check                                | Read CONTEXT and todo; summarize current state + next steps. On-demand: "Summarize CONTEXT and todo."                                                                        |
 
 **Cron (already configured):** monitor every 30m, ship:check every 6h, future-shoestring weekly. When cron runs, the assigned agent does the task and appends to this file.
 
