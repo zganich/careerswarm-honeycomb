@@ -174,22 +174,21 @@ railway status | logs | variable list | redeploy | up | open
 
 ## Last Session (2026-02-06)
 
-**OpenClaw and workflow:**
+### Evening handoff (Cursor → OpenClaw)
 
-- **OpenClaw** configured: role agents (Ship, Server, Client, Docs, Review, Business) added with identities; workspace = this repo.
-- **Cron jobs** (OpenClaw): `careerswarm-monitor` every 30m (Ship), `careerswarm-ship-check` every 6h (Ship), `careerswarm-future-shoestring` weekly (Business). All append to OPENCLAW_HANDOFF on completion/failure; none commit.
-- **Docs added:** TASKS.md (named tasks + handoff), TOOLS.md (agents + commands), docs/OPENCLAW_FUTURE_SHOESTRING.md (future/shoestring brief), docs/OPENCLAW_INSPIRATION.md (ideas + sketchiness), docs/IDEAL_WORKFLOW_AND_ASSIGNMENTS.md (what Cursor needs; task/agent assignments), docs/DOCS_INDEX.md (index of all docs), SECURITY.md (reporting vulns), CONTRIBUTING.md (doctor, precommit, PR), .github/dependabot.yml (npm + actions weekly).
-- **Script:** `pnpm run doctor` — verify-env + check + build (no secrets printed). OPENCLAW_INTEGRATION and CONTEXT updated with doctor, delegation (sessions_send), and link to ideal workflow.
-- **Standing instruction:** Before committing, check OPENCLAW_HANDOFF.md for recent OpenClaw work.
+- **User ask:** Cursor to state the plan, assign OpenClaw its jobs, and finish the project to completion; user signing off for the evening.
+- **Cursor did:** (1) Ran full verification: `pnpm check`, `pnpm test`, `pnpm build`, `pnpm format:check`, `pnpm lint` — all passed. (`pnpm precommit` fails locally if `git secrets` not installed; CI may run it.) (2) Wrote **OpenClaw job assignments** in [OPENCLAW_HANDOFF.md](./OPENCLAW_HANDOFF.md): Ship (monitor, ship:check, optional ship:check:full), Business (future-shoestring), Docs (optional sync-check). (3) Updated CONTEXT and todo; committed and pushed.
+- **OpenClaw:** Cron already set (monitor 30m, ship:check 6h, future-shoestring weekly). When agents run, they append to OPENCLAW_HANDOFF per TASKS.md. **When you return:** Check OPENCLAW_HANDOFF.md for any new entries from OpenClaw; review and commit if ready.
 
-**Sync:** CONTEXT and todo updated; commit and push done. Next chat: read CONTEXT, todo, and [docs/IDEAL_WORKFLOW_AND_ASSIGNMENTS.md](./docs/IDEAL_WORKFLOW_AND_ASSIGNMENTS.md) for who does what.
+**Earlier (2026-02-06):** OpenClaw configured (Ship, Server, Client, Docs, Review, Business); TASKS.md, IDEAL_WORKFLOW_AND_ASSIGNMENTS.md, cron jobs; standing instruction to check OPENCLAW_HANDOFF before commit.
 
 ### Next Steps (for new chat)
 
-- **Before commit:** Run `pnpm precommit`. Check [OPENCLAW_HANDOFF.md](./OPENCLAW_HANDOFF.md) for OpenClaw work to include.
+- **When you return:** Read [OPENCLAW_HANDOFF.md](./OPENCLAW_HANDOFF.md) for OpenClaw entries; review and commit any “ready for review” changes.
+- **Before commit:** Run `pnpm precommit` (or check + format:check + lint if git-secrets not installed). Check OPENCLAW_HANDOFF for OpenClaw work to include.
 - **Before deploy:** Run `pnpm check`, `pnpm test`, `pnpm build`; then production smoke + E2E. See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md).
 - **Quick status:** `pnpm run monitor`; `pnpm run doctor` for local sanity.
-- **OpenClaw:** WebChat http://127.0.0.1:18789/; cron runs monitor (30m), ship:check (6h), future/shoestring (weekly). Task/agent map: [docs/IDEAL_WORKFLOW_AND_ASSIGNMENTS.md](./docs/IDEAL_WORKFLOW_AND_ASSIGNMENTS.md).
+- **OpenClaw:** WebChat http://127.0.0.1:18789/; assignments in OPENCLAW_HANDOFF; task/agent map: [docs/IDEAL_WORKFLOW_AND_ASSIGNMENTS.md](./docs/IDEAL_WORKFLOW_AND_ASSIGNMENTS.md).
 - **When schema changes:** Run `pnpm db:migrate`; ensure migrations are committed and applied in Railway.
 - **Backlog:** See [todo.md](./todo.md).
 
