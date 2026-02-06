@@ -6,12 +6,12 @@
 
 ## How to run this orchestration (most efficient)
 
-1. **Open WebChat:** http://127.0.0.1:18789/
+1. **Open WebChat:** Run `openclaw dashboard` (or open http://127.0.0.1:18789/ — if you see "gateway token missing," see OPENCLAW_INTEGRATION.md § gateway token).
 2. **Open two docs:** This file + [OPENCLAW_INTEGRATION.md](./OPENCLAW_INTEGRATION.md) (Role brief table).
 3. **Run agents in parallel:** In separate tabs or sessions, for each agent: select agent → paste **role brief** once → paste **that agent’s task** from the table below. All can run at the same time.
 4. **Collect results:** Each agent appends to OPENCLAW_HANDOFF.md when done. You or Cursor read from the bottom up, merge fixes, run final checks, commit.
 
-**Rule for agents:** You may **apply minimal fixes** and re-run to verify. **Do not commit.** Append one handoff block to OPENCLAW_HANDOFF.md (When, Agent, What ran, What failed, What changed, Ready for).
+**Rule for agents:** You may **apply minimal fixes** and re-run to verify. **Do not commit.** Append one handoff block to OPENCLAW_HANDOFF.md (format in that file).
 
 **Work until fixed:** When the user says "work on this until the solution is fixed," agents should **keep iterating** until the lead-magnet flow works in the live browser: run fixes → run human-style test or production E2E → if still broken, debug and fix again → append handoff each run. Stop only when Roast → Sign in → onboarding (or dashboard) works and you’ve recorded that in OPENCLAW_HANDOFF.md. Use the **“Work until fixed” prompt** below.
 
@@ -67,7 +67,7 @@ Lead-magnet sign-in and onboarding must work for a real user in the live browser
 2. Current state is in OPENCLAW_HANDOFF.md under “OpenClaw: work until fixed — current state.” Apply any remaining fixes, then verify.
 3. Verify by running the human-style test: npx playwright test tests/human-style-roast-signup-onboarding.spec.ts --config=playwright.production.config.ts --headed --project=chromium-desktop (or run production E2E and confirm auth + onboarding flow pass).
 4. If anything still fails or the user would get stuck (no clear direction after login, loop, wrong redirect): debug, fix, re-run from step 3. Repeat until the flow works.
-5. After each run, append to OPENCLAW_HANDOFF.md (When, Agent, What ran, What failed, What changed, Ready for). When the flow works, append “OpenClaw: lead-magnet flow verified working” and stop.
+5. After each run, append to OPENCLAW_HANDOFF.md (format in that file). When the flow works, append “OpenClaw: lead-magnet flow verified working” and stop.
 Do not commit. User or Cursor will commit after review.
 ```
 

@@ -13,6 +13,8 @@ You are working in the **CareerSwarm** repo (AI career evidence platform: Roast,
 2. Read **CONTEXT_FOR_NEW_CHAT.md** (current state, last session, next steps).
 3. Read **todo.md** (priorities). Do not duplicate work Cursor is doing.
 
+**Goal shortcut:** If the user says "production today" or "deploy-ready," run only `pnpm run ship:check:full` and hand off (do not run code sweep or work-until-fixed). If the user says "fix lead-magnet" or "work until fixed," use OPENCLAW_START / OPENCLAW_ORCHESTRATION work-until-fixed flow.
+
 ## Commands (run from repo root)
 
 - **Full ship gate (local):** `pnpm run ship:check` (check + build + test).

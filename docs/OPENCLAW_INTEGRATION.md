@@ -6,6 +6,17 @@ Use [OpenClaw](https://github.com/openclaw/openclaw) (personal AI assistant) in 
 
 **Orchestrate the dev team:** [docs/OPENCLAW_ORCHESTRATION.md](./OPENCLAW_ORCHESTRATION.md) — coordinate Ship, Server, Client, Docs, Review on one problem (e.g. sign-in loop). Copy-paste tasks per agent; they hand off to OPENCLAW_HANDOFF.md so you or Cursor can synthesize and commit.
 
+## What OpenClaw needs to do (goal-based)
+
+Pick a goal; use the prompt or doc in the table. Handoff format is defined once in [OPENCLAW_HANDOFF.md](../OPENCLAW_HANDOFF.md) — append one block there when done; do not commit.
+
+| Goal | What OpenClaw does | Prompt / doc |
+|------|--------------------|--------------|
+| **Production gate (deploy-ready today)** | Run `ship:check:full`; if fail, fix and re-run; append handoff. No sweep, no work-until-fixed. | Paste "Production today" prompt below (Ship or main). |
+| **Fix lead-magnet flow (sign-in/onboarding)** | Work until fixed: run E2E/human-style test → if fail, fix and re-run; optional code sweep only if first run failed. Append handoff each run; when green, append "lead-magnet flow verified working." | Paste "Work until fixed" prompt from [OPENCLAW_ORCHESTRATION.md](./OPENCLAW_ORCHESTRATION.md) or [OPENCLAW_START.md](../OPENCLAW_START.md). |
+| **Multi-agent debug (e.g. sign-in loop)** | Run Server, Client, Ship, Review, Docs in parallel per ORCHESTRATION; each appends handoff. | Use orchestration table in [OPENCLAW_ORCHESTRATION.md](./OPENCLAW_ORCHESTRATION.md). |
+| **Routine (cron)** | Monitor 30m, ship:check 6h, future-shoestring weekly. | Already configured; agents run per HANDOFF job table. |
+
 ## What’s already done (this machine)
 
 - **Installed:** `openclaw` CLI globally (Node ≥22).
@@ -42,7 +53,9 @@ done
 
 Then (re)start the gateway if it’s running: `openclaw gateway restart`.
 
-**Talk to OpenClaw:** Open **WebChat** at [http://127.0.0.1:18789/](http://127.0.0.1:18789/) (or run `openclaw dashboard`). From there you can say e.g. “Run monitor and report,” “Sweep server/ and suggest fixes from DEBUGGING.md,” or “Summarize CONTEXT and todo.”
+**Talk to OpenClaw:** Run **`openclaw dashboard`** (recommended — opens the Control UI with correct auth). Or open [http://127.0.0.1:18789/](http://127.0.0.1:18789/) in a browser. From there you can say e.g. “Run monitor and report,” “Sweep server/ and suggest fixes from DEBUGGING.md,” or “Summarize CONTEXT and todo.”
+
+**If you see "Disconnected from gateway" (1008: unauthorized: gateway token missing):** Get the token: `openclaw config get gateway.auth.token` or generate: `openclaw doctor --generate-gateway-token`. In the Control UI, open **Settings**, paste the token into the gateway auth field, and connect. The UI stores it for next time.
 
 ---
 
@@ -279,5 +292,15 @@ These run automatically so the product stays shippable and future work is scoped
 | List agents             | `openclaw agents list`                                                                                       |
 | Add role agent          | `openclaw agents add ship --workspace /Users/jamesknight/GitHub/careerswarm-honeycomb` (see Multiple agents) |
 | Orchestrate dev team    | See [docs/OPENCLAW_ORCHESTRATION.md](./OPENCLAW_ORCHESTRATION.md) — copy-paste tasks per agent; handoffs go to OPENCLAW_HANDOFF.md |
+
+## Production today (one-shot)
+
+When the goal is **ready for Production today**, paste into **Ship** or **main** (after the Ship role brief). Run `pnpm run ship:check:full`; on failure fix per docs/DEBUGGING.md and re-run until green. Append one handoff block to OPENCLAW_HANDOFF.md (format in that file). Do not commit.
+
+**Prompt to paste (Production today):**
+
+```
+Production today: Run pnpm run ship:check:full. If anything fails, fix per docs/DEBUGGING.md and re-run until green. Append result to OPENCLAW_HANDOFF.md (format in that file). Do not commit.
+```
 
 **Delegation:** From main (or any session) you can send a message to another agent via OpenClaw’s session tools (e.g. `sessions_send` so Ship runs monitor without opening Ship’s WebChat). See [Session tools](https://docs.openclaw.ai/concepts/session-tool).
