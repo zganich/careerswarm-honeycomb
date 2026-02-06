@@ -4,7 +4,7 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "pnpm start",
+    "startCommand": "pnpm db:push && pnpm start",
     "healthcheckPath": "/",
     "restartPolicyType": "ON_FAILURE"
   }

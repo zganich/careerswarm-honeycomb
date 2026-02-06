@@ -113,6 +113,13 @@
       "when": 1769301000000,
       "tag": "0015_master_profile_new_sections",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "5",
+      "when": 1769302000000,
+      "tag": "0016_application_limits",
+      "breakpoints": true
     }
   ]
 }

@@ -23,6 +23,7 @@ import {
 import { OpportunityDetailModal } from "@/components/OpportunityDetailModal";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
+import { useUpgradeModal } from "@/components/UpgradeModal";
 
 export default function SavedOpportunities() {
   const [selectedOpportunityId, setSelectedOpportunityId] = useState<
@@ -31,6 +32,9 @@ export default function SavedOpportunities() {
   const [companyStageFilter, setCompanyStageFilter] = useState<string>("all");
   const [locationFilter, setLocationFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("date_saved");
+  
+  // Upgrade modal for application limits
+  const { handleApplicationError, UpgradeModalComponent } = useUpgradeModal();
 
   const {
     data: savedOpportunities,
@@ -56,7 +60,10 @@ export default function SavedOpportunities() {
       refetch();
     },
     onError: error => {
-      toast.error(`Failed to apply: ${error.message}`);
+      // Check if this is an application limit error
+      if (!handleApplicationError(error)) {
+        toast.error(`Failed to apply: ${error.message}`);
+      }
     },
   });
 
@@ -341,6 +348,9 @@ export default function SavedOpportunities() {
           onClose={() => setSelectedOpportunityId(null)}
         />
       )}
+
+      {/* Upgrade Modal for application limits */}
+      {UpgradeModalComponent}
     </div>
   );
 }

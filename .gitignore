@@ -117,3 +117,4 @@ playwright/.cache
 .manus-logs/
 screenshots/
 .manus/
+# CareerSwarm (already set up)

@@ -32,6 +32,10 @@ export const users = mysqlTable("users", {
   subscriptionStatus: varchar("subscriptionStatus", { length: 50 }),
   subscriptionEndDate: timestamp("subscriptionEndDate"),
 
+  // Usage tracking (for free tier limits)
+  applicationsThisMonth: int("applicationsThisMonth").default(0).notNull(),
+  applicationsResetAt: timestamp("applicationsResetAt").defaultNow(),
+
   // Onboarding state
   onboardingCompleted: boolean("onboardingCompleted").default(false),
   onboardingStep: int("onboardingStep").default(0), // 0-5

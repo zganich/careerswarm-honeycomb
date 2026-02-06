@@ -15,6 +15,8 @@ import FAQ from "./pages/FAQ";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import DevLogin from "./pages/DevLogin";
+import Outplacement from "./pages/Outplacement";
+import AdminDashboard from "./pages/AdminDashboard";
 
 // Onboarding is temporarily offline (lead magnet being reworked). Redirect to home.
 function OnboardingOffline() {
@@ -60,6 +62,9 @@ function Router() {
       <Route path="/faq" component={FAQ} />
       <Route path="/privacy" component={Privacy} />
       <Route path="/terms" component={Terms} />
+      <Route path="/outplacement" component={Outplacement} />
+      <Route path="/enterprise" component={Outplacement} />
+      <Route path="/workforce-admin" component={AdminDashboard} />
 
       {/* Activity Feed */}
       <Route path="/activity" component={Activity} />

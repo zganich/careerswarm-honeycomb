@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -7,11 +8,44 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Check, Hexagon } from "lucide-react";
+import { Check, Hexagon, Loader2 } from "lucide-react";
 import { useLocation } from "wouter";
+import { trpc } from "@/lib/trpc";
 
 export default function Pricing() {
   const [, setLocation] = useLocation();
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Check if user is logged in
+  const { data: user } = trpc.auth.me.useQuery();
+
+  // Stripe checkout mutation
+  const checkoutMutation = trpc.stripe.createCheckoutSession.useMutation({
+    onSuccess: (data) => {
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+      }
+    },
+    onError: (error) => {
+      console.error("Checkout error:", error);
+      setIsLoading(false);
+      // If not logged in, redirect to sign in
+      if (error.message.includes("UNAUTHORIZED")) {
+        setLocation("/login?returnTo=/pricing?upgrade=pro");
+      }
+    },
+  });
+
+  const handleProClick = () => {
+    if (!user) {
+      // Not logged in - redirect to email sign in first
+      setLocation("/login?returnTo=/pricing?upgrade=pro");
+      return;
+    }
+
+    setIsLoading(true);
+    checkoutMutation.mutate({});
+  };
 
   const tiers = [
     {
@@ -28,6 +62,7 @@ export default function Pricing() {
       ],
       cta: "Start Free",
       highlighted: false,
+      action: () => setLocation("/roast"),
     },
     {
       name: "Pro",
@@ -45,8 +80,10 @@ export default function Pricing() {
         "Application tracking",
         "Interview prep materials",
       ],
-      cta: "Start Pro Trial",
+      cta: isLoading ? "Loading..." : "Start Pro Trial",
       highlighted: true,
+      action: handleProClick,
+      isLoading,
     },
     {
       name: "Enterprise",
@@ -66,6 +103,9 @@ export default function Pricing() {
       ],
       cta: "Contact Sales",
       highlighted: false,
+      action: () => {
+        window.location.href = "mailto:sales@careerswarm.com";
+      },
     },
   ];
 
@@ -84,17 +124,22 @@ export default function Pricing() {
             </span>
           </button>
           <div className="flex items-center space-x-4">
-            <button
-              onClick={() =>
-                (window.location.href = `${import.meta.env.VITE_OAUTH_PORTAL_URL}?app_id=${import.meta.env.VITE_APP_ID}&redirect_uri=${window.location.origin}/api/oauth/callback`)
-              }
-              className="text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors"
-            >
-              Sign In
-            </button>
-            <Button onClick={() => setLocation("/roast")}>
-              Get Roasted
-            </Button>
+            {user ? (
+              <button
+                onClick={() => setLocation("/dashboard")}
+                className="text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors"
+              >
+                Dashboard
+              </button>
+            ) : (
+              <button
+                onClick={() => setLocation("/login?returnTo=/pricing")}
+                className="text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors"
+              >
+                Sign In
+              </button>
+            )}
+            <Button onClick={() => setLocation("/roast")}>Get Roasted</Button>
           </div>
         </div>
       </nav>
@@ -114,7 +159,7 @@ export default function Pricing() {
       {/* Pricing Cards */}
       <div className="max-w-7xl mx-auto px-6 pb-24">
         <div className="grid md:grid-cols-3 gap-8">
-          {tiers.map(tier => (
+          {tiers.map((tier) => (
             <Card
               key={tier.name}
               className={
@@ -142,7 +187,7 @@ export default function Pricing() {
               </CardHeader>
               <CardContent>
                 <ul className="space-y-3">
-                  {tier.features.map(feature => (
+                  {tier.features.map((feature) => (
                     <li key={feature} className="flex items-start">
                       <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5" />
                       <span className="text-slate-700">{feature}</span>
@@ -154,14 +199,12 @@ export default function Pricing() {
                 <Button
                   className="w-full"
                   variant={tier.highlighted ? "default" : "outline"}
-                  onClick={() => {
-                    if (tier.name === "Enterprise") {
-                      window.location.href = "mailto:sales@careerswarm.com";
-                    } else {
-                      setLocation("/roast");
-                    }
-                  }}
+                  onClick={tier.action}
+                  disabled={tier.isLoading}
                 >
+                  {tier.isLoading && (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  )}
                   {tier.cta}
                 </Button>
               </CardFooter>

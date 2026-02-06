@@ -1519,6 +1519,15 @@ Each superpower should:
   }),
 
   applications: router({
+    // Get application usage (for showing limits to free tier users)
+    getUsage: protectedProcedure.query(async ({ ctx }) => {
+      const user = await db.getUserByOpenId(ctx.user.openId);
+      if (!user)
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
+      return db.getApplicationUsage(user.id);
+    }),
+
     // List user applications
     list: protectedProcedure
       .input(
@@ -1592,6 +1601,21 @@ Each superpower should:
         const user = await db.getUserByOpenId(ctx.user.openId);
         if (!user)
           throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
+        // Check application limit for free tier users
+        const limitCheck = await db.checkApplicationLimit(user.id);
+        if (!limitCheck.allowed) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: limitCheck.reason || "Application limit reached",
+            cause: {
+              type: "APPLICATION_LIMIT",
+              applicationsUsed: limitCheck.applicationsUsed,
+              limit: limitCheck.limit,
+              tier: limitCheck.tier,
+            },
+          });
+        }
 
         const startTime = Date.now();
 
@@ -1717,6 +1741,9 @@ Each superpower should:
           emailTemplate: outreach.emailOutreach,
           matchScore: qualification.matchScore,
         });
+
+        // Increment application count for free tier users
+        await db.incrementApplicationCount(user.id);
 
         // Log agent execution
         await db.logAgentExecution({

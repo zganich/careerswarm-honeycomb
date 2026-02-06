@@ -1348,3 +1348,131 @@ export async function getJdDraftById(
   console.log(`[JD] getJdDraftById called for id ${id}`);
   return null;
 }
+
+// ================================================================
+// APPLICATION USAGE TRACKING (Free tier limits)
+// ================================================================
+
+const FREE_TIER_APP_LIMIT = 5;
+
+/**
+ * Check if user can generate an application (based on tier and usage)
+ * Returns { allowed: true } or { allowed: false, reason, applicationsUsed, limit }
+ */
+export async function checkApplicationLimit(userId: number): Promise<{
+  allowed: boolean;
+  reason?: string;
+  applicationsUsed?: number;
+  limit?: number;
+  tier?: string;
+}> {
+  const db = await getDb();
+  if (!db) return { allowed: false, reason: "Database not available" };
+
+  const [user] = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
+
+  if (!user) return { allowed: false, reason: "User not found" };
+
+  // Pro users have unlimited applications
+  if (user.subscriptionTier === "pro") {
+    return { allowed: true, tier: "pro" };
+  }
+
+  // Check if we need to reset the monthly counter
+  const now = new Date();
+  const resetAt = user.applicationsResetAt ? new Date(user.applicationsResetAt) : new Date(0);
+  const monthsSinceReset =
+    (now.getFullYear() - resetAt.getFullYear()) * 12 +
+    (now.getMonth() - resetAt.getMonth());
+
+  let applicationsUsed = user.applicationsThisMonth ?? 0;
+
+  // Reset counter if it's a new month
+  if (monthsSinceReset >= 1) {
+    await db
+      .update(users)
+      .set({
+        applicationsThisMonth: 0,
+        applicationsResetAt: now,
+      })
+      .where(eq(users.id, userId));
+    applicationsUsed = 0;
+  }
+
+  // Check limit
+  if (applicationsUsed >= FREE_TIER_APP_LIMIT) {
+    return {
+      allowed: false,
+      reason: `You've used all ${FREE_TIER_APP_LIMIT} free applications this month. Upgrade to Pro for unlimited applications.`,
+      applicationsUsed,
+      limit: FREE_TIER_APP_LIMIT,
+      tier: "free",
+    };
+  }
+
+  return {
+    allowed: true,
+    applicationsUsed,
+    limit: FREE_TIER_APP_LIMIT,
+    tier: "free",
+  };
+}
+
+/**
+ * Increment the user's application count (call after successful generation)
+ */
+export async function incrementApplicationCount(userId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+
+  const [user] = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
+
+  if (!user || user.subscriptionTier === "pro") return;
+
+  await db
+    .update(users)
+    .set({
+      applicationsThisMonth: (user.applicationsThisMonth ?? 0) + 1,
+    })
+    .where(eq(users.id, userId));
+}
+
+/**
+ * Get user's current application usage
+ */
+export async function getApplicationUsage(userId: number): Promise<{
+  used: number;
+  limit: number;
+  tier: string;
+  unlimited: boolean;
+}> {
+  const db = await getDb();
+  if (!db) return { used: 0, limit: FREE_TIER_APP_LIMIT, tier: "free", unlimited: false };
+
+  const [user] = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
+
+  if (!user) return { used: 0, limit: FREE_TIER_APP_LIMIT, tier: "free", unlimited: false };
+
+  if (user.subscriptionTier === "pro") {
+    return { used: 0, limit: 0, tier: "pro", unlimited: true };
+  }
+
+  return {
+    used: user.applicationsThisMonth ?? 0,
+    limit: FREE_TIER_APP_LIMIT,
+    tier: "free",
+    unlimited: false,
+  };
+}

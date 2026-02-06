@@ -107,3 +107,93 @@ _(Entries below this line.)_
 - **Hypothesis:** 401 on first load after login (or first batch before cookie) triggered redirect back to /login.
 - **What was done:** Client applied delayed 401 redirect (600ms) and cancel on auth.me success. Server lane: no code change (auth/cookie already correct). Ship: ship:check green; production E2E one known flaky test (loginViaAPI).
 - **Next:** Review handoff entries above; run `pnpm run ship:check:full` if desired; commit. After deploy, verify sign-in in a live browser.
+
+---
+
+## Monetization Strategy (2026-02-06)
+
+- **When:** 2026-02-06
+- **Agent:** Business (main session)
+- **What ran:** Full monetization strategy review. Read CAREERSWARM_GTM_STRATEGY.md, GTM_PLAN.md, server/agents/gtm/, Stripe router, schema, pricing page.
+- **What failed:** N/A (strategy document, not code).
+- **What changed:** Created `docs/MONETIZATION_STRATEGY.md` — complete monetization playbook.
+- **Ready for:** Review and commit. Then implement per priorities below.
+
+### Do First (This Week)
+
+1. **Fix sign-in flow** — in progress; unblocks everything
+2. **Wire Pro button to Stripe** — connect `/pricing` "Start Pro Trial" to `stripeRouter.createCheckoutSession` (~1 hour)
+3. **Add 5-app limit for free tier** — add counter + check before generating application packages (~2 hours)
+4. **Add upgrade modal** — show when limit hit (~1 hour)
+5. **Set `STRIPE_PRO_PRICE_ID`** — create $29/mo product in Stripe, add to prod env
+
+**Outcome:** First paying customers possible.
+
+### Do Soon (Week 2-3)
+
+6. Post-roast upsell CTA ("Fix these mistakes with Pro")
+7. Cover letter gate (Pro-only)
+8. 7-day Pro trial
+9. Basic funnel tracking in PostHog (roast → signup → app → upgrade)
+10. B2B: Anonymous first JD + Recruiter Pro ($49/mo)
+
+### Defer (Month 2+)
+
+- B2B recruiter outreach pipeline (GTM agents)
+- Lead scoring agents
+- Referral rewards (30 days Pro)
+- Team/Enterprise tiers
+- Annual pricing ($199/yr)
+- Paid acquisition
+
+### Why This Order
+
+- B2C Pro ($29/mo) has the lowest friction — Stripe is wired, Roast works, onboarding almost fixed
+- B2B Recruiter Pro ($49/mo) is easy revenue once B2C proves the model
+- Everything else adds complexity; prove revenue first, optimize later
+- Shoestring: $0 acquisition cost (Reddit, LinkedIn, HN), ~4 Pro subs covers all costs
+
+### Key Metrics to Track
+
+| Metric | Target |
+|--------|--------|
+| Roast → Signup | >10% |
+| Signup → First App | >30% |
+| Free → Pro (at limit) | >5% |
+| Monthly churn | <5% |
+
+Full strategy in `docs/MONETIZATION_STRATEGY.md`.
+
+---
+
+## Monetization Implementation (2026-02-06)
+
+- **When:** 2026-02-06 04:45 MST
+- **Agent:** Business (main session)
+- **What ran:** Implemented items #4-7 from monetization checklist
+- **What failed:** N/A
+- **What changed:**
+  - `drizzle/migrations/0002_application_limits.sql` — new migration for usage tracking columns
+  - `drizzle/schema.ts` — added `applicationsThisMonth` and `applicationsResetAt` to users table
+  - `server/db.ts` — added `checkApplicationLimit`, `incrementApplicationCount`, `getApplicationUsage` functions
+  - `server/routers.ts` — added limit check to `quickApply`, added `applications.getUsage` query
+  - `client/src/pages/Pricing.tsx` — wired Pro button to Stripe checkout
+  - `client/src/components/UpgradeModal.tsx` — new modal for when users hit their limit
+- **Ready for:** Review and commit. Then:
+  1. Run migration: `pnpm drizzle-kit push` (or your migration command)
+  2. Create $29/mo Pro product in Stripe dashboard
+  3. Set `STRIPE_PRO_PRICE_ID` in production env
+  4. Deploy
+
+### What's wired now:
+- ✅ Pro button on /pricing → Stripe checkout (if logged in) or sign-in → checkout
+- ✅ Free tier: 5 applications/month limit (resets monthly)
+- ✅ Limit check before generating applications (returns error with upgrade info)
+- ✅ `applications.getUsage` query for showing usage in UI
+- ✅ `UpgradeModal` component + `useUpgradeModal` hook for handling limit errors
+
+### What you still need to do:
+- [ ] Create Stripe product ($29/mo) and get price ID
+- [ ] Set `STRIPE_PRO_PRICE_ID` in production env
+- [ ] Run database migration
+- [ ] Integrate `UpgradeModal` into the dashboard/application flow where `quickApply` is called

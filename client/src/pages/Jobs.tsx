@@ -27,6 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useUpgradeModal } from "@/components/UpgradeModal";
 
 export default function Jobs() {
   const [, setLocation] = useLocation();
@@ -40,6 +41,9 @@ export default function Jobs() {
   );
   const [filterStage, setFilterStage] = useState<string>("all");
   const [filterLocation, setFilterLocation] = useState<string>("all");
+  
+  // Upgrade modal for application limits
+  const { handleApplicationError, UpgradeModalComponent } = useUpgradeModal();
 
   const {
     data: opportunities,
@@ -102,7 +106,10 @@ export default function Jobs() {
       setLocation("/applications");
     },
     onError: error => {
-      toast.error(`1-Click Apply failed: ${error.message}`);
+      // Check if this is an application limit error
+      if (!handleApplicationError(error)) {
+        toast.error(`1-Click Apply failed: ${error.message}`);
+      }
     },
   });
 
@@ -398,6 +405,9 @@ export default function Jobs() {
         open={selectedOpportunityId !== null}
         onClose={() => setSelectedOpportunityId(null)}
       />
+
+      {/* Upgrade Modal for application limits */}
+      {UpgradeModalComponent}
     </div>
   );
 }
