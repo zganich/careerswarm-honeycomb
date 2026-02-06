@@ -19,6 +19,25 @@ openclaw configure
 # Alternatively set OPENAI_API_KEY in your environment before starting the gateway.
 ```
 
+**Anthropic (Claude) via Anthropic CLI** — use `claude setup-token`, then sync into OpenClaw.
+
+Install the Anthropic CLI if needed: `brew install --cask claude-code` or `curl -fsSL https://claude.ai/install.sh | bash`.
+
+```bash
+# 1. Create token via Anthropic CLI (requires Claude subscription; interactive)
+claude setup-token
+
+# 2. Sync that token into OpenClaw's main agent auth store
+openclaw models auth setup-token
+
+# 3. Copy main's auth to role agents (Ship, Server, Client, etc.)
+MAIN_AUTH=~/.openclaw/agents/main/agent/auth-profiles.json
+for agent in ship server client docs review business; do
+  mkdir -p ~/.openclaw/agents/$agent/agent
+  cp "$MAIN_AUTH" ~/.openclaw/agents/$agent/agent/auth-profiles.json 2>/dev/null || true
+done
+```
+
 Then (re)start the gateway if it’s running: `openclaw gateway restart`.
 
 **Talk to OpenClaw:** Open **WebChat** at [http://127.0.0.1:18789/](http://127.0.0.1:18789/) (or run `openclaw dashboard`). From there you can say e.g. “Run monitor and report,” “Sweep server/ and suggest fixes from DEBUGGING.md,” or “Summarize CONTEXT and todo.”
@@ -251,6 +270,8 @@ These run automatically so the product stays shippable and future work is scoped
 | Gateway restart         | `openclaw gateway restart`                                                                                   |
 | Open WebChat            | [http://127.0.0.1:18789/](http://127.0.0.1:18789/) or `openclaw dashboard`                                   |
 | Add model auth          | `openclaw configure`                                                                                         |
+| Install Anthropic CLI   | `brew install --cask claude-code` (or see install script at claude.ai)                                       |
+| Add Anthropic (CLI flow) | `claude setup-token` then `openclaw models auth setup-token` then copy auth to role agents (see § above)   |
 | Health check            | `openclaw health`                                                                                            |
 | Run agent one-off (CLI) | `openclaw agent --message "Run pnpm run monitor and report"` (after auth is set)                             |
 | List agents             | `openclaw agents list`                                                                                       |
