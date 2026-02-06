@@ -72,3 +72,13 @@ npx playwright test tests/production-e2e.spec.ts -g "Onboarding Flow" --config=p
 ```
 
 Logs show `[Onboarding]`-prefixed steps so you can see exactly when an error occurs. Requires `TEST_USER_EMAIL` / `TEST_USER_PASSWORD` in CI; locally Dev Login accepts any email.
+
+### Human-style single flow: Roast → Signup → Onboarding (5–10s between steps)
+
+One combined flow that acts like a real user: 5–10 second pause between every step, in a headed browser. Targets production (careerswarm.com).
+
+```bash
+npx playwright test tests/human-style-roast-signup-onboarding.spec.ts --config=playwright.production.config.ts --headed --project=chromium-desktop
+```
+
+Logs show `[Human]`-prefixed steps and the exact wait time for each pause (~3.5 min total with extraction).

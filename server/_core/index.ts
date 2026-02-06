@@ -65,10 +65,20 @@ async function startServer() {
           ? {
               directives: {
                 defaultSrc: ["'self'"],
-                scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // Required for Vite/React
-                styleSrc: ["'self'", "'unsafe-inline'"],
+                scriptSrc: [
+                  "'self'",
+                  "'unsafe-inline'",
+                  "'unsafe-eval'",
+                  "https://static.cloudflareinsights.com",
+                ], // Vite/React + Cloudflare Web Analytics
+                styleSrc: [
+                  "'self'",
+                  "'unsafe-inline'",
+                  "https://fonts.googleapis.com",
+                ],
+                fontSrc: ["'self'", "data:", "https://fonts.gstatic.com"],
                 imgSrc: ["'self'", "data:", "blob:", "https:"],
-                fontSrc: ["'self'", "data:"],
+                workerSrc: ["'self'", "blob:"],
                 connectSrc: [
                   "'self'",
                   "https://api.stripe.com",
