@@ -1,17 +1,14 @@
 /**
  * Human-style browser test: Roast → Signup → Onboarding
  *
- * Simulates a real user: 5–10 second pause between each step, headed browser.
+ * Simulates a real user: 3–5 second pause between each step, headed browser.
  * Run: npx playwright test tests/human-style-roast-signup-onboarding.spec.ts
  *      --config=playwright.production.config.ts --headed --project=chromium-desktop
  */
 
 import { test, expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
-import {
-  getUniqueTestEmail,
-  PRODUCTION_URL,
-} from "./utils/production-auth";
+import { getUniqueTestEmail, PRODUCTION_URL } from "./utils/production-auth";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -21,8 +18,8 @@ const __dirname = path.dirname(__filename);
 const BASE_URL = PRODUCTION_URL;
 
 /** Minimum and maximum delay between steps (ms) — human-like pacing */
-const STEP_DELAY_MIN_MS = 5000;
-const STEP_DELAY_MAX_MS = 10000;
+const STEP_DELAY_MIN_MS = 3000;
+const STEP_DELAY_MAX_MS = 5000;
 
 function humanDelayMs(): number {
   return Math.floor(
@@ -33,12 +30,14 @@ function humanDelayMs(): number {
 async function waitHuman(page: Page, stepName: string): Promise<void> {
   const ms = humanDelayMs();
   const ts = new Date().toISOString().slice(11, 23);
-  console.log(`[${ts}] [Human] ${stepName} — waiting ${(ms / 1000).toFixed(1)}s`);
+  console.log(
+    `[${ts}] [Human] ${stepName} — waiting ${(ms / 1000).toFixed(1)}s`
+  );
   await page.waitForTimeout(ms);
 }
 
 test.describe("Human-style: Roast, Signup, Onboarding", () => {
-  test("Full flow: Roast → Sign in → Onboarding (human pacing, 5–10s between steps)", async ({
+  test("Full flow: Roast → Sign in → Onboarding (human pacing, 3–5s between steps)", async ({
     page,
   }) => {
     test.setTimeout(420000); // 7 min: roast + login + onboarding + LLM extraction + delays
@@ -67,7 +66,9 @@ test.describe("Human-style: Roast, Signup, Onboarding", () => {
 
     const result = page.getByTestId("roast-result");
     const error = page.getByTestId("roast-error");
-    await expect(result.or(error)).toBeVisible({ timeout: 95000 }).catch(() => {});
+    await expect(result.or(error))
+      .toBeVisible({ timeout: 95000 })
+      .catch(() => {});
     await waitHuman(page, "Saw roast result or error");
 
     // —— SIGNUP (LOGIN) ——
@@ -98,11 +99,19 @@ test.describe("Human-style: Roast, Signup, Onboarding", () => {
       await waitHuman(page, "Clicked start/continue");
     }
 
-    await page.waitForURL(/\/onboarding\/(upload|welcome|extraction)/, { timeout: 15000 }).catch(() => {});
+    await page
+      .waitForURL(/\/onboarding\/(upload|welcome|extraction)/, {
+        timeout: 15000,
+      })
+      .catch(() => {});
 
     const fileInput = page.locator('input[type="file"]');
     if ((await fileInput.count()) > 0) {
-      const testResumePath = path.join(__dirname, "fixtures", "test-resume.txt");
+      const testResumePath = path.join(
+        __dirname,
+        "fixtures",
+        "test-resume.txt"
+      );
       await fileInput.setInputFiles(testResumePath);
       await waitHuman(page, "Uploaded resume file");
 
@@ -113,10 +122,16 @@ test.describe("Human-style: Roast, Signup, Onboarding", () => {
       }
     }
 
-    await page.waitForURL(/\/onboarding\/extraction/, { timeout: 15000 }).catch(() => {});
+    await page
+      .waitForURL(/\/onboarding\/extraction/, { timeout: 15000 })
+      .catch(() => {});
 
-    const reviewBtn = page.getByRole("button", { name: /continue|review|next/i });
-    await reviewBtn.waitFor({ state: "visible", timeout: 90000 }).catch(() => {});
+    const reviewBtn = page.getByRole("button", {
+      name: /continue|review|next/i,
+    });
+    await reviewBtn
+      .waitFor({ state: "visible", timeout: 90000 })
+      .catch(() => {});
     if (await reviewBtn.isVisible()) {
       await reviewBtn.click();
       await waitHuman(page, "Clicked continue to review");
@@ -125,7 +140,9 @@ test.describe("Human-style: Roast, Signup, Onboarding", () => {
       .waitForURL(/\/onboarding\/review/, { timeout: 15000 })
       .catch(() => {});
 
-    const nextBtn = page.getByRole("button", { name: /continue|next/i }).first();
+    const nextBtn = page
+      .getByRole("button", { name: /continue|next/i })
+      .first();
     if (await nextBtn.isVisible()) {
       await nextBtn.click();
       await waitHuman(page, "Clicked continue to preferences");

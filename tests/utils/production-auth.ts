@@ -41,7 +41,8 @@ export async function loginViaDevLogin(
 }
 
 /**
- * Login via API directly (faster than UI login)
+ * Login via API directly (sets cookie via request context, then navigates).
+ * More reliable than UI login for tests that need a stable session.
  *
  * @param page - Playwright Page object
  * @param email - Email address to login with
@@ -50,20 +51,13 @@ export async function loginViaAPI(
   page: Page,
   email: string = DEFAULT_TEST_EMAIL
 ): Promise<void> {
-  // First navigate to set the cookie domain
   await page.goto(PRODUCTION_URL);
 
-  // Call the test-login API directly
   const response = await page.request.post(
     `${PRODUCTION_URL}/api/auth/test-login`,
     {
-      data: {
-        email,
-        returnTo: "/dashboard",
-      },
-      headers: {
-        "Content-Type": "application/json",
-      },
+      data: { email, returnTo: "/dashboard" },
+      headers: { "Content-Type": "application/json" },
     }
   );
 
@@ -73,14 +67,8 @@ export async function loginViaAPI(
     );
   }
 
-  const data = await response.json();
-
-  if (data.redirect) {
-    await page.goto(data.redirect);
-  } else {
-    await page.goto(`${PRODUCTION_URL}/dashboard`);
-  }
-
+  await page.goto(`${PRODUCTION_URL}/dashboard`);
+  await page.waitForURL(/\/(dashboard|onboarding)/, { timeout: 15000 });
   console.log(`[Production Auth] Logged in via API as ${email}`);
 }
 

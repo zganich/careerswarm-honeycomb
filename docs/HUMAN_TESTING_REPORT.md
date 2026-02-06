@@ -73,12 +73,32 @@ npx playwright test tests/production-e2e.spec.ts -g "Onboarding Flow" --config=p
 
 Logs show `[Onboarding]`-prefixed steps so you can see exactly when an error occurs. Requires `TEST_USER_EMAIL` / `TEST_USER_PASSWORD` in CI; locally Dev Login accepts any email.
 
-### Human-style single flow: Roast → Signup → Onboarding (5–10s between steps)
+### Human-style single flow: Roast → Signup → Onboarding (3–5s between steps)
 
-One combined flow that acts like a real user: 5–10 second pause between every step, in a headed browser. Targets production (careerswarm.com).
+One combined flow that acts like a real user: 3–5 second pause between every step, in a headed browser. Targets production (careerswarm.com).
 
 ```bash
 npx playwright test tests/human-style-roast-signup-onboarding.spec.ts --config=playwright.production.config.ts --headed --project=chromium-desktop
 ```
 
 Logs show `[Human]`-prefixed steps and the exact wait time for each pause (~3.5 min total with extraction).
+
+### Human-style 5-persona test (entry paths + onboarding)
+
+Five distinct personas through full onboarding with 3–5s delays between steps. See `tests/human-style-5-persona.spec.ts` for the spec; full test matrix and resume snippets are in the "test prompt for openclaw" document.
+
+| Persona            | Email                         | Entry Path                        |
+| ------------------ | ----------------------------- | --------------------------------- |
+| Career Changer     | hospitality.pivot@simtest.com | LinkedIn Import (home)            |
+| Recent STEM Grad   | datasci.grad@simtest.com      | Job Board (?utm_source=indeed)    |
+| Senior Executive   | executive.board@simtest.com   | Recruiter (?utm_source=recruiter) |
+| Freelance Creative | creative.remote@simtest.com   | Direct (home)                     |
+| Veteran            | veteran.ops@simtest.com       | Referral (?ref=vetnet)            |
+
+```bash
+npx playwright test tests/human-style-5-persona.spec.ts --config=playwright.production.config.ts --headed --project=chromium-desktop
+```
+
+~15–20 min total. Auth: email-only (no password); Dev Login accepts any email when `ENABLE_DEV_LOGIN=true`.
+
+**Note:** The Cursor MCP browser tool does not persist session cookies from the test-login API redirect, so full human-style tests must be run via Playwright (or OpenClaw with its browser tool).

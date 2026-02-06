@@ -23,7 +23,7 @@ The assistant runs these checks when finishing work; no need for the user to run
 
 ## Completed (February 6, 2026)
 
-- [x] CSP fix: Google Fonts, Cloudflare Insights, blob workers (server/_core/index.ts); human-style test human-style-roast-signup-onboarding.spec.ts (Roast→Signup→Onboarding, 5–10s delays); fix reviewBtn click through review→preferences→complete; CONTEXT last-session summary
+- [x] CSP fix: Google Fonts, Cloudflare Insights, blob workers (server/\_core/index.ts); human-style test human-style-roast-signup-onboarding.spec.ts (Roast→Signup→Onboarding, 5–10s delays); fix reviewBtn click through review→preferences→complete; CONTEXT last-session summary
 - [x] OpenClaw role agents (Ship, Server, Client, Docs, Review, Business) + identities; workspace = this repo
 - [x] OpenClaw cron: careerswarm-monitor (30m), careerswarm-ship-check (6h), careerswarm-future-shoestring (weekly)
 - [x] TASKS.md, TOOLS.md, docs/OPENCLAW_FUTURE_SHOESTRING.md, docs/IDEAL_WORKFLOW_AND_ASSIGNMENTS.md, docs/DOCS_INDEX.md

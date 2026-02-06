@@ -8,6 +8,7 @@
 import { test, expect } from "@playwright/test";
 import {
   loginViaDevLogin,
+  loginViaAPI,
   logout,
   isLoggedIn,
   getUniqueTestEmail,
@@ -90,9 +91,8 @@ test.describe("Authentication Flow", () => {
   });
 
   test("Sign in and stay on dashboard for 5 seconds", async ({ page }) => {
-    // Use unique email for fresh session (shared default can cause redirect to login)
     const email = getUniqueTestEmail();
-    await loginViaDevLogin(page, email);
+    await loginViaAPI(page, email);
     const urlAfterLogin = page.url();
     expect(urlAfterLogin).toMatch(/\/(dashboard|onboarding)/);
     await page.waitForTimeout(5000);

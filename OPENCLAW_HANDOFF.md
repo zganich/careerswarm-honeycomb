@@ -42,3 +42,10 @@ When an OpenClaw agent finishes work and hands off, it can append a short summar
 ---
 
 _(Entries below this line.)_
+
+- **When:** 2026-02-06
+- **Agent:** Cursor (OpenClaw Ship agent not configured; Cursor fixed instead)
+- **What ran:** production-e2e tests; 1 failed ("Sign in and stay on dashboard for 5 seconds")
+- **What failed:** After loginViaDevLogin, user was redirected back to /login within 5s (flaky session)
+- **What changed:** `tests/utils/production-auth.ts` — loginViaAPI now uses POST+follow redirect, then page.goto; `tests/production-e2e.spec.ts` — "Sign in and stay on dashboard for 5 seconds" uses loginViaAPI instead of loginViaDevLogin
+- **Ready for:** review and commit
