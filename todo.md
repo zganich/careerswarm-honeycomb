@@ -1,7 +1,7 @@
 # CareerSwarm TODO
 
 **Last Updated:** February 6, 2026  
-**Status:** Production-ready, all checks passing; E2E 25/25; OpenClaw configured (agents, cron, ideal workflow doc). Cursor verified check/test/build/format/lint (2026-02-06 evening) and wrote OpenClaw job assignments to OPENCLAW_HANDOFF.md.
+**Status:** Production-ready, all checks passing; E2E 25/25; OpenClaw configured. CSP updated (fonts/Cloudflare/workers); human-style test Roast→Signup→Onboarding (5–10s steps); CONTEXT synced for new chat.
 
 ---
 
@@ -23,6 +23,7 @@ The assistant runs these checks when finishing work; no need for the user to run
 
 ## Completed (February 6, 2026)
 
+- [x] CSP fix: Google Fonts, Cloudflare Insights, blob workers (server/_core/index.ts); human-style test human-style-roast-signup-onboarding.spec.ts (Roast→Signup→Onboarding, 5–10s delays); fix reviewBtn click through review→preferences→complete; CONTEXT last-session summary
 - [x] OpenClaw role agents (Ship, Server, Client, Docs, Review, Business) + identities; workspace = this repo
 - [x] OpenClaw cron: careerswarm-monitor (30m), careerswarm-ship-check (6h), careerswarm-future-shoestring (weekly)
 - [x] TASKS.md, TOOLS.md, docs/OPENCLAW_FUTURE_SHOESTRING.md, docs/IDEAL_WORKFLOW_AND_ASSIGNMENTS.md, docs/DOCS_INDEX.md
