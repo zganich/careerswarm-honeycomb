@@ -58,15 +58,19 @@ function getGhRepo() {
 async function githubStatus() {
   const repo = getGhRepo();
   const { code, out } = await run('gh', ['run', 'list', '--limit', '5', '--json', 'status,conclusion,name,displayTitle,createdAt', '--repo', repo]);
-  if (code !== 0) return { ok: false, runs: [], error: 'gh run list failed' };
+  if (code !== 0) return { ok: false, runs: [], failed: [], inProgress: false, error: 'gh run list failed' };
   let runs;
   try {
     runs = JSON.parse(out);
   } catch {
-    return { ok: false, runs: [], error: 'gh output parse failed' };
+    return { ok: false, runs: [], failed: [], inProgress: false, error: 'gh output parse failed' };
   }
   const failed = runs.filter((r) => r.conclusion === 'failure');
-  return { ok: failed.length === 0, runs, failed };
+  const latest = runs[0];
+  // CI is healthy only when the latest run has completed successfully; in-progress or failure = not OK
+  const ok = latest ? latest.conclusion === 'success' : failed.length === 0;
+  const inProgress = latest?.status === 'in_progress';
+  return { ok, runs, failed, inProgress };
 }
 
 async function railwayStatus() {
@@ -136,11 +140,20 @@ async function runMonitor(notifyOnFail = false) {
       console.log(`  ${icon} ${r.name}: ${r.conclusion || r.status} — ${r.displayTitle || r.createdAt}`);
     }
   } else {
-    console.log('  ❌ GitHub CI: failures detected');
-    for (const r of gh.failed) {
-      console.log(`     - ${r.name}: ${r.displayTitle}`);
+    if (gh.error) {
+      console.log('  ❌ GitHub CI:', gh.error);
+    } else if (gh.inProgress) {
+      const latest = gh.runs[0];
+      console.log('  ❌ GitHub CI: latest run in progress');
+      console.log(`     - ${latest?.name}: ${latest?.displayTitle || latest?.createdAt}`);
+    } else {
+      console.log('  ❌ GitHub CI: failures detected');
+      for (const r of gh.failed || []) {
+        console.log(`     - ${r.name}: ${r.displayTitle}`);
+      }
     }
-    if (notifyOnFail) notify('CareerSwarm', `GitHub CI failed: ${gh.failed.map((f) => f.name).join(', ')}`, false);
+    const hasFailures = (gh.failed?.length ?? 0) > 0;
+    if (notifyOnFail && !gh.inProgress && hasFailures) notify('CareerSwarm', `GitHub CI failed: ${gh.failed.map((f) => f.name).join(', ')}`, false);
   }
   console.log('');
 
