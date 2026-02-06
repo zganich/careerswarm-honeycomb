@@ -11,10 +11,12 @@ You are deploying the CareerSwarm application. Follow these instructions EXACTLY
 ## STEP 1: CONNECT TO REPOSITORY
 
 Connect to this GitHub repository:
+
 - **URL:** https://github.com/zganich/careerswarm-honeycomb
 - **Branch:** main
 
 Run this command to clone:
+
 ```bash
 git clone https://github.com/zganich/careerswarm-honeycomb.git
 cd careerswarm-honeycomb
@@ -27,6 +29,7 @@ cd careerswarm-honeycomb
 ## STEP 2: INSTALL DEPENDENCIES
 
 Run this exact command:
+
 ```bash
 pnpm install
 ```
@@ -43,17 +46,17 @@ Check that ALL of these environment variables are set in your project. List the 
 
 ### REQUIRED VARIABLES (app will NOT work without these):
 
-| Variable | Expected Value | Status |
-|----------|---------------|--------|
-| DATABASE_URL | mysql://... connection string | ? |
-| JWT_SECRET | Random string, minimum 32 characters | ? |
-| OAUTH_SERVER_URL | Your Manus OAuth server URL | ? |
-| OWNER_OPEN_ID | Your Manus OpenID | ? |
-| BUILT_IN_FORGE_API_URL | https://forge.manus.ai | ? |
-| BUILT_IN_FORGE_API_KEY | Your Forge API key (starts with sk- or similar) | ? |
-| VITE_APP_ID | careerswarm | ? |
-| VITE_OAUTH_PORTAL_URL | https://oauth.manus.im (or your OAuth portal) | ? |
-| NODE_ENV | production | ? |
+| Variable               | Expected Value                                  | Status |
+| ---------------------- | ----------------------------------------------- | ------ |
+| DATABASE_URL           | mysql://... connection string                   | ?      |
+| JWT_SECRET             | Random string, minimum 32 characters            | ?      |
+| OAUTH_SERVER_URL       | Your Manus OAuth server URL                     | ?      |
+| OWNER_OPEN_ID          | Your Manus OpenID                               | ?      |
+| BUILT_IN_FORGE_API_URL | https://forge.manus.ai                          | ?      |
+| BUILT_IN_FORGE_API_KEY | Your Forge API key (starts with sk- or similar) | ?      |
+| VITE_APP_ID            | careerswarm                                     | ?      |
+| VITE_OAUTH_PORTAL_URL  | https://oauth.manus.im (or your OAuth portal)   | ?      |
+| NODE_ENV               | production                                      | ?      |
 
 ### HOW TO SET MISSING VARIABLES:
 
@@ -73,6 +76,7 @@ export NODE_ENV="production"
 ```
 
 **CONFIRM:** Reply with a table showing the status of each variable:
+
 - ✓ = set and has value
 - ✗ = missing or empty
 
@@ -83,15 +87,18 @@ Do NOT proceed until ALL required variables show ✓.
 ## STEP 4: VERIFY DATABASE CONNECTION
 
 The database must be accessible. Run this command:
+
 ```bash
 pnpm db:migrate
 ```
 
-**Expected output:** 
+**Expected output:**
+
 - "No migrations to run" (if already migrated)
 - OR a list of migrations being applied (0000 through 0015)
 
 **If you see an error:**
+
 - "Connection refused" = DATABASE_URL is wrong or database is not running
 - "Access denied" = Wrong username/password in DATABASE_URL
 - "Unknown database" = Database does not exist, create it first
@@ -107,15 +114,18 @@ Run these commands in order:
 ```bash
 pnpm check
 ```
+
 **Expected:** No output (0 TypeScript errors)
 
 ```bash
 pnpm build
 ```
+
 **Expected:** Build completes with output showing:
+
 - dist/public/index.html
-- dist/public/assets/index-*.css
-- dist/public/assets/index-*.js
+- dist/public/assets/index-\*.css
+- dist/public/assets/index-\*.js
 - dist/index.js
 
 **CONFIRM:** Reply "Step 5 complete - build successful" OR describe any errors.
@@ -138,6 +148,7 @@ Replace YOUR-PRODUCTION-DOMAIN with the actual domain (e.g., careerswarm.com or 
 **Where to configure:** In your Manus project settings, look for "OAuth" or "Allowed Redirect URIs" or "Callback URLs".
 
 **CONFIRM:** Reply with:
+
 1. The production URL
 2. The callback URL you added
 3. Confirmation it was added to the whitelist
@@ -152,6 +163,7 @@ Deploy the application using your hosting method:
 Click the "Publish" button in the Manus Management UI.
 
 **Option B - Command line:**
+
 ```bash
 pnpm start
 ```
@@ -165,25 +177,30 @@ pnpm start
 Test these pages in order:
 
 ### Test 1: Homepage
+
 - Go to: `https://YOUR-DOMAIN/`
 - **Expected:** Homepage loads with "CareerSwarm" branding and hero section
 
 ### Test 2: Resume Roast (Public Page)
+
 - Go to: `https://YOUR-DOMAIN/roast`
 - Paste this text: "Software engineer with 5 years experience in JavaScript and Python. Led team of 3 developers."
 - Click "Get Roasted"
 - **Expected:** Score and feedback appear
 
 ### Test 3: Login Flow
+
 - Go to: `https://YOUR-DOMAIN/login`
 - Click "Sign In to CareerSwarm"
 - **Expected:** Redirects to Manus OAuth, then back to the app
 
 ### Test 4: Dashboard (After Login)
+
 - After login, go to: `https://YOUR-DOMAIN/dashboard`
 - **Expected:** Dashboard loads with user info
 
 **CONFIRM:** Reply with test results:
+
 - Test 1: ✓ or ✗ (with error if failed)
 - Test 2: ✓ or ✗ (with error if failed)
 - Test 3: ✓ or ✗ (with error if failed)
@@ -228,22 +245,27 @@ DEPLOYMENT STATUS: [SUCCESS/FAILED]
 ## TROUBLESHOOTING
 
 ### OAuth Redirect Loop
+
 - Cause: Callback URL not whitelisted
 - Fix: Add `https://YOUR-DOMAIN/api/oauth/callback` to OAuth settings
 
 ### Database Connection Error
+
 - Cause: DATABASE_URL is wrong
 - Fix: Verify the connection string format: `mysql://user:password@host:port/database`
 
 ### Build Fails
+
 - Cause: Missing dependencies or TypeScript errors
 - Fix: Run `pnpm install` again, then `pnpm check` to see errors
 
 ### 500 Error on API Calls
+
 - Cause: Missing BUILT_IN_FORGE_API_KEY
 - Fix: Set the Forge API key in environment variables
 
 ### Login Works But Dashboard is Empty
+
 - Cause: Database tables don't exist
 - Fix: Run `pnpm db:migrate`
 

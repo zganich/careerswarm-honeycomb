@@ -21,10 +21,16 @@ export default function ForRecruiters() {
   const [copied, setCopied] = useState(false);
 
   const generateMutation = trpc.jdBuilder.generate.useMutation();
-  const listQuery = trpc.jdBuilder.list.useQuery({ limit: 20 }, { enabled: !!generateMutation.data?.draftId });
+  const listQuery = trpc.jdBuilder.list.useQuery(
+    { limit: 20 },
+    { enabled: !!generateMutation.data?.draftId }
+  );
 
   const result = generateMutation.data;
-  const canSubmit = roleTitle.trim().length > 0 && companyName.trim().length > 0 && !generateMutation.isPending;
+  const canSubmit =
+    roleTitle.trim().length > 0 &&
+    companyName.trim().length > 0 &&
+    !generateMutation.isPending;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,8 +39,18 @@ export default function ForRecruiters() {
       roleTitle: roleTitle.trim(),
       companyName: companyName.trim(),
       department: department.trim() || undefined,
-      mustHaves: mustHaves.trim() ? mustHaves.split(/[,;]/).map((s) => s.trim()).filter(Boolean) : undefined,
-      niceToHaves: niceToHaves.trim() ? niceToHaves.split(/[,;]/).map((s) => s.trim()).filter(Boolean) : undefined,
+      mustHaves: mustHaves.trim()
+        ? mustHaves
+            .split(/[,;]/)
+            .map(s => s.trim())
+            .filter(Boolean)
+        : undefined,
+      niceToHaves: niceToHaves.trim()
+        ? niceToHaves
+            .split(/[,;]/)
+            .map(s => s.trim())
+            .filter(Boolean)
+        : undefined,
       level: level.trim() || undefined,
       location: locationType.trim() || undefined,
       compensationRange: compensationRange.trim() || undefined,
@@ -65,9 +81,12 @@ export default function ForRecruiters() {
             <FileText className="w-6 h-6 text-orange-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">Job Description Builder</h1>
+            <h1 className="text-2xl font-bold text-slate-900">
+              Job Description Builder
+            </h1>
             <p className="text-sm text-slate-600">
-              For recruiters and HR. Generate ATS-friendly job descriptions in minutes. 1 free JD per month.
+              For recruiters and HR. Generate ATS-friendly job descriptions in
+              minutes. 1 free JD per month.
             </p>
           </div>
         </div>
@@ -78,7 +97,7 @@ export default function ForRecruiters() {
             <Input
               id="roleTitle"
               value={roleTitle}
-              onChange={(e) => setRoleTitle(e.target.value)}
+              onChange={e => setRoleTitle(e.target.value)}
               placeholder="e.g. Senior Product Manager"
               disabled={generateMutation.isPending}
             />
@@ -88,7 +107,7 @@ export default function ForRecruiters() {
             <Input
               id="companyName"
               value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
+              onChange={e => setCompanyName(e.target.value)}
               placeholder="e.g. Acme Inc"
               disabled={generateMutation.isPending}
             />
@@ -98,7 +117,7 @@ export default function ForRecruiters() {
             <Input
               id="department"
               value={department}
-              onChange={(e) => setDepartment(e.target.value)}
+              onChange={e => setDepartment(e.target.value)}
               placeholder="e.g. Product, Engineering"
               disabled={generateMutation.isPending}
             />
@@ -108,7 +127,7 @@ export default function ForRecruiters() {
             <Input
               id="level"
               value={level}
-              onChange={(e) => setLevel(e.target.value)}
+              onChange={e => setLevel(e.target.value)}
               placeholder="e.g. Senior, Mid, Junior"
               disabled={generateMutation.isPending}
             />
@@ -118,17 +137,19 @@ export default function ForRecruiters() {
             <Input
               id="location"
               value={locationType}
-              onChange={(e) => setLocationType(e.target.value)}
+              onChange={e => setLocationType(e.target.value)}
               placeholder="e.g. Remote, NYC, Hybrid"
               disabled={generateMutation.isPending}
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="mustHaves">Must-haves (comma or semicolon separated)</Label>
+            <Label htmlFor="mustHaves">
+              Must-haves (comma or semicolon separated)
+            </Label>
             <Textarea
               id="mustHaves"
               value={mustHaves}
-              onChange={(e) => setMustHaves(e.target.value)}
+              onChange={e => setMustHaves(e.target.value)}
               placeholder="e.g. 5+ years PM, B2B SaaS, SQL"
               rows={2}
               disabled={generateMutation.isPending}
@@ -139,7 +160,7 @@ export default function ForRecruiters() {
             <Textarea
               id="niceToHaves"
               value={niceToHaves}
-              onChange={(e) => setNiceToHaves(e.target.value)}
+              onChange={e => setNiceToHaves(e.target.value)}
               placeholder="e.g. MBA, startup experience"
               rows={2}
               disabled={generateMutation.isPending}
@@ -150,12 +171,16 @@ export default function ForRecruiters() {
             <Input
               id="compensation"
               value={compensationRange}
-              onChange={(e) => setCompensationRange(e.target.value)}
+              onChange={e => setCompensationRange(e.target.value)}
               placeholder="e.g. $150k–$180k, Competitive"
               disabled={generateMutation.isPending}
             />
           </div>
-          <Button type="submit" disabled={!canSubmit} className="bg-orange-500 hover:bg-orange-600">
+          <Button
+            type="submit"
+            disabled={!canSubmit}
+            className="bg-orange-500 hover:bg-orange-600"
+          >
             {generateMutation.isPending ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -178,7 +203,11 @@ export default function ForRecruiters() {
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Job Description</CardTitle>
               <Button variant="outline" size="sm" onClick={handleCopy}>
-                {copied ? <Check className="w-4 h-4 mr-1" /> : <Copy className="w-4 h-4 mr-1" />}
+                {copied ? (
+                  <Check className="w-4 h-4 mr-1" />
+                ) : (
+                  <Copy className="w-4 h-4 mr-1" />
+                )}
                 {copied ? "Copied" : "Copy"}
               </Button>
             </CardHeader>
@@ -191,7 +220,15 @@ export default function ForRecruiters() {
         )}
 
         <p className="mt-8 text-xs text-slate-500">
-          Pro users get unlimited JDs. <button type="button" onClick={() => setLocation("/pricing")} className="text-orange-600 hover:underline">View pricing</button>.
+          Pro users get unlimited JDs.{" "}
+          <button
+            type="button"
+            onClick={() => setLocation("/pricing")}
+            className="text-orange-600 hover:underline"
+          >
+            View pricing
+          </button>
+          .
         </p>
       </div>
     </div>

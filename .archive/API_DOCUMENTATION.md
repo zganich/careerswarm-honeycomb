@@ -7,6 +7,7 @@
 ## Overview
 
 The Careerswarm API allows partners to integrate career intelligence into their platforms. Use cases include:
+
 - Job boards adding "Career Match" scores to listings
 - ATS systems suggesting candidates based on achievement data
 - Career coaching platforms accessing trajectory predictions
@@ -39,6 +40,7 @@ Get your API key from the [Developer Dashboard](https://careerswarm.app/develope
 Predict career match percentage for a target role.
 
 **Request Body:**
+
 ```json
 {
   "user_id": "string",
@@ -49,6 +51,7 @@ Predict career match percentage for a target role.
 ```
 
 **Response:**
+
 ```json
 {
   "match_percentage": 78,
@@ -57,10 +60,7 @@ Predict career match percentage for a target role.
     "Led team of 8 engineers",
     "AWS infrastructure expertise"
   ],
-  "gaps": [
-    "Kubernetes experience",
-    "Machine learning background"
-  ],
+  "gaps": ["Kubernetes experience", "Machine learning background"],
   "recommendations": [
     "Highlight 'Migrated legacy system to microservices' achievement",
     "Emphasize 'Reduced infrastructure costs by 40%' story"
@@ -76,6 +76,7 @@ Predict career match percentage for a target role.
 Transform STAR-format achievement into Google XYZ format.
 
 **Request Body:**
+
 ```json
 {
   "situation": "Legacy monolithic application causing deployment delays",
@@ -86,6 +87,7 @@ Transform STAR-format achievement into Google XYZ format.
 ```
 
 **Response:**
+
 ```json
 {
   "xyz_accomplishment": "Reduced deployment time by 87.5% (from 2 hours to 15 minutes) by leading migration to microservices architecture using Docker and Kubernetes, enabling the team to ship features 8x faster",
@@ -100,9 +102,11 @@ Transform STAR-format achievement into Google XYZ format.
 Get achievement templates by role.
 
 **Query Parameters:**
+
 - `role`: string (required) - e.g., "software_engineer", "product_manager"
 
 **Response:**
+
 ```json
 {
   "templates": [
@@ -125,6 +129,7 @@ Get achievement templates by role.
 Extract structured data from job description text.
 
 **Request Body:**
+
 ```json
 {
   "job_description_text": "We're looking for a Senior Engineer with 5+ years..."
@@ -132,6 +137,7 @@ Extract structured data from job description text.
 ```
 
 **Response:**
+
 ```json
 {
   "required_skills": ["Python", "AWS", "System Design"],
@@ -156,6 +162,7 @@ Extract structured data from job description text.
 Generate tailored resume for a specific job.
 
 **Request Body:**
+
 ```json
 {
   "user_id": "string",
@@ -165,6 +172,7 @@ Generate tailored resume for a specific job.
 ```
 
 **Response:**
+
 ```json
 {
   "resume_url": "https://cdn.careerswarm.app/resumes/abc123.pdf",
@@ -185,6 +193,7 @@ Generate tailored resume for a specific job.
 Search candidates by achievements.
 
 **Request Body:**
+
 ```json
 {
   "query": "engineers who reduced infrastructure costs",
@@ -198,6 +207,7 @@ Search candidates by achievements.
 ```
 
 **Response:**
+
 ```json
 {
   "matches": [
@@ -248,6 +258,7 @@ Subscribe to events via webhooks:
 ## SDKs
 
 Official SDKs available:
+
 - **JavaScript/TypeScript**: `npm install @careerswarm/sdk`
 - **Python**: `pip install careerswarm`
 - **Ruby**: `gem install careerswarm`
@@ -255,14 +266,14 @@ Official SDKs available:
 ### Example (JavaScript)
 
 ```javascript
-import { Careerswarm } from '@careerswarm/sdk';
+import { Careerswarm } from "@careerswarm/sdk";
 
-const client = new Careerswarm({ apiKey: 'YOUR_API_KEY' });
+const client = new Careerswarm({ apiKey: "YOUR_API_KEY" });
 
 const prediction = await client.trajectory.predict({
-  userId: 'user_123',
-  targetRole: 'Senior Engineer',
-  targetCompany: 'Google'
+  userId: "user_123",
+  targetRole: "Senior Engineer",
+  targetCompany: "Google",
 });
 
 console.log(`Match: ${prediction.matchPercentage}%`);
@@ -271,6 +282,7 @@ console.log(`Match: ${prediction.matchPercentage}%`);
 ## Error Handling
 
 Standard HTTP status codes:
+
 - `200` - Success
 - `400` - Bad Request (invalid parameters)
 - `401` - Unauthorized (invalid API key)
@@ -279,6 +291,7 @@ Standard HTTP status codes:
 - `500` - Internal Server Error
 
 Error response format:
+
 ```json
 {
   "error": {
@@ -299,6 +312,7 @@ Error response format:
 ## Changelog
 
 ### v1.0.0 (2026-01-21)
+
 - Initial public release
 - Career trajectory prediction
 - Achievement transformation

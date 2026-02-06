@@ -1,8 +1,20 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Edit, Trash2, TrendingUp, Target, Clock, Sparkles } from "lucide-react";
+import {
+  Edit,
+  Trash2,
+  TrendingUp,
+  Target,
+  Clock,
+  Sparkles,
+} from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
 interface Achievement {
@@ -33,13 +45,16 @@ export function AchievementDetailModal({
   onEdit,
   onDelete,
 }: AchievementDetailModalProps) {
-  const { data: achievementStats } = trpc.profile.getAchievementStats.useQuery();
+  const { data: achievementStats } =
+    trpc.profile.getAchievementStats.useQuery();
   const { data: profile } = trpc.profile.get.useQuery();
 
   if (!achievement) return null;
 
   // Get stats for this achievement
-  const stats = achievementStats?.find((s: any) => s.achievementId === achievement.id);
+  const stats = achievementStats?.find(
+    (s: any) => s.achievementId === achievement.id
+  );
   const successRate = stats?.successRate || 0;
   const usageCount = stats?.usageCount || 0;
 
@@ -49,10 +64,11 @@ export function AchievementDetailModal({
   );
 
   // Find superpowers that reference this achievement
-  const linkedSuperpowers = profile?.superpowers.filter((sp: any) => {
-    const evidenceIds = sp.evidenceAchievementIds || [];
-    return evidenceIds.includes(achievement.id);
-  }) || [];
+  const linkedSuperpowers =
+    profile?.superpowers.filter((sp: any) => {
+      const evidenceIds = sp.evidenceAchievementIds || [];
+      return evidenceIds.includes(achievement.id);
+    }) || [];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -65,19 +81,27 @@ export function AchievementDetailModal({
           {/* Work Experience Context */}
           {workExperience && (
             <div className="text-sm text-muted-foreground">
-              <p className="font-medium text-foreground">{workExperience.companyName}</p>
+              <p className="font-medium text-foreground">
+                {workExperience.companyName}
+              </p>
               <p>{workExperience.jobTitle}</p>
               <p>
-                {new Date(workExperience.startDate).toLocaleDateString("en-US", {
-                  month: "short",
-                  year: "numeric",
-                })}{" "}
+                {new Date(workExperience.startDate).toLocaleDateString(
+                  "en-US",
+                  {
+                    month: "short",
+                    year: "numeric",
+                  }
+                )}{" "}
                 -{" "}
                 {workExperience.endDate
-                  ? new Date(workExperience.endDate).toLocaleDateString("en-US", {
-                      month: "short",
-                      year: "numeric",
-                    })
+                  ? new Date(workExperience.endDate).toLocaleDateString(
+                      "en-US",
+                      {
+                        month: "short",
+                        year: "numeric",
+                      }
+                    )
                   : "Present"}
               </p>
             </div>
@@ -87,7 +111,9 @@ export function AchievementDetailModal({
           <Card>
             <CardContent className="pt-6">
               <h3 className="font-semibold mb-2">Description</h3>
-              <p className="text-sm leading-relaxed">{achievement.description}</p>
+              <p className="text-sm leading-relaxed">
+                {achievement.description}
+              </p>
               {achievement.context && (
                 <>
                   <h3 className="font-semibold mt-4 mb-2">Context</h3>
@@ -120,11 +146,15 @@ export function AchievementDetailModal({
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground mb-1">Timeframe</p>
+                    <p className="text-xs text-muted-foreground mb-1">
+                      Timeframe
+                    </p>
                     <p className="font-medium">
                       {workExperience
                         ? `${Math.round(
-                            (new Date(workExperience.endDate || Date.now()).getTime() -
+                            (new Date(
+                              workExperience.endDate || Date.now()
+                            ).getTime() -
                               new Date(workExperience.startDate).getTime()) /
                               (1000 * 60 * 60 * 24 * 30)
                           )} months`
@@ -161,21 +191,30 @@ export function AchievementDetailModal({
               </h3>
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <p className="text-xs text-muted-foreground mb-1">Times Used</p>
+                  <p className="text-xs text-muted-foreground mb-1">
+                    Times Used
+                  </p>
                   <p className="text-2xl font-bold">{usageCount}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground mb-1">Success Rate</p>
+                  <p className="text-xs text-muted-foreground mb-1">
+                    Success Rate
+                  </p>
                   <p className="text-2xl font-bold">{successRate}%</p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground mb-1">Last Used</p>
+                  <p className="text-xs text-muted-foreground mb-1">
+                    Last Used
+                  </p>
                   <p className="text-sm font-medium">
                     {achievement.lastUsedAt
-                      ? new Date(achievement.lastUsedAt).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                        })
+                      ? new Date(achievement.lastUsedAt).toLocaleDateString(
+                          "en-US",
+                          {
+                            month: "short",
+                            day: "numeric",
+                          }
+                        )
                       : "Never"}
                   </p>
                 </div>

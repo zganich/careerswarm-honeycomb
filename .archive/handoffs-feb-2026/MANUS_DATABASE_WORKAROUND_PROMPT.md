@@ -14,12 +14,12 @@ The original TiDB database was dropped and Manus support may take days to respon
 
 Before setting up the database, ensure you have these environment variables ready (see `.env.example`):
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `DATABASE_URL` | MySQL connection string | Yes |
-| `JWT_SECRET` | Session signing key (min 32 chars) | Yes |
-| `OAUTH_SERVER_URL` | Manus OAuth server URL | Yes |
-| `BUILT_IN_FORGE_API_KEY` | Manus Forge API key for LLM | Yes |
+| Variable                 | Description                        | Required |
+| ------------------------ | ---------------------------------- | -------- |
+| `DATABASE_URL`           | MySQL connection string            | Yes      |
+| `JWT_SECRET`             | Session signing key (min 32 chars) | Yes      |
+| `OAUTH_SERVER_URL`       | Manus OAuth server URL             | Yes      |
+| `BUILT_IN_FORGE_API_KEY` | Manus Forge API key for LLM        | Yes      |
 
 ---
 
@@ -119,11 +119,13 @@ If Docker isn't available:
 3. **Create database:** Name it `careerswarm`
 4. **Get connection string** from dashboard
 5. **Update `.env`:**
+
    ```
    DATABASE_URL="mysql://username:password@aws.connect.psdb.cloud/careerswarm?ssl={\"rejectUnauthorized\":true}"
    ```
-   
+
    Or use the simpler format if SSL issues occur:
+
    ```
    DATABASE_URL="mysql://username:password@aws.connect.psdb.cloud/careerswarm?sslmode=require"
    ```
@@ -142,6 +144,7 @@ pnpm db:migrate
 ```
 
 **Expected output:** Migrations complete, no errors. You should see output like:
+
 ```
 Running migrations...
 Migration 0000_lucky_secret_warriors done
@@ -161,9 +164,9 @@ mysql.createConnection(process.env.DATABASE_URL).then(async conn => {
   const tableNames = tables.map(t => Object.values(t)[0]);
   console.log('Total tables:', tableNames.length);
   console.log('Tables:', tableNames.join(', '));
-  
+
   // Check for critical tables
-  const required = ['users', 'userProfiles', 'workExperiences', 'achievements', 'skills', 
+  const required = ['users', 'userProfiles', 'workExperiences', 'achievements', 'skills',
                     'education', 'targetPreferences', 'opportunities', 'applications'];
   const missing = required.filter(t => !tableNames.includes(t));
   if (missing.length > 0) {
@@ -180,6 +183,7 @@ mysql.createConnection(process.env.DATABASE_URL).then(async conn => {
 ```
 
 **Expected:** 24 tables including:
+
 - `users` - User accounts
 - `userProfiles` - Contact info, professional summary
 - `workExperiences` - Job history
@@ -281,6 +285,7 @@ pnpm db:migrate
 ```
 
 **For non-Docker databases:**
+
 ```sql
 -- Run this in MySQL client
 DROP DATABASE IF EXISTS careerswarm;
@@ -294,6 +299,7 @@ Then run `pnpm db:migrate` again.
 **Cause:** MySQL server not running or wrong host/port.
 
 **Solutions:**
+
 1. **Docker:** Check container is running: `docker ps | grep careerswarm-mysql`
 2. **Start container:** `docker start careerswarm-mysql`
 3. **Check port:** Ensure nothing else is using port 3306
@@ -304,6 +310,7 @@ Then run `pnpm db:migrate` again.
 **Cause:** Wrong credentials in DATABASE_URL.
 
 **Solution:** Verify username/password match what was set when creating the database:
+
 - Docker default: `root` / `localdev`
 - Check your database provider's dashboard for credentials
 
@@ -312,6 +319,7 @@ Then run `pnpm db:migrate` again.
 **Cause:** Database doesn't exist yet.
 
 **Solution:**
+
 ```bash
 # For Docker:
 docker exec -it careerswarm-mysql mysql -u root -plocaldev -e "CREATE DATABASE IF NOT EXISTS careerswarm;"
@@ -325,6 +333,7 @@ pnpm db:migrate
 **Cause:** Migrations didn't complete successfully.
 
 **Solution:**
+
 1. Check migration output for errors
 2. Try running migrations again: `pnpm db:migrate`
 3. If still failing, use clean slate approach (drop and recreate database)
@@ -369,11 +378,11 @@ Proceeding with deployment...
 
 ## Quick Summary
 
-| Option | Time | Requires | Best For |
-|--------|------|----------|----------|
-| 1. Manus Dashboard | 2 min | Dashboard access | Production deployments |
-| 2. Docker MySQL | 5 min | Docker installed | Local development, testing |
-| 3. PlanetScale | 5 min | Internet, email | When Docker unavailable |
+| Option             | Time  | Requires         | Best For                   |
+| ------------------ | ----- | ---------------- | -------------------------- |
+| 1. Manus Dashboard | 2 min | Dashboard access | Production deployments     |
+| 2. Docker MySQL    | 5 min | Docker installed | Local development, testing |
+| 3. PlanetScale     | 5 min | Internet, email  | When Docker unavailable    |
 
 **Recommended:** Try Option 1 first (check Manus dashboard). If not available, use Option 2 (Docker).
 

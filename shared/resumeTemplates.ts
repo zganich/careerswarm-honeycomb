@@ -17,45 +17,53 @@ export const RESUME_TEMPLATES: Record<ResumeTemplate, TemplateConfig> = {
   modern: {
     id: "modern",
     name: "Modern Professional",
-    description: "Clean, contemporary design with subtle color accents. Perfect for creative and tech roles.",
+    description:
+      "Clean, contemporary design with subtle color accents. Perfect for creative and tech roles.",
     preview: "/templates/modern-preview.png",
     features: [
       "Two-column layout",
       "Color-coded sections",
       "Icon support",
       "Skills bar visualization",
-      "ATS-friendly structure"
+      "ATS-friendly structure",
     ],
-    bestFor: ["Tech", "Marketing", "Design", "Startups"]
+    bestFor: ["Tech", "Marketing", "Design", "Startups"],
   },
   classic: {
     id: "classic",
     name: "Classic Executive",
-    description: "Traditional, professional format. Ideal for corporate and executive positions.",
+    description:
+      "Traditional, professional format. Ideal for corporate and executive positions.",
     preview: "/templates/classic-preview.png",
     features: [
       "Single-column layout",
       "Conservative typography",
       "Emphasis on experience",
       "Formal section headers",
-      "Maximum ATS compatibility"
+      "Maximum ATS compatibility",
     ],
-    bestFor: ["Finance", "Legal", "Healthcare", "Government"]
+    bestFor: ["Finance", "Legal", "Healthcare", "Government"],
   },
   tech: {
     id: "tech",
     name: "Tech Stack",
-    description: "Developer-focused layout with emphasis on technical skills and projects.",
+    description:
+      "Developer-focused layout with emphasis on technical skills and projects.",
     preview: "/templates/tech-preview.png",
     features: [
       "GitHub/portfolio links prominent",
       "Technical skills matrix",
       "Project highlights section",
       "Code-friendly formatting",
-      "Dark mode option"
+      "Dark mode option",
     ],
-    bestFor: ["Software Engineering", "DevOps", "Data Science", "Cybersecurity"]
-  }
+    bestFor: [
+      "Software Engineering",
+      "DevOps",
+      "Data Science",
+      "Cybersecurity",
+    ],
+  },
 };
 
 /**
@@ -69,7 +77,7 @@ export const TEMPLATE_SECTION_ORDER: Record<ResumeTemplate, string[]> = {
     "experience",
     "education",
     "achievements",
-    "certifications"
+    "certifications",
   ],
   classic: [
     "header",
@@ -78,7 +86,7 @@ export const TEMPLATE_SECTION_ORDER: Record<ResumeTemplate, string[]> = {
     "education",
     "skills",
     "achievements",
-    "certifications"
+    "certifications",
   ],
   tech: [
     "header",
@@ -87,8 +95,8 @@ export const TEMPLATE_SECTION_ORDER: Record<ResumeTemplate, string[]> = {
     "projects",
     "experience",
     "education",
-    "certifications"
-  ]
+    "certifications",
+  ],
 };
 
 /**
@@ -122,13 +130,13 @@ export const TEMPLATE_STYLES: Record<ResumeTemplate, TemplateStyles> = {
       name: "28px",
       title: "11px",
       heading: "14px",
-      body: "10px"
+      body: "10px",
     },
     spacing: {
       section: "16px",
-      item: "8px"
+      item: "8px",
     },
-    layout: "two-column"
+    layout: "two-column",
   },
   classic: {
     primaryColor: "#1e293b", // Dark slate
@@ -139,13 +147,13 @@ export const TEMPLATE_STYLES: Record<ResumeTemplate, TemplateStyles> = {
       name: "24px",
       title: "10px",
       heading: "12px",
-      body: "10px"
+      body: "10px",
     },
     spacing: {
       section: "12px",
-      item: "6px"
+      item: "6px",
     },
-    layout: "single-column"
+    layout: "single-column",
   },
   tech: {
     primaryColor: "#10b981", // Green
@@ -156,12 +164,12 @@ export const TEMPLATE_STYLES: Record<ResumeTemplate, TemplateStyles> = {
       name: "26px",
       title: "10px",
       heading: "13px",
-      body: "9px"
+      body: "9px",
     },
     spacing: {
       section: "14px",
-      item: "7px"
+      item: "7px",
     },
-    layout: "two-column"
-  }
+    layout: "two-column",
+  },
 };

@@ -9,7 +9,10 @@ const MAX_DURATION_MS = 5 * 60 * 1000; // 5 minutes
  * GET /api/resume-progress
  * SSE stream of resume processing progress for the authenticated user.
  */
-export async function handleResumeProgress(req: Request, res: Response): Promise<void> {
+export async function handleResumeProgress(
+  req: Request,
+  res: Response
+): Promise<void> {
   let user: { id: number };
   try {
     user = await sdk.authenticateRequest(req);
@@ -27,7 +30,8 @@ export async function handleResumeProgress(req: Request, res: Response): Promise
   const start = Date.now();
   const send = (data: object) => {
     res.write(`data: ${JSON.stringify(data)}\n\n`);
-    if ("flush" in res && typeof (res as any).flush === "function") (res as any).flush();
+    if ("flush" in res && typeof (res as any).flush === "function")
+      (res as any).flush();
   };
 
   const interval = setInterval(() => {

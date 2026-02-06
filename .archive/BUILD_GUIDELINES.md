@@ -18,6 +18,7 @@
 ## ✅ Best Practices
 
 ### File Operations
+
 ```bash
 # Check file size first
 wc -l file.ts
@@ -36,12 +37,14 @@ file.edit({ edits: [
 ```
 
 ### Code Generation
+
 - Write complete files, not partial
 - Use templates for repetitive code
 - Batch similar components
 - Trust TypeScript, don't verify
 
 ### Testing
+
 - Write tests as you build
 - Run tests before checkpoint
 - Fix bugs within 3 attempts
@@ -53,7 +56,7 @@ file.edit({ edits: [
 ❌ Single edits when batch would work  
 ❌ Full file reads for small changes  
 ❌ Verbose planning documents  
-❌ Checkpoints without tests  
+❌ Checkpoints without tests
 
 ## ✅ Patterns
 
@@ -61,4 +64,4 @@ file.edit({ edits: [
 ✅ Batch edits (5+ changes at once)  
 ✅ Shell commands for file inspection  
 ✅ Concise task lists in todo.md  
-✅ Test → Checkpoint → Notify  
+✅ Test → Checkpoint → Notify

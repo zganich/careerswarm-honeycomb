@@ -103,11 +103,11 @@ DATABASE_URL=mysql://root:password@localhost:3306/careerswarm_restore
 
 ## Backup Schedule Recommendations
 
-| Environment | Frequency | Retention |
-|-------------|-----------|-----------|
-| Production | Daily (automated by Railway) | 7 days |
-| Pre-major-deploy | Manual backup | Until deploy verified |
-| Before migrations | Manual backup | Until migration verified |
+| Environment       | Frequency                    | Retention                |
+| ----------------- | ---------------------------- | ------------------------ |
+| Production        | Daily (automated by Railway) | 7 days                   |
+| Pre-major-deploy  | Manual backup                | Until deploy verified    |
+| Before migrations | Manual backup                | Until migration verified |
 
 ## Pre-Migration Backup Script
 

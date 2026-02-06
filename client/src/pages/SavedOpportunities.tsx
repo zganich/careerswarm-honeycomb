@@ -25,45 +25,62 @@ import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 
 export default function SavedOpportunities() {
-  const [selectedOpportunityId, setSelectedOpportunityId] = useState<number | null>(null);
+  const [selectedOpportunityId, setSelectedOpportunityId] = useState<
+    number | null
+  >(null);
   const [companyStageFilter, setCompanyStageFilter] = useState<string>("all");
   const [locationFilter, setLocationFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("date_saved");
 
-  const { data: savedOpportunities, isLoading, refetch } = trpc.opportunities.getSaved.useQuery();
+  const {
+    data: savedOpportunities,
+    isLoading,
+    refetch,
+  } = trpc.opportunities.getSaved.useQuery();
 
   const unsaveMutation = trpc.opportunities.unsave.useMutation({
     onSuccess: () => {
       toast.success("Opportunity removed from saved");
       refetch();
     },
-    onError: (error) => {
+    onError: error => {
       toast.error(`Failed to remove: ${error.message}`);
     },
   });
 
   const quickApply = trpc.applications.quickApply.useMutation({
     onSuccess: () => {
-      toast.success("Application created! Check Applications page for details.");
+      toast.success(
+        "Application created! Check Applications page for details."
+      );
       refetch();
     },
-    onError: (error) => {
+    onError: error => {
       toast.error(`Failed to apply: ${error.message}`);
     },
   });
 
   // Filter and sort opportunities
   const filteredOpportunities = savedOpportunities
-    ?.filter((opp) => {
-      if (companyStageFilter !== "all" && opp.companyStage !== companyStageFilter) {
+    ?.filter(opp => {
+      if (
+        companyStageFilter !== "all" &&
+        opp.companyStage !== companyStageFilter
+      ) {
         return false;
       }
       if (locationFilter !== "all") {
         const location = opp.locationCity || opp.locationType || "";
-        if (locationFilter === "remote" && !location.toLowerCase().includes("remote")) {
+        if (
+          locationFilter === "remote" &&
+          !location.toLowerCase().includes("remote")
+        ) {
           return false;
         }
-        if (locationFilter !== "remote" && !location.toLowerCase().includes(locationFilter.toLowerCase())) {
+        if (
+          locationFilter !== "remote" &&
+          !location.toLowerCase().includes(locationFilter.toLowerCase())
+        ) {
           return false;
         }
       }
@@ -77,7 +94,9 @@ export default function SavedOpportunities() {
         return (a.companyName || "").localeCompare(b.companyName || "");
       }
       // Default: date_saved (newest first)
-      return new Date(b.savedAt || 0).getTime() - new Date(a.savedAt || 0).getTime();
+      return (
+        new Date(b.savedAt || 0).getTime() - new Date(a.savedAt || 0).getTime()
+      );
     });
 
   if (isLoading) {
@@ -107,8 +126,13 @@ export default function SavedOpportunities() {
         <CardContent className="pt-6">
           <div className="flex flex-wrap gap-4">
             <div className="flex-1 min-w-[200px]">
-              <label className="text-sm font-medium mb-2 block">Company Stage</label>
-              <Select value={companyStageFilter} onValueChange={setCompanyStageFilter}>
+              <label className="text-sm font-medium mb-2 block">
+                Company Stage
+              </label>
+              <Select
+                value={companyStageFilter}
+                onValueChange={setCompanyStageFilter}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="All stages" />
                 </SelectTrigger>
@@ -148,9 +172,15 @@ export default function SavedOpportunities() {
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="date_saved">Date Saved (Newest)</SelectItem>
-                  <SelectItem value="match_score">Match Score (Highest)</SelectItem>
-                  <SelectItem value="company_name">Company Name (A-Z)</SelectItem>
+                  <SelectItem value="date_saved">
+                    Date Saved (Newest)
+                  </SelectItem>
+                  <SelectItem value="match_score">
+                    Match Score (Highest)
+                  </SelectItem>
+                  <SelectItem value="company_name">
+                    Company Name (A-Z)
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -160,7 +190,8 @@ export default function SavedOpportunities() {
 
       {/* Results Count */}
       <div className="mb-4 text-sm text-muted-foreground">
-        {filteredOpportunities?.length || 0} saved {filteredOpportunities?.length === 1 ? "opportunity" : "opportunities"}
+        {filteredOpportunities?.length || 0} saved{" "}
+        {filteredOpportunities?.length === 1 ? "opportunity" : "opportunities"}
       </div>
 
       {/* Saved Opportunities Grid */}
@@ -168,7 +199,9 @@ export default function SavedOpportunities() {
         <Card>
           <CardContent className="py-12 text-center">
             <BookmarkCheck className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-            <h3 className="text-lg font-semibold mb-2">No saved opportunities yet</h3>
+            <h3 className="text-lg font-semibold mb-2">
+              No saved opportunities yet
+            </h3>
             <p className="text-muted-foreground mb-4">
               Bookmark jobs from the Jobs page to save them for later
             </p>
@@ -179,14 +212,16 @@ export default function SavedOpportunities() {
         </Card>
       ) : (
         <div className="grid gap-4">
-          {filteredOpportunities.map((opp) => {
+          {filteredOpportunities.map(opp => {
             return (
               <Card key={opp.id} className="hover:shadow-md transition-shadow">
                 <CardHeader>
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <CardTitle className="text-xl">{opp.companyName}</CardTitle>
+                        <CardTitle className="text-xl">
+                          {opp.companyName}
+                        </CardTitle>
                         {opp.strategicFitScore && (
                           <Badge variant="secondary" className="gap-1">
                             <TrendingUp className="h-3 w-3" />
@@ -205,29 +240,39 @@ export default function SavedOpportunities() {
                             {opp.locationCity || opp.locationType}
                           </div>
                         )}
-                        {(opp.oteMin && opp.oteMax) && (
+                        {opp.oteMin && opp.oteMax && (
                           <div className="flex items-center gap-1">
-                            <DollarSign className="h-4 w-4" />
-                            ${(opp.oteMin / 1000).toFixed(0)}-${(opp.oteMax / 1000).toFixed(0)}K OTE
+                            <DollarSign className="h-4 w-4" />$
+                            {(opp.oteMin / 1000).toFixed(0)}-$
+                            {(opp.oteMax / 1000).toFixed(0)}K OTE
                           </div>
                         )}
                         {opp.companyStage && (
                           <div className="flex items-center gap-1">
                             <Building2 className="h-4 w-4" />
-                            {opp.companyStage.replace(/_/g, " ").replace(/\b\w/g, (l: string) => l.toUpperCase())}
+                            {opp.companyStage
+                              .replace(/_/g, " ")
+                              .replace(/\b\w/g, (l: string) => l.toUpperCase())}
                           </div>
                         )}
                       </div>
 
                       <p className="text-xs text-muted-foreground mt-3">
-                        Saved {opp.savedAt ? formatDistanceToNow(new Date(opp.savedAt), { addSuffix: true }) : "recently"}
+                        Saved{" "}
+                        {opp.savedAt
+                          ? formatDistanceToNow(new Date(opp.savedAt), {
+                              addSuffix: true,
+                            })
+                          : "recently"}
                       </p>
                     </div>
 
                     <div className="flex flex-col gap-2">
                       <Button
                         size="sm"
-                        onClick={() => opp.id && quickApply.mutate({ opportunityId: opp.id })}
+                        onClick={() =>
+                          opp.id && quickApply.mutate({ opportunityId: opp.id })
+                        }
                         disabled={quickApply.isPending}
                       >
                         {quickApply.isPending ? (
@@ -242,13 +287,19 @@ export default function SavedOpportunities() {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => opp.id && setSelectedOpportunityId(opp.id)}
+                        onClick={() =>
+                          opp.id && setSelectedOpportunityId(opp.id)
+                        }
                       >
                         View Details
                       </Button>
                       {opp.jobUrl && (
                         <Button size="sm" variant="outline" asChild>
-                          <a href={opp.jobUrl} target="_blank" rel="noopener noreferrer">
+                          <a
+                            href={opp.jobUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
                             <ExternalLink className="h-3 w-3 mr-1" />
                             Job Page
                           </a>
@@ -257,7 +308,10 @@ export default function SavedOpportunities() {
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => opp.id && unsaveMutation.mutate({ opportunityId: opp.id })}
+                        onClick={() =>
+                          opp.id &&
+                          unsaveMutation.mutate({ opportunityId: opp.id })
+                        }
                         disabled={unsaveMutation.isPending}
                       >
                         <Trash2 className="h-4 w-4 mr-1" />

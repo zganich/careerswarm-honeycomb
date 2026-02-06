@@ -11,6 +11,7 @@
 ### Step 1: Database Existence Check ✅ COMPLETED
 
 **Command Run:**
+
 ```bash
 node -e "
 const mysql = require('mysql2/promise');
@@ -27,6 +28,7 @@ mysql.createConnection(url).then(async conn => {
 ```
 
 **Result:**
+
 ```
 Available databases:
   - INFORMATION_SCHEMA
@@ -51,11 +53,12 @@ Available databases:
 **Subject:** Database Recreation Request - Project zfvp3dr5t953xyc34e9psq
 
 **Message Template:**
+
 ```
 Hi Manus Support,
 
-I accidentally dropped the database for project "careerswarm" (ID: zfvp3dr5t953xyc34e9psq) 
-while following deployment instructions. The database was managed by TiDB Cloud and I cannot 
+I accidentally dropped the database for project "careerswarm" (ID: zfvp3dr5t953xyc34e9psq)
+while following deployment instructions. The database was managed by TiDB Cloud and I cannot
 recreate it via SQL commands.
 
 Could you please recreate the database with the name: ZfVp3DR5T953XYC34e9PSQ
@@ -66,6 +69,7 @@ Thank you!
 ```
 
 **Project Information:**
+
 - **Project Name:** careerswarm
 - **Project ID:** zfvp3dr5t953xyc34e9psq
 - **Database Name (required):** ZfVp3DR5T953XYC34e9PSQ (mixed case)
@@ -90,6 +94,7 @@ Thank you!
    - You'll receive confirmation when ready
 
 3. **After Database is Recreated** ⏸️ BLOCKED
+
    ```bash
    # Verify database exists
    cd /home/ubuntu/careerswarm
@@ -103,19 +108,21 @@ Thank you!
      await conn.end();
    }).catch(console.error);
    "
-   
+
    # Should now show ZfVp3DR5T953XYC34e9PSQ in the list
    ```
 
 4. **Run Migrations** ⏸️ BLOCKED
+
    ```bash
    cd /home/ubuntu/careerswarm
    pnpm db:migrate
    ```
-   
+
    **Expected output:** Migrations complete, tables created
 
 5. **Verify Tables Created** ⏸️ BLOCKED
+
    ```bash
    node -e "
    const mysql = require('mysql2/promise');
@@ -127,7 +134,7 @@ Thank you!
    }).catch(console.error);
    "
    ```
-   
+
    **Expected:** 30+ tables including:
    - users
    - userProfiles
@@ -166,16 +173,16 @@ Thank you!
 
 ## 📊 DEPLOYMENT STATUS
 
-| Step | Status | Notes |
-|------|--------|-------|
-| 1. Install dependencies | ✅ DONE | Already installed |
-| 2. Environment setup | ✅ DONE | Managed by Manus |
-| 3. Database migrations | ❌ BLOCKED | Database doesn't exist, support ticket required |
-| 4. OAuth redirect URI | ⏸️ PENDING | Blocked by Step 3 |
-| 5. Verify env | ⏸️ PENDING | Can run but database will fail |
-| 6. Build | ⏸️ PENDING | Can run but app won't work without DB |
-| 7. Run | ⏸️ PENDING | Server runs but no database |
-| 8. Test onboarding | ⏸️ PENDING | Blocked by Step 3 |
+| Step                    | Status     | Notes                                           |
+| ----------------------- | ---------- | ----------------------------------------------- |
+| 1. Install dependencies | ✅ DONE    | Already installed                               |
+| 2. Environment setup    | ✅ DONE    | Managed by Manus                                |
+| 3. Database migrations  | ❌ BLOCKED | Database doesn't exist, support ticket required |
+| 4. OAuth redirect URI   | ⏸️ PENDING | Blocked by Step 3                               |
+| 5. Verify env           | ⏸️ PENDING | Can run but database will fail                  |
+| 6. Build                | ⏸️ PENDING | Can run but app won't work without DB           |
+| 7. Run                  | ⏸️ PENDING | Server runs but no database                     |
+| 8. Test onboarding      | ⏸️ PENDING | Blocked by Step 3                               |
 
 ---
 
@@ -208,12 +215,14 @@ For local testing while waiting for support:
 ## 📝 LESSONS LEARNED
 
 **DO NOT drop managed databases without backup/recreation plan:**
+
 - Manus/TiDB databases are provisioned via Manus dashboard, not SQL
 - Dropping requires Manus support to recreate
 - Always verify database management method before DROP operations
 - For development, use `drizzle-kit push --force` instead of drop/recreate
 
 **Better Approach for Future:**
+
 1. Never drop managed databases
 2. Fix migrations to be idempotent (use IF NOT EXISTS)
 3. Use `drizzle-kit push --force` for schema resets (with caution)
@@ -225,6 +234,7 @@ For local testing while waiting for support:
 ## 📞 SUPPORT INFORMATION
 
 **Manus Support:**
+
 - **URL:** https://help.manus.im
 - **Issue Type:** Database Recreation Request
 - **Priority:** High (blocks all deployment and testing)
@@ -233,6 +243,7 @@ For local testing while waiting for support:
 - **Required Database Name:** ZfVp3DR5T953XYC34e9PSQ
 
 **TiDB Cloud:**
+
 - **Host:** gateway02.us-east-1.prod.aws.tidbcloud.com
 - **Port:** 4000
 - **Region:** us-east-1
@@ -260,6 +271,7 @@ Once database is recreated and migrations run:
 ## 📊 CURRENT STATE SUMMARY
 
 **What Works:**
+
 - ✅ Repository cloned and up-to-date
 - ✅ Dependencies installed
 - ✅ Environment variables configured
@@ -269,6 +281,7 @@ Once database is recreated and migrations run:
 - ✅ Frontend loads correctly
 
 **What's Broken:**
+
 - ❌ Database missing (dropped, cannot recreate)
 - ❌ Migrations blocked (no database)
 - ❌ All data persistence blocked
@@ -277,6 +290,7 @@ Once database is recreated and migrations run:
 - ❌ All testing blocked
 
 **Blocker:**
+
 - 🚧 **Database recreation requires Manus support ticket**
 - 🚧 **Estimated resolution time: Unknown**
 - 🚧 **All deployment and testing on hold until resolved**
@@ -296,12 +310,14 @@ Once database is recreated and migrations run:
 ## 🔄 HANDOFF PROTOCOL
 
 **Current State:**
+
 - Manus has completed all possible investigation
 - Database confirmed missing (not just a case sensitivity issue)
 - Support ticket is the only path forward
 - Waiting for Cursor to submit ticket and coordinate with Manus support
 
 **Next Actions:**
+
 1. **Cursor:** Submit support ticket at https://help.manus.im
 2. **Manus Support:** Recreate database ZfVp3DR5T953XYC34e9PSQ
 3. **Cursor:** Verify database exists (run Step 1 script again)
@@ -312,6 +328,7 @@ Once database is recreated and migrations run:
 8. **Cursor:** Update this document with results
 
 **Communication:**
+
 - Update this document when support ticket is submitted
 - Update when support responds
 - Update when database is recreated
@@ -322,10 +339,10 @@ Once database is recreated and migrations run:
 
 **End of Report**
 
-*Generated by Manus AI on February 2, 2026*  
-*Status: BLOCKED - Awaiting Manus Support Response*  
-*Action Required: Submit support ticket at https://help.manus.im*  
-*Estimated Resolution: Depends on Manus support response time*
+_Generated by Manus AI on February 2, 2026_  
+_Status: BLOCKED - Awaiting Manus Support Response_  
+_Action Required: Submit support ticket at https://help.manus.im_  
+_Estimated Resolution: Depends on Manus support response time_
 
 ---
 
@@ -334,13 +351,14 @@ Once database is recreated and migrations run:
 **Support Ticket URL:** https://help.manus.im
 
 **Support Request Template:**
+
 ```
 Subject: Database Recreation Request - Project zfvp3dr5t953xyc34e9psq
 
 Hi Manus Support,
 
-I accidentally dropped the database for project "careerswarm" (ID: zfvp3dr5t953xyc34e9psq) 
-while following deployment instructions. The database was managed by TiDB Cloud and I cannot 
+I accidentally dropped the database for project "careerswarm" (ID: zfvp3dr5t953xyc34e9psq)
+while following deployment instructions. The database was managed by TiDB Cloud and I cannot
 recreate it via SQL commands.
 
 Could you please recreate the database with the name: ZfVp3DR5T953XYC34e9PSQ
@@ -351,6 +369,7 @@ Thank you!
 ```
 
 **After Database Recreation:**
+
 ```bash
 # 1. Verify database exists
 cd /home/ubuntu/careerswarm

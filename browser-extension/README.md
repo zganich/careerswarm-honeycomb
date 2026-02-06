@@ -51,6 +51,7 @@ Analyze any job posting and see your career trajectory match instantly.
 ## Development
 
 The extension consists of:
+
 - `manifest.json`: Extension configuration
 - `content.js`: Injected script that analyzes job pages
 - `content.css`: Styling for the floating widget

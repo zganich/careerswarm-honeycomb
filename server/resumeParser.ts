@@ -1,5 +1,5 @@
-import mammoth from 'mammoth';
-import { invokeLLM } from './_core/llm';
+import mammoth from "mammoth";
+import { invokeLLM } from "./_core/llm";
 
 // ================================================================
 // TEXT EXTRACTION
@@ -11,14 +11,14 @@ import { invokeLLM } from './_core/llm';
 export async function extractTextFromPDF(buffer: Buffer): Promise<string> {
   try {
     // Dynamic import to avoid ESM issues
-    const pdfParse = await import('pdf-parse');
+    const pdfParse = await import("pdf-parse");
     // @ts-ignore - pdf-parse has weird export structure
     const pdf = pdfParse.default || pdfParse;
     const data = await pdf(buffer);
     return data.text;
   } catch (error) {
-    console.error('[Resume Parser] PDF extraction failed:', error);
-    throw new Error('Failed to extract text from PDF');
+    console.error("[Resume Parser] PDF extraction failed:", error);
+    throw new Error("Failed to extract text from PDF");
   }
 }
 
@@ -30,21 +30,28 @@ export async function extractTextFromDOCX(buffer: Buffer): Promise<string> {
     const result = await mammoth.extractRawText({ buffer });
     return result.value;
   } catch (error) {
-    console.error('[Resume Parser] DOCX extraction failed:', error);
-    throw new Error('Failed to extract text from DOCX');
+    console.error("[Resume Parser] DOCX extraction failed:", error);
+    throw new Error("Failed to extract text from DOCX");
   }
 }
 
 /**
  * Extract text from resume file based on MIME type
  */
-export async function extractTextFromResume(buffer: Buffer, mimeType: string): Promise<string> {
-  if (mimeType === 'application/pdf') {
+export async function extractTextFromResume(
+  buffer: Buffer,
+  mimeType: string
+): Promise<string> {
+  if (mimeType === "application/pdf") {
     return extractTextFromPDF(buffer);
-  } else if (mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || mimeType === 'application/msword') {
+  } else if (
+    mimeType ===
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+    mimeType === "application/msword"
+  ) {
     return extractTextFromDOCX(buffer);
-  } else if (mimeType === 'text/plain') {
-    return buffer.toString('utf-8');
+  } else if (mimeType === "text/plain") {
+    return buffer.toString("utf-8");
   } else {
     throw new Error(`Unsupported file type: ${mimeType}`);
   }
@@ -91,17 +98,59 @@ interface ParsedResume {
   workExperiences: ParsedWorkExperience[];
   skills: ParsedSkill[];
   certifications: Array<{ name: string; organization?: string; year?: number }>;
-  education: Array<{ degree?: string; field?: string; institution: string; graduationYear?: number }>;
-  awards: Array<{ name: string; organization?: string; year?: number; context?: string }>;
-  languages: Array<{ language: string; proficiency?: string; isNative?: boolean }>;
-  volunteerExperiences: Array<{ organization: string; role?: string; startDate?: string; endDate?: string; description?: string }>;
-  projects: Array<{ name: string; description?: string; url?: string; role?: string; startDate?: string; endDate?: string }>;
-  publications: Array<{ title: string; publisherOrVenue?: string; year?: number; url?: string; context?: string }>;
-  securityClearances: Array<{ clearanceType: string; level?: string; expiryDate?: string }>;
+  education: Array<{
+    degree?: string;
+    field?: string;
+    institution: string;
+    graduationYear?: number;
+  }>;
+  awards: Array<{
+    name: string;
+    organization?: string;
+    year?: number;
+    context?: string;
+  }>;
+  languages: Array<{
+    language: string;
+    proficiency?: string;
+    isNative?: boolean;
+  }>;
+  volunteerExperiences: Array<{
+    organization: string;
+    role?: string;
+    startDate?: string;
+    endDate?: string;
+    description?: string;
+  }>;
+  projects: Array<{
+    name: string;
+    description?: string;
+    url?: string;
+    role?: string;
+    startDate?: string;
+    endDate?: string;
+  }>;
+  publications: Array<{
+    title: string;
+    publisherOrVenue?: string;
+    year?: number;
+    url?: string;
+    context?: string;
+  }>;
+  securityClearances: Array<{
+    clearanceType: string;
+    level?: string;
+    expiryDate?: string;
+  }>;
   // Additional fields for Master Profile
   professionalSummary?: string;
   portfolioUrls?: string[];
-  parsedContact?: { email?: string; phone?: string; location?: string; linkedin?: string };
+  parsedContact?: {
+    email?: string;
+    phone?: string;
+    location?: string;
+    linkedin?: string;
+  };
   licenses?: Array<{ name: string; organization?: string; year?: number }>;
 }
 
@@ -110,11 +159,13 @@ export type { ParsedResume };
 /**
  * Parse work history and achievements from resume text using LLM
  */
-export async function parseResumeWithLLM(resumeText: string): Promise<ParsedResume> {
+export async function parseResumeWithLLM(
+  resumeText: string
+): Promise<ParsedResume> {
   const response = await invokeLLM({
     messages: [
       {
-        role: 'system',
+        role: "system",
         content: `You are an expert resume parser. Extract structured career data from resumes with high accuracy.
 
 CRITICAL RULES:
@@ -137,186 +188,211 @@ CRITICAL RULES:
 Return valid JSON matching the schema.`,
       },
       {
-        role: 'user',
+        role: "user",
         content: `Parse this resume and extract all career data:\n\n${resumeText}`,
       },
     ],
     response_format: {
-      type: 'json_schema',
+      type: "json_schema",
       json_schema: {
-        name: 'parsed_resume',
+        name: "parsed_resume",
         strict: true,
         schema: {
-          type: 'object',
+          type: "object",
           properties: {
             workExperiences: {
-              type: 'array',
+              type: "array",
               items: {
-                type: 'object',
+                type: "object",
                 properties: {
-                  companyName: { type: 'string' },
-                  jobTitle: { type: 'string' },
-                  startDate: { type: 'string', description: 'YYYY-MM format' },
-                  endDate: { type: ['string', 'null'], description: 'YYYY-MM format or null if current' },
-                  isCurrent: { type: 'boolean' },
-                  location: { type: 'string' },
-                  companyStage: { type: 'string' },
-                  companyFunding: { type: 'string' },
-                  companyIndustry: { type: 'string' },
-                  companySizeEmployees: { type: 'number' },
-                  roleOverview: { type: 'string' },
+                  companyName: { type: "string" },
+                  jobTitle: { type: "string" },
+                  startDate: { type: "string", description: "YYYY-MM format" },
+                  endDate: {
+                    type: ["string", "null"],
+                    description: "YYYY-MM format or null if current",
+                  },
+                  isCurrent: { type: "boolean" },
+                  location: { type: "string" },
+                  companyStage: { type: "string" },
+                  companyFunding: { type: "string" },
+                  companyIndustry: { type: "string" },
+                  companySizeEmployees: { type: "number" },
+                  roleOverview: { type: "string" },
                   achievements: {
-                    type: 'array',
+                    type: "array",
                     items: {
-                      type: 'object',
+                      type: "object",
                       properties: {
-                        description: { type: 'string' },
-                        context: { type: 'string' },
-                        metricType: { type: 'string' },
-                        metricValue: { type: 'number' },
-                        metricUnit: { type: 'string' },
-                        metricTimeframe: { type: 'string' },
-                        keywords: { type: 'array', items: { type: 'string' } },
-                        importanceScore: { type: 'number', description: '0-100' },
+                        description: { type: "string" },
+                        context: { type: "string" },
+                        metricType: { type: "string" },
+                        metricValue: { type: "number" },
+                        metricUnit: { type: "string" },
+                        metricTimeframe: { type: "string" },
+                        keywords: { type: "array", items: { type: "string" } },
+                        importanceScore: {
+                          type: "number",
+                          description: "0-100",
+                        },
                       },
-                      required: ['description', 'keywords', 'importanceScore'],
+                      required: ["description", "keywords", "importanceScore"],
                       additionalProperties: false,
                     },
                   },
                 },
-                required: ['companyName', 'jobTitle', 'startDate', 'isCurrent', 'location', 'roleOverview', 'achievements'],
+                required: [
+                  "companyName",
+                  "jobTitle",
+                  "startDate",
+                  "isCurrent",
+                  "location",
+                  "roleOverview",
+                  "achievements",
+                ],
                 additionalProperties: false,
               },
             },
             skills: {
-              type: 'array',
+              type: "array",
               items: {
-                type: 'object',
+                type: "object",
                 properties: {
-                  skillName: { type: 'string' },
-                  skillCategory: { type: 'string' },
-                  proficiencyLevel: { type: 'string' },
-                  yearsExperience: { type: 'number' },
+                  skillName: { type: "string" },
+                  skillCategory: { type: "string" },
+                  proficiencyLevel: { type: "string" },
+                  yearsExperience: { type: "number" },
                 },
-                required: ['skillName', 'skillCategory'],
+                required: ["skillName", "skillCategory"],
                 additionalProperties: false,
               },
             },
             certifications: {
-              type: 'array',
+              type: "array",
               items: {
-                type: 'object',
+                type: "object",
                 properties: {
-                  name: { type: 'string' },
-                  organization: { type: 'string' },
-                  year: { type: 'number' },
+                  name: { type: "string" },
+                  organization: { type: "string" },
+                  year: { type: "number" },
                 },
-                required: ['name'],
+                required: ["name"],
                 additionalProperties: false,
               },
             },
             education: {
-              type: 'array',
+              type: "array",
               items: {
-                type: 'object',
+                type: "object",
                 properties: {
-                  degree: { type: 'string' },
-                  field: { type: 'string' },
-                  institution: { type: 'string' },
-                  graduationYear: { type: 'number' },
+                  degree: { type: "string" },
+                  field: { type: "string" },
+                  institution: { type: "string" },
+                  graduationYear: { type: "number" },
                 },
-                required: ['institution'],
+                required: ["institution"],
                 additionalProperties: false,
               },
             },
             awards: {
-              type: 'array',
+              type: "array",
               items: {
-                type: 'object',
+                type: "object",
                 properties: {
-                  name: { type: 'string' },
-                  organization: { type: 'string' },
-                  year: { type: 'number' },
-                  context: { type: 'string' },
+                  name: { type: "string" },
+                  organization: { type: "string" },
+                  year: { type: "number" },
+                  context: { type: "string" },
                 },
-                required: ['name'],
+                required: ["name"],
                 additionalProperties: false,
               },
             },
             languages: {
-              type: 'array',
+              type: "array",
               items: {
-                type: 'object',
+                type: "object",
                 properties: {
-                  language: { type: 'string' },
-                  proficiency: { type: 'string' },
-                  isNative: { type: 'boolean' },
+                  language: { type: "string" },
+                  proficiency: { type: "string" },
+                  isNative: { type: "boolean" },
                 },
-                required: ['language'],
+                required: ["language"],
                 additionalProperties: false,
               },
             },
             volunteerExperiences: {
-              type: 'array',
+              type: "array",
               items: {
-                type: 'object',
+                type: "object",
                 properties: {
-                  organization: { type: 'string' },
-                  role: { type: 'string' },
-                  startDate: { type: 'string' },
-                  endDate: { type: 'string' },
-                  description: { type: 'string' },
+                  organization: { type: "string" },
+                  role: { type: "string" },
+                  startDate: { type: "string" },
+                  endDate: { type: "string" },
+                  description: { type: "string" },
                 },
-                required: ['organization'],
+                required: ["organization"],
                 additionalProperties: false,
               },
             },
             projects: {
-              type: 'array',
+              type: "array",
               items: {
-                type: 'object',
+                type: "object",
                 properties: {
-                  name: { type: 'string' },
-                  description: { type: 'string' },
-                  url: { type: 'string' },
-                  role: { type: 'string' },
-                  startDate: { type: 'string' },
-                  endDate: { type: 'string' },
+                  name: { type: "string" },
+                  description: { type: "string" },
+                  url: { type: "string" },
+                  role: { type: "string" },
+                  startDate: { type: "string" },
+                  endDate: { type: "string" },
                 },
-                required: ['name'],
+                required: ["name"],
                 additionalProperties: false,
               },
             },
             publications: {
-              type: 'array',
+              type: "array",
               items: {
-                type: 'object',
+                type: "object",
                 properties: {
-                  title: { type: 'string' },
-                  publisherOrVenue: { type: 'string' },
-                  year: { type: 'number' },
-                  url: { type: 'string' },
-                  context: { type: 'string' },
+                  title: { type: "string" },
+                  publisherOrVenue: { type: "string" },
+                  year: { type: "number" },
+                  url: { type: "string" },
+                  context: { type: "string" },
                 },
-                required: ['title'],
+                required: ["title"],
                 additionalProperties: false,
               },
             },
             securityClearances: {
-              type: 'array',
+              type: "array",
               items: {
-                type: 'object',
+                type: "object",
                 properties: {
-                  clearanceType: { type: 'string' },
-                  level: { type: 'string' },
-                  expiryDate: { type: 'string' },
+                  clearanceType: { type: "string" },
+                  level: { type: "string" },
+                  expiryDate: { type: "string" },
                 },
-                required: ['clearanceType'],
+                required: ["clearanceType"],
                 additionalProperties: false,
               },
             },
           },
-          required: ['workExperiences', 'skills', 'certifications', 'education', 'awards', 'languages', 'volunteerExperiences', 'projects', 'publications', 'securityClearances'],
+          required: [
+            "workExperiences",
+            "skills",
+            "certifications",
+            "education",
+            "awards",
+            "languages",
+            "volunteerExperiences",
+            "projects",
+            "publications",
+            "securityClearances",
+          ],
           additionalProperties: false,
         },
       },
@@ -324,8 +400,8 @@ Return valid JSON matching the schema.`,
   });
 
   const content = response.choices[0].message.content;
-  if (!content || typeof content !== 'string') {
-    throw new Error('LLM returned empty response');
+  if (!content || typeof content !== "string") {
+    throw new Error("LLM returned empty response");
   }
 
   return JSON.parse(content) as ParsedResume;
@@ -334,7 +410,9 @@ Return valid JSON matching the schema.`,
 /**
  * Generate top 3 "superpowers" from achievements
  */
-export async function generateSuperpowers(achievements: ParsedAchievement[]): Promise<Array<{ title: string; evidence: string }>> {
+export async function generateSuperpowers(
+  achievements: ParsedAchievement[]
+): Promise<Array<{ title: string; evidence: string }>> {
   // Get top achievements by importance score
   const topAchievements = achievements
     .sort((a, b) => b.importanceScore - a.importanceScore)
@@ -342,12 +420,12 @@ export async function generateSuperpowers(achievements: ParsedAchievement[]): Pr
 
   const achievementText = topAchievements
     .map((a, i) => `${i + 1}. ${a.description}`)
-    .join('\n');
+    .join("\n");
 
   const response = await invokeLLM({
     messages: [
       {
-        role: 'system',
+        role: "system",
         content: `You are a career branding expert. Analyze achievements and identify the candidate's top 3 unique strengths or "superpowers".
 
 RULES:
@@ -360,34 +438,40 @@ RULES:
 Return JSON with 3 superpowers.`,
       },
       {
-        role: 'user',
+        role: "user",
         content: `Analyze these achievements and identify the top 3 superpowers:\n\n${achievementText}`,
       },
     ],
     response_format: {
-      type: 'json_schema',
+      type: "json_schema",
       json_schema: {
-        name: 'superpowers',
+        name: "superpowers",
         strict: true,
         schema: {
-          type: 'object',
+          type: "object",
           properties: {
             superpowers: {
-              type: 'array',
+              type: "array",
               items: {
-                type: 'object',
+                type: "object",
                 properties: {
-                  title: { type: 'string', description: 'Short, memorable superpower title' },
-                  evidence: { type: 'string', description: 'Specific evidence from achievements' },
+                  title: {
+                    type: "string",
+                    description: "Short, memorable superpower title",
+                  },
+                  evidence: {
+                    type: "string",
+                    description: "Specific evidence from achievements",
+                  },
                 },
-                required: ['title', 'evidence'],
+                required: ["title", "evidence"],
                 additionalProperties: false,
               },
               minItems: 3,
               maxItems: 3,
             },
           },
-          required: ['superpowers'],
+          required: ["superpowers"],
           additionalProperties: false,
         },
       },
@@ -395,20 +479,24 @@ Return JSON with 3 superpowers.`,
   });
 
   const content = response.choices[0].message.content;
-  if (!content || typeof content !== 'string') {
-    throw new Error('LLM returned empty response');
+  if (!content || typeof content !== "string") {
+    throw new Error("LLM returned empty response");
   }
 
-  const result = JSON.parse(content) as { superpowers: Array<{ title: string; evidence: string }> };
+  const result = JSON.parse(content) as {
+    superpowers: Array<{ title: string; evidence: string }>;
+  };
   return result.superpowers;
 }
 
 /**
  * Consolidate multiple parsed resumes into a single Master Profile
  */
-export function consolidateResumes(parsedResumes: ParsedResume[]): ParsedResume {
+export function consolidateResumes(
+  parsedResumes: ParsedResume[]
+): ParsedResume {
   if (parsedResumes.length === 0) {
-    throw new Error('No resumes to consolidate');
+    throw new Error("No resumes to consolidate");
   }
 
   if (parsedResumes.length === 1) {
@@ -455,7 +543,10 @@ export function consolidateResumes(parsedResumes: ParsedResume[]): ParsedResume 
   }
 
   // Merge certifications (deduplicate by name)
-  const certsMap = new Map<string, typeof parsedResumes[0]['certifications'][0]>();
+  const certsMap = new Map<
+    string,
+    (typeof parsedResumes)[0]["certifications"][0]
+  >();
   for (const resume of parsedResumes) {
     for (const cert of resume.certifications) {
       const key = cert.name.toLowerCase();
@@ -466,10 +557,10 @@ export function consolidateResumes(parsedResumes: ParsedResume[]): ParsedResume 
   }
 
   // Merge education (deduplicate by institution + degree)
-  const eduMap = new Map<string, typeof parsedResumes[0]['education'][0]>();
+  const eduMap = new Map<string, (typeof parsedResumes)[0]["education"][0]>();
   for (const resume of parsedResumes) {
     for (const edu of resume.education) {
-      const key = `${edu.institution}|${edu.degree || ''}`.toLowerCase();
+      const key = `${edu.institution}|${edu.degree || ""}`.toLowerCase();
       if (!eduMap.has(key)) {
         eduMap.set(key, edu);
       }
@@ -477,7 +568,7 @@ export function consolidateResumes(parsedResumes: ParsedResume[]): ParsedResume 
   }
 
   // Merge awards (deduplicate by name)
-  const awardsMap = new Map<string, typeof parsedResumes[0]['awards'][0]>();
+  const awardsMap = new Map<string, (typeof parsedResumes)[0]["awards"][0]>();
   for (const resume of parsedResumes) {
     for (const award of resume.awards) {
       const key = award.name.toLowerCase();
@@ -488,7 +579,10 @@ export function consolidateResumes(parsedResumes: ParsedResume[]): ParsedResume 
   }
 
   // Merge languages (deduplicate by language name)
-  const languagesMap = new Map<string, typeof parsedResumes[0]['languages'][0]>();
+  const languagesMap = new Map<
+    string,
+    (typeof parsedResumes)[0]["languages"][0]
+  >();
   for (const resume of parsedResumes) {
     for (const lang of resume.languages || []) {
       const key = lang.language.toLowerCase();
@@ -499,10 +593,13 @@ export function consolidateResumes(parsedResumes: ParsedResume[]): ParsedResume 
   }
 
   // Merge volunteer experiences (deduplicate by organization + role)
-  const volunteerMap = new Map<string, typeof parsedResumes[0]['volunteerExperiences'][0]>();
+  const volunteerMap = new Map<
+    string,
+    (typeof parsedResumes)[0]["volunteerExperiences"][0]
+  >();
   for (const resume of parsedResumes) {
     for (const vol of resume.volunteerExperiences || []) {
-      const key = `${vol.organization.toLowerCase()}-${(vol.role || '').toLowerCase()}`;
+      const key = `${vol.organization.toLowerCase()}-${(vol.role || "").toLowerCase()}`;
       if (!volunteerMap.has(key)) {
         volunteerMap.set(key, vol);
       }
@@ -510,7 +607,10 @@ export function consolidateResumes(parsedResumes: ParsedResume[]): ParsedResume 
   }
 
   // Merge projects (deduplicate by name)
-  const projectsMap = new Map<string, typeof parsedResumes[0]['projects'][0]>();
+  const projectsMap = new Map<
+    string,
+    (typeof parsedResumes)[0]["projects"][0]
+  >();
   for (const resume of parsedResumes) {
     for (const proj of resume.projects || []) {
       const key = proj.name.toLowerCase();
@@ -521,7 +621,10 @@ export function consolidateResumes(parsedResumes: ParsedResume[]): ParsedResume 
   }
 
   // Merge publications (deduplicate by title)
-  const publicationsMap = new Map<string, typeof parsedResumes[0]['publications'][0]>();
+  const publicationsMap = new Map<
+    string,
+    (typeof parsedResumes)[0]["publications"][0]
+  >();
   for (const resume of parsedResumes) {
     for (const pub of resume.publications || []) {
       const key = pub.title.toLowerCase();
@@ -532,7 +635,10 @@ export function consolidateResumes(parsedResumes: ParsedResume[]): ParsedResume 
   }
 
   // Merge security clearances (deduplicate by clearance type)
-  const clearancesMap = new Map<string, typeof parsedResumes[0]['securityClearances'][0]>();
+  const clearancesMap = new Map<
+    string,
+    (typeof parsedResumes)[0]["securityClearances"][0]
+  >();
   for (const resume of parsedResumes) {
     for (const clearance of resume.securityClearances || []) {
       const key = clearance.clearanceType.toLowerCase();
@@ -545,7 +651,7 @@ export function consolidateResumes(parsedResumes: ParsedResume[]): ParsedResume 
   return {
     workExperiences: Array.from(workExpMap.values()).sort((a, b) => {
       // Sort by start date descending (most recent first)
-      return (b.startDate || '').localeCompare(a.startDate || '');
+      return (b.startDate || "").localeCompare(a.startDate || "");
     }),
     skills: Array.from(skillsMap.values()),
     certifications: Array.from(certsMap.values()),

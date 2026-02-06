@@ -51,7 +51,7 @@ export function ManualAchievementEntry({
   };
 
   const isValid = achievements.every(
-    (a) => a.situation && a.task && a.action && a.result
+    a => a.situation && a.task && a.action && a.result
   );
 
   const handleSubmit = () => {
@@ -124,7 +124,7 @@ export function ManualAchievementEntry({
                   </label>
                   <Input
                     value={achievement.situation}
-                    onChange={(e) =>
+                    onChange={e =>
                       updateAchievement(index, "situation", e.target.value)
                     }
                     placeholder="e.g., Led product launch for new mobile app"
@@ -142,7 +142,7 @@ export function ManualAchievementEntry({
                   </label>
                   <Input
                     value={achievement.task}
-                    onChange={(e) =>
+                    onChange={e =>
                       updateAchievement(index, "task", e.target.value)
                     }
                     placeholder="e.g., Increase user engagement by 30%"
@@ -154,13 +154,11 @@ export function ManualAchievementEntry({
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-2">
                     Action{" "}
-                    <span className="text-slate-500">
-                      (What did you do?)
-                    </span>
+                    <span className="text-slate-500">(What did you do?)</span>
                   </label>
                   <Textarea
                     value={achievement.action}
-                    onChange={(e) =>
+                    onChange={e =>
                       updateAchievement(index, "action", e.target.value)
                     }
                     placeholder="e.g., Designed and implemented gamification features, conducted A/B testing, collaborated with engineering team"
@@ -179,7 +177,7 @@ export function ManualAchievementEntry({
                   </label>
                   <Textarea
                     value={achievement.result}
-                    onChange={(e) =>
+                    onChange={e =>
                       updateAchievement(index, "result", e.target.value)
                     }
                     placeholder="e.g., Achieved 42% increase in daily active users, reduced churn by 18%, featured in TechCrunch"

@@ -12,7 +12,6 @@
 - Users sign in at **`/login`**: enter email → `POST /api/auth/test-login` → session cookie set → redirect to `returnTo` (e.g. `/onboarding/welcome`, `/dashboard`). First-time emails create an account automatically.
 - Optional: if you set `OAUTH_SERVER_URL` and `VITE_OAUTH_PORTAL_URL`, OAuth can be used; when unset, the app uses email sign-in only.
 
-
 ---
 
 ## 1. OPENAI_API_KEY (Required for AI Features)
@@ -20,11 +19,13 @@
 **Impact:** All AI features (Resume Roast, Tailor, Scribe, etc.) will fail without this.
 
 ### Steps:
+
 1. Get your OpenAI API key from [platform.openai.com](https://platform.openai.com/api-keys)
 2. **Use CLI when you can.** Set the variable via dashboard or [Railway API](https://docs.railway.app/guides/manage-variables) (CLI cannot set variables): `railway open` → careerswarm-app → Variables. Add `OPENAI_API_KEY=sk-...` (or replace if placeholder).
 3. Redeploy via CLI: `railway redeploy`
 
 ### Verify:
+
 ```bash
 # After deployment, test the Resume Roast endpoint (resumeText must be ≥50 chars)
 curl -X POST https://careerswarm.com/api/trpc/public.roast \
@@ -39,22 +40,26 @@ curl -X POST https://careerswarm.com/api/trpc/public.roast \
 **Impact:** E2E tests in GitHub Actions will fail on push to main.
 
 ### Steps:
+
 1. Go to GitHub → careerswarm-honeycomb → Settings → Secrets and variables → Actions
 2. Click "New repository secret"
 3. Add these secrets:
 
-| Secret Name | Value | Description |
-|-------------|-------|-------------|
-| `TEST_USER_EMAIL` | (your test user email) | Email for E2E test login |
+| Secret Name          | Value                     | Description                 |
+| -------------------- | ------------------------- | --------------------------- |
+| `TEST_USER_EMAIL`    | (your test user email)    | Email for E2E test login    |
 | `TEST_USER_PASSWORD` | (your test user password) | Password for E2E test login |
 
 ### Create Test User (if needed):
+
 1. Go to https://careerswarm.com
 2. Create an account with a dedicated test email
 3. Use those credentials for the secrets
 
 ### Verify:
+
 After adding secrets, push a commit to main. The CI workflow should:
+
 - ✅ Pass lint & type check
 - ✅ Pass unit tests
 - ✅ Pass build
@@ -71,15 +76,19 @@ Use the existing Sentry project **careerswarm-backend** (org **careerswarm**). D
 ### Steps (do in this order):
 
 1. **Authenticate Sentry CLI**
+
    ```bash
    pnpm run sentry:login
    ```
+
    When prompted: open the URL in a browser, create an auth token at the page it shows (or use [sentry.io/settings/account/api/auth-tokens/](https://sentry.io/settings/account/api/auth-tokens/)), paste the token into the terminal. It is stored in `~/.sentryclirc`.
 
 2. **Verify CLI**
+
    ```bash
    pnpm run sentry:info
    ```
+
    This runs the project's Sentry CLI (`@sentry/cli` in package.json). You must see "Method: Token" (or similar authenticated state), not "Unauthorized". If the command fails (e.g. "unknown command"), run `pnpm install` and try again; if it still fails, a successful login in step 1 is sufficient—continue to step 3.
 
 3. **Get the DSN from careerswarm-backend**
@@ -97,6 +106,7 @@ Use the existing Sentry project **careerswarm-backend** (org **careerswarm**). D
    - Save / Apply.
 
 5. **Redeploy**
+
    ```bash
    railway redeploy
    ```
@@ -108,6 +118,7 @@ Use the existing Sentry project **careerswarm-backend** (org **careerswarm**). D
    You must see a line containing "Sentry initialized" after the app starts.
 
 ### Recommended Alerts (in Sentry Dashboard → Alerts):
+
 - **Error Spike:** >10 errors in 1 hour → Email
 - **New Issue:** Any new issue → Email
 - **AI Failure:** Message contains "LLM" or "OpenAI" → Email
@@ -118,12 +129,12 @@ See `docs/SENTRY_SETUP.md` for full alert configuration.
 
 ## Quick Reference
 
-| Item | Where to Configure | Current Status |
-|------|-------------------|----------------|
-| OPENAI_API_KEY | Railway Variables | ❌ Placeholder |
-| TEST_USER_EMAIL | GitHub Secrets | ❌ Missing |
-| TEST_USER_PASSWORD | GitHub Secrets | ❌ Missing |
-| SENTRY_DSN | Railway Variables | ❌ Missing |
+| Item               | Where to Configure | Current Status |
+| ------------------ | ------------------ | -------------- |
+| OPENAI_API_KEY     | Railway Variables  | ❌ Placeholder |
+| TEST_USER_EMAIL    | GitHub Secrets     | ❌ Missing     |
+| TEST_USER_PASSWORD | GitHub Secrets     | ❌ Missing     |
+| SENTRY_DSN         | Railway Variables  | ❌ Missing     |
 
 ---
 

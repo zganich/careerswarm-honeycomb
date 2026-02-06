@@ -2,7 +2,7 @@ import { type Page, expect } from "@playwright/test";
 
 /**
  * Production Auth Utility for E2E Tests
- * 
+ *
  * Uses the Dev Login feature (ENABLE_DEV_LOGIN=true on Railway)
  * to authenticate without requiring OAuth.
  */
@@ -12,7 +12,7 @@ const DEFAULT_TEST_EMAIL = "e2e-test@careerswarm.com";
 
 /**
  * Login via Dev Login page on production
- * 
+ *
  * @param page - Playwright Page object
  * @param email - Email address to login with (any email works with Dev Login)
  */
@@ -22,27 +22,27 @@ export async function loginViaDevLogin(
 ): Promise<void> {
   // Navigate to dev login page
   await page.goto(`${PRODUCTION_URL}/login`);
-  await page.waitForLoadState('networkidle');
-  
+  await page.waitForLoadState("networkidle");
+
   // Fill email field
   const emailInput = page.locator('input[type="email"]');
   await expect(emailInput).toBeVisible({ timeout: 10000 });
   await emailInput.fill(email);
-  
+
   // Click submit button
   const submitButton = page.locator('button[type="submit"]');
   await expect(submitButton).toBeEnabled();
   await submitButton.click();
-  
+
   // Wait for redirect to dashboard or successful login
   await page.waitForURL(/\/(dashboard|onboarding)/, { timeout: 30000 });
-  
+
   console.log(`[Production Auth] Logged in as ${email}`);
 }
 
 /**
  * Login via API directly (faster than UI login)
- * 
+ *
  * @param page - Playwright Page object
  * @param email - Email address to login with
  */
@@ -52,36 +52,41 @@ export async function loginViaAPI(
 ): Promise<void> {
   // First navigate to set the cookie domain
   await page.goto(PRODUCTION_URL);
-  
+
   // Call the test-login API directly
-  const response = await page.request.post(`${PRODUCTION_URL}/api/auth/test-login`, {
-    data: {
-      email,
-      returnTo: '/dashboard',
-    },
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-  
+  const response = await page.request.post(
+    `${PRODUCTION_URL}/api/auth/test-login`,
+    {
+      data: {
+        email,
+        returnTo: "/dashboard",
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
   if (!response.ok()) {
-    throw new Error(`Login failed: ${response.status()} ${await response.text()}`);
+    throw new Error(
+      `Login failed: ${response.status()} ${await response.text()}`
+    );
   }
-  
+
   const data = await response.json();
-  
+
   if (data.redirect) {
     await page.goto(data.redirect);
   } else {
     await page.goto(`${PRODUCTION_URL}/dashboard`);
   }
-  
+
   console.log(`[Production Auth] Logged in via API as ${email}`);
 }
 
 /**
  * Check if user is currently logged in
- * 
+ *
  * @param page - Playwright Page object
  * @returns true if logged in, false otherwise
  */
@@ -89,11 +94,11 @@ export async function isLoggedIn(page: Page): Promise<boolean> {
   try {
     // Try to access dashboard
     await page.goto(`${PRODUCTION_URL}/dashboard`);
-    await page.waitForLoadState('networkidle');
-    
+    await page.waitForLoadState("networkidle");
+
     // If we're still on dashboard (not redirected to login), we're logged in
     const url = page.url();
-    return url.includes('/dashboard') && !url.includes('/login');
+    return url.includes("/dashboard") && !url.includes("/login");
   } catch {
     return false;
   }
@@ -101,22 +106,22 @@ export async function isLoggedIn(page: Page): Promise<boolean> {
 
 /**
  * Logout from the application
- * 
+ *
  * @param page - Playwright Page object
  */
 export async function logout(page: Page): Promise<void> {
   // Clear all cookies
   await page.context().clearCookies();
-  
+
   // Navigate to home to verify logout
   await page.goto(PRODUCTION_URL);
-  
-  console.log('[Production Auth] Logged out');
+
+  console.log("[Production Auth] Logged out");
 }
 
 /**
  * Get a unique test email for isolated testing
- * 
+ *
  * @returns Unique email address
  */
 export function getUniqueTestEmail(): string {

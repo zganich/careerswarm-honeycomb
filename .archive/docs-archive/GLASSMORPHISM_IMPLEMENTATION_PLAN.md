@@ -1,6 +1,7 @@
 # Glassmorphism "Lens of Clarity" Implementation Plan
 
 ## Overview
+
 Implement frosted glass feature cards that float above the animated honeycomb background, creating the visual metaphor of AI agents acting as a lens to focus chaotic career data into clear, structured information.
 
 ---
@@ -8,15 +9,18 @@ Implement frosted glass feature cards that float above the animated honeycomb ba
 ## Phase 1: Component Audit (5 minutes)
 
 ### Files to Modify
+
 1. **`/home/ubuntu/careerswarm/client/src/pages/Home.tsx`**
    - How It Works section (lines ~87-140)
    - Features section (lines ~142-250)
 
 ### Current State
+
 - How It Works: 3 numbered cards with gradient backgrounds (lavender, yellow, mint)
 - Features: 6 feature cards with gradient backgrounds (yellow, lavender, mint, coral, blue, orange)
 
 ### Target State
+
 - Replace solid gradient backgrounds with glassmorphism effect
 - Maintain number badges and icons
 - Add subtle orange borders
@@ -27,26 +31,28 @@ Implement frosted glass feature cards that float above the animated honeycomb ba
 ## Phase 2: CSS Classes Available
 
 ### Base Glassmorphism Class
+
 ```css
 .glass-card {
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(12px) saturate(180%);
   -webkit-backdrop-filter: blur(12px) saturate(180%);
   border: 1px solid rgba(249, 115, 22, 0.2);
-  box-shadow: 
+  box-shadow:
     0 8px 32px 0 rgba(249, 115, 22, 0.08),
     inset 0 1px 0 0 rgba(255, 255, 255, 0.5);
 }
 ```
 
 ### Active/Hover State
+
 ```css
 .glass-card-active {
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(16px) saturate(200%);
   -webkit-backdrop-filter: blur(16px) saturate(200%);
   border: 1px solid rgba(249, 115, 22, 0.4);
-  box-shadow: 
+  box-shadow:
     0 12px 40px 0 rgba(249, 115, 22, 0.12),
     inset 0 1px 0 0 rgba(255, 255, 255, 0.6),
     0 0 0 1px rgba(249, 115, 22, 0.1);
@@ -60,6 +66,7 @@ Implement frosted glass feature cards that float above the animated honeycomb ba
 ### Step 1: How It Works Section (10 minutes)
 
 **Current Code Pattern:**
+
 ```tsx
 <div className="rounded-2xl p-8 bg-gradient-to-br from-purple-50 to-purple-100">
   <div className="...">1</div>
@@ -69,6 +76,7 @@ Implement frosted glass feature cards that float above the animated honeycomb ba
 ```
 
 **New Code Pattern:**
+
 ```tsx
 <div className="glass-card rounded-2xl p-8 hover:glass-card-active transition-all duration-300">
   <div className="...">1</div>
@@ -78,6 +86,7 @@ Implement frosted glass feature cards that float above the animated honeycomb ba
 ```
 
 **Changes:**
+
 1. Replace `bg-gradient-to-br from-purple-50 to-purple-100` with `glass-card`
 2. Replace `bg-gradient-to-br from-yellow-50 to-yellow-100` with `glass-card`
 3. Replace `bg-gradient-to-br from-emerald-50 to-emerald-100` with `glass-card`
@@ -86,6 +95,7 @@ Implement frosted glass feature cards that float above the animated honeycomb ba
 ### Step 2: Features Section (15 minutes)
 
 **Current Code Pattern:**
+
 ```tsx
 <div className="rounded-xl p-6 bg-gradient-to-br from-yellow-50 to-yellow-100">
   <Icon className="h-8 w-8 text-primary mb-4" />
@@ -95,6 +105,7 @@ Implement frosted glass feature cards that float above the animated honeycomb ba
 ```
 
 **New Code Pattern:**
+
 ```tsx
 <div className="glass-card rounded-xl p-6 hover:glass-card-active transition-all duration-300">
   <Icon className="h-8 w-8 text-primary mb-4" />
@@ -104,6 +115,7 @@ Implement frosted glass feature cards that float above the animated honeycomb ba
 ```
 
 **Changes:**
+
 1. Replace all 6 gradient backgrounds with `glass-card`
 2. Add `hover:glass-card-active transition-all duration-300` to all 6 cards
 3. Keep existing icons and content unchanged
@@ -113,6 +125,7 @@ Implement frosted glass feature cards that float above the animated honeycomb ba
 ## Phase 4: Testing Checklist (10 minutes)
 
 ### Visual Tests
+
 - [ ] Frosted glass effect visible on white background
 - [ ] Backdrop blur works (honeycomb pattern visible through cards)
 - [ ] Orange borders (1px) visible on all cards
@@ -120,18 +133,21 @@ Implement frosted glass feature cards that float above the animated honeycomb ba
 - [ ] Cards appear to "float" above background
 
 ### Interaction Tests
+
 - [ ] Hover state transitions smoothly (300ms)
 - [ ] Active state increases blur and opacity
 - [ ] Active state brightens orange border
 - [ ] No layout shift on hover
 
 ### Browser Compatibility
+
 - [ ] Chrome/Edge: backdrop-filter supported
 - [ ] Firefox: backdrop-filter supported (v103+)
 - [ ] Safari: -webkit-backdrop-filter supported
 - [ ] Fallback: rgba background still provides contrast
 
 ### Performance
+
 - [ ] No jank during hover transitions
 - [ ] Animations run at 60fps
 - [ ] No excessive repaints (check DevTools Performance)
@@ -161,18 +177,21 @@ If glassmorphism causes issues:
 ## Phase 6: Success Metrics
 
 ### Visual Quality
+
 - Cards appear as frosted glass panels
 - Honeycomb pattern visible through cards (but blurred)
 - Orange "connection" borders reinforce hive metaphor
 - Cards float above background with subtle shadows
 
 ### User Experience
+
 - Smooth hover interactions
 - Clear visual hierarchy maintained
 - Text remains readable on glass background
 - Professional "Lab" aesthetic achieved
 
 ### Technical
+
 - Zero console errors
 - Smooth 60fps animations
 - Works in all modern browsers

@@ -52,7 +52,8 @@ export default function ResumeRoast() {
           <div>
             <h1 className="text-2xl font-bold text-slate-900">Resume Roast</h1>
             <p className="text-sm text-slate-600">
-              Brutally honest feedback. No signup. Paste your resume (min {MIN_LENGTH} characters).
+              Brutally honest feedback. No signup. Paste your resume (min{" "}
+              {MIN_LENGTH} characters).
             </p>
           </div>
         </div>
@@ -60,7 +61,7 @@ export default function ResumeRoast() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <textarea
             value={resumeText}
-            onChange={(e) => setResumeText(e.target.value)}
+            onChange={e => setResumeText(e.target.value)}
             placeholder="Paste your resume text here..."
             className="w-full min-h-[200px] px-4 py-3 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 resize-y"
             disabled={roast.isPending}
@@ -69,11 +70,19 @@ export default function ResumeRoast() {
           <div className="flex items-center justify-between gap-4">
             <span className="text-xs text-slate-500">
               {resumeText.trim().length} chars
-              {resumeText.trim().length > 0 && resumeText.trim().length < MIN_LENGTH && (
-                <span className="text-amber-600"> — need at least {MIN_LENGTH}</span>
-              )}
+              {resumeText.trim().length > 0 &&
+                resumeText.trim().length < MIN_LENGTH && (
+                  <span className="text-amber-600">
+                    {" "}
+                    — need at least {MIN_LENGTH}
+                  </span>
+                )}
             </span>
-            <Button type="submit" disabled={!canSubmit} className="bg-orange-500 hover:bg-orange-600">
+            <Button
+              type="submit"
+              disabled={!canSubmit}
+              className="bg-orange-500 hover:bg-orange-600"
+            >
               {roast.isPending ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -100,7 +109,11 @@ export default function ResumeRoast() {
             <div className="flex items-center gap-4">
               <div
                 className={`text-3xl font-bold ${
-                  result.score >= 70 ? "text-emerald-600" : result.score >= 40 ? "text-amber-600" : "text-red-600"
+                  result.score >= 70
+                    ? "text-emerald-600"
+                    : result.score >= 40
+                      ? "text-amber-600"
+                      : "text-red-600"
                 }`}
               >
                 {result.score}/100
@@ -109,17 +122,28 @@ export default function ResumeRoast() {
             </div>
 
             <div className="p-4 bg-slate-100 border border-slate-200 rounded-xl">
-              <p className="text-sm font-semibold text-slate-700 mb-2">The brutal truth</p>
-              <p className="text-sm text-slate-700 leading-relaxed">{result.brutalTruth}</p>
+              <p className="text-sm font-semibold text-slate-700 mb-2">
+                The brutal truth
+              </p>
+              <p className="text-sm text-slate-700 leading-relaxed">
+                {result.brutalTruth}
+              </p>
             </div>
 
             <div>
-              <p className="text-sm font-semibold text-slate-700 mb-3">3 Million-Dollar Mistakes</p>
+              <p className="text-sm font-semibold text-slate-700 mb-3">
+                3 Million-Dollar Mistakes
+              </p>
               <ul className="space-y-4">
                 {result.mistakes.map((m, i) => (
-                  <li key={i} className="p-4 bg-white border border-slate-200 rounded-xl">
+                  <li
+                    key={i}
+                    className="p-4 bg-white border border-slate-200 rounded-xl"
+                  >
                     <p className="font-medium text-slate-900">{m.title}</p>
-                    <p className="text-sm text-slate-600 mt-1">{m.explanation}</p>
+                    <p className="text-sm text-slate-600 mt-1">
+                      {m.explanation}
+                    </p>
                     <p className="text-sm text-emerald-700 mt-2">
                       <span className="font-medium">Fix:</span> {m.fix}
                     </p>
@@ -137,7 +161,8 @@ export default function ResumeRoast() {
                 Turn these fixes into a resume that gets interviews
               </h2>
               <p className="text-sm text-slate-300 mb-4">
-                Build one Master Profile. We'll help you fix these mistakes and tailor every application.
+                Build one Master Profile. We'll help you fix these mistakes and
+                tailor every application.
               </p>
               <Button
                 type="button"

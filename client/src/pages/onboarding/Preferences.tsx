@@ -36,11 +36,19 @@ export default function Preferences() {
       await savePreferencesMutation.mutateAsync({
         roleTitles: preferences.targetRoles.split(",").map(r => r.trim()),
         industries: preferences.targetIndustries.split(",").map(i => i.trim()),
-        companyStages: preferences.targetCompanyStages.split(",").map(s => s.trim()),
-        minimumBaseSalary: preferences.minSalary ? parseInt(preferences.minSalary) : undefined,
-        targetBaseSalary: preferences.targetSalary ? parseInt(preferences.targetSalary) : undefined,
+        companyStages: preferences.targetCompanyStages
+          .split(",")
+          .map(s => s.trim()),
+        minimumBaseSalary: preferences.minSalary
+          ? parseInt(preferences.minSalary)
+          : undefined,
+        targetBaseSalary: preferences.targetSalary
+          ? parseInt(preferences.targetSalary)
+          : undefined,
         locationType: preferences.remotePreference,
-        allowedCities: preferences.locationPreference ? [preferences.locationPreference] : undefined,
+        allowedCities: preferences.locationPreference
+          ? [preferences.locationPreference]
+          : undefined,
       });
 
       toast.success("Preferences saved! Onboarding complete!");
@@ -62,9 +70,7 @@ export default function Preferences() {
             <Award className="h-6 w-6 text-primary" />
             <span className="font-bold text-xl">CareerSwarm</span>
           </div>
-          <div className="text-sm text-muted-foreground">
-            Step 5 of 5
-          </div>
+          <div className="text-sm text-muted-foreground">Step 5 of 5</div>
         </div>
       </header>
 
@@ -72,7 +78,10 @@ export default function Preferences() {
       <div className="bg-white border-b">
         <div className="container">
           <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-            <div className="h-full bg-primary transition-all duration-300" style={{ width: "100%" }} />
+            <div
+              className="h-full bg-primary transition-all duration-300"
+              style={{ width: "100%" }}
+            />
           </div>
         </div>
       </div>
@@ -87,7 +96,8 @@ export default function Preferences() {
             Set Your Job Preferences
           </h1>
           <p className="text-lg text-muted-foreground">
-            Tell us what you're looking for so our AI agents can find the perfect opportunities.
+            Tell us what you're looking for so our AI agents can find the
+            perfect opportunities.
           </p>
         </div>
 
@@ -101,10 +111,17 @@ export default function Preferences() {
                   id="targetRoles"
                   placeholder="e.g., Head of Partnerships, VP Partnerships, Director Strategic Alliances"
                   value={preferences.targetRoles}
-                  onChange={(e) => setPreferences({ ...preferences, targetRoles: e.target.value })}
+                  onChange={e =>
+                    setPreferences({
+                      ...preferences,
+                      targetRoles: e.target.value,
+                    })
+                  }
                   className="mt-2"
                 />
-                <p className="text-xs text-muted-foreground mt-1">Separate multiple roles with commas</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Separate multiple roles with commas
+                </p>
               </div>
 
               {/* Target Industries */}
@@ -114,10 +131,17 @@ export default function Preferences() {
                   id="targetIndustries"
                   placeholder="e.g., AI, B2B SaaS, FinTech, Enterprise Software"
                   value={preferences.targetIndustries}
-                  onChange={(e) => setPreferences({ ...preferences, targetIndustries: e.target.value })}
+                  onChange={e =>
+                    setPreferences({
+                      ...preferences,
+                      targetIndustries: e.target.value,
+                    })
+                  }
                   className="mt-2"
                 />
-                <p className="text-xs text-muted-foreground mt-1">Separate multiple industries with commas</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Separate multiple industries with commas
+                </p>
               </div>
 
               {/* Company Stages */}
@@ -127,10 +151,17 @@ export default function Preferences() {
                   id="targetCompanyStages"
                   placeholder="e.g., Series A, Series B, Series C"
                   value={preferences.targetCompanyStages}
-                  onChange={(e) => setPreferences({ ...preferences, targetCompanyStages: e.target.value })}
+                  onChange={e =>
+                    setPreferences({
+                      ...preferences,
+                      targetCompanyStages: e.target.value,
+                    })
+                  }
                   className="mt-2"
                 />
-                <p className="text-xs text-muted-foreground mt-1">Separate multiple stages with commas</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Separate multiple stages with commas
+                </p>
               </div>
 
               {/* Salary Range */}
@@ -142,7 +173,12 @@ export default function Preferences() {
                     type="number"
                     placeholder="150000"
                     value={preferences.minSalary}
-                    onChange={(e) => setPreferences({ ...preferences, minSalary: e.target.value })}
+                    onChange={e =>
+                      setPreferences({
+                        ...preferences,
+                        minSalary: e.target.value,
+                      })
+                    }
                     className="mt-2"
                   />
                 </div>
@@ -153,7 +189,12 @@ export default function Preferences() {
                     type="number"
                     placeholder="200000"
                     value={preferences.targetSalary}
-                    onChange={(e) => setPreferences({ ...preferences, targetSalary: e.target.value })}
+                    onChange={e =>
+                      setPreferences({
+                        ...preferences,
+                        targetSalary: e.target.value,
+                      })
+                    }
                     className="mt-2"
                   />
                 </div>
@@ -166,7 +207,12 @@ export default function Preferences() {
                   id="locationPreference"
                   placeholder="e.g., Salt Lake City, UT or Remote"
                   value={preferences.locationPreference}
-                  onChange={(e) => setPreferences({ ...preferences, locationPreference: e.target.value })}
+                  onChange={e =>
+                    setPreferences({
+                      ...preferences,
+                      locationPreference: e.target.value,
+                    })
+                  }
                   className="mt-2"
                 />
               </div>
@@ -176,20 +222,47 @@ export default function Preferences() {
                 <Label>Work Arrangement</Label>
                 <div className="flex gap-4 mt-2">
                   <Button
-                    variant={preferences.remotePreference === "remote" ? "default" : "outline"}
-                    onClick={() => setPreferences({ ...preferences, remotePreference: "remote" })}
+                    variant={
+                      preferences.remotePreference === "remote"
+                        ? "default"
+                        : "outline"
+                    }
+                    onClick={() =>
+                      setPreferences({
+                        ...preferences,
+                        remotePreference: "remote",
+                      })
+                    }
                   >
                     Remote
                   </Button>
                   <Button
-                    variant={preferences.remotePreference === "hybrid" ? "default" : "outline"}
-                    onClick={() => setPreferences({ ...preferences, remotePreference: "hybrid" })}
+                    variant={
+                      preferences.remotePreference === "hybrid"
+                        ? "default"
+                        : "outline"
+                    }
+                    onClick={() =>
+                      setPreferences({
+                        ...preferences,
+                        remotePreference: "hybrid",
+                      })
+                    }
                   >
                     Hybrid
                   </Button>
                   <Button
-                    variant={preferences.remotePreference === "onsite" ? "default" : "outline"}
-                    onClick={() => setPreferences({ ...preferences, remotePreference: "onsite" })}
+                    variant={
+                      preferences.remotePreference === "onsite"
+                        ? "default"
+                        : "outline"
+                    }
+                    onClick={() =>
+                      setPreferences({
+                        ...preferences,
+                        remotePreference: "onsite",
+                      })
+                    }
                   >
                     On-site
                   </Button>

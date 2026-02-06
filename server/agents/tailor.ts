@@ -1,5 +1,5 @@
-import { invokeLLM } from '../_core/llm';
-import { insertAgentMetric } from '../db';
+import { invokeLLM } from "../_core/llm";
+import { insertAgentMetric } from "../db";
 
 interface TailorInput {
   userProfile: {
@@ -42,23 +42,63 @@ interface TailorOutput {
 
 function extractKeywords(text: string): string[] {
   // Simple keyword extraction - remove common words and split
-  const commonWords = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from', 'as', 'is', 'was', 'are', 'were', 'been', 'be', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'should', 'could', 'may', 'might', 'must', 'can']);
-  
+  const commonWords = new Set([
+    "the",
+    "a",
+    "an",
+    "and",
+    "or",
+    "but",
+    "in",
+    "on",
+    "at",
+    "to",
+    "for",
+    "of",
+    "with",
+    "by",
+    "from",
+    "as",
+    "is",
+    "was",
+    "are",
+    "were",
+    "been",
+    "be",
+    "have",
+    "has",
+    "had",
+    "do",
+    "does",
+    "did",
+    "will",
+    "would",
+    "should",
+    "could",
+    "may",
+    "might",
+    "must",
+    "can",
+  ]);
+
   const words = text
     .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/[^a-z0-9\s]/g, " ")
     .split(/\s+/)
     .filter(word => word.length > 3 && !commonWords.has(word));
-  
+
   // Return unique keywords
   return Array.from(new Set(words));
 }
 
-export async function tailorResume(input: TailorInput, options?: { applicationId?: number; userId?: number }): Promise<TailorOutput> {
+export async function tailorResume(
+  input: TailorInput,
+  options?: { applicationId?: number; userId?: number }
+): Promise<TailorOutput> {
   const startTime = Date.now();
-  
+
   try {
-  const systemPrompt = `You are an expert Executive Recruiter and Resume Strategist.
+    const systemPrompt = `You are an expert Executive Recruiter and Resume Strategist.
 
 Your task is to rewrite the user's resume to align perfectly with the target Job Description (JD).
 
@@ -125,15 +165,15 @@ Your task is to rewrite the user's resume to align perfectly with the target Job
 - Removes irrelevant experience
 - Keeps to 1-2 pages maximum`;
 
-  const pivotBlock = input.pivotContext
-    ? `
+    const pivotBlock = input.pivotContext
+      ? `
 
 **CAREER PIVOT - FORCE FORMAT B (Strategic Hybrid):**
 This application is a career pivot. Use Format B: place a robust Skills/Summary section at the top framing capabilities and bridge skills, then work history.${input.pivotContext.pivotStrategy ? ` Strategy: ${input.pivotContext.pivotStrategy}` : ""}${input.pivotContext.transferableStrengths?.length ? ` Highlight: ${input.pivotContext.transferableStrengths.join(", ")}` : ""}
 `
-    : "";
+      : "";
 
-  const userPrompt = `**JOB DESCRIPTION:**
+    const userPrompt = `**JOB DESCRIPTION:**
 ${input.jobDescription}
 
 **COMPANY:** ${input.companyName}
@@ -147,21 +187,29 @@ Location: ${input.userProfile.location}
 LinkedIn: ${input.userProfile.linkedIn}
 
 **WORK EXPERIENCE:**
-${input.userProfile.workExperience.map(exp => `
+${input.userProfile.workExperience
+  .map(
+    exp => `
 ### ${exp.title} at ${exp.company}
 ${exp.startDate} - ${exp.endDate}
 Achievements:
-${exp.achievements.map(a => `- ${a}`).join('\n')}
-`).join('\n')}
+${exp.achievements.map(a => `- ${a}`).join("\n")}
+`
+  )
+  .join("\n")}
 
 **SKILLS:**
-${input.userProfile.skills.join(', ')}
+${input.userProfile.skills.join(", ")}
 
 **EDUCATION:**
-${input.userProfile.education.map(edu => `
+${input.userProfile.education
+  .map(
+    edu => `
 ${edu.degree} in ${edu.field}
 ${edu.institution}, ${edu.graduationYear}
-`).join('\n')}
+`
+  )
+  .join("\n")}
 
 ---
 
@@ -176,41 +224,45 @@ ${edu.institution}, ${edu.graduationYear}
 
 **REMEMBER:** No AI fluff words. Only quantified, specific achievements.`;
 
-  const response = await invokeLLM({
-    messages: [
-      {
-        role: "system",
-        content: systemPrompt,
-      },
-      {
-        role: "user",
-        content: userPrompt,
-      },
-    ],
-  });
+    const response = await invokeLLM({
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt,
+        },
+        {
+          role: "user",
+          content: userPrompt,
+        },
+      ],
+    });
 
-  const messageContent = response.choices[0]?.message?.content;
-  const resumeMarkdown = typeof messageContent === 'string' ? messageContent : '';
+    const messageContent = response.choices[0]?.message?.content;
+    const resumeMarkdown =
+      typeof messageContent === "string" ? messageContent : "";
 
-  // Extract keyword matches
-  const jdKeywords = extractKeywords(input.jobDescription);
-  const resumeKeywords = extractKeywords(resumeMarkdown);
-  const keywordMatches = jdKeywords.filter(keyword => 
-    resumeKeywords.some(rk => rk.toLowerCase().includes(keyword.toLowerCase()))
-  );
+    // Extract keyword matches
+    const jdKeywords = extractKeywords(input.jobDescription);
+    const resumeKeywords = extractKeywords(resumeMarkdown);
+    const keywordMatches = jdKeywords.filter(keyword =>
+      resumeKeywords.some(rk =>
+        rk.toLowerCase().includes(keyword.toLowerCase())
+      )
+    );
 
-  // Calculate confidence based on keyword match rate
-  const matchRate = jdKeywords.length > 0 
-    ? (keywordMatches.length / jdKeywords.length) * 100 
-    : 0;
-  const confidence = Math.min(matchRate, 100);
+    // Calculate confidence based on keyword match rate
+    const matchRate =
+      jdKeywords.length > 0
+        ? (keywordMatches.length / jdKeywords.length) * 100
+        : 0;
+    const confidence = Math.min(matchRate, 100);
 
     const duration = Date.now() - startTime;
-    
+
     // Log success metric
     if (options?.applicationId || options?.userId) {
       await insertAgentMetric({
-        agentType: 'tailor',
+        agentType: "tailor",
         duration,
         success: true,
         applicationId: options.applicationId,
@@ -222,7 +274,7 @@ ${edu.institution}, ${edu.graduationYear}
         },
       });
     }
-    
+
     return {
       resumeMarkdown,
       keywordMatches,
@@ -230,11 +282,11 @@ ${edu.institution}, ${edu.graduationYear}
     };
   } catch (error) {
     const duration = Date.now() - startTime;
-    
+
     // Log error metric
     if (options?.applicationId || options?.userId) {
       await insertAgentMetric({
-        agentType: 'tailor',
+        agentType: "tailor",
         duration,
         success: false,
         errorMessage: error instanceof Error ? error.message : String(error),
@@ -242,7 +294,7 @@ ${edu.institution}, ${edu.graduationYear}
         userId: options.userId,
       });
     }
-    
+
     throw error;
   }
 }

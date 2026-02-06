@@ -19,7 +19,7 @@ export async function setupVite(app: Express, server: Server) {
   // Dynamic imports to avoid loading vite/viteConfig in production bundles
   const { createServer: createViteServer } = await import("vite");
   const viteConfig = (await import("../../vite.config")).default;
-  
+
   const serverOptions = {
     middlewareMode: true,
     hmr: { server },
@@ -40,7 +40,11 @@ export async function setupVite(app: Express, server: Server) {
     "index.html"
   );
 
-  async function serveIndexHtml(req: express.Request, res: express.Response, next: express.NextFunction) {
+  async function serveIndexHtml(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) {
     try {
       let template = await fs.promises.readFile(clientTemplatePath, "utf-8");
       template = template.replace(

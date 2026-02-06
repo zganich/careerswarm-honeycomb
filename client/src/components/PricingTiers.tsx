@@ -4,7 +4,7 @@ import { Button } from "./ui/button";
 
 /**
  * PricingTiers - Conversion-optimized pricing section
- * 
+ *
  * Features:
  * - Three tiers: Free (gateway), Pro (highlighted), Teams
  * - Pro tier emphasized as target conversion
@@ -80,7 +80,11 @@ const tiers: PricingTier[] = [
   },
 ];
 
-export function PricingTiers({ onSelectPlan }: { onSelectPlan: (plan: string) => void }) {
+export function PricingTiers({
+  onSelectPlan,
+}: {
+  onSelectPlan: (plan: string) => void;
+}) {
   return (
     <section className="w-full bg-gradient-to-b from-slate-50 to-white py-20">
       <div className="container max-w-7xl">
@@ -123,10 +127,14 @@ export function PricingTiers({ onSelectPlan }: { onSelectPlan: (plan: string) =>
             >
               {/* Badge with Float Animation */}
               {tier.badge && (
-                <motion.div 
+                <motion.div
                   className="absolute -top-4 left-1/2 -translate-x-1/2"
                   animate={{ y: [-2, 2, -2] }}
-                  transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                  transition={{
+                    duration: 6,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
                 >
                   <div className="px-4 py-1 bg-orange-500 text-white text-sm font-semibold rounded-full shadow-lg">
                     {tier.badge}
@@ -139,12 +147,16 @@ export function PricingTiers({ onSelectPlan }: { onSelectPlan: (plan: string) =>
                 <div className="flex items-center gap-3 mb-3">
                   <div
                     className={`p-2 rounded-lg ${
-                      tier.highlighted ? "bg-orange-100 text-orange-600" : "bg-slate-100 text-slate-600"
+                      tier.highlighted
+                        ? "bg-orange-100 text-orange-600"
+                        : "bg-slate-100 text-slate-600"
                     }`}
                   >
                     {tier.icon}
                   </div>
-                  <h3 className="text-2xl font-bold text-slate-900">{tier.name}</h3>
+                  <h3 className="text-2xl font-bold text-slate-900">
+                    {tier.name}
+                  </h3>
                 </div>
                 <p className="text-sm text-slate-600">{tier.description}</p>
               </div>
@@ -152,7 +164,9 @@ export function PricingTiers({ onSelectPlan }: { onSelectPlan: (plan: string) =>
               {/* Price */}
               <div className="mb-6">
                 <div className="flex items-baseline gap-2">
-                  <span className="text-5xl font-bold text-slate-900">{tier.price}</span>
+                  <span className="text-5xl font-bold text-slate-900">
+                    {tier.price}
+                  </span>
                   <span className="text-slate-600">/{tier.period}</span>
                 </div>
               </div>
@@ -171,7 +185,7 @@ export function PricingTiers({ onSelectPlan }: { onSelectPlan: (plan: string) =>
 
               {/* Features */}
               <ul className="space-y-3">
-                {tier.features.map((feature) => (
+                {tier.features.map(feature => (
                   <li key={feature} className="flex items-start gap-3">
                     <Check className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
                     <span className="text-sm text-slate-700">{feature}</span>
@@ -190,7 +204,9 @@ export function PricingTiers({ onSelectPlan }: { onSelectPlan: (plan: string) =>
           className="text-center"
         >
           <p className="text-sm text-slate-600">
-            <span className="font-semibold text-slate-900">Most candidates upgrade within 3 days</span>{" "}
+            <span className="font-semibold text-slate-900">
+              Most candidates upgrade within 3 days
+            </span>{" "}
             after seeing their first optimized resume
           </p>
         </motion.div>
@@ -204,8 +220,12 @@ export function PricingTiers({ onSelectPlan }: { onSelectPlan: (plan: string) =>
         >
           <Shield className="w-6 h-6 text-emerald-600" />
           <div className="text-left">
-            <div className="font-semibold text-emerald-900">30-Day Money-Back Guarantee</div>
-            <div className="text-sm text-emerald-700">Not satisfied? Get a full refund, no questions asked</div>
+            <div className="font-semibold text-emerald-900">
+              30-Day Money-Back Guarantee
+            </div>
+            <div className="text-sm text-emerald-700">
+              Not satisfied? Get a full refund, no questions asked
+            </div>
           </div>
         </motion.div>
       </div>

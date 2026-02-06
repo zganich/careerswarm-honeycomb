@@ -1,6 +1,15 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, FileText, Sparkles, CheckCircle2, Loader2, Shield, Lock, Eye } from "lucide-react";
+import {
+  Upload,
+  FileText,
+  Sparkles,
+  CheckCircle2,
+  Loader2,
+  Shield,
+  Lock,
+  Eye,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
@@ -24,7 +33,9 @@ interface UploadedFile {
   };
 }
 
-export function MasterProfileBuilder({ onComplete }: MasterProfileBuilderProps) {
+export function MasterProfileBuilder({
+  onComplete,
+}: MasterProfileBuilderProps) {
   const [currentStep, setCurrentStep] = useState<BuilderStep>("upload");
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -50,12 +61,14 @@ export function MasterProfileBuilder({ onComplete }: MasterProfileBuilderProps) 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    
+
     const files = Array.from(e.dataTransfer.files);
-    const validFiles = files.filter(file => 
-      file.type === "application/pdf" || 
-      file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
-      file.type === "text/plain"
+    const validFiles = files.filter(
+      file =>
+        file.type === "application/pdf" ||
+        file.type ===
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+        file.type === "text/plain"
     );
 
     if (validFiles.length > 0) {
@@ -63,12 +76,15 @@ export function MasterProfileBuilder({ onComplete }: MasterProfileBuilderProps) 
     }
   }, []);
 
-  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    if (files.length > 0) {
-      handleFilesUpload(files);
-    }
-  }, []);
+  const handleFileSelect = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = Array.from(e.target.files || []);
+      if (files.length > 0) {
+        handleFilesUpload(files);
+      }
+    },
+    []
+  );
 
   const handleFilesUpload = async (files: File[]) => {
     setIsProcessing(true);
@@ -89,9 +105,7 @@ export function MasterProfileBuilder({ onComplete }: MasterProfileBuilderProps) 
       for (let progress = 0; progress <= 100; progress += 20) {
         await new Promise(resolve => setTimeout(resolve, 100));
         setUploadedFiles(prev =>
-          prev.map(f =>
-            f.id === uploadedFile.id ? { ...f, progress } : f
-          )
+          prev.map(f => (f.id === uploadedFile.id ? { ...f, progress } : f))
         );
       }
 
@@ -138,7 +152,15 @@ export function MasterProfileBuilder({ onComplete }: MasterProfileBuilderProps) 
         <div className="flex items-center gap-3">
           <Sparkles className="h-5 w-5 text-blue-600" />
           <span className="text-sm font-medium text-slate-700">
-            Step {currentStep === "upload" ? "1" : currentStep === "merging" ? "2" : currentStep === "reveal" ? "3" : "4"} of 4 • {stepProgress[currentStep]}% Complete
+            Step{" "}
+            {currentStep === "upload"
+              ? "1"
+              : currentStep === "merging"
+                ? "2"
+                : currentStep === "reveal"
+                  ? "3"
+                  : "4"}{" "}
+            of 4 • {stepProgress[currentStep]}% Complete
           </span>
         </div>
       </div>
@@ -160,7 +182,8 @@ export function MasterProfileBuilder({ onComplete }: MasterProfileBuilderProps) 
                   🗂️ Upload Every Resume Version You've Ever Created
                 </h1>
                 <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-                  We'll merge 15+ resume versions into one powerful Master Profile that tells your complete career story.
+                  We'll merge 15+ resume versions into one powerful Master
+                  Profile that tells your complete career story.
                 </p>
               </div>
 
@@ -241,7 +264,7 @@ export function MasterProfileBuilder({ onComplete }: MasterProfileBuilderProps) 
                   <h3 className="text-lg font-semibold text-slate-900 mb-4">
                     Uploaded Files ({uploadedFiles.length})
                   </h3>
-                  {uploadedFiles.map((file) => (
+                  {uploadedFiles.map(file => (
                     <motion.div
                       key={file.id}
                       initial={{ opacity: 0, x: -20 }}
@@ -255,28 +278,35 @@ export function MasterProfileBuilder({ onComplete }: MasterProfileBuilderProps) 
                           ) : (
                             <Loader2 className="h-5 w-5 text-blue-600 animate-spin" />
                           )}
-                          <span className="font-medium text-slate-900">{file.name}</span>
+                          <span className="font-medium text-slate-900">
+                            {file.name}
+                          </span>
                         </div>
-                        <span className="text-sm text-slate-500">{file.progress}%</span>
+                        <span className="text-sm text-slate-500">
+                          {file.progress}%
+                        </span>
                       </div>
                       {file.status === "complete" && file.findings && (
                         <div className="text-sm text-slate-600 ml-8">
-                          • Found {file.findings.roles} roles • {file.findings.skills} skills identified
-                          {file.findings.duplicates > 0 && ` • Merged ${file.findings.duplicates} duplicates`}
+                          • Found {file.findings.roles} roles •{" "}
+                          {file.findings.skills} skills identified
+                          {file.findings.duplicates > 0 &&
+                            ` • Merged ${file.findings.duplicates} duplicates`}
                         </div>
                       )}
                     </motion.div>
                   ))}
 
-                  {!isProcessing && uploadedFiles.every(f => f.status === "complete") && (
-                    <Button
-                      size="lg"
-                      className="w-full bg-orange-600 hover:bg-orange-700 text-white mt-6"
-                      onClick={handleContinueToMerging}
-                    >
-                      Continue to Merging →
-                    </Button>
-                  )}
+                  {!isProcessing &&
+                    uploadedFiles.every(f => f.status === "complete") && (
+                      <Button
+                        size="lg"
+                        className="w-full bg-orange-600 hover:bg-orange-700 text-white mt-6"
+                        onClick={handleContinueToMerging}
+                      >
+                        Continue to Merging →
+                      </Button>
+                    )}
                 </div>
               )}
             </motion.div>

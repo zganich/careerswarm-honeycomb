@@ -3,7 +3,7 @@
 **Video URL:** https://www.loom.com/share/6421f5c4c9384b9e848a0ded6fba627d  
 **Title:** Navigating the Resume Roast and Profile Setup Challenges 🚀  
 **Duration:** 2:52  
-**Recorded:** February 2, 2026 (4 minutes ago)  
+**Recorded:** February 2, 2026 (4 minutes ago)
 
 ## Video Summary (from Loom AI)
 
@@ -18,53 +18,66 @@
 ## Complete Transcript Analysis
 
 ### 0:00 - "We've got our homepage here. And notice, this will push the header, this line here, underneath this."
+
 **Issue:** User notes that something is pushing the header line underneath another element
 **Severity:** Medium - Layout issue affecting header positioning
 
 ### 0:16 - "Let me go ahead and go to Resume Roast. And let's go ahead and copy and paste this. That works too."
+
 **Action:** User navigates to Resume Roast and pastes resume text
 **Status:** ✅ Navigation and paste functionality working
 
 ### 0:32 - "Just fine. Da da da, get all that. Colors are a little bit different than the home page. I'll roast that."
+
 **Issue:** Colors differ between homepage and Resume Roast page
 **Severity:** Low - Visual inconsistency but not blocking
 
 ### 0:44 - "And then it pushes it off. All the way down to the bottom, rather than this being at the top and then this."
+
 **Issue:** Resume Roast results push content to bottom instead of showing at top
 **Severity:** High - Poor UX, users expect results at top after submission
 
 ### 0:56 - "So let's build my master profile. We get a sign in required. Sign in here. We don't have the branding correctly."
+
 **Issue:** OAuth gate appears but branding is incorrect
 **Severity:** Critical - Branding inconsistency breaks trust
 
 ### 1:14 - "And we get taken back to the beginning. Let's try it Try that. We'll do this. Put It's roasted."
+
 **Issue:** After OAuth attempt, user gets redirected back to beginning (likely homepage)
 **Severity:** Critical - OAuth flow broken, prevents onboarding completion
 
 ### 1:27 - "Uhm. It's not roasting it like it used to. It either used to be pretty funny, but now it's not."
+
 **Issue:** Resume Roast quality degraded - not providing humorous/engaging feedback
 **Severity:** Medium - Feature quality regression
 
 ### 1:41 - "So. I guess we'll have to sign in with Manus. I don't like that. Let's use another account, and, let's do test.care..."
+
 **Issue:** User dislikes "Sign in with Manus" branding (wants CareerSwarm branding)
 **Severity:** High - User explicitly states dissatisfaction with Manus branding
 
 ### 2:08 - "Let's see if that works. Alright, don't have a verification code because that is not a real thing."
+
 **Issue:** OAuth flow requires verification code, but test account doesn't have one
 **Severity:** Critical - Blocks testing and real user onboarding
 
 ### 2:32 - "So we'll go back here. Let's try this again. Here. And we'll And back to the beginning."
+
 **Issue:** After OAuth attempt, redirects back to beginning again (loop)
 **Severity:** Critical - OAuth redirect loop prevents any progress
 
 ### 2:49 - "So, there's an error there."
+
 **Conclusion:** User confirms there's an error in the OAuth/onboarding flow
 **Severity:** Critical - Complete flow blocker
 
 ## Detailed Observations
 
 ### Chapter 1: Homepage Overview (0:00-0:56)
+
 **Visible in Screenshot:**
+
 - ✅ Homepage loads with "Stop Applying. Start Infiltrating." headline
 - ✅ SwarmNarrative animation visible (showing history stack on left)
 - ✅ CTAs present: "Start Free Trial" + "Import from LinkedIn"
@@ -74,42 +87,52 @@
 **User Commentary:** "We've got our homepage here."
 
 **Issues Noted by User:**
+
 - ❌ "Colors differ" - User mentions color inconsistencies
 - ❌ "Layout isn't as expected" - User notes layout issues
 
 ### Chapter 2: Master Profile Issues (0:56-2:08)
+
 **User Actions:**
+
 - Attempted to click "Build My Master Profile"
 - Encountered issues with the master profile setup
 
 **Issues Noted by User:**
+
 - ❌ "Branding inconsistencies" - User mentions branding problems
 - ❌ Sign-in challenges - User faced difficulties with authentication
 
 ### Chapter 3: Sign-In Troubleshooting (2:08-2:52)
+
 **User Actions:**
+
 - Attempted to troubleshoot sign-in process
 - Encountered authentication flow issues
 
 **Issues Noted by User:**
+
 - ❌ Sign-in challenges continue
 - ❌ Branding inconsistencies persist
 
 ## Critical Issues Identified
 
 ### 1. Color Inconsistencies
+
 - **Severity:** Medium
 - **Location:** Homepage and Resume Roast feature
 - **User Impact:** Visual inconsistency affects brand perception
 - **Action Required:** Review and standardize color palette across all pages
 
 ### 2. Layout Issues
+
 - **Severity:** Medium
 - **Location:** Homepage
 - **User Impact:** Layout doesn't match user expectations
 - **Action Required:** Clarify specific layout concerns with user
 
 ### 3. Branding Inconsistencies
+
 - **Severity:** High
 - **Location:** Master Profile / Sign-in flow
 - **User Impact:** Confusing user experience, breaks trust
@@ -117,6 +140,7 @@
 - **Known Issue:** Manus OAuth portal shows "Powered by Manus" (external system limitation)
 
 ### 4. Sign-In Challenges
+
 - **Severity:** Critical
 - **Location:** OAuth authentication flow
 - **User Impact:** Blocks user from completing onboarding
@@ -125,12 +149,14 @@
 ## Next Steps
 
 ### Immediate Actions:
+
 1. **Watch full video** - Play through all 3 chapters to see exact user actions and error messages
 2. **Check browser console** - Look for JavaScript errors during sign-in flow
 3. **Review OAuth callback** - Verify redirect URL and session cookie handling
 4. **Test color consistency** - Compare homepage vs Resume Roast vs onboarding pages
 
 ### Questions for User:
+
 1. What specific colors are different? (Orange vs green? Background colors?)
 2. What layout issues did you notice? (Spacing? Alignment? Missing elements?)
 3. What exact error message appeared during sign-in?

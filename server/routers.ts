@@ -7,7 +7,12 @@ import { z } from "zod";
 import * as db from "./db";
 import { invokeLLM } from "./_core/llm";
 import { storagePut, storageGet } from "./storage";
-import { extractTextFromResume, parseResumeWithLLM, consolidateResumes, generateSuperpowers } from "./resumeParser";
+import {
+  extractTextFromResume,
+  parseResumeWithLLM,
+  consolidateResumes,
+  generateSuperpowers,
+} from "./resumeParser";
 import { profileRouter } from "./routers/profile";
 import { stripeRouter } from "./stripe-router";
 import { setResumeProgress } from "./resumeProgress";
@@ -30,12 +35,18 @@ export const appRouter = router({
       return {
         sentryDsn: process.env.SENTRY_DSN || null,
         posthogKey: process.env.POSTHOG_KEY || null,
-        posthogHost: process.env.POSTHOG_HOST || 'https://us.posthog.com',
+        posthogHost: process.env.POSTHOG_HOST || "https://us.posthog.com",
       };
     }),
 
     roast: publicProcedure
-      .input(z.object({ resumeText: z.string().min(50, "Resume must be at least 50 characters") }))
+      .input(
+        z.object({
+          resumeText: z
+            .string()
+            .min(50, "Resume must be at least 50 characters"),
+        })
+      )
       .mutation(async ({ input }) => {
         try {
           const outcome = await runRoast(input.resumeText);
@@ -49,7 +60,8 @@ export const appRouter = router({
           // Any uncaught error (e.g. fetch failed from LLM) → friendly 503 so client never sees 500
           throw new TRPCError({
             code: "SERVICE_UNAVAILABLE",
-            message: "Resume roast isn't available right now. Please try again in a moment.",
+            message:
+              "Resume roast isn't available right now. Please try again in a moment.",
           });
         }
       }),
@@ -57,17 +69,36 @@ export const appRouter = router({
     estimateQualification: publicProcedure
       .input(
         z.object({
-          currentRole: z.string().min(2, "Current role must be at least 2 characters"),
-          targetRole: z.string().min(2, "Target role must be at least 2 characters"),
+          currentRole: z
+            .string()
+            .min(2, "Current role must be at least 2 characters"),
+          targetRole: z
+            .string()
+            .min(2, "Target role must be at least 2 characters"),
         })
       )
       .mutation(async ({ input }) => {
         // Stub: returns valid shape for tests; can be replaced with LLM later
-        const score = Math.min(100, Math.max(0, 50 + Math.floor(Math.random() * 40)));
+        const score = Math.min(
+          100,
+          Math.max(0, 50 + Math.floor(Math.random() * 40))
+        );
         const gaps = [
-          { skill: "Domain experience", importance: "critical" as const, suggestion: "Gain experience in target domain." },
-          { skill: "Leadership", importance: "important" as const, suggestion: "Take on project ownership." },
-          { skill: "Communication", importance: "helpful" as const, suggestion: "Present to stakeholders." },
+          {
+            skill: "Domain experience",
+            importance: "critical" as const,
+            suggestion: "Gain experience in target domain.",
+          },
+          {
+            skill: "Leadership",
+            importance: "important" as const,
+            suggestion: "Take on project ownership.",
+          },
+          {
+            skill: "Communication",
+            importance: "helpful" as const,
+            suggestion: "Present to stakeholders.",
+          },
         ];
         const reasoning = `Comparison of ${input.currentRole} to ${input.targetRole}: gap analysis based on typical requirements.`;
         return { score, gaps, reasoning };
@@ -87,7 +118,10 @@ export const appRouter = router({
     logout: protectedProcedure.mutation(async ({ ctx }) => {
       const { COOKIE_NAME } = await import("@shared/const");
       const { getSessionCookieOptions } = await import("./_core/cookies");
-      ctx.res.clearCookie(COOKIE_NAME, { ...getSessionCookieOptions(ctx.req), maxAge: 0 });
+      ctx.res.clearCookie(COOKIE_NAME, {
+        ...getSessionCookieOptions(ctx.req),
+        maxAge: 0,
+      });
       return { success: true };
     }),
   }),
@@ -99,8 +133,9 @@ export const appRouter = router({
     // Get current onboarding status
     getStatus: protectedProcedure.query(async ({ ctx }) => {
       const user = await db.getUserByOpenId(ctx.user.openId);
-      if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
-      
+      if (!user)
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
       return {
         step: user.onboardingStep || 0,
         completed: user.onboardingCompleted || false,
@@ -112,38 +147,45 @@ export const appRouter = router({
       .input(z.object({ referrerUserId: z.number() }))
       .mutation(async ({ ctx, input }) => {
         const user = await db.getUserByOpenId(ctx.user.openId);
-        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
         await db.setUserReferredBy(user.id, input.referrerUserId);
         return { success: true };
       }),
 
     // Update onboarding step
     updateStep: protectedProcedure
-      .input(z.object({
-        step: z.number().min(0).max(5),
-        completed: z.boolean().optional(),
-      }))
+      .input(
+        z.object({
+          step: z.number().min(0).max(5),
+          completed: z.boolean().optional(),
+        })
+      )
       .mutation(async ({ ctx, input }) => {
         const user = await db.getUserByOpenId(ctx.user.openId);
-        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
-        
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
         await db.updateUserOnboardingStep(user.id, input.step, input.completed);
         return { success: true };
       }),
 
     // Upload resume file
     uploadResume: protectedProcedure
-      .input(z.object({
-        filename: z.string(),
-        fileData: z.string(), // base64
-        mimeType: z.string(),
-      }))
+      .input(
+        z.object({
+          filename: z.string(),
+          fileData: z.string(), // base64
+          mimeType: z.string(),
+        })
+      )
       .mutation(async ({ ctx, input }) => {
         const user = await db.getUserByOpenId(ctx.user.openId);
-        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
         // Upload to S3
-        const fileBuffer = Buffer.from(input.fileData, 'base64');
+        const fileBuffer = Buffer.from(input.fileData, "base64");
         const fileKey = `resumes/${user.id}/${Date.now()}-${input.filename}`;
         const { url } = await storagePut(fileKey, fileBuffer, input.mimeType);
 
@@ -155,7 +197,7 @@ export const appRouter = router({
           fileUrl: url,
           fileSize: fileBuffer.length,
           mimeType: input.mimeType,
-          processingStatus: 'pending',
+          processingStatus: "pending",
         });
 
         return { resumeId, url };
@@ -164,24 +206,37 @@ export const appRouter = router({
     // Process uploaded resumes (extract text + parse achievements)
     processResumes: protectedProcedure.mutation(async ({ ctx }) => {
       const user = await db.getUserByOpenId(ctx.user.openId);
-      if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+      if (!user)
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
       const resumes = await db.getUploadedResumes(user.id);
-      const pendingResumes = resumes.filter(r => r.processingStatus === 'pending');
+      const pendingResumes = resumes.filter(
+        r => r.processingStatus === "pending"
+      );
 
       if (pendingResumes.length === 0) {
         return { message: "No resumes to process" };
       }
 
       const total = pendingResumes.length;
-      setResumeProgress(user.id, { phase: "processing", current: 0, total, message: "Starting..." });
+      setResumeProgress(user.id, {
+        phase: "processing",
+        current: 0,
+        total,
+        message: "Starting...",
+      });
 
       // Process each resume
       for (let i = 0; i < pendingResumes.length; i++) {
         const resume = pendingResumes[i];
         try {
-          setResumeProgress(user.id, { phase: "processing", current: i + 1, total, message: `Processing ${resume.filename}...` });
-          await db.updateResumeProcessingStatus(resume.id, 'processing');
+          setResumeProgress(user.id, {
+            phase: "processing",
+            current: i + 1,
+            total,
+            message: `Processing ${resume.filename}...`,
+          });
+          await db.updateResumeProcessingStatus(resume.id, "processing");
 
           // Download file from S3
           const { url } = await storageGet(resume.fileKey);
@@ -189,234 +244,280 @@ export const appRouter = router({
           const buffer = Buffer.from(await response.arrayBuffer());
 
           // Extract text based on file type
-          const extractedText = await extractTextFromResume(buffer, resume.mimeType || 'application/pdf');
-          
-          await db.updateResumeProcessingStatus(resume.id, 'completed', extractedText);
+          const extractedText = await extractTextFromResume(
+            buffer,
+            resume.mimeType || "application/pdf"
+          );
+
+          await db.updateResumeProcessingStatus(
+            resume.id,
+            "completed",
+            extractedText
+          );
         } catch (error: any) {
-          console.error(`[Resume Parser] Failed to process ${resume.filename}:`, error);
-          await db.updateResumeProcessingStatus(resume.id, 'failed', undefined, error.message);
+          console.error(
+            `[Resume Parser] Failed to process ${resume.filename}:`,
+            error
+          );
+          await db.updateResumeProcessingStatus(
+            resume.id,
+            "failed",
+            undefined,
+            error.message
+          );
         }
       }
 
-      setResumeProgress(user.id, { phase: "parsing", message: "Extracting profile..." });
+      setResumeProgress(user.id, {
+        phase: "parsing",
+        message: "Extracting profile...",
+      });
       return { processed: pendingResumes.length };
     }),
 
     // Parse resumes and extract Master Profile data
     parseResumes: protectedProcedure.mutation(async ({ ctx }) => {
       const user = await db.getUserByOpenId(ctx.user.openId);
-      if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+      if (!user)
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
       const database = await db.getDb();
       if (!database) {
         console.error("[parseResumes] Database not available");
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "Database is not available. Please check your connection and try again. If this persists, contact support.",
+          message:
+            "Database is not available. Please check your connection and try again. If this persists, contact support.",
         });
       }
 
       const resumes = await db.getUploadedResumes(user.id);
-      const completedResumes = resumes.filter(r => r.processingStatus === 'completed' && r.extractedText);
+      const completedResumes = resumes.filter(
+        r => r.processingStatus === "completed" && r.extractedText
+      );
 
       if (completedResumes.length === 0) {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "No processed resumes found. Upload and process resumes first, then try again." });
-      }
-
-      setResumeProgress(user.id, { phase: "parsing", message: "Building your profile..." });
-
-      try {
-      // Parse each resume with LLM
-      const parsedResumes = [];
-      for (const resume of completedResumes) {
-        const parsed = await parseResumeWithLLM(resume.extractedText!);
-        parsedResumes.push(parsed);
-      }
-
-      // Consolidate multiple resumes
-      const consolidated = consolidateResumes(parsedResumes);
-
-      // Save work experiences and achievements
-      for (const we of consolidated.workExperiences) {
-        const workExpId = await db.createWorkExperience({
-          userId: user.id,
-          companyName: we.companyName,
-          jobTitle: we.jobTitle,
-          startDate: new Date(we.startDate),
-          endDate: we.endDate ? new Date(we.endDate) : null,
-          location: we.location || null,
-          isCurrent: we.isCurrent,
-          roleOverview: we.roleOverview || null,
-          companyStage: we.companyStage || null,
-          companyFunding: we.companyFunding || null,
-          companyIndustry: we.companyIndustry || null,
-          companySizeEmployees: we.companySizeEmployees || null,
-        });
-
-        // Save achievements for this work experience
-        for (const ach of we.achievements || []) {
-          await db.createAchievement({
-            userId: user.id,
-            workExperienceId: workExpId,
-            description: ach.description,
-            context: ach.context,
-            metricType: ach.metricType,
-            metricValue: ach.metricValue ? ach.metricValue.toString() : null,
-            metricUnit: ach.metricUnit,
-            metricTimeframe: ach.metricTimeframe,
-            keywords: ach.keywords as any,
-            importanceScore: ach.importanceScore,
-            sourceResumeFilename: completedResumes[0].filename,
-          });
-        }
-      }
-
-      // Save skills
-      for (const skill of consolidated.skills) {
-        await db.createSkill({
-          userId: user.id,
-          skillName: skill.skillName,
-          skillCategory: skill.skillCategory || null,
-          proficiencyLevel: skill.proficiencyLevel as any || null,
-          yearsExperience: skill.yearsExperience ? skill.yearsExperience.toString() : null,
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message:
+            "No processed resumes found. Upload and process resumes first, then try again.",
         });
       }
 
-      // Save certifications
-      for (const cert of consolidated.certifications) {
-        await db.createCertification({
-          userId: user.id,
-          certificationName: cert.name,
-          issuingOrganization: cert.organization || null,
-          issueYear: cert.year || null,
-        });
-      }
-
-      // Save education
-      for (const edu of consolidated.education) {
-        await db.createEducation({
-          userId: user.id,
-          institution: edu.institution,
-          degreeType: edu.degree || null,
-          fieldOfStudy: edu.field || null,
-          graduationYear: edu.graduationYear || null,
-        });
-      }
-
-      // Save awards
-      for (const award of consolidated.awards) {
-        await db.createAward({
-          userId: user.id,
-          awardName: award.name,
-          organization: award.organization || null,
-          year: award.year || null,
-          context: award.context || null,
-        });
-      }
-
-      // Save professional summary, portfolio URLs, parsed contact (pre-fill only)
-      await db.upsertUserProfile(user.id, {
-        professionalSummary: consolidated.professionalSummary || null,
-        portfolioUrls: (consolidated.portfolioUrls?.length ? consolidated.portfolioUrls : null) as any,
-        parsedContactFromResume: consolidated.parsedContact && Object.keys(consolidated.parsedContact).length ? consolidated.parsedContact as any : null,
+      setResumeProgress(user.id, {
+        phase: "parsing",
+        message: "Building your profile...",
       });
 
-      // Save languages
-      for (const lang of consolidated.languages ?? []) {
-        await db.createLanguage({
-          userId: user.id,
-          language: lang.language,
-          proficiency: lang.proficiency ?? undefined,
-          isNative: lang.isNative ?? false,
+      try {
+        // Parse each resume with LLM
+        const parsedResumes = [];
+        for (const resume of completedResumes) {
+          const parsed = await parseResumeWithLLM(resume.extractedText!);
+          parsedResumes.push(parsed);
+        }
+
+        // Consolidate multiple resumes
+        const consolidated = consolidateResumes(parsedResumes);
+
+        // Save work experiences and achievements
+        for (const we of consolidated.workExperiences) {
+          const workExpId = await db.createWorkExperience({
+            userId: user.id,
+            companyName: we.companyName,
+            jobTitle: we.jobTitle,
+            startDate: new Date(we.startDate),
+            endDate: we.endDate ? new Date(we.endDate) : null,
+            location: we.location || null,
+            isCurrent: we.isCurrent,
+            roleOverview: we.roleOverview || null,
+            companyStage: we.companyStage || null,
+            companyFunding: we.companyFunding || null,
+            companyIndustry: we.companyIndustry || null,
+            companySizeEmployees: we.companySizeEmployees || null,
+          });
+
+          // Save achievements for this work experience
+          for (const ach of we.achievements || []) {
+            await db.createAchievement({
+              userId: user.id,
+              workExperienceId: workExpId,
+              description: ach.description,
+              context: ach.context,
+              metricType: ach.metricType,
+              metricValue: ach.metricValue ? ach.metricValue.toString() : null,
+              metricUnit: ach.metricUnit,
+              metricTimeframe: ach.metricTimeframe,
+              keywords: ach.keywords as any,
+              importanceScore: ach.importanceScore,
+              sourceResumeFilename: completedResumes[0].filename,
+            });
+          }
+        }
+
+        // Save skills
+        for (const skill of consolidated.skills) {
+          await db.createSkill({
+            userId: user.id,
+            skillName: skill.skillName,
+            skillCategory: skill.skillCategory || null,
+            proficiencyLevel: (skill.proficiencyLevel as any) || null,
+            yearsExperience: skill.yearsExperience
+              ? skill.yearsExperience.toString()
+              : null,
+          });
+        }
+
+        // Save certifications
+        for (const cert of consolidated.certifications) {
+          await db.createCertification({
+            userId: user.id,
+            certificationName: cert.name,
+            issuingOrganization: cert.organization || null,
+            issueYear: cert.year || null,
+          });
+        }
+
+        // Save education
+        for (const edu of consolidated.education) {
+          await db.createEducation({
+            userId: user.id,
+            institution: edu.institution,
+            degreeType: edu.degree || null,
+            fieldOfStudy: edu.field || null,
+            graduationYear: edu.graduationYear || null,
+          });
+        }
+
+        // Save awards
+        for (const award of consolidated.awards) {
+          await db.createAward({
+            userId: user.id,
+            awardName: award.name,
+            organization: award.organization || null,
+            year: award.year || null,
+            context: award.context || null,
+          });
+        }
+
+        // Save professional summary, portfolio URLs, parsed contact (pre-fill only)
+        await db.upsertUserProfile(user.id, {
+          professionalSummary: consolidated.professionalSummary || null,
+          portfolioUrls: (consolidated.portfolioUrls?.length
+            ? consolidated.portfolioUrls
+            : null) as any,
+          parsedContactFromResume:
+            consolidated.parsedContact &&
+            Object.keys(consolidated.parsedContact).length
+              ? (consolidated.parsedContact as any)
+              : null,
         });
-      }
 
-      // Save volunteer experiences
-      for (const v of consolidated.volunteerExperiences ?? []) {
-        await db.createVolunteerExperience({
-          userId: user.id,
-          organization: v.organization,
-          role: v.role ?? undefined,
-          startDate: v.startDate ?? undefined,
-          endDate: v.endDate ?? undefined,
-          description: v.description ?? undefined,
+        // Save languages
+        for (const lang of consolidated.languages ?? []) {
+          await db.createLanguage({
+            userId: user.id,
+            language: lang.language,
+            proficiency: lang.proficiency ?? undefined,
+            isNative: lang.isNative ?? false,
+          });
+        }
+
+        // Save volunteer experiences
+        for (const v of consolidated.volunteerExperiences ?? []) {
+          await db.createVolunteerExperience({
+            userId: user.id,
+            organization: v.organization,
+            role: v.role ?? undefined,
+            startDate: v.startDate ?? undefined,
+            endDate: v.endDate ?? undefined,
+            description: v.description ?? undefined,
+          });
+        }
+
+        // Save projects
+        for (const p of consolidated.projects ?? []) {
+          await db.createProject({
+            userId: user.id,
+            name: p.name,
+            description: p.description ?? undefined,
+            url: p.url ?? undefined,
+            role: p.role ?? undefined,
+            startDate: p.startDate ?? undefined,
+            endDate: p.endDate ?? undefined,
+          });
+        }
+
+        // Save publications
+        for (const pub of consolidated.publications ?? []) {
+          await db.createPublication({
+            userId: user.id,
+            title: pub.title,
+            publisherOrVenue: pub.publisherOrVenue ?? undefined,
+            year: pub.year ?? undefined,
+            url: pub.url ?? undefined,
+            context: pub.context ?? undefined,
+          });
+        }
+
+        // Save security clearances
+        for (const c of consolidated.securityClearances ?? []) {
+          await db.createSecurityClearance({
+            userId: user.id,
+            clearanceType: c.clearanceType,
+            level: c.level ?? undefined,
+            expiryDate: c.expiryDate ?? undefined,
+          });
+        }
+
+        // Save licenses (as certifications with type 'license')
+        for (const lic of consolidated.licenses ?? []) {
+          await db.createCertification({
+            userId: user.id,
+            certificationName: lic.name,
+            issuingOrganization: lic.organization ?? null,
+            issueYear: lic.year ?? null,
+            type: "license",
+          } as any);
+        }
+
+        // Generate superpowers
+        const allAchievements = consolidated.workExperiences.flatMap(
+          we => we.achievements
+        );
+        const superpowers = await generateSuperpowers(allAchievements);
+
+        // Save superpowers
+        const superpowersData = superpowers.map((sp, i) => ({
+          title: sp.title,
+          evidenceAchievementIds: [], // Will be populated later when user selects achievements
+          rank: i + 1,
+        }));
+        await db.upsertSuperpowers(user.id, superpowersData);
+
+        // Update onboarding step
+        await db.updateUserOnboardingStep(user.id, 3, false);
+
+        setResumeProgress(user.id, {
+          phase: "done",
+          message: "Profile saved.",
         });
-      }
 
-      // Save projects
-      for (const p of consolidated.projects ?? []) {
-        await db.createProject({
-          userId: user.id,
-          name: p.name,
-          description: p.description ?? undefined,
-          url: p.url ?? undefined,
-          role: p.role ?? undefined,
-          startDate: p.startDate ?? undefined,
-          endDate: p.endDate ?? undefined,
-        });
-      }
-
-      // Save publications
-      for (const pub of consolidated.publications ?? []) {
-        await db.createPublication({
-          userId: user.id,
-          title: pub.title,
-          publisherOrVenue: pub.publisherOrVenue ?? undefined,
-          year: pub.year ?? undefined,
-          url: pub.url ?? undefined,
-          context: pub.context ?? undefined,
-        });
-      }
-
-      // Save security clearances
-      for (const c of consolidated.securityClearances ?? []) {
-        await db.createSecurityClearance({
-          userId: user.id,
-          clearanceType: c.clearanceType,
-          level: c.level ?? undefined,
-          expiryDate: c.expiryDate ?? undefined,
-        });
-      }
-
-      // Save licenses (as certifications with type 'license')
-      for (const lic of consolidated.licenses ?? []) {
-        await db.createCertification({
-          userId: user.id,
-          certificationName: lic.name,
-          issuingOrganization: lic.organization ?? null,
-          issueYear: lic.year ?? null,
-          type: "license",
-        } as any);
-      }
-
-      // Generate superpowers
-      const allAchievements = consolidated.workExperiences.flatMap(we => we.achievements);
-      const superpowers = await generateSuperpowers(allAchievements);
-
-      // Save superpowers
-      const superpowersData = superpowers.map((sp, i) => ({
-        title: sp.title,
-        evidenceAchievementIds: [], // Will be populated later when user selects achievements
-        rank: i + 1,
-      }));
-      await db.upsertSuperpowers(user.id, superpowersData);
-
-      // Update onboarding step
-      await db.updateUserOnboardingStep(user.id, 3, false);
-
-      setResumeProgress(user.id, { phase: "done", message: "Profile saved." });
-
-      return { 
-        success: true, 
-        workExperiences: consolidated.workExperiences.length,
-        achievements: allAchievements.length,
-        skills: consolidated.skills.length,
-        superpowers: superpowers,
-      };
+        return {
+          success: true,
+          workExperiences: consolidated.workExperiences.length,
+          achievements: allAchievements.length,
+          skills: consolidated.skills.length,
+          superpowers: superpowers,
+        };
       } catch (err) {
-        setResumeProgress(user.id, { phase: "error", message: "Something went wrong." });
+        setResumeProgress(user.id, {
+          phase: "error",
+          message: "Something went wrong.",
+        });
         console.error("[parseResumes] Failed to save profile:", err);
-        const isDbError = err && typeof err === "object" && ("code" in err || "errno" in err);
+        const isDbError =
+          err && typeof err === "object" && ("code" in err || "errno" in err);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: isDbError
@@ -430,17 +531,25 @@ export const appRouter = router({
     // Legacy code - keep for backward compatibility
     _oldParseResumes: protectedProcedure.mutation(async ({ ctx }) => {
       const user = await db.getUserByOpenId(ctx.user.openId);
-      if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+      if (!user)
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
       const resumes = await db.getUploadedResumes(user.id);
-      const completedResumes = resumes.filter(r => r.processingStatus === 'completed' && r.extractedText);
+      const completedResumes = resumes.filter(
+        r => r.processingStatus === "completed" && r.extractedText
+      );
 
       if (completedResumes.length === 0) {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "No processed resumes found" });
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "No processed resumes found",
+        });
       }
 
       // Combine all resume text
-      const combinedText = completedResumes.map(r => r.extractedText).join('\n\n---\n\n');
+      const combinedText = completedResumes
+        .map(r => r.extractedText)
+        .join("\n\n---\n\n");
 
       // Use LLM to extract structured data
       const response = await invokeLLM({
@@ -458,12 +567,12 @@ Focus on:
 For achievements, extract:
 - Description with context
 - Metrics (type, value, unit, timeframe)
-- Keywords for relevance scoring`
+- Keywords for relevance scoring`,
           },
           {
             role: "user",
-            content: `Parse these resumes and extract structured data:\n\n${combinedText}`
-          }
+            content: `Parse these resumes and extract structured data:\n\n${combinedText}`,
+          },
         ],
         response_format: {
           type: "json_schema",
@@ -496,16 +605,25 @@ For achievements, extract:
                             metricValue: { type: ["number", "null"] },
                             metricUnit: { type: ["string", "null"] },
                             metricTimeframe: { type: ["string", "null"] },
-                            keywords: { type: "array", items: { type: "string" } },
+                            keywords: {
+                              type: "array",
+                              items: { type: "string" },
+                            },
                           },
                           required: ["description", "context", "keywords"],
                           additionalProperties: false,
-                        }
-                      }
+                        },
+                      },
                     },
-                    required: ["companyName", "jobTitle", "startDate", "isCurrent", "achievements"],
+                    required: [
+                      "companyName",
+                      "jobTitle",
+                      "startDate",
+                      "isCurrent",
+                      "achievements",
+                    ],
                     additionalProperties: false,
-                  }
+                  },
                 },
                 skills: {
                   type: "array",
@@ -518,7 +636,7 @@ For achievements, extract:
                     },
                     required: ["skillName"],
                     additionalProperties: false,
-                  }
+                  },
                 },
                 education: {
                   type: "array",
@@ -532,18 +650,18 @@ For achievements, extract:
                     },
                     required: ["institution"],
                     additionalProperties: false,
-                  }
+                  },
                 },
               },
               required: ["workExperiences", "skills", "education"],
               additionalProperties: false,
-            }
-          }
-        }
+            },
+          },
+        },
       });
 
       const content = response.choices[0].message.content;
-      const parsed = JSON.parse(typeof content === 'string' ? content : "{}");
+      const parsed = JSON.parse(typeof content === "string" ? content : "{}");
 
       // Save work experiences and achievements
       for (const we of parsed.workExperiences) {
@@ -581,7 +699,7 @@ For achievements, extract:
           userId: user.id,
           skillName: skill.skillName,
           skillCategory: skill.skillCategory || null,
-          proficiencyLevel: skill.proficiencyLevel as any || null,
+          proficiencyLevel: (skill.proficiencyLevel as any) || null,
         });
       }
 
@@ -591,17 +709,21 @@ For achievements, extract:
     // Generate superpowers from achievements
     generateSuperpowers: protectedProcedure.mutation(async ({ ctx }) => {
       const user = await db.getUserByOpenId(ctx.user.openId);
-      if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+      if (!user)
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
       const achievements = await db.getAchievements(user.id);
       if (achievements.length === 0) {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "No achievements found" });
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "No achievements found",
+        });
       }
 
       // Use LLM to identify top 3 superpowers
-      const achievementsList = achievements.map((a, i) => 
-        `${i + 1}. ${a.description} (${a.context})`
-      ).join('\n');
+      const achievementsList = achievements
+        .map((a, i) => `${i + 1}. ${a.description} (${a.context})`)
+        .join("\n");
 
       const response = await invokeLLM({
         messages: [
@@ -613,12 +735,12 @@ Each superpower should:
 - Be specific and memorable (not generic like "hard worker")
 - Be backed by concrete evidence from achievements
 - Highlight measurable impact
-- Be relevant to their target roles`
+- Be relevant to their target roles`,
           },
           {
             role: "user",
-            content: `Identify the top 3 superpowers from these achievements:\n\n${achievementsList}`
-          }
+            content: `Identify the top 3 superpowers from these achievements:\n\n${achievementsList}`,
+          },
         ],
         response_format: {
           type: "json_schema",
@@ -634,31 +756,38 @@ Each superpower should:
                     type: "object",
                     properties: {
                       title: { type: "string" },
-                      evidenceAchievementIndices: { type: "array", items: { type: "number" } },
+                      evidenceAchievementIndices: {
+                        type: "array",
+                        items: { type: "number" },
+                      },
                     },
                     required: ["title", "evidenceAchievementIndices"],
                     additionalProperties: false,
                   },
                   minItems: 3,
                   maxItems: 3,
-                }
+                },
               },
               required: ["superpowers"],
               additionalProperties: false,
-            }
-          }
-        }
+            },
+          },
+        },
       });
 
       const content = response.choices[0].message.content;
-      const parsed = JSON.parse(typeof content === 'string' ? content : "{}");
+      const parsed = JSON.parse(typeof content === "string" ? content : "{}");
 
       // Save superpowers
-      const superpowersData = parsed.superpowers.map((sp: any, rank: number) => ({
-        title: sp.title,
-        evidenceAchievementIds: sp.evidenceAchievementIndices.map((idx: number) => achievements[idx - 1]?.id).filter(Boolean),
-        rank: rank + 1,
-      }));
+      const superpowersData = parsed.superpowers.map(
+        (sp: any, rank: number) => ({
+          title: sp.title,
+          evidenceAchievementIds: sp.evidenceAchievementIndices
+            .map((idx: number) => achievements[idx - 1]?.id)
+            .filter(Boolean),
+          rank: rank + 1,
+        })
+      );
 
       await db.upsertSuperpowers(user.id, superpowersData);
 
@@ -667,23 +796,26 @@ Each superpower should:
 
     // Save target preferences (Step 5)
     savePreferences: protectedProcedure
-      .input(z.object({
-        roleTitles: z.array(z.string()),
-        industries: z.array(z.string()),
-        companyStages: z.array(z.string()),
-        minimumBaseSalary: z.number().optional(),
-        minimumOTE: z.number().optional(),
-        targetBaseSalary: z.number().optional(),
-        targetOTE: z.number().optional(),
-        locationType: z.string().optional(),
-        allowedCities: z.array(z.string()).optional(),
-        maxTravelPercent: z.number().optional(),
-        internationalOk: z.boolean().optional(),
-        dealBreakers: z.array(z.string()).optional(),
-      }))
+      .input(
+        z.object({
+          roleTitles: z.array(z.string()),
+          industries: z.array(z.string()),
+          companyStages: z.array(z.string()),
+          minimumBaseSalary: z.number().optional(),
+          minimumOTE: z.number().optional(),
+          targetBaseSalary: z.number().optional(),
+          targetOTE: z.number().optional(),
+          locationType: z.string().optional(),
+          allowedCities: z.array(z.string()).optional(),
+          maxTravelPercent: z.number().optional(),
+          internationalOk: z.boolean().optional(),
+          dealBreakers: z.array(z.string()).optional(),
+        })
+      )
       .mutation(async ({ ctx, input }) => {
         const user = await db.getUserByOpenId(ctx.user.openId);
-        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
         await db.upsertTargetPreferences(user.id, {
           roleTitles: input.roleTitles as any,
@@ -716,7 +848,8 @@ Each superpower should:
     // Get complete Master Profile
     get: protectedProcedure.query(async ({ ctx }) => {
       const user = await db.getUserByOpenId(ctx.user.openId);
-      if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+      if (!user)
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
       const [
         userProfile,
@@ -775,17 +908,20 @@ Each superpower should:
 
     // Update user profile
     updateProfile: protectedProcedure
-      .input(z.object({
-        phone: z.string().optional(),
-        linkedinUrl: z.string().optional(),
-        locationCity: z.string().optional(),
-        locationState: z.string().optional(),
-        locationCountry: z.string().optional(),
-        workPreference: z.array(z.string()).optional(),
-      }))
+      .input(
+        z.object({
+          phone: z.string().optional(),
+          linkedinUrl: z.string().optional(),
+          locationCity: z.string().optional(),
+          locationState: z.string().optional(),
+          locationCountry: z.string().optional(),
+          workPreference: z.array(z.string()).optional(),
+        })
+      )
       .mutation(async ({ ctx, input }) => {
         const user = await db.getUserByOpenId(ctx.user.openId);
-        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
         await db.upsertUserProfile(user.id, {
           phone: input.phone,
@@ -793,7 +929,9 @@ Each superpower should:
           locationCity: input.locationCity,
           locationState: input.locationState,
           locationCountry: input.locationCountry,
-          workPreference: input.workPreference ? JSON.stringify(input.workPreference) : null,
+          workPreference: input.workPreference
+            ? JSON.stringify(input.workPreference)
+            : null,
         } as any);
 
         return { success: true };
@@ -802,13 +940,14 @@ Each superpower should:
     // Get work experiences with achievements
     getWorkHistory: protectedProcedure.query(async ({ ctx }) => {
       const user = await db.getUserByOpenId(ctx.user.openId);
-      if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+      if (!user)
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
       const workExperiences = await db.getWorkExperiences(user.id);
-      
+
       // Get achievements for each work experience
       const workHistoryWithAchievements = await Promise.all(
-        workExperiences.map(async (we) => ({
+        workExperiences.map(async we => ({
           ...we,
           achievements: await db.getAchievementsByWorkExperience(we.id),
         }))
@@ -819,18 +958,21 @@ Each superpower should:
 
     // Add work experience
     addWorkExperience: protectedProcedure
-      .input(z.object({
-        companyName: z.string(),
-        jobTitle: z.string(),
-        startDate: z.string(),
-        endDate: z.string().nullable(),
-        location: z.string().nullable(),
-        isCurrent: z.boolean(),
-        roleOverview: z.string().nullable(),
-      }))
+      .input(
+        z.object({
+          companyName: z.string(),
+          jobTitle: z.string(),
+          startDate: z.string(),
+          endDate: z.string().nullable(),
+          location: z.string().nullable(),
+          isCurrent: z.boolean(),
+          roleOverview: z.string().nullable(),
+        })
+      )
       .mutation(async ({ ctx, input }) => {
         const user = await db.getUserByOpenId(ctx.user.openId);
-        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
         const workExperienceId = await db.createWorkExperience({
           userId: user.id,
@@ -848,19 +990,22 @@ Each superpower should:
 
     // Update work experience
     updateWorkExperience: protectedProcedure
-      .input(z.object({
-        id: z.number(),
-        companyName: z.string().optional(),
-        jobTitle: z.string().optional(),
-        startDate: z.string().optional(),
-        endDate: z.string().nullable().optional(),
-        location: z.string().nullable().optional(),
-        isCurrent: z.boolean().optional(),
-        roleOverview: z.string().nullable().optional(),
-      }))
+      .input(
+        z.object({
+          id: z.number(),
+          companyName: z.string().optional(),
+          jobTitle: z.string().optional(),
+          startDate: z.string().optional(),
+          endDate: z.string().nullable().optional(),
+          location: z.string().nullable().optional(),
+          isCurrent: z.boolean().optional(),
+          roleOverview: z.string().nullable().optional(),
+        })
+      )
       .mutation(async ({ ctx, input }) => {
         const user = await db.getUserByOpenId(ctx.user.openId);
-        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
         const { id, ...data } = input;
         // Convert string dates to Date objects
@@ -877,7 +1022,8 @@ Each superpower should:
       .input(z.object({ id: z.number() }))
       .mutation(async ({ ctx, input }) => {
         const user = await db.getUserByOpenId(ctx.user.openId);
-        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
         await db.deleteWorkExperience(input.id, user.id);
 
@@ -886,17 +1032,20 @@ Each superpower should:
 
     // Add achievement
     addAchievement: protectedProcedure
-      .input(z.object({
-        workExperienceId: z.number(),
-        description: z.string(),
-        context: z.string().nullable(),
-        metricType: z.string().nullable(),
-        metricValue: z.number().nullable(),
-        metricUnit: z.string().nullable(),
-      }))
+      .input(
+        z.object({
+          workExperienceId: z.number(),
+          description: z.string(),
+          context: z.string().nullable(),
+          metricType: z.string().nullable(),
+          metricValue: z.number().nullable(),
+          metricUnit: z.string().nullable(),
+        })
+      )
       .mutation(async ({ ctx, input }) => {
         const user = await db.getUserByOpenId(ctx.user.openId);
-        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
         const achievementData: any = { ...input };
         if (input.metricValue !== null) {
@@ -910,18 +1059,21 @@ Each superpower should:
 
     // Update achievement
     updateAchievement: protectedProcedure
-      .input(z.object({
-        id: z.number(),
-        description: z.string().optional(),
-        context: z.string().optional(),
-        metricType: z.string().optional(),
-        metricValue: z.number().optional(),
-        metricUnit: z.string().optional(),
-        metricTimeframe: z.string().optional(),
-      }))
+      .input(
+        z.object({
+          id: z.number(),
+          description: z.string().optional(),
+          context: z.string().optional(),
+          metricType: z.string().optional(),
+          metricValue: z.number().optional(),
+          metricUnit: z.string().optional(),
+          metricTimeframe: z.string().optional(),
+        })
+      )
       .mutation(async ({ ctx, input }) => {
         const user = await db.getUserByOpenId(ctx.user.openId);
-        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
         const { id, ...data } = input;
         // Convert metricValue to string for decimal field
@@ -939,7 +1091,8 @@ Each superpower should:
       .input(z.object({ id: z.number() }))
       .mutation(async ({ ctx, input }) => {
         const user = await db.getUserByOpenId(ctx.user.openId);
-        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
         await db.deleteAchievement(input.id, user.id);
 
@@ -948,15 +1101,18 @@ Each superpower should:
 
     // Add skill
     addSkill: protectedProcedure
-      .input(z.object({
-        skillName: z.string(),
-        skillCategory: z.string(),
-        proficiencyLevel: z.string(),
-        yearsExperience: z.number().nullable(),
-      }))
+      .input(
+        z.object({
+          skillName: z.string(),
+          skillCategory: z.string(),
+          proficiencyLevel: z.string(),
+          yearsExperience: z.number().nullable(),
+        })
+      )
       .mutation(async ({ ctx, input }) => {
         const user = await db.getUserByOpenId(ctx.user.openId);
-        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
         const skillData: any = { userId: user.id, ...input };
         if (input.yearsExperience !== null) {
@@ -973,7 +1129,8 @@ Each superpower should:
       .input(z.object({ id: z.number() }))
       .mutation(async ({ ctx, input }) => {
         const user = await db.getUserByOpenId(ctx.user.openId);
-        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
         await db.deleteSkill(input.id, user.id);
 
@@ -983,21 +1140,24 @@ Each superpower should:
     // Get achievement usage statistics
     getAchievementStats: protectedProcedure.query(async ({ ctx }) => {
       const user = await db.getUserByOpenId(ctx.user.openId);
-      if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+      if (!user)
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
       const achievements = await db.getAchievements(user.id);
       const applications = await db.getApplications(user.id);
 
       // Calculate stats for each achievement
-      const stats = achievements.map((achievement) => {
+      const stats = achievements.map(achievement => {
         const usageCount = achievement.timesUsed || 0;
-        const applicationsWithThis = achievement.applicationsWithAchievement || 0;
+        const applicationsWithThis =
+          achievement.applicationsWithAchievement || 0;
         const responsesWithThis = achievement.responsesWithAchievement || 0;
-        
+
         // Calculate success rate (responses / applications)
-        const successRate = applicationsWithThis > 0 
-          ? Math.round((responsesWithThis / applicationsWithThis) * 100)
-          : 0;
+        const successRate =
+          applicationsWithThis > 0
+            ? Math.round((responsesWithThis / applicationsWithThis) * 100)
+            : 0;
 
         return {
           achievementId: achievement.id,
@@ -1013,9 +1173,17 @@ Each superpower should:
     // Get profile completeness score
     getCompleteness: protectedProcedure.query(async ({ ctx }) => {
       const user = await db.getUserByOpenId(ctx.user.openId);
-      if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+      if (!user)
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
-      const [userProfile, workExperiences, achievements, skills, preferences, languages] = await Promise.all([
+      const [
+        userProfile,
+        workExperiences,
+        achievements,
+        skills,
+        preferences,
+        languages,
+      ] = await Promise.all([
         db.getUserProfile(user.id),
         db.getWorkExperiences(user.id),
         db.getAchievements(user.id),
@@ -1031,13 +1199,13 @@ Each superpower should:
       // Contact info (20 points)
       if (user.email) score += 5;
       else missing.push("Email address");
-      
+
       if (userProfile?.phone) score += 5;
       else missing.push("Phone number");
-      
+
       if (userProfile?.linkedinUrl) score += 5;
       else missing.push("LinkedIn profile");
-      
+
       if (userProfile?.locationCity && userProfile?.locationState) score += 5;
       else missing.push("Location");
 
@@ -1045,7 +1213,11 @@ Each superpower should:
       if (workExperiences.length >= 2) score += 20;
       else if (workExperiences.length === 1) {
         score += 10;
-        missing.push("At least 2 work experiences (only " + workExperiences.length + " added)");
+        missing.push(
+          "At least 2 work experiences (only " +
+            workExperiences.length +
+            " added)"
+        );
       } else {
         missing.push("Work experience");
       }
@@ -1054,10 +1226,14 @@ Each superpower should:
       if (achievements.length >= 10) score += 30;
       else if (achievements.length >= 5) {
         score += 20;
-        missing.push("At least 10 achievements (only " + achievements.length + " added)");
+        missing.push(
+          "At least 10 achievements (only " + achievements.length + " added)"
+        );
       } else if (achievements.length >= 1) {
         score += 10;
-        missing.push("At least 10 achievements (only " + achievements.length + " added)");
+        missing.push(
+          "At least 10 achievements (only " + achievements.length + " added)"
+        );
       } else {
         missing.push("Achievements");
       }
@@ -1076,12 +1252,14 @@ Each superpower should:
 
       // Target preferences (15 points)
       if (preferences) {
-        if (preferences.roleTitles && preferences.roleTitles.length > 0) score += 5;
+        if (preferences.roleTitles && preferences.roleTitles.length > 0)
+          score += 5;
         else missing.push("Target job titles");
-        
-        if (preferences.industries && preferences.industries.length > 0) score += 5;
+
+        if (preferences.industries && preferences.industries.length > 0)
+          score += 5;
         else missing.push("Target industries");
-        
+
         if (preferences.minimumBaseSalary) score += 5;
         else missing.push("Minimum salary expectations");
       } else {
@@ -1092,7 +1270,12 @@ Each superpower should:
       let richness = 0;
       if (userProfile?.professionalSummary?.trim()) richness += 2;
       if (languages.length >= 1) richness += 2;
-      if (userProfile?.portfolioUrls && Array.isArray(userProfile.portfolioUrls) && userProfile.portfolioUrls.length > 0) richness += 1;
+      if (
+        userProfile?.portfolioUrls &&
+        Array.isArray(userProfile.portfolioUrls) &&
+        userProfile.portfolioUrls.length > 0
+      )
+        richness += 1;
       score = Math.min(100, score + richness);
 
       return {
@@ -1109,16 +1292,19 @@ Each superpower should:
 
     // Update superpower
     updateSuperpower: protectedProcedure
-      .input(z.object({
-        id: z.number().nullable(),
-        title: z.string(),
-        description: z.string(),
-        evidence: z.string(),
-        evidenceAchievementIds: z.array(z.number()),
-      }))
+      .input(
+        z.object({
+          id: z.number().nullable(),
+          title: z.string(),
+          description: z.string(),
+          evidence: z.string(),
+          evidenceAchievementIds: z.array(z.number()),
+        })
+      )
       .mutation(async ({ ctx, input }) => {
         const user = await db.getUserByOpenId(ctx.user.openId);
-        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
         if (input.id) {
           // Update existing superpower
@@ -1144,18 +1330,23 @@ Each superpower should:
 
     // Update target preferences
     updatePreferences: protectedProcedure
-      .input(z.object({
-        roleTitles: z.array(z.string()).optional(),
-        industries: z.array(z.string()).optional(),
-        companyStages: z.array(z.string()).optional(),
-        locationType: z.enum(["remote", "hybrid", "onsite", "flexible"]).optional(),
-        allowedCities: z.array(z.string()).optional(),
-        minimumBaseSalary: z.number().nullable().optional(),
-        dealBreakers: z.array(z.string()).optional(),
-      }))
+      .input(
+        z.object({
+          roleTitles: z.array(z.string()).optional(),
+          industries: z.array(z.string()).optional(),
+          companyStages: z.array(z.string()).optional(),
+          locationType: z
+            .enum(["remote", "hybrid", "onsite", "flexible"])
+            .optional(),
+          allowedCities: z.array(z.string()).optional(),
+          minimumBaseSalary: z.number().nullable().optional(),
+          dealBreakers: z.array(z.string()).optional(),
+        })
+      )
       .mutation(async ({ ctx, input }) => {
         const user = await db.getUserByOpenId(ctx.user.openId);
-        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
         await db.updateTargetPreferences(user.id, input);
 
@@ -1169,26 +1360,32 @@ Each superpower should:
   agents: router({
     // Run Scout Agent (find opportunities)
     runScout: protectedProcedure
-      .input(z.object({
-        searchQuery: z.string().optional(),
-        limit: z.number().default(10),
-      }))
+      .input(
+        z.object({
+          searchQuery: z.string().optional(),
+          limit: z.number().default(10),
+        })
+      )
       .mutation(async ({ ctx, input }) => {
         const user = await db.getUserByOpenId(ctx.user.openId);
-        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
         const startTime = Date.now();
 
         // Get user preferences
         const preferences = await db.getTargetPreferences(user.id);
         if (!preferences) {
-          throw new TRPCError({ code: "BAD_REQUEST", message: "Please complete onboarding first" });
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Please complete onboarding first",
+          });
         }
 
         // Import and run Scout agent
         const { ScoutAgent } = await import("./agents/scout");
         const scout = new ScoutAgent(user.id);
-        
+
         const searchParams = {
           roleTitles: preferences.roleTitles || [],
           industries: preferences.industries || [],
@@ -1197,7 +1394,7 @@ Each superpower should:
           allowedCities: preferences.allowedCities || [],
           numResults: input.limit,
         };
-        
+
         const opportunities = await scout.execute(searchParams);
 
         // Log agent execution
@@ -1205,7 +1402,10 @@ Each superpower should:
           userId: user.id,
           agentName: "Scout",
           executionType: "job_search",
-          inputData: JSON.stringify({ searchQuery: input.searchQuery, limit: input.limit }),
+          inputData: JSON.stringify({
+            searchQuery: input.searchQuery,
+            limit: input.limit,
+          }),
           outputData: JSON.stringify({ foundCount: opportunities.length }),
           executionTimeMs: Date.now() - startTime,
           status: "success",
@@ -1216,13 +1416,16 @@ Each superpower should:
 
     // Get agent execution logs
     getLogs: protectedProcedure
-      .input(z.object({
-        agentName: z.string().optional(),
-        limit: z.number().default(50),
-      }))
+      .input(
+        z.object({
+          agentName: z.string().optional(),
+          limit: z.number().default(50),
+        })
+      )
       .query(async ({ ctx, input }) => {
         const user = await db.getUserByOpenId(ctx.user.openId);
-        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
         const logs = await db.getAgentExecutionLogs(user.id, input.agentName);
         return logs.slice(0, input.limit);
@@ -1235,10 +1438,12 @@ Each superpower should:
   opportunities: router({
     // List discovered opportunities
     list: protectedProcedure
-      .input(z.object({
-        isActive: z.boolean().optional(),
-        companyStage: z.string().optional(),
-      }))
+      .input(
+        z.object({
+          isActive: z.boolean().optional(),
+          companyStage: z.string().optional(),
+        })
+      )
       .query(async ({ ctx, input }) => {
         return db.getOpportunities(input);
       }),
@@ -1249,17 +1454,23 @@ Each superpower should:
       .query(async ({ ctx, input }) => {
         const opportunity = await db.getOpportunityById(input.id);
         if (!opportunity) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Opportunity not found" });
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Opportunity not found",
+          });
         }
         return opportunity;
       }),
 
     // Save opportunity for later
     save: protectedProcedure
-      .input(z.object({ opportunityId: z.number(), notes: z.string().optional() }))
+      .input(
+        z.object({ opportunityId: z.number(), notes: z.string().optional() })
+      )
       .mutation(async ({ ctx, input }) => {
         const user = await db.getUserByOpenId(ctx.user.openId);
-        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
         await db.saveOpportunity(user.id, input.opportunityId, input.notes);
         return { success: true };
@@ -1270,7 +1481,8 @@ Each superpower should:
       .input(z.object({ opportunityId: z.number() }))
       .mutation(async ({ ctx, input }) => {
         const user = await db.getUserByOpenId(ctx.user.openId);
-        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
         await db.unsaveOpportunity(user.id, input.opportunityId);
         return { success: true };
@@ -1279,12 +1491,13 @@ Each superpower should:
     // Get saved opportunities
     getSaved: protectedProcedure.query(async ({ ctx }) => {
       const user = await db.getUserByOpenId(ctx.user.openId);
-      if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+      if (!user)
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
       const saved = await db.getSavedOpportunities(user.id);
       // Fetch full opportunity details for each saved item
       const opportunities = await Promise.all(
-        saved.map(async (s) => {
+        saved.map(async s => {
           const opp = await db.getOpportunityById(s.opportunityId);
           return { ...opp, savedAt: s.createdAt, savedNotes: s.notes };
         })
@@ -1297,7 +1510,8 @@ Each superpower should:
       .input(z.object({ opportunityId: z.number() }))
       .query(async ({ ctx, input }) => {
         const user = await db.getUserByOpenId(ctx.user.openId);
-        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
         return db.isOpportunitySaved(user.id, input.opportunityId);
       }),
@@ -1306,12 +1520,15 @@ Each superpower should:
   applications: router({
     // List user applications
     list: protectedProcedure
-      .input(z.object({
-        status: z.string().optional(),
-      }))
+      .input(
+        z.object({
+          status: z.string().optional(),
+        })
+      )
       .query(async ({ ctx, input }) => {
         const user = await db.getUserByOpenId(ctx.user.openId);
-        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
         return db.getApplications(user.id, input);
       }),
@@ -1321,24 +1538,43 @@ Each superpower should:
       .input(z.object({ id: z.number() }))
       .query(async ({ ctx, input }) => {
         const user = await db.getUserByOpenId(ctx.user.openId);
-        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
         const application = await db.getApplicationById(input.id, user.id);
         if (!application) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Application not found" });
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Application not found",
+          });
         }
         return application;
       }),
 
     // Update application status
     updateStatus: protectedProcedure
-      .input(z.object({
-        id: z.number(),
-        status: z.enum(['draft', 'applied', 'response_received', 'phone_screen', 'interview', 'final_interview', 'offer', 'accepted', 'rejected', 'withdrawn', 'ghosted']),
-      }))
+      .input(
+        z.object({
+          id: z.number(),
+          status: z.enum([
+            "draft",
+            "applied",
+            "response_received",
+            "phone_screen",
+            "interview",
+            "final_interview",
+            "offer",
+            "accepted",
+            "rejected",
+            "withdrawn",
+            "ghosted",
+          ]),
+        })
+      )
       .mutation(async ({ ctx, input }) => {
         const user = await db.getUserByOpenId(ctx.user.openId);
-        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
         await db.updateApplication(input.id, user.id, { status: input.status });
         return { success: true };
@@ -1346,23 +1582,37 @@ Each superpower should:
 
     // Quick Apply - Orchestrate all 7 agents
     quickApply: protectedProcedure
-      .input(z.object({
-        opportunityId: z.number(),
-      }))
+      .input(
+        z.object({
+          opportunityId: z.number(),
+        })
+      )
       .mutation(async ({ ctx, input }) => {
         const user = await db.getUserByOpenId(ctx.user.openId);
-        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
         const startTime = Date.now();
 
         // Get opportunity
         const opportunity = await db.getOpportunityById(input.opportunityId);
         if (!opportunity) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Opportunity not found" });
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Opportunity not found",
+          });
         }
 
         // Get user profile and preferences
-        const [profile, workExperiences, achievements, skills, superpowers, preferences, educationList] = await Promise.all([
+        const [
+          profile,
+          workExperiences,
+          achievements,
+          skills,
+          superpowers,
+          preferences,
+          educationList,
+        ] = await Promise.all([
           db.getUserProfile(user.id),
           db.getWorkExperiences(user.id),
           db.getAchievements(user.id),
@@ -1383,7 +1633,8 @@ Each superpower should:
 
         // Import all agents
         const { ProfilerAgent } = await import("./agents/profiler");
-        const { QualifierAgent, HunterAgent, ScribeAgent, AssemblerAgent } = await import("./agents/remaining");
+        const { QualifierAgent, HunterAgent, ScribeAgent, AssemblerAgent } =
+          await import("./agents/remaining");
         const { tailorResume } = await import("./agents/tailor");
 
         // AGENT 2: Profiler - Analyze company
@@ -1416,7 +1667,9 @@ Each superpower should:
             company: exp.companyName,
             title: exp.jobTitle,
             startDate: exp.startDate?.toISOString?.()?.split("T")[0] ?? "",
-            endDate: exp.endDate ? exp.endDate.toISOString?.()?.split("T")[0] ?? "" : "Present",
+            endDate: exp.endDate
+              ? (exp.endDate.toISOString?.()?.split("T")[0] ?? "")
+              : "Present",
             achievements: achievements
               .filter((ach: any) => ach.workExperienceId === exp.id)
               .map((ach: any) => ach.description),
@@ -1489,12 +1742,19 @@ Each superpower should:
       .input(z.object({ applicationId: z.number() }))
       .query(async ({ ctx, input }) => {
         const user = await db.getUserByOpenId(ctx.user.openId);
-        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
         // Verify application belongs to user
-        const application = await db.getApplicationById(input.applicationId, user.id);
+        const application = await db.getApplicationById(
+          input.applicationId,
+          user.id
+        );
         if (!application) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Application not found" });
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Application not found",
+          });
         }
 
         return db.getApplicationNotes(input.applicationId);
@@ -1502,21 +1762,34 @@ Each superpower should:
 
     // Add application note
     addNote: protectedProcedure
-      .input(z.object({
-        applicationId: z.number(),
-        noteText: z.string().min(1),
-      }))
+      .input(
+        z.object({
+          applicationId: z.number(),
+          noteText: z.string().min(1),
+        })
+      )
       .mutation(async ({ ctx, input }) => {
         const user = await db.getUserByOpenId(ctx.user.openId);
-        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
         // Verify application belongs to user
-        const application = await db.getApplicationById(input.applicationId, user.id);
+        const application = await db.getApplicationById(
+          input.applicationId,
+          user.id
+        );
         if (!application) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Application not found" });
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Application not found",
+          });
         }
 
-        const noteId = await db.createApplicationNote(input.applicationId, user.id, input.noteText);
+        const noteId = await db.createApplicationNote(
+          input.applicationId,
+          user.id,
+          input.noteText
+        );
         return { success: true, noteId };
       }),
 
@@ -1525,7 +1798,8 @@ Each superpower should:
       .input(z.object({ noteId: z.number() }))
       .mutation(async ({ ctx, input }) => {
         const user = await db.getUserByOpenId(ctx.user.openId);
-        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
         await db.deleteApplicationNote(input.noteId, user.id);
         return { success: true };
@@ -1534,13 +1808,21 @@ Each superpower should:
     // Generate application package (async)
     generatePackage: protectedProcedure
       .input(z.object({ applicationId: z.number() }))
-      .mutation(async ({ ctx, input }) => {        const user = await db.getUserByOpenId(ctx.user.openId);
-        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+      .mutation(async ({ ctx, input }) => {
+        const user = await db.getUserByOpenId(ctx.user.openId);
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
         // Verify application belongs to user
-        const application = await db.getApplicationById(input.applicationId, user.id);
+        const application = await db.getApplicationById(
+          input.applicationId,
+          user.id
+        );
         if (!application) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Application not found" });
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Application not found",
+          });
         }
 
         // Start async generation (fire and forget)
@@ -1549,10 +1831,18 @@ Each superpower should:
             // Import agents
             const { tailorResume } = await import("./agents/tailor");
             const { generateOutreach } = await import("./agents/scribe");
-            const { assembleApplicationPackage } = await import("./agents/assembler");
+            const { assembleApplicationPackage } =
+              await import("./agents/assembler");
 
             // Get user profile for generation
-            const [profile, workExperiences, achievements, skillsList, educationList, superpowersList] = await Promise.all([
+            const [
+              profile,
+              workExperiences,
+              achievements,
+              skillsList,
+              educationList,
+              superpowersList,
+            ] = await Promise.all([
               db.getUserProfile(user.id),
               db.getWorkExperiences(user.id),
               db.getAchievements(user.id),
@@ -1562,7 +1852,9 @@ Each superpower should:
             ]);
 
             // Get opportunity details
-            const opportunity = await db.getOpportunityById(application.opportunityId);
+            const opportunity = await db.getOpportunityById(
+              application.opportunityId
+            );
             if (!opportunity) {
               throw new Error("Opportunity not found");
             }
@@ -1577,47 +1869,65 @@ Each superpower should:
               workExperience: workExperiences.map(exp => ({
                 company: exp.companyName,
                 title: exp.jobTitle,
-                startDate: exp.startDate.toISOString().split('T')[0],
-                endDate: exp.endDate ? exp.endDate.toISOString().split('T')[0] : "Present",
+                startDate: exp.startDate.toISOString().split("T")[0],
+                endDate: exp.endDate
+                  ? exp.endDate.toISOString().split("T")[0]
+                  : "Present",
                 achievements: achievements
                   .filter(ach => ach.workExperienceId === exp.id)
-                  .map(ach => ach.description)
+                  .map(ach => ach.description),
               })),
               skills: skillsList.map((s: { skillName: string }) => s.skillName),
-              education: educationList.map((e: { institution: string; degreeType?: string | null; fieldOfStudy?: string | null; graduationYear?: number | null }) => ({
-                institution: e.institution,
-                degree: e.degreeType || "",
-                field: e.fieldOfStudy || "",
-                graduationYear: String(e.graduationYear ?? ""),
-              })),
+              education: educationList.map(
+                (e: {
+                  institution: string;
+                  degreeType?: string | null;
+                  fieldOfStudy?: string | null;
+                  graduationYear?: number | null;
+                }) => ({
+                  institution: e.institution,
+                  degree: e.degreeType || "",
+                  field: e.fieldOfStudy || "",
+                  graduationYear: String(e.graduationYear ?? ""),
+                })
+              ),
             };
 
             // Transform userProfile for Scribe agent
             const scribeUserProfile = {
               fullName: user.name || "User",
               currentTitle: workExperiences[0]?.jobTitle || "Professional",
-              topAchievements: achievements.slice(0, 3).map(ach => ach.description)
+              topAchievements: achievements
+                .slice(0, 3)
+                .map(ach => ach.description),
             };
 
             // Generate resume (pass pivot context when available for Format B)
-            const resumeResult = await tailorResume({
-              userProfile: tailorUserProfile,
-              jobDescription: opportunity.jobDescription || "",
-              companyName: opportunity.companyName,
-              roleTitle: opportunity.roleTitle,
-              ...(application.pivotAnalysis != null && typeof application.pivotAnalysis === 'object'
-                ? { pivotContext: application.pivotAnalysis }
-                : {}),
-            }, {
-              applicationId: application.id,
-              userId: user.id,
-            });
+            const resumeResult = await tailorResume(
+              {
+                userProfile: tailorUserProfile,
+                jobDescription: opportunity.jobDescription || "",
+                companyName: opportunity.companyName,
+                roleTitle: opportunity.roleTitle,
+                ...(application.pivotAnalysis != null &&
+                typeof application.pivotAnalysis === "object"
+                  ? { pivotContext: application.pivotAnalysis }
+                  : {}),
+              },
+              {
+                applicationId: application.id,
+                userId: user.id,
+              }
+            );
 
             // Run Profiler for company insights (optional; fallback to empty if it fails)
             let strategicMemo = "";
             try {
               const { ProfilerAgent } = await import("./agents/profiler");
-              const profilerUserProfile = { superpowers: superpowersList, achievements };
+              const profilerUserProfile = {
+                superpowers: superpowersList,
+                achievements,
+              };
               const profiler = new ProfilerAgent(user.id, profilerUserProfile);
               const companyAnalysis = await profiler.execute(opportunity);
               strategicMemo = companyAnalysis.compellingNarrative || "";
@@ -1626,30 +1936,36 @@ Each superpower should:
             }
 
             // Generate cover letter and LinkedIn message
-            const outreachResult = await generateOutreach({
-              userProfile: scribeUserProfile,
-              jobDescription: opportunity.jobDescription || "",
-              companyName: opportunity.companyName,
-              roleTitle: opportunity.roleTitle,
-              strategicMemo,
-            }, {
-              applicationId: application.id,
-              userId: user.id,
-            });
+            const outreachResult = await generateOutreach(
+              {
+                userProfile: scribeUserProfile,
+                jobDescription: opportunity.jobDescription || "",
+                companyName: opportunity.companyName,
+                roleTitle: opportunity.roleTitle,
+                strategicMemo,
+              },
+              {
+                applicationId: application.id,
+                userId: user.id,
+              }
+            );
 
             // Assemble package
-            const packageResult = await assembleApplicationPackage({
-              applicationId: application.id.toString(),
-              resumeMarkdown: resumeResult.resumeMarkdown,
-              coverLetter: outreachResult.coverLetter,
-              linkedInMessage: outreachResult.linkedInMessage,
-              userFullName: user.name || "User",
-              companyName: opportunity.companyName,
-              roleTitle: opportunity.roleTitle,
-            }, {
-              applicationId: application.id,
-              userId: user.id,
-            });
+            const packageResult = await assembleApplicationPackage(
+              {
+                applicationId: application.id.toString(),
+                resumeMarkdown: resumeResult.resumeMarkdown,
+                coverLetter: outreachResult.coverLetter,
+                linkedInMessage: outreachResult.linkedInMessage,
+                userFullName: user.name || "User",
+                companyName: opportunity.companyName,
+                roleTitle: opportunity.roleTitle,
+              },
+              {
+                applicationId: application.id,
+                userId: user.id,
+              }
+            );
 
             // Update application with package URLs
             await db.updateApplication(application.id, user.id, {
@@ -1686,7 +2002,8 @@ Each superpower should:
               agentName: "PackagePipeline",
               executionType: "package_generation",
               status: "failed",
-              errorMessage: error instanceof Error ? error.message : String(error),
+              errorMessage:
+                error instanceof Error ? error.message : String(error),
             });
 
             // Send error notification with actionable message
@@ -1694,7 +2011,8 @@ Each superpower should:
               userId: user.id,
               type: "application_package_error",
               title: "Package Generation Failed",
-              message: "We couldn't generate your application package. Please try again in a few minutes, or open the application and use \"Generate Package\" again.",
+              message:
+                'We couldn\'t generate your application package. Please try again in a few minutes, or open the application and use "Generate Package" again.',
               applicationId: input.applicationId,
             });
           }
@@ -1708,11 +2026,18 @@ Each superpower should:
       .input(z.object({ applicationId: z.number() }))
       .query(async ({ ctx, input }) => {
         const user = await db.getUserByOpenId(ctx.user.openId);
-        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
-        const application = await db.getApplicationById(input.applicationId, user.id);
+        const application = await db.getApplicationById(
+          input.applicationId,
+          user.id
+        );
         if (!application) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Application not found" });
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Application not found",
+          });
         }
 
         return {
@@ -1732,11 +2057,12 @@ Each superpower should:
   // ================================================================
   // ANALYTICS
   // ================================================================
-  analytics: router({  
+  analytics: router({
     // Get analytics overview
     getOverview: protectedProcedure.query(async ({ ctx }) => {
       const user = await db.getUserByOpenId(ctx.user.openId);
-      if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+      if (!user)
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
       const applications = await db.getApplications(user.id, {});
       const achievements = await db.getAchievements(user.id);
@@ -1745,84 +2071,98 @@ Each superpower should:
       const totalApplications = applications.length;
       const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
       const twoWeeksAgo = Date.now() - 14 * 24 * 60 * 60 * 1000;
-      
+
       const thisWeekApplications = applications.filter(
-        (app) => app.appliedAt && new Date(app.appliedAt).getTime() > oneWeekAgo
+        app => app.appliedAt && new Date(app.appliedAt).getTime() > oneWeekAgo
       ).length;
-      
+
       const lastWeekApplications = applications.filter(
-        (app) => app.appliedAt && 
+        app =>
+          app.appliedAt &&
           new Date(app.appliedAt).getTime() > twoWeeksAgo &&
           new Date(app.appliedAt).getTime() <= oneWeekAgo
       );
 
       const respondedApplications = applications.filter(
-        (app) => app.status !== "applied" && app.status !== "draft"
+        app => app.status !== "applied" && app.status !== "draft"
       );
-      const responseRate = totalApplications > 0
-        ? Math.round((respondedApplications.length / totalApplications) * 100)
-        : 0;
-      
+      const responseRate =
+        totalApplications > 0
+          ? Math.round((respondedApplications.length / totalApplications) * 100)
+          : 0;
+
       // Calculate response rate change (this week vs last week)
       const thisWeekResponded = applications.filter(
-        (app) => app.appliedAt && 
+        app =>
+          app.appliedAt &&
           new Date(app.appliedAt).getTime() > oneWeekAgo &&
-          app.status !== "applied" && app.status !== "draft"
+          app.status !== "applied" &&
+          app.status !== "draft"
       ).length;
       const thisWeekTotal = thisWeekApplications;
-      const thisWeekRate = thisWeekTotal > 0 ? (thisWeekResponded / thisWeekTotal) * 100 : 0;
-      
+      const thisWeekRate =
+        thisWeekTotal > 0 ? (thisWeekResponded / thisWeekTotal) * 100 : 0;
+
       const lastWeekResponded = lastWeekApplications.filter(
-        (app) => app.status !== "applied" && app.status !== "draft"
+        app => app.status !== "applied" && app.status !== "draft"
       ).length;
       const lastWeekTotal = lastWeekApplications.length;
-      const lastWeekRate = lastWeekTotal > 0 ? (lastWeekResponded / lastWeekTotal) * 100 : 0;
-      
-      const responseRateChange = lastWeekTotal > 0 
-        ? Math.round(thisWeekRate - lastWeekRate)
-        : 0;
+      const lastWeekRate =
+        lastWeekTotal > 0 ? (lastWeekResponded / lastWeekTotal) * 100 : 0;
+
+      const responseRateChange =
+        lastWeekTotal > 0 ? Math.round(thisWeekRate - lastWeekRate) : 0;
 
       const interviewingCount = applications.filter(
-        (app) => app.status === "interview" || app.status === "phone_screen" || app.status === "final_interview"
+        app =>
+          app.status === "interview" ||
+          app.status === "phone_screen" ||
+          app.status === "final_interview"
       ).length;
       const offerCount = applications.filter(
-        (app) => app.status === "offer"
+        app => app.status === "offer"
       ).length;
       const rejectedCount = applications.filter(
-        (app) => app.status === "rejected"
+        app => app.status === "rejected"
       ).length;
 
-      const interviewRate = totalApplications > 0
-        ? Math.round((interviewingCount / totalApplications) * 100)
-        : 0;
+      const interviewRate =
+        totalApplications > 0
+          ? Math.round((interviewingCount / totalApplications) * 100)
+          : 0;
 
       // Calculate average response time (using updatedAt as proxy since respondedAt doesn't exist)
       const responseTimes = respondedApplications
-        .map((app) => {
+        .map(app => {
           if (!app.appliedAt) return null;
           return Math.floor(
-            (new Date(app.updatedAt).getTime() - new Date(app.appliedAt).getTime()) /
+            (new Date(app.updatedAt).getTime() -
+              new Date(app.appliedAt).getTime()) /
               (24 * 60 * 60 * 1000)
           );
         })
         .filter((time): time is number => time !== null);
 
-      const avgResponseTime = responseTimes.length > 0
-        ? Math.round(
-            responseTimes.reduce((sum, time) => sum + time, 0) / responseTimes.length
-          )
-        : 0;
+      const avgResponseTime =
+        responseTimes.length > 0
+          ? Math.round(
+              responseTimes.reduce((sum, time) => sum + time, 0) /
+                responseTimes.length
+            )
+          : 0;
 
       // Get top achievements
       const topAchievements = achievements
-        .filter((a) => (a.timesUsed || 0) > 0)
-        .map((a) => ({
+        .filter(a => (a.timesUsed || 0) > 0)
+        .map(a => ({
           title: a.description, // achievements use 'description' not 'title'
           timesUsed: a.timesUsed,
           successRate:
             (a.applicationsWithAchievement || 0) > 0
               ? Math.round(
-                  ((a.responsesWithAchievement || 0) / (a.applicationsWithAchievement || 1)) * 100
+                  ((a.responsesWithAchievement || 0) /
+                    (a.applicationsWithAchievement || 1)) *
+                    100
                 )
               : 0,
         }))
@@ -1830,44 +2170,76 @@ Each superpower should:
         .slice(0, 5);
 
       // Generate insights based on metrics
-      const insights: { type: 'positive' | 'negative' | 'neutral'; message: string }[] = [];
-      
+      const insights: {
+        type: "positive" | "negative" | "neutral";
+        message: string;
+      }[] = [];
+
       // Response rate insights
       if (responseRate >= 30) {
-        insights.push({ type: 'positive', message: `Your ${responseRate}% response rate is above average. Keep targeting similar roles!` });
+        insights.push({
+          type: "positive",
+          message: `Your ${responseRate}% response rate is above average. Keep targeting similar roles!`,
+        });
       } else if (responseRate > 0 && responseRate < 15) {
-        insights.push({ type: 'negative', message: 'Low response rate. Consider tailoring your resume more specifically to each job.' });
+        insights.push({
+          type: "negative",
+          message:
+            "Low response rate. Consider tailoring your resume more specifically to each job.",
+        });
       }
-      
+
       // Response rate trend
       if (responseRateChange > 10) {
-        insights.push({ type: 'positive', message: `Response rate up ${responseRateChange}% from last week. Your strategy is working!` });
+        insights.push({
+          type: "positive",
+          message: `Response rate up ${responseRateChange}% from last week. Your strategy is working!`,
+        });
       } else if (responseRateChange < -10) {
-        insights.push({ type: 'negative', message: `Response rate down ${Math.abs(responseRateChange)}% from last week. Review recent applications.` });
+        insights.push({
+          type: "negative",
+          message: `Response rate down ${Math.abs(responseRateChange)}% from last week. Review recent applications.`,
+        });
       }
-      
+
       // Interview conversion
       if (interviewRate >= 20) {
-        insights.push({ type: 'positive', message: `${interviewRate}% of applications reaching interviews. Excellent conversion!` });
+        insights.push({
+          type: "positive",
+          message: `${interviewRate}% of applications reaching interviews. Excellent conversion!`,
+        });
       }
-      
+
       // Activity insights
       if (thisWeekApplications === 0 && totalApplications > 0) {
-        insights.push({ type: 'neutral', message: 'No applications this week. Consistency helps - aim for 5-10 quality applications weekly.' });
+        insights.push({
+          type: "neutral",
+          message:
+            "No applications this week. Consistency helps - aim for 5-10 quality applications weekly.",
+        });
       } else if (thisWeekApplications >= 10) {
-        insights.push({ type: 'positive', message: `Strong activity with ${thisWeekApplications} applications this week!` });
+        insights.push({
+          type: "positive",
+          message: `Strong activity with ${thisWeekApplications} applications this week!`,
+        });
       }
-      
+
       // Offer insights
       if (offerCount > 0) {
-        insights.push({ type: 'positive', message: `You have ${offerCount} offer${offerCount > 1 ? 's' : ''} to consider. Congratulations!` });
+        insights.push({
+          type: "positive",
+          message: `You have ${offerCount} offer${offerCount > 1 ? "s" : ""} to consider. Congratulations!`,
+        });
       }
-      
+
       // Top achievement insight
       if (topAchievements.length > 0 && topAchievements[0].successRate > 50) {
-        insights.push({ type: 'positive', message: `"${topAchievements[0].title.slice(0, 50)}..." has ${topAchievements[0].successRate}% success rate.` });
+        insights.push({
+          type: "positive",
+          message: `"${topAchievements[0].title.slice(0, 50)}..." has ${topAchievements[0].successRate}% success rate.`,
+        });
       }
-      
+
       // Limit to 3 most relevant insights
       const limitedInsights = insights.slice(0, 3);
 
@@ -1888,38 +2260,48 @@ Each superpower should:
 
     // Get agent performance metrics
     getAgentMetrics: protectedProcedure
-      .input(z.object({
-        agentType: z.enum(['tailor', 'scribe', 'assembler']).optional(),
-        hours: z.number().default(24), // Last N hours
-      }))
+      .input(
+        z.object({
+          agentType: z.enum(["tailor", "scribe", "assembler"]).optional(),
+          hours: z.number().default(24), // Last N hours
+        })
+      )
       .query(async ({ input }) => {
         const startDate = new Date(Date.now() - input.hours * 60 * 60 * 1000);
-        
+
         const stats = await db.getAgentPerformanceStats(input.agentType);
-        
+
         return stats;
       }),
 
     // Get package generation success rate
     getPackageSuccessRate: protectedProcedure
-      .input(z.object({
-        hours: z.number().default(24), // Last N hours
-      }))
+      .input(
+        z.object({
+          hours: z.number().default(24), // Last N hours
+        })
+      )
       .query(async ({ ctx, input }) => {
         const user = await db.getUserByOpenId(ctx.user.openId);
-        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
-        
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
         const startDate = new Date(Date.now() - input.hours * 60 * 60 * 1000);
-        
+
         const applications = await db.getApplications(user.id, {});
         const recentApplications = applications.filter(
-          (app) => app.createdAt && new Date(app.createdAt).getTime() >= startDate.getTime()
+          app =>
+            app.createdAt &&
+            new Date(app.createdAt).getTime() >= startDate.getTime()
         );
-        
+
         const totalAttempts = recentApplications.length;
-        const successful = recentApplications.filter((app) => app.packageZipUrl).length;
-        const successRate = totalAttempts > 0 ? (successful / totalAttempts) * 100 : 0;
-        
+        const successful = recentApplications.filter(
+          app => app.packageZipUrl
+        ).length;
+        const successRate =
+          totalAttempts > 0 ? (successful / totalAttempts) * 100 : 0;
+
         return {
           totalAttempts,
           successful,
@@ -1936,12 +2318,15 @@ Each superpower should:
   notifications: router({
     // Get user notifications
     list: protectedProcedure
-      .input(z.object({
-        unreadOnly: z.boolean().default(false),
-      }))
+      .input(
+        z.object({
+          unreadOnly: z.boolean().default(false),
+        })
+      )
       .query(async ({ ctx, input }) => {
         const user = await db.getUserByOpenId(ctx.user.openId);
-        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
         return db.getNotifications(user.id, input.unreadOnly);
       }),
@@ -1951,7 +2336,8 @@ Each superpower should:
       .input(z.object({ id: z.number() }))
       .mutation(async ({ ctx, input }) => {
         const user = await db.getUserByOpenId(ctx.user.openId);
-        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
         await db.markNotificationAsRead(input.id, user.id);
         return { success: true };

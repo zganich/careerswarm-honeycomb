@@ -12,7 +12,7 @@ export const powerVerbs = [
   { verb: "Grew", category: "growth", strength: "medium" },
   { verb: "Increased", category: "growth", strength: "strong" },
   { verb: "Scaled", category: "growth", strength: "strong" },
-  
+
   // Technical & Building
   { verb: "Architected", category: "technical", strength: "strong" },
   { verb: "Built", category: "technical", strength: "medium" },
@@ -22,7 +22,7 @@ export const powerVerbs = [
   { verb: "Engineered", category: "technical", strength: "strong" },
   { verb: "Implemented", category: "technical", strength: "medium" },
   { verb: "Programmed", category: "technical", strength: "medium" },
-  
+
   // Leadership & Management
   { verb: "Directed", category: "leadership", strength: "strong" },
   { verb: "Led", category: "leadership", strength: "strong" },
@@ -30,7 +30,7 @@ export const powerVerbs = [
   { verb: "Mentored", category: "leadership", strength: "medium" },
   { verb: "Supervised", category: "leadership", strength: "medium" },
   { verb: "Trained", category: "leadership", strength: "medium" },
-  
+
   // Efficiency & Optimization
   { verb: "Automated", category: "efficiency", strength: "strong" },
   { verb: "Optimized", category: "efficiency", strength: "strong" },
@@ -41,13 +41,33 @@ export const powerVerbs = [
 
 export const skillsTaxonomy = [
   // Technical Skills
-  { skill: "Python", category: "Technical", subcategory: "Programming Languages" },
-  { skill: "JavaScript", category: "Technical", subcategory: "Programming Languages" },
-  { skill: "TypeScript", category: "Technical", subcategory: "Programming Languages" },
-  { skill: "Java", category: "Technical", subcategory: "Programming Languages" },
+  {
+    skill: "Python",
+    category: "Technical",
+    subcategory: "Programming Languages",
+  },
+  {
+    skill: "JavaScript",
+    category: "Technical",
+    subcategory: "Programming Languages",
+  },
+  {
+    skill: "TypeScript",
+    category: "Technical",
+    subcategory: "Programming Languages",
+  },
+  {
+    skill: "Java",
+    category: "Technical",
+    subcategory: "Programming Languages",
+  },
   { skill: "C++", category: "Technical", subcategory: "Programming Languages" },
   { skill: "React", category: "Technical", subcategory: "Frontend Frameworks" },
-  { skill: "Node.js", category: "Technical", subcategory: "Backend Frameworks" },
+  {
+    skill: "Node.js",
+    category: "Technical",
+    subcategory: "Backend Frameworks",
+  },
   { skill: "SQL", category: "Technical", subcategory: "Databases" },
   { skill: "PostgreSQL", category: "Technical", subcategory: "Databases" },
   { skill: "MongoDB", category: "Technical", subcategory: "Databases" },
@@ -55,28 +75,56 @@ export const skillsTaxonomy = [
   { skill: "Azure", category: "Technical", subcategory: "Cloud Platforms" },
   { skill: "Docker", category: "Technical", subcategory: "DevOps" },
   { skill: "Kubernetes", category: "Technical", subcategory: "DevOps" },
-  
+
   // Business Skills
-  { skill: "Project Management", category: "Business", subcategory: "Management" },
+  {
+    skill: "Project Management",
+    category: "Business",
+    subcategory: "Management",
+  },
   { skill: "Agile/Scrum", category: "Business", subcategory: "Methodologies" },
   { skill: "Data Analysis", category: "Business", subcategory: "Analytics" },
   { skill: "Financial Modeling", category: "Business", subcategory: "Finance" },
-  { skill: "Strategic Planning", category: "Business", subcategory: "Strategy" },
-  { skill: "Business Development", category: "Business", subcategory: "Growth" },
-  
+  {
+    skill: "Strategic Planning",
+    category: "Business",
+    subcategory: "Strategy",
+  },
+  {
+    skill: "Business Development",
+    category: "Business",
+    subcategory: "Growth",
+  },
+
   // Product Skills
   { skill: "Product Strategy", category: "Product", subcategory: "Strategy" },
   { skill: "User Research", category: "Product", subcategory: "Research" },
   { skill: "A/B Testing", category: "Product", subcategory: "Experimentation" },
   { skill: "Product Analytics", category: "Product", subcategory: "Analytics" },
   { skill: "Roadmap Planning", category: "Product", subcategory: "Planning" },
-  
+
   // Leadership Skills
-  { skill: "Team Leadership", category: "Leadership", subcategory: "Management" },
-  { skill: "Stakeholder Management", category: "Leadership", subcategory: "Communication" },
-  { skill: "Cross-functional Collaboration", category: "Leadership", subcategory: "Collaboration" },
+  {
+    skill: "Team Leadership",
+    category: "Leadership",
+    subcategory: "Management",
+  },
+  {
+    skill: "Stakeholder Management",
+    category: "Leadership",
+    subcategory: "Communication",
+  },
+  {
+    skill: "Cross-functional Collaboration",
+    category: "Leadership",
+    subcategory: "Collaboration",
+  },
   { skill: "Mentoring", category: "Leadership", subcategory: "Development" },
-  { skill: "Conflict Resolution", category: "Leadership", subcategory: "Management" },
+  {
+    skill: "Conflict Resolution",
+    category: "Leadership",
+    subcategory: "Management",
+  },
 ];
 
 export const atsKeywords = [
@@ -86,12 +134,24 @@ export const atsKeywords = [
   { keyword: "problem solver", category: "General", importance: "high" },
   { keyword: "detail-oriented", category: "General", importance: "medium" },
   { keyword: "self-starter", category: "General", importance: "medium" },
-  { keyword: "fast-paced environment", category: "General", importance: "medium" },
+  {
+    keyword: "fast-paced environment",
+    category: "General",
+    importance: "medium",
+  },
   { keyword: "cross-functional", category: "General", importance: "high" },
-  { keyword: "stakeholder management", category: "General", importance: "high" },
+  {
+    keyword: "stakeholder management",
+    category: "General",
+    importance: "high",
+  },
   { keyword: "data-driven", category: "General", importance: "high" },
-  { keyword: "continuous improvement", category: "General", importance: "medium" },
-  
+  {
+    keyword: "continuous improvement",
+    category: "General",
+    importance: "medium",
+  },
+
   // Technical keywords
   { keyword: "full-stack", category: "Technical", importance: "high" },
   { keyword: "microservices", category: "Technical", importance: "high" },
@@ -100,13 +160,21 @@ export const atsKeywords = [
   { keyword: "machine learning", category: "Technical", importance: "high" },
   { keyword: "cloud architecture", category: "Technical", importance: "high" },
   { keyword: "scalability", category: "Technical", importance: "high" },
-  { keyword: "security best practices", category: "Technical", importance: "high" },
-  
+  {
+    keyword: "security best practices",
+    category: "Technical",
+    importance: "high",
+  },
+
   // Business keywords
   { keyword: "revenue growth", category: "Business", importance: "high" },
   { keyword: "cost reduction", category: "Business", importance: "high" },
   { keyword: "ROI", category: "Business", importance: "high" },
   { keyword: "KPIs", category: "Business", importance: "high" },
   { keyword: "market analysis", category: "Business", importance: "medium" },
-  { keyword: "competitive advantage", category: "Business", importance: "medium" },
+  {
+    keyword: "competitive advantage",
+    category: "Business",
+    importance: "medium",
+  },
 ];

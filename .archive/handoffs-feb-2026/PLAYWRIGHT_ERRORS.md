@@ -8,10 +8,12 @@
 ## Critical Issues Found
 
 ### 1. **test.describe() Error (False Positive)**
+
 **Error:** `Playwright Test did not expect test.describe() to be called here`
 
 **Root Cause:**  
 This error is a **red herring**. It's Playwright's internal error message when test collection fails for OTHER reasons. The actual issues are:
+
 1. Auth setup failing
 2. Onboarding flow tests failing
 3. Missing or incorrect test assertions
@@ -19,6 +21,7 @@ This error is a **red herring**. It's Playwright's internal error message when t
 **Status:** ✅ RESOLVED - Not a real issue, focus on actual test failures below
 
 **Verification:**
+
 - ✅ Only one @playwright/test version installed (1.58.0)
 - ✅ All test files have correct imports
 - ✅ No configuration file issues
@@ -26,14 +29,17 @@ This error is a **red herring**. It's Playwright's internal error message when t
 ---
 
 ### 2. **Test Execution Timeout**
+
 **Issue:** Tests are taking longer than expected to complete (240s+ timeout)
 
 **Observations:**
+
 - Some tests are passing: `onboarding-flow.spec.ts` Step 1 (Welcome page) ✓
 - Some tests are failing: Steps 2 (Upload) and 3 (Extraction) ✘
 - Auth setup is failing ✘
 
 **Potential Causes:**
+
 - Dev server not fully started
 - Network latency to Manus OAuth
 - AI agent processing delays
@@ -60,6 +66,7 @@ This error is a **red herring**. It's Playwright's internal error message when t
 **Impact:** All tests depending on authentication will fail
 
 **Observations:**
+
 - Auth bypass is working: `[Auth Bypass] Injected session cookie for Playwright Test User`
 - But setup test itself is failing
 
@@ -68,12 +75,14 @@ This error is a **red herring**. It's Playwright's internal error message when t
 ## Next Steps
 
 ### Immediate Actions:
+
 1. Fix `test.describe()` import errors in all test files
 2. Investigate auth.setup.ts failure
 3. Debug onboarding flow upload and extraction failures
 4. Reduce test timeouts or optimize test execution
 
 ### Testing Strategy:
+
 1. Run tests individually to isolate failures
 2. Check dev server logs for errors
 3. Verify OAuth integration is working

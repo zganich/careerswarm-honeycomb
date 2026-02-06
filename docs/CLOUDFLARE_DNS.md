@@ -40,10 +40,10 @@ SSL/TLS: set to **Full** or **Full (strict)** in the Cloudflare dashboard (no AP
 
 3. **Add or update these records** (same as API above):
 
-   | Type  | Name | Target                                       | Proxy   |
-   |-------|------|----------------------------------------------|---------|
-   | CNAME | `@`  | `careerswarm-app-production.up.railway.app`  | Grey (DNS only) or Orange |
-   | CNAME | `www`| `careerswarm-app-production.up.railway.app`  | Grey (DNS only) or Orange |
+   | Type  | Name  | Target                                      | Proxy                     |
+   | ----- | ----- | ------------------------------------------- | ------------------------- |
+   | CNAME | `@`   | `careerswarm-app-production.up.railway.app` | Grey (DNS only) or Orange |
+   | CNAME | `www` | `careerswarm-app-production.up.railway.app` | Grey (DNS only) or Orange |
 
    **Note:** For root (`@`), some plans need ALIAS/ANAME instead of CNAME. If CNAME fails at root, use the record type your plan supports for apex domains.
 

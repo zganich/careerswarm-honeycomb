@@ -17,7 +17,9 @@ vi.mock("stripe", () => ({
     },
     billingPortal: {
       sessions: {
-        create: vi.fn().mockResolvedValue({ url: "https://billing.stripe.com/session/123" }),
+        create: vi
+          .fn()
+          .mockResolvedValue({ url: "https://billing.stripe.com/session/123" }),
       },
     },
   })),
@@ -50,7 +52,9 @@ describe("Stripe Router", () => {
     try {
       const result = await caller.stripe.createCheckoutSession({});
       expect(result).toBeDefined();
-      expect(result.checkoutUrl).toBe("https://checkout.stripe.com/c/pay/cs_test_123");
+      expect(result.checkoutUrl).toBe(
+        "https://checkout.stripe.com/c/pay/cs_test_123"
+      );
       expect(result.sessionId).toBe("cs_test_123");
     } catch (e: any) {
       // tRPC wraps errors; message may be on e.message or e.cause?.message

@@ -16,14 +16,19 @@ export default function StatusPipeline({ currentStatus }: StatusPipelineProps) {
   ];
 
   const getCurrentStageIndex = () => {
-    const index = stages.findIndex((stage) => stage.key === currentStatus);
+    const index = stages.findIndex(stage => stage.key === currentStatus);
     return index !== -1 ? index : 0;
   };
 
   const currentIndex = getCurrentStageIndex();
 
   // Special statuses that don't fit in the pipeline
-  const isSpecialStatus = ["accepted", "rejected", "withdrawn", "ghosted"].includes(currentStatus);
+  const isSpecialStatus = [
+    "accepted",
+    "rejected",
+    "withdrawn",
+    "ghosted",
+  ].includes(currentStatus);
 
   if (isSpecialStatus) {
     return (
@@ -40,7 +45,9 @@ export default function StatusPipeline({ currentStatus }: StatusPipelineProps) {
 
   return (
     <div className="p-6 rounded-lg border bg-card">
-      <div className="text-sm font-medium mb-4 text-center">Application Progress</div>
+      <div className="text-sm font-medium mb-4 text-center">
+        Application Progress
+      </div>
       <div className="flex items-center justify-between">
         {stages.map((stage, index) => (
           <div key={stage.key} className="flex items-center flex-1">
@@ -62,7 +69,9 @@ export default function StatusPipeline({ currentStatus }: StatusPipelineProps) {
               {/* Label */}
               <div
                 className={`text-xs mt-2 text-center ${
-                  index <= currentIndex ? "font-medium" : "text-muted-foreground"
+                  index <= currentIndex
+                    ? "font-medium"
+                    : "text-muted-foreground"
                 }`}
               >
                 {stage.label}

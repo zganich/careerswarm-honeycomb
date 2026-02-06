@@ -2,19 +2,18 @@ import { describe, it, expect } from "vitest";
 
 /**
  * Onboarding Flow Validation Test
- * 
+ *
  * Tests the 5-step onboarding flow architecture:
  * 1. Welcome - User starts onboarding
  * 2. Upload - User uploads resume
  * 3. Extraction - System parses resume and extracts data
  * 4. Review - User reviews extracted data
  * 5. Preferences - User sets preferences and completes onboarding
- * 
+ *
  * This test validates the flow logic and architecture, not database operations.
  */
 
 describe("Onboarding Flow Architecture Validation", () => {
-  
   describe("Step 1: Welcome Page", () => {
     it("should have correct route path", () => {
       const welcomeRoutes = ["/onboarding", "/onboarding/welcome"];
@@ -26,7 +25,7 @@ describe("Onboarding Flow Architecture Validation", () => {
       const currentStep = 1;
       const totalSteps = 5;
       const progressPercentage = (currentStep / totalSteps) * 100;
-      
+
       expect(currentStep).toBe(1);
       expect(totalSteps).toBe(5);
       expect(progressPercentage).toBe(20);
@@ -48,7 +47,7 @@ describe("Onboarding Flow Architecture Validation", () => {
       const currentStep = 2;
       const totalSteps = 5;
       const progressPercentage = (currentStep / totalSteps) * 100;
-      
+
       expect(currentStep).toBe(2);
       expect(totalSteps).toBe(5);
       expect(progressPercentage).toBe(40);
@@ -58,18 +57,20 @@ describe("Onboarding Flow Architecture Validation", () => {
       const acceptedFormats = [
         "application/pdf",
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        "text/plain"
+        "text/plain",
       ];
-      
+
       expect(acceptedFormats).toContain("application/pdf");
-      expect(acceptedFormats).toContain("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+      expect(acceptedFormats).toContain(
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      );
       expect(acceptedFormats).toContain("text/plain");
     });
 
     it("should enforce 10MB file size limit", () => {
       const maxFileSize = 10 * 1024 * 1024; // 10MB in bytes
       const testFileSize = 5 * 1024 * 1024; // 5MB
-      
+
       expect(testFileSize).toBeLessThan(maxFileSize);
       expect(maxFileSize).toBe(10485760);
     });
@@ -95,7 +96,7 @@ describe("Onboarding Flow Architecture Validation", () => {
       const currentStep = 3;
       const totalSteps = 5;
       const progressPercentage = (currentStep / totalSteps) * 100;
-      
+
       expect(currentStep).toBe(3);
       expect(totalSteps).toBe(5);
       expect(progressPercentage).toBe(60);
@@ -103,14 +104,14 @@ describe("Onboarding Flow Architecture Validation", () => {
 
     it("should extract required Master Profile sections", () => {
       const extractedSections = [
-        "basicInfo",        // name, email, phone, location, LinkedIn
-        "workExperience",   // companies, titles, dates, descriptions
-        "achievements",     // XYZ accomplishments
-        "education",        // degrees, institutions, dates
-        "skills",           // technical and soft skills
-        "certifications",   // certifications and licenses
+        "basicInfo", // name, email, phone, location, LinkedIn
+        "workExperience", // companies, titles, dates, descriptions
+        "achievements", // XYZ accomplishments
+        "education", // degrees, institutions, dates
+        "skills", // technical and soft skills
+        "certifications", // certifications and licenses
       ];
-      
+
       expect(extractedSections).toContain("basicInfo");
       expect(extractedSections).toContain("workExperience");
       expect(extractedSections).toContain("achievements");
@@ -121,13 +122,13 @@ describe("Onboarding Flow Architecture Validation", () => {
 
     it("should extract new Master Profile sections (migration 0015)", () => {
       const newSections = [
-        "languages",           // language proficiency
+        "languages", // language proficiency
         "volunteerExperiences", // volunteer work
-        "projects",            // personal/professional projects
-        "publications",        // academic/professional publications
-        "securityClearances",  // government clearances
+        "projects", // personal/professional projects
+        "publications", // academic/professional publications
+        "securityClearances", // government clearances
       ];
-      
+
       expect(newSections).toContain("languages");
       expect(newSections).toContain("volunteerExperiences");
       expect(newSections).toContain("projects");
@@ -151,7 +152,7 @@ describe("Onboarding Flow Architecture Validation", () => {
       const currentStep = 4;
       const totalSteps = 5;
       const progressPercentage = (currentStep / totalSteps) * 100;
-      
+
       expect(currentStep).toBe(4);
       expect(totalSteps).toBe(5);
       expect(progressPercentage).toBe(80);
@@ -176,7 +177,7 @@ describe("Onboarding Flow Architecture Validation", () => {
         "publications",
         "securityClearances",
       ];
-      
+
       expect(reviewableSections.length).toBe(11);
       expect(reviewableSections).toContain("basicInfo");
       expect(reviewableSections).toContain("languages");
@@ -198,7 +199,7 @@ describe("Onboarding Flow Architecture Validation", () => {
       const currentStep = 5;
       const totalSteps = 5;
       const progressPercentage = (currentStep / totalSteps) * 100;
-      
+
       expect(currentStep).toBe(5);
       expect(totalSteps).toBe(5);
       expect(progressPercentage).toBe(100);
@@ -213,7 +214,7 @@ describe("Onboarding Flow Architecture Validation", () => {
         "salaryExpectations",
         "remotePreference",
       ];
-      
+
       expect(preferenceOptions.length).toBeGreaterThan(0);
       expect(preferenceOptions).toContain("jobSearchStatus");
     });
@@ -233,7 +234,7 @@ describe("Onboarding Flow Architecture Validation", () => {
         { step: 4, route: "/onboarding/review", name: "Review" },
         { step: 5, route: "/onboarding/preferences", name: "Preferences" },
       ];
-      
+
       expect(onboardingSteps.length).toBe(5);
       expect(onboardingSteps[0].name).toBe("Welcome");
       expect(onboardingSteps[4].name).toBe("Preferences");
@@ -248,7 +249,7 @@ describe("Onboarding Flow Architecture Validation", () => {
         "/onboarding/preferences",
         "/dashboard",
       ];
-      
+
       expect(flowProgression[0]).toBe("/onboarding");
       expect(flowProgression[5]).toBe("/dashboard");
       expect(flowProgression.length).toBe(6); // 5 steps + completion redirect
@@ -257,18 +258,39 @@ describe("Onboarding Flow Architecture Validation", () => {
     it("should build complete Master Profile through onboarding", () => {
       const masterProfileSections = {
         basicInfo: ["fullName", "email", "phone", "location", "linkedIn"],
-        workExperience: ["company", "title", "startDate", "endDate", "description"],
-        achievements: ["description", "xyzAccomplishment", "xyzMeasurableResult"],
-        education: ["institution", "degree", "fieldOfStudy", "startDate", "endDate"],
+        workExperience: [
+          "company",
+          "title",
+          "startDate",
+          "endDate",
+          "description",
+        ],
+        achievements: [
+          "description",
+          "xyzAccomplishment",
+          "xyzMeasurableResult",
+        ],
+        education: [
+          "institution",
+          "degree",
+          "fieldOfStudy",
+          "startDate",
+          "endDate",
+        ],
         skills: ["name", "category"],
         certifications: ["name", "issuingOrganization", "issueDate", "type"],
         languages: ["language", "proficiency", "isNative"],
         volunteerExperiences: ["organization", "role", "startDate", "endDate"],
         projects: ["name", "description", "url", "role"],
         publications: ["title", "publisherOrVenue", "year", "url"],
-        securityClearances: ["clearanceType", "level", "issueDate", "expirationDate"],
+        securityClearances: [
+          "clearanceType",
+          "level",
+          "issueDate",
+          "expirationDate",
+        ],
       };
-      
+
       const sectionCount = Object.keys(masterProfileSections).length;
       expect(sectionCount).toBe(11);
       expect(masterProfileSections.basicInfo).toContain("fullName");
@@ -278,8 +300,10 @@ describe("Onboarding Flow Architecture Validation", () => {
     it("should calculate profile completeness score", () => {
       const completedSections = 11;
       const totalSections = 11;
-      const completenessScore = Math.round((completedSections / totalSections) * 100);
-      
+      const completenessScore = Math.round(
+        (completedSections / totalSections) * 100
+      );
+
       expect(completenessScore).toBe(100);
     });
   });
@@ -292,7 +316,7 @@ describe("Onboarding Flow Architecture Validation", () => {
         "/onboarding/job-matcher",
         "/onboarding/preferences",
       ];
-      
+
       const currentFlow = [
         "/onboarding",
         "/onboarding/upload",
@@ -300,7 +324,7 @@ describe("Onboarding Flow Architecture Validation", () => {
         "/onboarding/review",
         "/onboarding/preferences",
       ];
-      
+
       expect(currentFlow).not.toEqual(unimplementedFlow);
       expect(currentFlow.length).toBe(5);
     });
@@ -313,7 +337,7 @@ describe("Onboarding Flow Architecture Validation", () => {
         "/onboarding/review-edit",
         "/onboarding/preferences",
       ];
-      
+
       const currentFlow = [
         "/onboarding",
         "/onboarding/upload",
@@ -321,7 +345,7 @@ describe("Onboarding Flow Architecture Validation", () => {
         "/onboarding/review",
         "/onboarding/preferences",
       ];
-      
+
       expect(currentFlow).not.toEqual(unimplementedFlow);
       expect(currentFlow.length).toBe(5);
     });
@@ -338,7 +362,7 @@ describe("Onboarding Flow Architecture Validation", () => {
           "/onboarding/preferences",
         ],
       };
-      
+
       expect(originalArchitecture.stepCount).toBe(5);
       expect(originalArchitecture.steps).toHaveLength(5);
       expect(originalArchitecture.routes).toHaveLength(5);

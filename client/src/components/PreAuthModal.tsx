@@ -23,7 +23,8 @@ export function PreAuthModal({ open, onClose, onContinue }: PreAuthModalProps) {
             Create Your Free Account
           </DialogTitle>
           <DialogDescription className="text-lg text-slate-600">
-            Build your Master Profile once, then apply to jobs in 5 minutes instead of 4 hours.
+            Build your Master Profile once, then apply to jobs in 5 minutes
+            instead of 4 hours.
           </DialogDescription>
         </DialogHeader>
 
@@ -63,19 +64,31 @@ export function PreAuthModal({ open, onClose, onContinue }: PreAuthModalProps) {
             <ul className="space-y-2">
               <li className="flex items-start gap-2 text-slate-700">
                 <Target className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
-                <span><strong>Finds best-fit jobs</strong> matching your profile (Scout Agent)</span>
+                <span>
+                  <strong>Finds best-fit jobs</strong> matching your profile
+                  (Scout Agent)
+                </span>
               </li>
               <li className="flex items-start gap-2 text-slate-700">
                 <FileText className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
-                <span><strong>Tailors resume</strong> for each specific job (Tailor Agent)</span>
+                <span>
+                  <strong>Tailors resume</strong> for each specific job (Tailor
+                  Agent)
+                </span>
               </li>
               <li className="flex items-start gap-2 text-slate-700">
                 <FileText className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
-                <span><strong>Writes cover letters & outreach</strong> personalized to company (Scribe Agent)</span>
+                <span>
+                  <strong>Writes cover letters & outreach</strong> personalized
+                  to company (Scribe Agent)
+                </span>
               </li>
               <li className="flex items-start gap-2 text-slate-700">
                 <Target className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
-                <span><strong>Finds hiring managers</strong> and decision makers (Hunter Agent)</span>
+                <span>
+                  <strong>Finds hiring managers</strong> and decision makers
+                  (Hunter Agent)
+                </span>
               </li>
             </ul>
           </div>
@@ -83,10 +96,12 @@ export function PreAuthModal({ open, onClose, onContinue }: PreAuthModalProps) {
           {/* Time Savings Highlight */}
           <div className="bg-gradient-to-r from-orange-50 to-green-50 p-4 rounded-lg border-2 border-orange-200">
             <p className="text-center text-lg font-semibold text-slate-900">
-              ⏱️ Saves <span className="text-orange-600">3.5 hours</span> per application
+              ⏱️ Saves <span className="text-orange-600">3.5 hours</span> per
+              application
             </p>
             <p className="text-center text-sm text-slate-600 mt-1">
-              For 100 applications: <strong>350 hours saved</strong> (8.75 work weeks)
+              For 100 applications: <strong>350 hours saved</strong> (8.75 work
+              weeks)
             </p>
           </div>
 
@@ -99,8 +114,9 @@ export function PreAuthModal({ open, onClose, onContinue }: PreAuthModalProps) {
                   Secure OAuth Login
                 </p>
                 <p className="text-sm text-slate-600">
-                  You'll be securely signed in with your email (takes 30 seconds).
-                  We never see your password and you can sign out anytime.
+                  You'll be securely signed in with your email (takes 30
+                  seconds). We never see your password and you can sign out
+                  anytime.
                 </p>
               </div>
             </div>
@@ -108,18 +124,14 @@ export function PreAuthModal({ open, onClose, onContinue }: PreAuthModalProps) {
 
           {/* CTA Buttons */}
           <div className="flex flex-col gap-3 pt-2">
-            <Button 
+            <Button
               onClick={onContinue}
               className="w-full bg-orange-500 hover:bg-orange-600 text-white text-lg py-6 shadow-lg"
               size="lg"
             >
               Continue to Secure Login
             </Button>
-            <Button 
-              onClick={onClose}
-              variant="outline"
-              className="w-full"
-            >
+            <Button onClick={onClose} variant="outline" className="w-full">
               Maybe Later
             </Button>
           </div>

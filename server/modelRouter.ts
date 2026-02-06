@@ -1,11 +1,11 @@
 /**
  * Model Router - Intelligent model selection for cost optimization
- * 
+ *
  * Cost per 1M tokens (input/output):
  * - GPT-4o-mini: $0.15 / $0.60
  * - GPT-4o: $2.50 / $10.00
  * - Claude 3.5 Sonnet: $3.00 / $15.00
- * 
+ *
  * Strategy:
  * - Simple tasks (scoring, classification): GPT-4o-mini (90% cheaper)
  * - Medium tasks (analysis, extraction): GPT-4o
@@ -51,7 +51,7 @@ export const TaskType = {
   KEYWORD_MATCHING: TaskComplexity.SIMPLE,
   CLASSIFICATION: TaskComplexity.SIMPLE,
   SENTIMENT_ANALYSIS: TaskComplexity.SIMPLE,
-  
+
   // Medium tasks (GPT-4o)
   SKILL_EXTRACTION: TaskComplexity.MEDIUM,
   JD_ANALYSIS: TaskComplexity.MEDIUM,
@@ -59,7 +59,7 @@ export const TaskType = {
   COMPANY_RESEARCH: TaskComplexity.MEDIUM,
   RESUME_MATCHING: TaskComplexity.MEDIUM,
   EMAIL_PARSING: TaskComplexity.MEDIUM,
-  
+
   // Complex tasks (Claude 3.5 Sonnet)
   STAR_TO_XYZ_TRANSFORMATION: TaskComplexity.COMPLEX,
   COVER_LETTER_GENERATION: TaskComplexity.COMPLEX,
@@ -86,9 +86,9 @@ export function estimateCost(
   outputTokens: number
 ): number {
   const costs = {
-    [Model.GPT_4O_MINI]: { input: 0.15, output: 0.60 },
-    [Model.GPT_4O]: { input: 2.50, output: 10.00 },
-    [Model.CLAUDE_35_SONNET]: { input: 3.00, output: 15.00 },
+    [Model.GPT_4O_MINI]: { input: 0.15, output: 0.6 },
+    [Model.GPT_4O]: { input: 2.5, output: 10.0 },
+    [Model.CLAUDE_35_SONNET]: { input: 3.0, output: 15.0 },
   };
 
   const cost = costs[model];
@@ -112,7 +112,7 @@ const usageLog: ModelUsage[] = [];
 
 export function logModelUsage(usage: ModelUsage): void {
   usageLog.push(usage);
-  
+
   // Keep only last 10000 entries in memory
   if (usageLog.length > 10000) {
     usageLog.shift();

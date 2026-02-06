@@ -47,11 +47,11 @@ npx playwright test tests/production-e2e.spec.ts --config=playwright.production.
 
 ## Quick refs
 
-| Task | Doc / Command |
-|------|----------------|
-| DB migration when MySQL is up | `pnpm db:migrate` |
-| Auth (email-only) | `/login`; no OAuth required |
-| OPENAI_API_KEY | Set in Railway Variables; redeploy required |
-| Dev login (preview / local) | `/login` (Dev Login enabled when `ENABLE_DEV_LOGIN=true` or non-production) |
-| Full onboarding E2E | Use `tests/production-e2e.spec.ts`; `tests/onboarding-flow.spec.ts` is skipped (auth-bypass user not in DB). |
-| CLI monitoring | `pnpm run monitor` — GitHub, Railway, app health, Cloudflare. [MONITORING.md](./MONITORING.md) |
+| Task                          | Doc / Command                                                                                                |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| DB migration when MySQL is up | `pnpm db:migrate`                                                                                            |
+| Auth (email-only)             | `/login`; no OAuth required                                                                                  |
+| OPENAI_API_KEY                | Set in Railway Variables; redeploy required                                                                  |
+| Dev login (preview / local)   | `/login` (Dev Login enabled when `ENABLE_DEV_LOGIN=true` or non-production)                                  |
+| Full onboarding E2E           | Use `tests/production-e2e.spec.ts`; `tests/onboarding-flow.spec.ts` is skipped (auth-bypass user not in DB). |
+| CLI monitoring                | `pnpm run monitor` — GitHub, Railway, app health, Cloudflare. [MONITORING.md](./MONITORING.md)               |

@@ -1,5 +1,5 @@
 import { trpc } from "@/lib/trpc";
-import { UNAUTHED_ERR_MSG } from '@shared/const';
+import { UNAUTHED_ERR_MSG } from "@shared/const";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink, TRPCClientError } from "@trpc/client";
 import { createRoot } from "react-dom/client";
@@ -39,12 +39,12 @@ function injectAnalyticsScript() {
 // Monitoring config is loaded from the backend so env is not required at build time
 async function initializeMonitoring() {
   try {
-    const response = await fetch('/api/trpc/public.getMonitoringConfig');
+    const response = await fetch("/api/trpc/public.getMonitoringConfig");
     const result = await response.json();
     const config = result.result?.data?.json;
-    
+
     if (!config) return;
-    
+
     // Initialize Sentry
     if (config.sentryDsn) {
       Sentry.init({
@@ -59,26 +59,26 @@ async function initializeMonitoring() {
         replaysOnErrorSampleRate: 1.0,
         debug: false,
       });
-      console.log('[Monitoring] Sentry initialized');
+      console.log("[Monitoring] Sentry initialized");
     }
-    
+
     // Initialize PostHog
     if (config.posthogKey) {
       posthog.init(config.posthogKey, {
-        api_host: config.posthogHost || 'https://us.posthog.com',
+        api_host: config.posthogHost || "https://us.posthog.com",
         capture_pageview: true,
         autocapture: true,
         disable_session_recording: true,
-        loaded: (posthog) => {
-          if (import.meta.env.MODE === 'development') {
+        loaded: posthog => {
+          if (import.meta.env.MODE === "development") {
             posthog.opt_out_capturing();
           }
         },
       });
-      console.log('[Monitoring] PostHog initialized');
+      console.log("[Monitoring] PostHog initialized");
     }
   } catch (error) {
-    console.error('[Monitoring] Failed to initialize:', error);
+    console.error("[Monitoring] Failed to initialize:", error);
   }
 }
 
@@ -109,17 +109,20 @@ const redirectToLoginIfUnauthorized = (error: unknown) => {
   const returnTo = window.location.pathname + window.location.search || "/";
   const loginUrl = getLoginUrl(returnTo);
   // Use /login when OAuth not configured (dev, preview)
-  window.location.href = loginUrl && loginUrl !== "#" ? loginUrl : `/login?returnTo=${encodeURIComponent(returnTo)}`;
+  window.location.href =
+    loginUrl && loginUrl !== "#"
+      ? loginUrl
+      : `/login?returnTo=${encodeURIComponent(returnTo)}`;
 };
 
 queryClient.getQueryCache().subscribe(event => {
   if (event.type === "updated" && event.action.type === "error") {
     const error = event.query.state.error;
     redirectToLoginIfUnauthorized(error);
-    
+
     const formatted = formatTRPCError(error);
     console.error("[API Query Error]", { formatted, raw: error });
-    
+
     // Show toast for user-friendly errors
     if (formatted.isUserFriendly && formatted.code !== "UNAUTHORIZED") {
       toast.error(formatted.message);
@@ -142,24 +145,24 @@ const trpcClient = trpc.createClient({
       transformer: superjson,
       fetch(input, init) {
         // Add localStorage token as Authorization header if present
-        const devToken = localStorage.getItem('dev_session_token');
+        const devToken = localStorage.getItem("dev_session_token");
         const headers: Record<string, string> = {};
-        
+
         // Copy existing headers
         if (init?.headers) {
           if (init.headers instanceof Headers) {
             init.headers.forEach((value, key) => {
               headers[key] = value;
             });
-          } else if (typeof init.headers === 'object') {
+          } else if (typeof init.headers === "object") {
             Object.assign(headers, init.headers);
           }
         }
-        
+
         if (devToken) {
-          headers['Authorization'] = `Bearer ${devToken}`;
+          headers["Authorization"] = `Bearer ${devToken}`;
         }
-        
+
         return globalThis.fetch(input, {
           ...(init ?? {}),
           credentials: "include",
@@ -175,9 +178,12 @@ createRoot(document.getElementById("root")!).render(
     fallback={({ error, resetError }) => (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="max-w-md p-8 bg-white rounded-lg shadow-lg">
-          <h1 className="text-2xl font-bold text-slate-900 mb-4">Something went wrong</h1>
+          <h1 className="text-2xl font-bold text-slate-900 mb-4">
+            Something went wrong
+          </h1>
           <p className="text-slate-600 mb-6">
-            We've been notified and are working on a fix. Please try refreshing the page.
+            We've been notified and are working on a fix. Please try refreshing
+            the page.
           </p>
           <div className="flex gap-4">
             <button
@@ -193,10 +199,14 @@ createRoot(document.getElementById("root")!).render(
               Try Again
             </button>
           </div>
-          {import.meta.env.MODE === 'development' && (
+          {import.meta.env.MODE === "development" && (
             <details className="mt-6">
-              <summary className="text-sm text-slate-500 cursor-pointer">Error details</summary>
-              <pre className="mt-2 text-xs text-red-600 overflow-auto">{String(error)}</pre>
+              <summary className="text-sm text-slate-500 cursor-pointer">
+                Error details
+              </summary>
+              <pre className="mt-2 text-xs text-red-600 overflow-auto">
+                {String(error)}
+              </pre>
             </details>
           )}
         </div>

@@ -106,7 +106,7 @@ export function getQueue(name: QueueName): Queue {
   if (!redis) {
     throw new Error("Redis connection not available for job queue");
   }
-  
+
   if (!queues.has(name)) {
     const queue = new Queue(name, {
       connection: redis,
@@ -155,7 +155,7 @@ export async function addBulkJobs<T>(
 ): Promise<Job<T>[]> {
   const queue = getQueue(queueName);
   return queue.addBulk(
-    jobs.map((job) => ({
+    jobs.map(job => ({
       name: queueName,
       data: job.data,
       opts: job.opts,
@@ -231,7 +231,7 @@ export function createWorker<T>(
   if (!redis) {
     throw new Error("Redis connection not available for worker");
   }
-  
+
   return new Worker<T>(queueName, processor, {
     connection: redis,
     concurrency: options?.concurrency || 5,

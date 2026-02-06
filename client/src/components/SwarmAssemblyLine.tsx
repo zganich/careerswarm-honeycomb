@@ -7,7 +7,6 @@ export function SwarmAssemblyLine() {
     <div className="w-full max-w-6xl mx-auto">
       {/* Assembly Line Container */}
       <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8">
-        
         {/* STAGE 1: Deep Research */}
         <div
           className="relative bg-white/50 backdrop-blur-md border border-orange-100 rounded-2xl p-6 shadow-xl w-full lg:w-80 transition-transform duration-300 hover:scale-105"
@@ -17,7 +16,7 @@ export function SwarmAssemblyLine() {
           <div className="text-xs uppercase tracking-wider text-slate-400 font-bold mb-4">
             1. DEEP RESEARCH
           </div>
-          
+
           <div className="space-y-3">
             {/* Scout */}
             <div className="bg-white rounded-full px-4 py-2.5 shadow-sm flex items-center gap-3">
@@ -27,7 +26,7 @@ export function SwarmAssemblyLine() {
                 <p className="text-xs text-slate-500">Finds Roles</p>
               </div>
             </div>
-            
+
             {/* Profiler */}
             <div className="bg-white rounded-full px-4 py-2.5 shadow-sm flex items-center gap-3">
               <span className="text-orange-500 text-lg">🧠</span>
@@ -36,12 +35,14 @@ export function SwarmAssemblyLine() {
                 <p className="text-xs text-slate-500">Analyzes Strategy</p>
               </div>
             </div>
-            
+
             {/* Qualifier */}
             <div className="bg-white rounded-full px-4 py-2.5 shadow-sm flex items-center gap-3">
               <span className="text-orange-500 text-lg">✅</span>
               <div className="text-left flex-1">
-                <p className="text-sm font-semibold text-slate-700">Qualifier</p>
+                <p className="text-sm font-semibold text-slate-700">
+                  Qualifier
+                </p>
                 <p className="text-xs text-slate-500">Verifies Fit</p>
               </div>
             </div>
@@ -51,7 +52,13 @@ export function SwarmAssemblyLine() {
         {/* Arrow 1 (Desktop) */}
         <div className="hidden lg:block">
           <svg className="w-12 h-8 flow-arrow" viewBox="0 0 50 30" fill="none">
-            <path d="M0 15 L40 15" stroke="#f97316" strokeWidth="2" strokeDasharray="4 4" className="animate-flow" />
+            <path
+              d="M0 15 L40 15"
+              stroke="#f97316"
+              strokeWidth="2"
+              strokeDasharray="4 4"
+              className="animate-flow"
+            />
             <path d="M35 10 L45 15 L35 20" fill="#f97316" />
           </svg>
         </div>
@@ -59,7 +66,13 @@ export function SwarmAssemblyLine() {
         {/* Arrow 1 (Mobile) */}
         <div className="lg:hidden">
           <svg className="w-8 h-12 flow-arrow" viewBox="0 0 30 50" fill="none">
-            <path d="M15 0 L15 40" stroke="#f97316" strokeWidth="2" strokeDasharray="4 4" className="animate-flow" />
+            <path
+              d="M15 0 L15 40"
+              stroke="#f97316"
+              strokeWidth="2"
+              strokeDasharray="4 4"
+              className="animate-flow"
+            />
             <path d="M10 35 L15 45 L20 35" fill="#f97316" />
           </svg>
         </div>
@@ -73,13 +86,13 @@ export function SwarmAssemblyLine() {
           <div className="text-xs uppercase tracking-wider text-slate-400 font-bold mb-4">
             2. TARGETING
           </div>
-          
+
           <div className="relative">
             {/* Radar Ring */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="w-32 h-32 rounded-full border-2 border-purple-300 animate-ping opacity-30"></div>
             </div>
-            
+
             {/* Hunter */}
             <div className="relative bg-white rounded-full px-4 py-2.5 shadow-sm flex items-center gap-3">
               <span className="text-orange-500 text-lg">🎯</span>
@@ -94,7 +107,13 @@ export function SwarmAssemblyLine() {
         {/* Arrow 2 (Desktop) */}
         <div className="hidden lg:block">
           <svg className="w-12 h-8 flow-arrow" viewBox="0 0 50 30" fill="none">
-            <path d="M0 15 L40 15" stroke="#f97316" strokeWidth="2" strokeDasharray="4 4" className="animate-flow" />
+            <path
+              d="M0 15 L40 15"
+              stroke="#f97316"
+              strokeWidth="2"
+              strokeDasharray="4 4"
+              className="animate-flow"
+            />
             <path d="M35 10 L45 15 L35 20" fill="#f97316" />
           </svg>
         </div>
@@ -102,7 +121,13 @@ export function SwarmAssemblyLine() {
         {/* Arrow 2 (Mobile) */}
         <div className="lg:hidden">
           <svg className="w-8 h-12 flow-arrow" viewBox="0 0 30 50" fill="none">
-            <path d="M15 0 L15 40" stroke="#f97316" strokeWidth="2" strokeDasharray="4 4" className="animate-flow" />
+            <path
+              d="M15 0 L15 40"
+              stroke="#f97316"
+              strokeWidth="2"
+              strokeDasharray="4 4"
+              className="animate-flow"
+            />
             <path d="M10 35 L15 45 L20 35" fill="#f97316" />
           </svg>
         </div>
@@ -116,7 +141,7 @@ export function SwarmAssemblyLine() {
           <div className="text-xs uppercase tracking-wider text-slate-400 font-bold mb-4">
             3. PRODUCTION
           </div>
-          
+
           <div className="space-y-3">
             {/* Tailor */}
             <div className="bg-white rounded-full px-4 py-2.5 shadow-sm flex items-center gap-3">
@@ -126,7 +151,7 @@ export function SwarmAssemblyLine() {
                 <p className="text-xs text-slate-500">Rewrites Resume</p>
               </div>
             </div>
-            
+
             {/* Scribe */}
             <div className="bg-white rounded-full px-4 py-2.5 shadow-sm flex items-center gap-3">
               <span className="text-orange-500 text-lg">✍️</span>
@@ -135,12 +160,14 @@ export function SwarmAssemblyLine() {
                 <p className="text-xs text-slate-500">Drafts Outreach</p>
               </div>
             </div>
-            
+
             {/* Assembler */}
             <div className="bg-white rounded-full px-4 py-2.5 shadow-sm flex items-center gap-3">
               <span className="text-orange-500 text-lg">📦</span>
               <div className="text-left flex-1">
-                <p className="text-sm font-semibold text-slate-700">Assembler</p>
+                <p className="text-sm font-semibold text-slate-700">
+                  Assembler
+                </p>
                 <p className="text-xs text-slate-500">Builds Package</p>
               </div>
             </div>
@@ -153,7 +180,13 @@ export function SwarmAssemblyLine() {
         {/* Arrow Down */}
         <div>
           <svg className="w-8 h-12 flow-arrow" viewBox="0 0 30 50" fill="none">
-            <path d="M15 0 L15 40" stroke="#10b981" strokeWidth="2" strokeDasharray="4 4" className="animate-flow" />
+            <path
+              d="M15 0 L15 40"
+              stroke="#10b981"
+              strokeWidth="2"
+              strokeDasharray="4 4"
+              className="animate-flow"
+            />
             <path d="M10 35 L15 45 L20 35" fill="#10b981" />
           </svg>
         </div>
@@ -171,13 +204,25 @@ export function SwarmAssemblyLine() {
           <div className="mt-4 flex items-center gap-4">
             {/* File Icon */}
             <div className="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center">
-              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+              <svg
+                className="w-8 h-8 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
+                />
               </svg>
             </div>
 
             <div className="text-left flex-1">
-              <p className="text-lg font-bold text-slate-900">Application Package</p>
+              <p className="text-lg font-bold text-slate-900">
+                Application Package
+              </p>
               <p className="text-sm text-slate-600">Ready to Send</p>
             </div>
           </div>

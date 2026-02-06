@@ -26,7 +26,8 @@ export function registerOAuthRoutes(app: Express) {
       res.status(403).json({ error: "Email login is not enabled" });
       return;
     }
-    const email = typeof req.body?.email === "string" ? req.body.email.trim() : "";
+    const email =
+      typeof req.body?.email === "string" ? req.body.email.trim() : "";
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       res.status(400).json({ error: "Valid email is required" });
       return;
@@ -44,8 +45,12 @@ export function registerOAuthRoutes(app: Express) {
       expiresInMs: ONE_YEAR_MS,
     });
     const cookieOptions = getSessionCookieOptions(req, true);
-    res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
-    const returnTo = typeof req.body?.returnTo === "string" ? req.body.returnTo : "/dashboard";
+    res.cookie(COOKIE_NAME, sessionToken, {
+      ...cookieOptions,
+      maxAge: ONE_YEAR_MS,
+    });
+    const returnTo =
+      typeof req.body?.returnTo === "string" ? req.body.returnTo : "/dashboard";
     // Server-side redirect so cookie is sent on the next request (more reliable than client redirect)
     res.redirect(302, returnTo);
   });
@@ -53,7 +58,9 @@ export function registerOAuthRoutes(app: Express) {
   app.get("/api/oauth/callback", async (req: Request, res: Response) => {
     const oauthUrl = process.env.OAUTH_SERVER_URL?.trim();
     if (!oauthUrl) {
-      res.status(404).json({ error: "OAuth is not configured; use email sign-in at /login" });
+      res.status(404).json({
+        error: "OAuth is not configured; use email sign-in at /login",
+      });
       return;
     }
     const code = getQueryParam(req, "code");
@@ -87,26 +94,41 @@ export function registerOAuthRoutes(app: Express) {
       // Decode state parameter to extract returnTo path
       let redirectUrl = "/";
       try {
-        const stateData = JSON.parse(Buffer.from(state, 'base64').toString('utf-8'));
-        if (stateData.returnTo && typeof stateData.returnTo === 'string' && stateData.returnTo.startsWith('/')) {
+        const stateData = JSON.parse(
+          Buffer.from(state, "base64").toString("utf-8")
+        );
+        if (
+          stateData.returnTo &&
+          typeof stateData.returnTo === "string" &&
+          stateData.returnTo.startsWith("/")
+        ) {
           redirectUrl = stateData.returnTo;
         }
       } catch (e) {
         // If state decoding fails, fall back to homepage
-        console.warn('[OAuth] Failed to decode state parameter:', e);
+        console.warn("[OAuth] Failed to decode state parameter:", e);
       }
 
       const cookieOptions = getSessionCookieOptions(req);
-      console.log('[OAuth] Setting cookie with options:', {
+      console.log("[OAuth] Setting cookie with options:", {
         cookieName: COOKIE_NAME,
         options: { ...cookieOptions, maxAge: ONE_YEAR_MS },
         hostname: req.hostname,
         protocol: req.protocol,
-        headers: { host: req.headers.host, 'x-forwarded-proto': req.headers['x-forwarded-proto'] },
-        redirectUrl
+        headers: {
+          host: req.headers.host,
+          "x-forwarded-proto": req.headers["x-forwarded-proto"],
+        },
+        redirectUrl,
       });
-      res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
-      console.log('[OAuth] Cookie set successfully, redirecting to:', redirectUrl);
+      res.cookie(COOKIE_NAME, sessionToken, {
+        ...cookieOptions,
+        maxAge: ONE_YEAR_MS,
+      });
+      console.log(
+        "[OAuth] Cookie set successfully, redirecting to:",
+        redirectUrl
+      );
 
       res.redirect(302, redirectUrl);
     } catch (error) {

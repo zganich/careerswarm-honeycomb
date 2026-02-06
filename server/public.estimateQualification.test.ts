@@ -35,7 +35,7 @@ describe("public.estimateQualification", () => {
     expect(result.gaps.length).toBeGreaterThanOrEqual(3);
     expect(result.gaps.length).toBeLessThanOrEqual(5);
 
-    result.gaps.forEach((gap) => {
+    result.gaps.forEach(gap => {
       expect(gap).toHaveProperty("skill");
       expect(gap).toHaveProperty("importance");
       expect(gap).toHaveProperty("suggestion");

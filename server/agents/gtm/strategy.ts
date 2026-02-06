@@ -28,17 +28,22 @@ const OUTPUT_SCHEMA = {
   additionalProperties: false,
 };
 
-export async function executeStrategy(input: StrategyInput): Promise<StrategyOutput> {
+export async function executeStrategy(
+  input: StrategyInput
+): Promise<StrategyOutput> {
   const context = [
     input.lastRunSummary && `Last run: ${input.lastRunSummary}`,
     input.kpiSnapshot && `KPIs: ${JSON.stringify(input.kpiSnapshot)}`,
-  ].filter(Boolean).join("\n");
+  ]
+    .filter(Boolean)
+    .join("\n");
 
   const response = await invokeLLM({
     messages: [
       {
         role: "system",
-        content: "You are a GTM strategist for CareerSwarm (job application + JD Builder). Output weekly tactics: content themes, channels to focus on, next actions, and suggested content topics. Be concise. JSON only.",
+        content:
+          "You are a GTM strategist for CareerSwarm (job application + JD Builder). Output weekly tactics: content themes, channels to focus on, next actions, and suggested content topics. Be concise. JSON only.",
       },
       {
         role: "user",
@@ -47,7 +52,11 @@ export async function executeStrategy(input: StrategyInput): Promise<StrategyOut
     ],
     response_format: {
       type: "json_schema",
-      json_schema: { name: "strategy_output", strict: true, schema: OUTPUT_SCHEMA },
+      json_schema: {
+        name: "strategy_output",
+        strict: true,
+        schema: OUTPUT_SCHEMA,
+      },
     },
     model: "gpt-4o-mini",
   });

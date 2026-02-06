@@ -7,15 +7,19 @@ interface SaveOpportunityButtonProps {
   opportunityId: number;
 }
 
-export default function SaveOpportunityButton({ opportunityId }: SaveOpportunityButtonProps) {
-  const { data: isSaved, refetch } = trpc.opportunities.isSaved.useQuery({ opportunityId });
-  
+export default function SaveOpportunityButton({
+  opportunityId,
+}: SaveOpportunityButtonProps) {
+  const { data: isSaved, refetch } = trpc.opportunities.isSaved.useQuery({
+    opportunityId,
+  });
+
   const saveMutation = trpc.opportunities.save.useMutation({
     onSuccess: () => {
       toast.success("Opportunity saved for later");
       refetch();
     },
-    onError: (error) => {
+    onError: error => {
       toast.error(`Failed to save: ${error.message}`);
     },
   });
@@ -25,7 +29,7 @@ export default function SaveOpportunityButton({ opportunityId }: SaveOpportunity
       toast.success("Opportunity removed from saved");
       refetch();
     },
-    onError: (error) => {
+    onError: error => {
       toast.error(`Failed to unsave: ${error.message}`);
     },
   });

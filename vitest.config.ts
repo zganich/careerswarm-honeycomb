@@ -6,8 +6,8 @@ const templateRoot = path.resolve(import.meta.dirname);
 
 export default defineConfig(({ mode }) => {
   // Load env vars from .env file for tests
-  const env = loadEnv(mode, templateRoot, '');
-  
+  const env = loadEnv(mode, templateRoot, "");
+
   return {
     root: templateRoot,
     resolve: {

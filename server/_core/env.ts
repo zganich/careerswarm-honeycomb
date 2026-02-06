@@ -10,7 +10,7 @@ const OPENAI_PLACEHOLDERS = ["placeholder", "sk-placeholder", "PLACEHOLDER"];
 function isPlaceholderOpenAIKey(value: string): boolean {
   const v = value.trim().toLowerCase();
   if (!v || v.length < 20) return true;
-  return OPENAI_PLACEHOLDERS.some((p) => v.includes(p.toLowerCase()));
+  return OPENAI_PLACEHOLDERS.some(p => v.includes(p.toLowerCase()));
 }
 
 /**

@@ -1,14 +1,8 @@
 {
   "autoApprove": {
-    "Edit": [
-      "**/*"
-    ],
-    "Read": [
-      "**/*"
-    ],
-    "Write": [
-      "**/*"
-    ],
+    "Edit": ["**/*"],
+    "Read": ["**/*"],
+    "Write": ["**/*"],
     "Bash": [
       "git:*",
       "pytest:*",
@@ -25,8 +19,6 @@
     ]
   },
   "permissions": {
-    "allow": [
-      "Bash(open:*)"
-    ]
+    "allow": ["Bash(open:*)"]
   }
 }

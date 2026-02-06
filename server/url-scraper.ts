@@ -14,14 +14,15 @@ export async function scrapeURL(url: string): Promise<ScrapeResult> {
   try {
     // Validate URL
     const urlObj = new URL(url);
-    
+
     // Check if LinkedIn (special handling)
     if (urlObj.hostname.includes("linkedin.com")) {
       return {
         title: "LinkedIn Profile",
         content: "",
         error: "LinkedIn protects their data with anti-scraping measures",
-        suggestion: "Please use the 'Save to PDF' feature on your LinkedIn profile and upload the file instead.",
+        suggestion:
+          "Please use the 'Save to PDF' feature on your LinkedIn profile and upload the file instead.",
       };
     }
 
@@ -69,8 +70,10 @@ export async function scrapeURL(url: string): Promise<ScrapeResult> {
       return {
         title,
         content: "",
-        error: "Extracted content is too short. The page may be protected or empty.",
-        suggestion: "Try using 'Save as PDF' in your browser and upload the file instead.",
+        error:
+          "Extracted content is too short. The page may be protected or empty.",
+        suggestion:
+          "Try using 'Save as PDF' in your browser and upload the file instead.",
       };
     }
 
@@ -80,7 +83,7 @@ export async function scrapeURL(url: string): Promise<ScrapeResult> {
     };
   } catch (error: any) {
     console.error("[URL Scraper] Error:", error.message);
-    
+
     if (error.name === "TypeError" && error.message.includes("Invalid URL")) {
       return {
         title: "",
@@ -93,7 +96,8 @@ export async function scrapeURL(url: string): Promise<ScrapeResult> {
       return {
         title: "",
         content: "",
-        error: "Request timed out. The website may be slow or blocking requests.",
+        error:
+          "Request timed out. The website may be slow or blocking requests.",
       };
     }
 

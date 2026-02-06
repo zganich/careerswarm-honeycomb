@@ -15,6 +15,7 @@ This doc answers the [MANUS_TESTING_UPDATE.md](../MANUS_TESTING_UPDATE.md) findi
   - Uses the existing journaled migrations in `drizzle/` with **no interactive prompts**.
 
 **Correct command for Manus (and any fresh deploy):**
+
 ```bash
 pnpm db:migrate
 ```
@@ -42,6 +43,7 @@ So after migrations, the tables to expect include `userProfiles`, `workExperienc
 - **Change made:** At the start of `parseResumes`, we now check that `getDb()` is not null. If the database is unavailable, the procedure throws immediately with a clear message instead of “succeeding” without persisting data.
 
 So:
+
 - **Missing or wrong tables** → DB calls will throw; the existing catch turns that into a user-visible error.
 - **DB not connected** (e.g. `getDb()` null) → New check throws so the UI does not show success when nothing was saved.
 

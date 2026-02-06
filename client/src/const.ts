@@ -15,7 +15,9 @@ export const getLoginUrl = (returnTo?: string) => {
 
   // Gracefully handle missing or invalid VITE_OAUTH_PORTAL_URL
   if (!oauthPortalUrl) {
-    console.error("VITE_OAUTH_PORTAL_URL is not defined in environment variables");
+    console.error(
+      "VITE_OAUTH_PORTAL_URL is not defined in environment variables"
+    );
     return "#"; // Safe fallback - prevents navigation
   }
 

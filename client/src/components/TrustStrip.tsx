@@ -1,21 +1,31 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React from "react";
+import { motion } from "framer-motion";
 
 export function TrustStrip() {
   const stats = [
-    { label: "Average Time Saved", value: "3.5 hours", subtext: "per application" },
+    {
+      label: "Average Time Saved",
+      value: "3.5 hours",
+      subtext: "per application",
+    },
     { label: "Response Rate", value: "45%", subtext: "2x industry average" },
     { label: "Active Users", value: "12,847+", subtext: "professionals" },
   ];
 
   const companies = [
-    "Google", "Meta", "Amazon", "Microsoft", "Apple", "Netflix", "Stripe", "Airbnb"
+    "Google",
+    "Meta",
+    "Amazon",
+    "Microsoft",
+    "Apple",
+    "Netflix",
+    "Stripe",
+    "Airbnb",
   ];
 
   return (
     <section className="py-16 bg-white border-y border-slate-100">
       <div className="max-w-7xl mx-auto px-6">
-        
         {/* Stats Grid */}
         <div className="grid md:grid-cols-3 gap-8 mb-16">
           {stats.map((stat, index) => (
@@ -33,9 +43,7 @@ export function TrustStrip() {
               <p className="text-sm font-semibold text-slate-900 uppercase tracking-wider mb-1">
                 {stat.label}
               </p>
-              <p className="text-xs text-slate-500">
-                {stat.subtext}
-              </p>
+              <p className="text-xs text-slate-500">{stat.subtext}</p>
             </motion.div>
           ))}
         </div>
@@ -61,7 +69,6 @@ export function TrustStrip() {
             ))}
           </div>
         </div>
-
       </div>
     </section>
   );

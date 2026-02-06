@@ -4,7 +4,12 @@
  */
 
 import { invokeLLM } from "../../_core/llm";
-import type { RecruiterFinderInput, RecruiterFinderOutput, RawB2BLead, SourceChannel } from "./types";
+import type {
+  RecruiterFinderInput,
+  RecruiterFinderOutput,
+  RawB2BLead,
+  SourceChannel,
+} from "./types";
 
 const EXTRACT_LEADS_SCHEMA = {
   type: "object" as const,
@@ -14,7 +19,17 @@ const EXTRACT_LEADS_SCHEMA = {
       items: {
         type: "object",
         properties: {
-          leadType: { type: "string", enum: ["recruiter_inhouse", "recruiter_agency", "hr_leader", "hiring_manager", "startup", "company"] },
+          leadType: {
+            type: "string",
+            enum: [
+              "recruiter_inhouse",
+              "recruiter_agency",
+              "hr_leader",
+              "hiring_manager",
+              "startup",
+              "company",
+            ],
+          },
           name: { type: "string" },
           title: { type: "string" },
           companyName: { type: "string" },
@@ -38,7 +53,9 @@ const EXTRACT_LEADS_SCHEMA = {
   additionalProperties: false,
 };
 
-export async function executeRecruiterFinder(input: RecruiterFinderInput): Promise<RecruiterFinderOutput> {
+export async function executeRecruiterFinder(
+  input: RecruiterFinderInput
+): Promise<RecruiterFinderOutput> {
   const { channel, vertical, query, rawText } = input;
 
   if (rawText && rawText.trim().length > 100) {
@@ -89,7 +106,7 @@ For each lead output: leadType (recruiter_inhouse, recruiter_agency, hr_leader, 
   try {
     const parsed = JSON.parse(content) as { leads: RawB2BLead[] };
     const leads = Array.isArray(parsed.leads) ? parsed.leads : [];
-    return leads.map((l) => ({
+    return leads.map(l => ({
       ...l,
       sourceChannel,
       vertical: l.vertical ?? vertical,

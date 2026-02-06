@@ -1,25 +1,37 @@
-import { motion } from 'framer-motion';
-import { useEffect, useState, useRef } from 'react';
-import { Upload, CheckCircle, Plus } from 'lucide-react';
-import { ManualAchievementEntry } from './ManualAchievementEntry';
-import { toast } from 'sonner';
-import { trpc } from '@/lib/trpc';
+import { motion } from "framer-motion";
+import { useEffect, useState, useRef } from "react";
+import { Upload, CheckCircle, Plus } from "lucide-react";
+import { ManualAchievementEntry } from "./ManualAchievementEntry";
+import { toast } from "sonner";
+import { trpc } from "@/lib/trpc";
 
 interface DashboardHeroProps {
   swarmScore: number; // 0-100
-  profileStatus: 'empty' | 'imported' | 'verified';
+  profileStatus: "empty" | "imported" | "verified";
   onAction: () => void;
-  onManualEntry?: (achievements: Array<{situation: string; task: string; action: string; result: string}>) => void;
+  onManualEntry?: (
+    achievements: Array<{
+      situation: string;
+      task: string;
+      action: string;
+      result: string;
+    }>
+  ) => void;
 }
 
 const RESUME_MIME_TYPES = [
-  'application/pdf',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  'application/msword', // .doc (legacy Word); must match accept attribute
-  'text/plain',
+  "application/pdf",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/msword", // .doc (legacy Word); must match accept attribute
+  "text/plain",
 ];
 
-export function DashboardHero({ swarmScore, profileStatus, onAction, onManualEntry }: DashboardHeroProps) {
+export function DashboardHero({
+  swarmScore,
+  profileStatus,
+  onAction,
+  onManualEntry,
+}: DashboardHeroProps) {
   const [displayScore, setDisplayScore] = useState(0);
   const [showManualEntry, setShowManualEntry] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -52,37 +64,37 @@ export function DashboardHero({ swarmScore, profileStatus, onAction, onManualEnt
 
   // Determine score color
   const getScoreColor = (score: number) => {
-    if (score >= 71) return 'text-emerald-400';
-    if (score >= 31) return 'text-amber-400';
-    return 'text-red-400';
+    if (score >= 71) return "text-emerald-400";
+    if (score >= 31) return "text-amber-400";
+    return "text-red-400";
   };
 
   const getScoreStroke = (score: number) => {
-    if (score >= 71) return '#34d399'; // emerald-400
-    if (score >= 31) return '#fbbf24'; // amber-400
-    return '#f87171'; // red-400
+    if (score >= 71) return "#34d399"; // emerald-400
+    if (score >= 31) return "#fbbf24"; // amber-400
+    return "#f87171"; // red-400
   };
 
   // Dynamic button configuration
   const getButtonConfig = () => {
     switch (profileStatus) {
-      case 'empty':
+      case "empty":
         return {
-          text: 'Import LinkedIn PDF',
+          text: "Import LinkedIn PDF",
           icon: Upload,
-          gradient: 'from-cyan-500 to-blue-600',
+          gradient: "from-cyan-500 to-blue-600",
         };
-      case 'imported':
+      case "imported":
         return {
-          text: 'Verify Employment',
+          text: "Verify Employment",
           icon: CheckCircle,
-          gradient: 'from-amber-500 to-orange-600',
+          gradient: "from-amber-500 to-orange-600",
         };
-      case 'verified':
+      case "verified":
         return {
-          text: 'Add Project Evidence',
+          text: "Add Project Evidence",
           icon: Plus,
-          gradient: 'from-emerald-500 to-green-600',
+          gradient: "from-emerald-500 to-green-600",
         };
     }
   };
@@ -98,16 +110,16 @@ export function DashboardHero({ swarmScore, profileStatus, onAction, onManualEnt
     // Validate file size (16MB limit)
     const maxSize = 16 * 1024 * 1024; // 16MB
     if (file.size > maxSize) {
-      toast.error('File too large', {
-        description: 'Please upload a file smaller than 16MB',
+      toast.error("File too large", {
+        description: "Please upload a file smaller than 16MB",
       });
       return;
     }
 
     // Validate file type (PDF, DOCX, TXT - same as onboarding upload)
     if (!RESUME_MIME_TYPES.includes(file.type)) {
-      toast.error('Invalid file type', {
-        description: 'Please upload a PDF, DOC, DOCX, or TXT file',
+      toast.error("Invalid file type", {
+        description: "Please upload a PDF, DOC, DOCX, or TXT file",
       });
       return;
     }
@@ -117,8 +129,9 @@ export function DashboardHero({ swarmScore, profileStatus, onAction, onManualEnt
     try {
       const fileData = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
-        reader.onload = () => resolve((reader.result as string).split(',')[1] ?? '');
-        reader.onerror = () => reject(new Error('Failed to read file'));
+        reader.onload = () =>
+          resolve((reader.result as string).split(",")[1] ?? "");
+        reader.onerror = () => reject(new Error("Failed to read file"));
         reader.readAsDataURL(file);
       });
 
@@ -131,14 +144,24 @@ export function DashboardHero({ swarmScore, profileStatus, onAction, onManualEnt
       const progressUrl = `${window.location.origin}/api/resume-progress`;
       const es = new EventSource(progressUrl);
       progressEventSourceRef.current = es;
-      es.onmessage = (ev) => {
+      es.onmessage = ev => {
         try {
-          const data = JSON.parse(ev.data) as { phase?: string; message?: string; current?: number; total?: number };
+          const data = JSON.parse(ev.data) as {
+            phase?: string;
+            message?: string;
+            current?: number;
+            total?: number;
+          };
           if (data.message) setProgressMessage(data.message);
-          else if (data.phase === 'processing' && data.total != null && data.current != null)
+          else if (
+            data.phase === "processing" &&
+            data.total != null &&
+            data.current != null
+          )
             setProgressMessage(`Processing ${data.current}/${data.total}...`);
-          else if (data.phase === 'parsing') setProgressMessage('Building your profile...');
-          else if (data.phase === 'done' || data.phase === 'error') es.close();
+          else if (data.phase === "parsing")
+            setProgressMessage("Building your profile...");
+          else if (data.phase === "done" || data.phase === "error") es.close();
         } catch (_) {}
       };
       es.onerror = () => es.close();
@@ -147,13 +170,16 @@ export function DashboardHero({ swarmScore, profileStatus, onAction, onManualEnt
       await parseResumesMutation.mutateAsync();
 
       onAction();
-      toast.success('Resume imported successfully!');
+      toast.success("Resume imported successfully!");
     } catch (error: unknown) {
-      const message = error && typeof error === 'object' && 'message' in error
-        ? String((error as { message?: string }).message)
-        : 'Import failed';
-      toast.error('Unable to parse file', {
-        description: message.includes('No processed resumes') ? 'Upload succeeded but extraction failed. Try again or add achievements manually.' : "Let's add your achievements manually instead",
+      const message =
+        error && typeof error === "object" && "message" in error
+          ? String((error as { message?: string }).message)
+          : "Import failed";
+      toast.error("Unable to parse file", {
+        description: message.includes("No processed resumes")
+          ? "Upload succeeded but extraction failed. Try again or add achievements manually."
+          : "Let's add your achievements manually instead",
       });
       setShowManualEntry(true);
     } finally {
@@ -161,13 +187,13 @@ export function DashboardHero({ swarmScore, profileStatus, onAction, onManualEnt
       progressEventSourceRef.current = null;
       setProgressMessage(null);
       setIsProcessing(false);
-      if (fileInputRef.current) fileInputRef.current.value = '';
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
   // Handle Import LinkedIn PDF with fallback
   const handleAction = async () => {
-    if (profileStatus === 'empty') {
+    if (profileStatus === "empty") {
       // Trigger file input
       fileInputRef.current?.click();
     } else {
@@ -175,12 +201,21 @@ export function DashboardHero({ swarmScore, profileStatus, onAction, onManualEnt
     }
   };
 
-  const handleManualComplete = (achievements: Array<{situation: string; task: string; action: string; result: string}>) => {
+  const handleManualComplete = (
+    achievements: Array<{
+      situation: string;
+      task: string;
+      action: string;
+      result: string;
+    }>
+  ) => {
     setShowManualEntry(false);
     if (onManualEntry) {
       onManualEntry(achievements);
     }
-    toast.success(`Added ${achievements.length} achievement${achievements.length > 1 ? 's' : ''}!`);
+    toast.success(
+      `Added ${achievements.length} achievement${achievements.length > 1 ? "s" : ""}!`
+    );
   };
 
   // SVG circle parameters
@@ -227,7 +262,7 @@ export function DashboardHero({ swarmScore, profileStatus, onAction, onManualEnt
               animate={{ strokeDashoffset }}
               transition={{ duration: 2, ease: "easeInOut" }}
               style={{
-                filter: 'drop-shadow(0 0 10px currentColor)',
+                filter: "drop-shadow(0 0 10px currentColor)",
               }}
             />
           </svg>
@@ -239,7 +274,7 @@ export function DashboardHero({ swarmScore, profileStatus, onAction, onManualEnt
               animate={{ scale: 1 }}
               transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
               className={`text-7xl font-black ${getScoreColor(swarmScore)}`}
-              style={{ fontFamily: 'Cabinet Grotesk, sans-serif' }}
+              style={{ fontFamily: "Cabinet Grotesk, sans-serif" }}
             >
               {displayScore}
             </motion.div>
@@ -254,9 +289,13 @@ export function DashboardHero({ swarmScore, profileStatus, onAction, onManualEnt
           transition={{ delay: 1 }}
           className="text-slate-400 mt-6 text-center max-w-md"
         >
-          {swarmScore >= 71 && "Excellent! Your career evidence is strong and comprehensive."}
-          {swarmScore >= 31 && swarmScore < 71 && "Good progress. Keep adding evidence to strengthen your profile."}
-          {swarmScore < 31 && "Let's build your career evidence library. Start by importing your resume."}
+          {swarmScore >= 71 &&
+            "Excellent! Your career evidence is strong and comprehensive."}
+          {swarmScore >= 31 &&
+            swarmScore < 71 &&
+            "Good progress. Keep adding evidence to strengthen your profile."}
+          {swarmScore < 31 &&
+            "Let's build your career evidence library. Start by importing your resume."}
         </motion.p>
       </motion.div>
 
@@ -282,7 +321,7 @@ export function DashboardHero({ swarmScore, profileStatus, onAction, onManualEnt
             group
             disabled:opacity-50 disabled:cursor-not-allowed
           `}
-          style={{ fontFamily: 'Cabinet Grotesk, sans-serif' }}
+          style={{ fontFamily: "Cabinet Grotesk, sans-serif" }}
         >
           {/* Animated background glow */}
           <motion.div
@@ -301,14 +340,16 @@ export function DashboardHero({ swarmScore, profileStatus, onAction, onManualEnt
           {/* Button content */}
           <ButtonIcon className="h-8 w-8 relative z-10" />
           <span className="relative z-10">
-            {isProcessing ? (progressMessage || 'Processing...') : buttonConfig.text}
+            {isProcessing
+              ? progressMessage || "Processing..."
+              : buttonConfig.text}
           </span>
 
           {/* Hover effect */}
           <motion.div
             className="absolute inset-0 bg-white/10"
-            initial={{ x: '-100%' }}
-            whileHover={{ x: '100%' }}
+            initial={{ x: "-100%" }}
+            whileHover={{ x: "100%" }}
             transition={{ duration: 0.5 }}
           />
         </motion.button>
@@ -316,13 +357,16 @@ export function DashboardHero({ swarmScore, profileStatus, onAction, onManualEnt
 
       {/* Decorative grid pattern */}
       <div className="absolute inset-0 opacity-5 pointer-events-none">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `
             linear-gradient(to right, #06b6d4 1px, transparent 1px),
             linear-gradient(to bottom, #06b6d4 1px, transparent 1px)
           `,
-          backgroundSize: '40px 40px',
-        }} />
+            backgroundSize: "40px 40px",
+          }}
+        />
       </div>
 
       {/* Hidden file input for mobile-optimized upload */}

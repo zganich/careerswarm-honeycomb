@@ -3,10 +3,7 @@
   "name": "Careerswarm - Career Intelligence",
   "version": "1.0.0",
   "description": "Analyze any job posting and see your career trajectory match instantly",
-  "permissions": [
-    "activeTab",
-    "storage"
-  ],
+  "permissions": ["activeTab", "storage"],
   "host_permissions": [
     "https://*.linkedin.com/*",
     "https://*.indeed.com/*",

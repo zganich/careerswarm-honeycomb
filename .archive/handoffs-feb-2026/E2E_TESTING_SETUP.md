@@ -16,6 +16,7 @@
 ## Why Tests Are Failing
 
 All 58 failing tests require user authentication via Manus OAuth. The tests are trying to access protected routes like:
+
 - `/dashboard`
 - `/profile`
 - `/jobs`
@@ -29,6 +30,7 @@ Without valid authentication, these routes redirect to the OAuth login page, cau
 ### Option 1: Manual Authentication (Quick Start)
 
 1. **Run Playwright in headed mode:**
+
    ```bash
    pnpm exec playwright test --headed --project=setup
    ```
@@ -47,12 +49,14 @@ Without valid authentication, these routes redirect to the OAuth login page, cau
 1. **Create test user credentials** in your Manus OAuth provider
 
 2. **Set environment variables:**
+
    ```bash
    export TEST_USER_EMAIL="test@example.com"
    export TEST_USER_PASSWORD="your-test-password"
    ```
 
 3. **Update `tests/auth.setup.ts`** to use these credentials:
+
    ```typescript
    // Add after OAuth redirect
    await page.fill('input[type="email"]', process.env.TEST_USER_EMAIL!);
@@ -72,6 +76,7 @@ For local development without real OAuth:
 1. **Create a mock auth endpoint** in `server/routers.ts`
 
 2. **Update Playwright config** to use mock auth:
+
    ```typescript
    use: {
      baseURL: 'http://localhost:3000',

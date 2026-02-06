@@ -12,11 +12,11 @@ The market is flooded with generic AI resume tools. If we position there, we com
 
 ### Alternative (What They Use Now)
 
-| Alternative | Why it fails |
-|-------------|--------------|
-| **Manual rewrites per application** | 4+ hours per application; no single source of truth; burnout. |
+| Alternative                              | Why it fails                                                                                |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------- |
+| **Manual rewrites per application**      | 4+ hours per application; no single source of truth; burnout.                               |
 | **Generic ChatGPT / Canva resume tools** | One-off outputs; no pipeline; no job-specific tailoring; no bridge-skills logic for pivots. |
-| **Career coaches / one-off edits** | Expensive, slow, not scalable; still no system that tailors every application. |
+| **Career coaches / one-off edits**       | Expensive, slow, not scalable; still no system that tailors every application.              |
 
 Frame the status quo as **duct tape**: a different version of the resume every time, no shared evidence base, no repeatable pipeline. Job seekers know this pain; we name it.
 
@@ -71,17 +71,17 @@ flowchart LR
   Packages --> RoastShare
 ```
 
-| Stage | What happens | Friction to minimize |
-|-------|--------------|----------------------|
-| **Cold traffic** | Organic (SEO, social, Reddit, newsletters). CTA: "Get free, brutal resume feedback in 60 seconds—no signup." | No login; one click to /roast. |
-| **Resume Roast** | Paste text (min 50 chars) → "Get Roasted" → 0–100 score, verdict, "brutal truth," 3 "Million-Dollar Mistakes" (title, explanation, fix). | No signup; fast response; clear copy. |
-| **Aha moment** | User internalizes: "My resume has specific, fixable mistakes—and this tool knows how to fix them at scale." Defined as: **seeing score + 3 mistakes + concrete fixes in under 2 minutes.** | Design and copy should make the three mistakes and fixes impossible to miss. |
-| **Conversion block** | "Turn these fixes into a resume that gets interviews" → "Build my Master Profile" → `/onboarding/welcome`. | Single CTA; no competing links. |
-| **Master Profile signup** | Onboarding: welcome → upload/extract → review → preferences. One-click OAuth (Manus). | Short flow; optional pre-fill from roast later. |
+| Stage                     | What happens                                                                                                                                                                               | Friction to minimize                                                         |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
+| **Cold traffic**          | Organic (SEO, social, Reddit, newsletters). CTA: "Get free, brutal resume feedback in 60 seconds—no signup."                                                                               | No login; one click to /roast.                                               |
+| **Resume Roast**          | Paste text (min 50 chars) → "Get Roasted" → 0–100 score, verdict, "brutal truth," 3 "Million-Dollar Mistakes" (title, explanation, fix).                                                   | No signup; fast response; clear copy.                                        |
+| **Aha moment**            | User internalizes: "My resume has specific, fixable mistakes—and this tool knows how to fix them at scale." Defined as: **seeing score + 3 mistakes + concrete fixes in under 2 minutes.** | Design and copy should make the three mistakes and fixes impossible to miss. |
+| **Conversion block**      | "Turn these fixes into a resume that gets interviews" → "Build my Master Profile" → `/onboarding/welcome`.                                                                                 | Single CTA; no competing links.                                              |
+| **Master Profile signup** | Onboarding: welcome → upload/extract → review → preferences. One-click OAuth (Manus).                                                                                                      | Short flow; optional pre-fill from roast later.                              |
 
 ### Tactics: Lower Friction
 
-- **Keep Roast 100% no-login.** Do not add email or signup before the roast. If we capture email, do it only *after* results (e.g., "Email your roast + fixes").
+- **Keep Roast 100% no-login.** Do not add email or signup before the roast. If we capture email, do it only _after_ results (e.g., "Email your roast + fixes").
 - **Reduce onboarding steps.** Where possible, pre-fill from roast (e.g., pass a token so we can pre-populate from the same resume text). One-click OAuth only.
 - **Single CTA from roast results.** No secondary CTAs that distract from "Build my Master Profile."
 
@@ -98,12 +98,12 @@ Use the score and mistakes to create urgency and clarity:
 
 ### Metrics to Track
 
-| Metric | What to optimize |
-|--------|-------------------|
-| Roast → view results | Ensure roast completes and results render; fix errors and timeouts. |
-| Results view → click "Build my Master Profile" | CTA copy, score-based messaging, visibility of conversion block. |
-| CTA click → onboarding start | No drop-off on route to /onboarding/welcome; OAuth ready. |
-| Onboarding start → Master Profile complete | Short flow; clear progress; optional pre-fill from roast. |
+| Metric                                         | What to optimize                                                    |
+| ---------------------------------------------- | ------------------------------------------------------------------- |
+| Roast → view results                           | Ensure roast completes and results render; fix errors and timeouts. |
+| Results view → click "Build my Master Profile" | CTA copy, score-based messaging, visibility of conversion block.    |
+| CTA click → onboarding start                   | No drop-off on route to /onboarding/welcome; OAuth ready.           |
+| Onboarding start → Master Profile complete     | Short flow; clear progress; optional pre-fill from roast.           |
 
 **Target:** Improve results-view → CTA click first; that's the highest-lever conversion point.
 
@@ -180,12 +180,12 @@ Sound authoritative and human. Attack the status quo. No fluff: ban words like s
 
 ### 1 Website Hero Section (Copy Only)
 
-| Element | Copy |
-|--------|------|
-| **Headline** | Stop Rewriting Your Resume. |
-| **Subheadline** | Build One Master Profile. Auto-Apply to Hundreds of Jobs While You Sleep. |
-| **Primary CTA** | Build My Master Profile |
-| **Secondary CTA** | Get free feedback (Resume Roast) |
+| Element           | Copy                                                                      |
+| ----------------- | ------------------------------------------------------------------------- |
+| **Headline**      | Stop Rewriting Your Resume.                                               |
+| **Subheadline**   | Build One Master Profile. Auto-Apply to Hundreds of Jobs While You Sleep. |
+| **Primary CTA**   | Build My Master Profile                                                   |
+| **Secondary CTA** | Get free feedback (Resume Roast)                                          |
 
 Attack: "rewriting your resume for every job." Offer: "one Master Profile, auto-apply to hundreds." CTAs align with existing `CopyConstants` (Build My Master Profile / Get free feedback (Resume Roast)).
 
@@ -217,11 +217,11 @@ Get the first 1,000 Master Profile signups with zero ad spend. Use Resume Roast 
 
 ### Success Metrics
 
-| Metric | Goal |
-|--------|------|
-| Roast submissions by channel | Attribute traffic (UTM or source); compare Reddit vs newsletter vs university. |
-| Roast → Master Profile signup rate by channel | Identify which channel converts best; double down. |
-| **Total** | First 1,000 Master Profile signups with zero paid acquisition. |
+| Metric                                        | Goal                                                                           |
+| --------------------------------------------- | ------------------------------------------------------------------------------ |
+| Roast submissions by channel                  | Attribute traffic (UTM or source); compare Reddit vs newsletter vs university. |
+| Roast → Master Profile signup rate by channel | Identify which channel converts best; double down.                             |
+| **Total**                                     | First 1,000 Master Profile signups with zero paid acquisition.                 |
 
 ---
 

@@ -13,6 +13,7 @@
 **Critical Finding:** Database tables do not exist. The migration script (`pnpm db:migrate`) failed with duplicate column errors, indicating a partial migration that didn't complete. All application functionality requiring database persistence is currently broken.
 
 **Impact:**
+
 - ❌ Onboarding flow non-functional (Profiler agent cannot save Master Profiles)
 - ❌ Application package generation untestable (no data to work with)
 - ❌ All 7 AI agents blocked (Profiler, Tailor, Scribe, Assembler, etc.)
@@ -103,6 +104,7 @@ Example: DATABASE_URL=mysql://user:password@localhost:3306/your_database
 ```
 
 **Analysis:**
+
 - The migration SQL tries to add `professionalSummary` column to `userProfiles` table
 - Column already exists (from partial previous migration)
 - Migration script doesn't handle idempotency (no `IF NOT EXISTS` checks)
@@ -116,7 +118,7 @@ SELECT DATABASE() as current_database;
 -- Result: zfvp3dr5t953xyc34e9psq
 
 -- Check if masterProfiles exists
-SELECT COUNT(*) FROM information_schema.tables 
+SELECT COUNT(*) FROM information_schema.tables
 WHERE table_schema = DATABASE() AND table_name = 'masterProfiles';
 -- Result: 0 (table does not exist)
 
@@ -130,14 +132,14 @@ SELECT * FROM masterProfiles LIMIT 1;
 **Test User:** test@careerswarm.com  
 **Test Resume:** tests/fixtures/test-resume.pdf (Michael Chen)
 
-| Step | Status | Notes |
-|------|--------|-------|
-| 1. Welcome | ✅ PASS | Page renders, "Get Started" works |
-| 2. Upload | ✅ PASS | File upload successful, test-resume.pdf accepted |
-| 3. Extraction | ⚠️ PARTIAL | Profiler agent UI shows success, but no data saved |
-| 4. Review | ❌ FAIL | Shows "No superpowers/work history/achievements extracted yet" |
-| 5. Preferences | ✅ PASS (UI only) | Form renders, can fill data, but cannot save |
-| Completion | ❌ FAIL | Redirects to `/profile` showing "No profile found" |
+| Step           | Status            | Notes                                                          |
+| -------------- | ----------------- | -------------------------------------------------------------- |
+| 1. Welcome     | ✅ PASS           | Page renders, "Get Started" works                              |
+| 2. Upload      | ✅ PASS           | File upload successful, test-resume.pdf accepted               |
+| 3. Extraction  | ⚠️ PARTIAL        | Profiler agent UI shows success, but no data saved             |
+| 4. Review      | ❌ FAIL           | Shows "No superpowers/work history/achievements extracted yet" |
+| 5. Preferences | ✅ PASS (UI only) | Form renders, can fill data, but cannot save                   |
+| Completion     | ❌ FAIL           | Redirects to `/profile` showing "No profile found"             |
 
 **Silent Failure:** User sees success animation in Step 3, but data is never persisted. No error message shown.
 
@@ -156,6 +158,7 @@ SELECT * FROM masterProfiles LIMIT 1;
 **Solution Options:**
 
 **Option A: Drop and Recreate Database (RECOMMENDED for development)**
+
 ```bash
 # WARNING: This deletes all data. Only use in development/testing.
 
@@ -174,23 +177,24 @@ mysql -u [user] -p -e "USE zfvp3dr5t953xyc34e9psq; SHOW TABLES;"
 ```
 
 **Option B: Fix Migration Scripts to be Idempotent**
+
 ```sql
 -- Update migration SQL to use IF NOT EXISTS
 -- Example:
-ALTER TABLE `userProfiles` 
+ALTER TABLE `userProfiles`
 ADD COLUMN IF NOT EXISTS `professionalSummary` text;
 
 -- Or check before adding:
-ALTER TABLE `userProfiles` 
+ALTER TABLE `userProfiles`
 ADD COLUMN `professionalSummary` text;
 -- Change to:
-SET @col_exists = (SELECT COUNT(*) FROM information_schema.columns 
-  WHERE table_schema = DATABASE() 
-  AND table_name = 'userProfiles' 
+SET @col_exists = (SELECT COUNT(*) FROM information_schema.columns
+  WHERE table_schema = DATABASE()
+  AND table_name = 'userProfiles'
   AND column_name = 'professionalSummary');
 
-SET @sql = IF(@col_exists = 0, 
-  'ALTER TABLE `userProfiles` ADD COLUMN `professionalSummary` text;', 
+SET @sql = IF(@col_exists = 0,
+  'ALTER TABLE `userProfiles` ADD COLUMN `professionalSummary` text;',
   'SELECT "Column already exists";');
 
 PREPARE stmt FROM @sql;
@@ -199,6 +203,7 @@ DEALLOCATE PREPARE stmt;
 ```
 
 **Option C: Use Drizzle Push Instead (DESTRUCTIVE)**
+
 ```bash
 # WARNING: This can cause data loss if tables exist with different schemas
 
@@ -222,6 +227,7 @@ npx drizzle-kit push --force
 **Location:** `server/routers.ts` (Profiler agent procedure)
 
 **Current Behavior:**
+
 ```typescript
 // Somewhere in the Profiler agent code:
 await db.insert(masterProfiles).values({...});
@@ -229,39 +235,44 @@ await db.insert(masterProfiles).values({...});
 ```
 
 **Required Fix:**
+
 ```typescript
 // Add try-catch with proper error handling
 try {
-  const [newProfile] = await db.insert(masterProfiles).values({
-    userId: ctx.user.id,
-    fullName: extractedData.fullName,
-    email: extractedData.email,
-    // ... other fields
-  }).returning();
-  
-  console.log('[Profiler] Master Profile created:', newProfile.id);
-  
+  const [newProfile] = await db
+    .insert(masterProfiles)
+    .values({
+      userId: ctx.user.id,
+      fullName: extractedData.fullName,
+      email: extractedData.email,
+      // ... other fields
+    })
+    .returning();
+
+  console.log("[Profiler] Master Profile created:", newProfile.id);
+
   return {
     success: true,
     profileId: newProfile.id,
-    message: 'Your career data has been analyzed and structured'
+    message: "Your career data has been analyzed and structured",
   };
-  
 } catch (error) {
-  console.error('[Profiler] Failed to save Master Profile:', error);
-  
+  console.error("[Profiler] Failed to save Master Profile:", error);
+
   // Log to external service if available (Sentry, etc.)
   // await logError('profiler-save-failed', error, { userId: ctx.user.id });
-  
+
   throw new TRPCError({
-    code: 'INTERNAL_SERVER_ERROR',
-    message: 'Failed to save your profile. Please try again or contact support.',
-    cause: error
+    code: "INTERNAL_SERVER_ERROR",
+    message:
+      "Failed to save your profile. Please try again or contact support.",
+    cause: error,
   });
 }
 ```
 
 **Why This Matters:**
+
 - Currently users see "success" but data isn't saved
 - No way to debug issues
 - Poor user experience (silent failures)
@@ -273,11 +284,13 @@ try {
 **Problem:** Function name mismatches causing TypeScript errors.
 
 **Errors:**
+
 1. Line 811: `db.getSecurityClearances` → should be `db.getUserSecurityClearances`
 2. Line 1085: `db.getLanguages` → should be `db.getUserLanguages`
 3. Line 1669: Missing `pivotAnalysis` property on application object
 
 **Fix:**
+
 ```typescript
 // Line 811 - Change:
 const clearances = await db.getSecurityClearances(userId);
@@ -305,17 +318,22 @@ const languages = await db.getUserLanguages(userId);
 **Goal:** Verify environment setup is complete and functional.
 
 **Steps:**
+
 1. **Run validation script:**
+
    ```bash
    cd /home/ubuntu/careerswarm
    pnpm run verify-env
    ```
+
    Expected output: "Required env vars OK."
 
 2. **Verify database tables exist:**
+
    ```bash
    mysql -u [user] -p -e "USE zfvp3dr5t953xyc34e9psq; SHOW TABLES;"
    ```
+
    Expected: 30+ tables including:
    - users
    - masterProfiles
@@ -342,21 +360,22 @@ const languages = await db.getUserLanguages(userId);
    - Verify redirect to `/profile` shows Master Profile data (NOT "No profile found")
 
 4. **Verify data in database:**
+
    ```sql
    -- Check Master Profile was created
-   SELECT mp.id, mp.fullName, mp.email, u.email as userEmail 
-   FROM masterProfiles mp 
-   JOIN users u ON mp.userId = u.id 
+   SELECT mp.id, mp.fullName, mp.email, u.email as userEmail
+   FROM masterProfiles mp
+   JOIN users u ON mp.userId = u.id
    WHERE u.email = 'test@careerswarm.com';
-   
+
    -- Check skills were extracted
-   SELECT COUNT(*) as skill_count 
-   FROM masterProfileSkills 
+   SELECT COUNT(*) as skill_count
+   FROM masterProfileSkills
    WHERE masterProfileId = [profile_id_from_above];
-   
+
    -- Check work experiences were extracted
-   SELECT COUNT(*) as experience_count 
-   FROM masterProfileExperiences 
+   SELECT COUNT(*) as experience_count
+   FROM masterProfileExperiences
    WHERE masterProfileId = [profile_id_from_above];
    ```
 
@@ -367,6 +386,7 @@ const languages = await db.getUserLanguages(userId);
    ```
 
 **Success Criteria:**
+
 - ✅ All 5 onboarding steps complete without errors
 - ✅ Profile page shows extracted data (name, skills, work history, achievements)
 - ✅ Database contains Master Profile record
@@ -380,6 +400,7 @@ const languages = await db.getUserLanguages(userId);
 **Goal:** Verify Tailor → Scribe → Assembler agent pipeline works.
 
 **Prerequisites:**
+
 - Phase 1 testing complete
 - Master Profile exists in database
 - Test user authenticated
@@ -387,19 +408,20 @@ const languages = await db.getUserLanguages(userId);
 **Steps:**
 
 1. **Create test job/opportunity:**
+
    ```bash
    # Option A: Use existing job if available
    # Navigate to /jobs and select any job
-   
+
    # Option B: Create test job via SQL
    mysql -u [user] -p zfvp3dr5t953xyc34e9psq
-   
+
    INSERT INTO jobs (
-     userId, 
-     companyName, 
-     roleTitle, 
-     jobDescription, 
-     status, 
+     userId,
+     companyName,
+     roleTitle,
+     jobDescription,
+     status,
      createdAt
    ) VALUES (
      (SELECT id FROM users WHERE email = 'test@careerswarm.com'),
@@ -423,15 +445,17 @@ const languages = await db.getUserLanguages(userId);
    - Monitor console for logs
 
 4. **Verify agent execution:**
+
    ```bash
    # Check server logs for agent activity
    tail -200 .manus-logs/devserver.log | grep -i "tailor\|scribe\|assembler"
    ```
 
 5. **Verify database updates:**
+
    ```sql
    -- Check application was updated with generated content
-   SELECT 
+   SELECT
      id,
      companyName,
      roleTitle,
@@ -442,9 +466,9 @@ const languages = await db.getUserLanguages(userId);
      packageZipUrl,
      resumePdfUrl,
      resumeDocxUrl
-   FROM applications 
+   FROM applications
    WHERE userId = (SELECT id FROM users WHERE email = 'test@careerswarm.com')
-   ORDER BY createdAt DESC 
+   ORDER BY createdAt DESC
    LIMIT 1;
    ```
 
@@ -461,14 +485,15 @@ const languages = await db.getUserLanguages(userId);
 
 7. **Verify notification sent:**
    ```sql
-   SELECT * FROM notifications 
+   SELECT * FROM notifications
    WHERE userId = (SELECT id FROM users WHERE email = 'test@careerswarm.com')
    AND type = 'application_package_ready'
-   ORDER BY createdAt DESC 
+   ORDER BY createdAt DESC
    LIMIT 1;
    ```
 
 **Success Criteria:**
+
 - ✅ Application created successfully
 - ✅ Tailor agent generates tailored resume (markdown)
 - ✅ Scribe agent generates cover letter
@@ -489,17 +514,21 @@ const languages = await db.getUserLanguages(userId);
 **Steps:**
 
 1. **Run backend tests:**
+
    ```bash
    cd /home/ubuntu/careerswarm
    pnpm test
    ```
+
    Expected: 127/127 passing (or document failures)
 
 2. **Run E2E tests:**
+
    ```bash
    cd /home/ubuntu/careerswarm
    npx playwright test
    ```
+
    Expected: 20/22 passing (2 skipped as documented in CLAUDE_MANUS_HANDOFF.md)
 
 3. **If tests fail:**
@@ -509,6 +538,7 @@ const languages = await db.getUserLanguages(userId);
    - Fix and re-run
 
 **Success Criteria:**
+
 - ✅ Backend tests pass (or failures documented with reasons)
 - ✅ E2E tests pass (or failures documented with reasons)
 - ✅ No new test failures introduced by fixes
@@ -522,6 +552,7 @@ const languages = await db.getUserLanguages(userId);
 **Goal:** Make migrations idempotent to prevent future issues.
 
 **Approach:**
+
 1. Review all migration files in `drizzle/migrations/`
 2. Add `IF NOT EXISTS` checks to CREATE TABLE statements
 3. Add column existence checks before ALTER TABLE ADD COLUMN
@@ -535,6 +566,7 @@ const languages = await db.getUserLanguages(userId);
 **Goal:** Improve observability for debugging production issues.
 
 **Recommendations:**
+
 1. Add structured logging to all agent procedures
 2. Log database operation failures with context
 3. Add Sentry or similar error tracking
@@ -546,6 +578,7 @@ const languages = await db.getUserLanguages(userId);
 ## 📁 FILES MODIFIED/CREATED
 
 ### Created by Manus:
+
 1. **`MANUS_TO_CURSOR_HANDOFF.md`** (this file)
    - Comprehensive handoff report
    - Step-by-step fix instructions
@@ -556,6 +589,7 @@ const languages = await db.getUserLanguages(userId);
    - Will be superseded by this document
 
 ### Files Requiring Fixes:
+
 1. **`server/routers.ts`**
    - Add error handling to Profiler agent (lines ~800-900)
    - Fix function name mismatches (lines 811, 1085, 1669)
@@ -575,6 +609,7 @@ const languages = await db.getUserLanguages(userId);
 ### P0 - CRITICAL (Blocks all testing)
 
 **BUG-001: Database Tables Missing**
+
 - **Status:** OPEN
 - **Severity:** Critical
 - **Impact:** Entire application non-functional
@@ -589,6 +624,7 @@ const languages = await db.getUserLanguages(userId);
 - **ETA:** Immediate
 
 **BUG-002: Profiler Agent Silent Failure**
+
 - **Status:** OPEN
 - **Severity:** Critical
 - **Impact:** Users see success but data not saved
@@ -605,6 +641,7 @@ const languages = await db.getUserLanguages(userId);
 ### P1 - HIGH (Blocks production deployment)
 
 **BUG-003: TypeScript Compilation Errors**
+
 - **Status:** OPEN
 - **Severity:** High
 - **Impact:** Type safety compromised, potential runtime errors
@@ -618,6 +655,7 @@ const languages = await db.getUserLanguages(userId);
 - **ETA:** Within 24 hours
 
 **BUG-004: No Profile Found After Onboarding**
+
 - **Status:** OPEN (will resolve when BUG-001 is fixed)
 - **Severity:** High
 - **Impact:** Users cannot proceed after completing onboarding
@@ -637,6 +675,7 @@ const languages = await db.getUserLanguages(userId);
 Use this checklist to verify all fixes are working:
 
 ### Database Setup
+
 - [ ] Database dropped and recreated (or migrations fixed)
 - [ ] `pnpm db:migrate` runs without errors
 - [ ] All tables exist (verify with `SHOW TABLES`)
@@ -644,12 +683,14 @@ Use this checklist to verify all fixes are working:
 - [ ] `pnpm run verify-env` passes
 
 ### Code Fixes
+
 - [ ] Error handling added to Profiler agent
 - [ ] TypeScript errors fixed in routers.ts
 - [ ] `pnpm check` passes with 0 errors
 - [ ] `pnpm run build` succeeds
 
 ### Onboarding Flow
+
 - [ ] Step 1 (Welcome) works
 - [ ] Step 2 (Upload) accepts resume file
 - [ ] Step 3 (Extraction) runs Profiler agent
@@ -658,6 +699,7 @@ Use this checklist to verify all fixes are working:
 - [ ] Completion redirects to profile page with data (NOT "No profile found")
 
 ### Database Verification
+
 - [ ] Master Profile record exists in database
 - [ ] Skills extracted and saved
 - [ ] Work experiences extracted and saved
@@ -665,6 +707,7 @@ Use this checklist to verify all fixes are working:
 - [ ] User preferences saved
 
 ### Application Package Generation
+
 - [ ] Can create test application
 - [ ] Tailor agent generates resume
 - [ ] Scribe agent generates cover letter
@@ -676,11 +719,13 @@ Use this checklist to verify all fixes are working:
 - [ ] Notification sent
 
 ### Automated Tests
+
 - [ ] Backend tests pass (`pnpm test`)
 - [ ] E2E tests pass (`npx playwright test`)
 - [ ] No new test failures introduced
 
 ### Error Handling
+
 - [ ] Database errors caught and logged
 - [ ] User sees helpful error messages (not silent failures)
 - [ ] Server logs contain debugging information
@@ -691,6 +736,7 @@ Use this checklist to verify all fixes are working:
 ## 📊 ENVIRONMENT STATUS
 
 ### Current State
+
 - **Dev Server:** ✅ Running on port 3000
 - **Database:** ❌ Tables missing (migration failed)
 - **Authentication:** ✅ Working (Dev Login functional)
@@ -699,6 +745,7 @@ Use this checklist to verify all fixes are working:
 - **Tests:** ⏸️ Not run (blocked by database issue)
 
 ### Environment Variables (from .env)
+
 ```bash
 # Database
 DATABASE_URL=mysql://[user]:[password]@[host]:3306/zfvp3dr5t953xyc34e9psq
@@ -778,18 +825,21 @@ All required environment variables are set. No issues with configuration.
 ## 🎯 SUCCESS CRITERIA FOR NEXT SESSION
 
 **Database Initialization:**
+
 - [ ] All tables exist in database
 - [ ] Can query masterProfiles table without error
 - [ ] Sample data can be inserted and retrieved
 - [ ] Migrations run cleanly without errors
 
 **Onboarding Flow:**
+
 - [ ] Upload resume → Profiler extracts data → Data saved to DB
 - [ ] Review page shows extracted superpowers, work history, achievements
 - [ ] Preferences saved successfully
 - [ ] Profile page shows complete Master Profile
 
 **Agent Testing:**
+
 - [ ] Profiler agent saves data correctly
 - [ ] Tailor agent generates resume from Master Profile
 - [ ] Scribe agent generates cover letter and LinkedIn message
@@ -797,11 +847,13 @@ All required environment variables are set. No issues with configuration.
 - [ ] All files uploaded to S3 successfully
 
 **Error Handling:**
+
 - [ ] Database errors caught and logged
 - [ ] User sees helpful error messages (not silent failures)
 - [ ] Application doesn't crash on missing data
 
 **Code Quality:**
+
 - [ ] TypeScript compilation clean (0 errors)
 - [ ] All tests passing
 - [ ] No console errors in browser
@@ -886,10 +938,10 @@ See MANUS_TO_CURSOR_HANDOFF.md for complete details.
 
 **End of Handoff Report**
 
-*Generated by Manus AI on February 2, 2026*  
-*Session ID: Handoff Testing & Database Investigation*  
-*Next Action: Cursor to fix database migration and add error handling*  
-*Estimated Time to Resolution: 2-3 hours*
+_Generated by Manus AI on February 2, 2026_  
+_Session ID: Handoff Testing & Database Investigation_  
+_Next Action: Cursor to fix database migration and add error handling_  
+_Estimated Time to Resolution: 2-3 hours_
 
 ---
 

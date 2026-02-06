@@ -6,7 +6,10 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 
 // Validation schemas
-const textInputSchema = z.string().min(2, "Please enter at least 2 characters").max(50, "Maximum 50 characters");
+const textInputSchema = z
+  .string()
+  .min(2, "Please enter at least 2 characters")
+  .max(50, "Maximum 50 characters");
 const choiceSchema = z.string().min(1, "Please select an option");
 
 interface QuestionOption {
@@ -27,7 +30,7 @@ interface QuestionCardProps {
 
 /**
  * QuestionCard - Validated input component with animations and error handling
- * 
+ *
  * Features:
  * - Zero-trust validation with Zod schemas
  * - Shake animation on validation errors
@@ -52,7 +55,7 @@ export function QuestionCard({
   // Validate and submit text input
   const handleTextSubmit = () => {
     const result = textInputSchema.safeParse(textValue);
-    
+
     if (!result.success) {
       setError(result.error.issues[0].message);
       triggerShake();
@@ -66,7 +69,7 @@ export function QuestionCard({
   // Validate and submit choice
   const handleChoiceSelect = (option: QuestionOption) => {
     const result = choiceSchema.safeParse(option.id);
-    
+
     if (!result.success) {
       setError("Please select an option");
       triggerShake();
@@ -117,7 +120,7 @@ export function QuestionCard({
               <Input
                 type="text"
                 value={textValue}
-                onChange={(e) => {
+                onChange={e => {
                   const value = e.target.value;
                   // Anti-bombing: enforce maxLength
                   if (value.length <= 50) {
@@ -128,7 +131,7 @@ export function QuestionCard({
                 placeholder={placeholder}
                 maxLength={50}
                 className="text-lg p-6 rounded-xl border-2 border-gray-200 focus:border-amber-500 transition-colors"
-                onKeyDown={(e) => {
+                onKeyDown={e => {
                   if (e.key === "Enter") {
                     handleTextSubmit();
                   }
@@ -156,7 +159,7 @@ export function QuestionCard({
           {/* Choice options */}
           {type === "choice" && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {options.map((option) => (
+              {options.map(option => (
                 <motion.button
                   key={option.id}
                   onClick={() => handleChoiceSelect(option)}

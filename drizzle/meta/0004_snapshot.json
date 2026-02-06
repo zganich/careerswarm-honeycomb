@@ -116,17 +116,13 @@
       "compositePrimaryKeys": {
         "achievementVerifications_id": {
           "name": "achievementVerifications_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {
         "achievementVerifications_verificationToken_unique": {
           "name": "achievementVerifications_verificationToken_unique",
-          "columns": [
-            "verificationToken"
-          ]
+          "columns": ["verificationToken"]
         }
       },
       "checkConstraint": {}
@@ -324,9 +320,7 @@
       "compositePrimaryKeys": {
         "achievements_id": {
           "name": "achievements_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {},
@@ -417,9 +411,7 @@
       "compositePrimaryKeys": {
         "generatedResumes_id": {
           "name": "generatedResumes_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {},
@@ -543,9 +535,7 @@
       "compositePrimaryKeys": {
         "jobDescriptions_id": {
           "name": "jobDescriptions_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {},
@@ -631,9 +621,7 @@
       "compositePrimaryKeys": {
         "pastEmployerJobs_id": {
           "name": "pastEmployerJobs_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {},
@@ -677,17 +665,13 @@
       "compositePrimaryKeys": {
         "powerVerbs_id": {
           "name": "powerVerbs_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {
         "powerVerbs_verb_unique": {
           "name": "powerVerbs_verb_unique",
-          "columns": [
-            "verb"
-          ]
+          "columns": ["verb"]
         }
       },
       "checkConstraint": {}
@@ -775,9 +759,7 @@
       "compositePrimaryKeys": {
         "skills_id": {
           "name": "skills_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {},
@@ -924,17 +906,13 @@
       "compositePrimaryKeys": {
         "users_id": {
           "name": "users_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {
         "users_openId_unique": {
           "name": "users_openId_unique",
-          "columns": [
-            "openId"
-          ]
+          "columns": ["openId"]
         }
       },
       "checkConstraint": {}

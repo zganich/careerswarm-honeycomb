@@ -26,7 +26,7 @@ import { toast } from "sonner";
 export default function ProfileEdit() {
   const [, navigate] = useLocation();
   const { data: profile, refetch } = trpc.profile.get.useQuery();
-  
+
   // Mutations
   const updateWorkExperience = trpc.profile.updateWorkExperience.useMutation({
     onSuccess: () => {
@@ -34,7 +34,7 @@ export default function ProfileEdit() {
       refetch();
     },
   });
-  
+
   const addWorkExperience = trpc.profile.addWorkExperience.useMutation({
     onSuccess: () => {
       toast.success("Work experience added");
@@ -42,21 +42,21 @@ export default function ProfileEdit() {
       setShowAddWorkModal(false);
     },
   });
-  
+
   const deleteWorkExperience = trpc.profile.deleteWorkExperience.useMutation({
     onSuccess: () => {
       toast.success("Work experience deleted");
       refetch();
     },
   });
-  
+
   const updateAchievement = trpc.profile.updateAchievement.useMutation({
     onSuccess: () => {
       toast.success("Achievement updated");
       refetch();
     },
   });
-  
+
   const addAchievement = trpc.profile.addAchievement.useMutation({
     onSuccess: () => {
       toast.success("Achievement added");
@@ -64,14 +64,14 @@ export default function ProfileEdit() {
       setShowAddAchievementModal(false);
     },
   });
-  
+
   const deleteAchievement = trpc.profile.deleteAchievement.useMutation({
     onSuccess: () => {
       toast.success("Achievement deleted");
       refetch();
     },
   });
-  
+
   const addSkill = trpc.profile.addSkill.useMutation({
     onSuccess: () => {
       toast.success("Skill added");
@@ -79,7 +79,7 @@ export default function ProfileEdit() {
       setShowAddSkillModal(false);
     },
   });
-  
+
   const deleteSkill = trpc.profile.deleteSkill.useMutation({
     onSuccess: () => {
       toast.success("Skill deleted");
@@ -175,8 +175,11 @@ export default function ProfileEdit() {
                     <Label>Company Name *</Label>
                     <Input
                       value={workForm.companyName}
-                      onChange={(e) =>
-                        setWorkForm({ ...workForm, companyName: e.target.value })
+                      onChange={e =>
+                        setWorkForm({
+                          ...workForm,
+                          companyName: e.target.value,
+                        })
                       }
                       placeholder="e.g., Builder.ai"
                     />
@@ -185,7 +188,7 @@ export default function ProfileEdit() {
                     <Label>Job Title *</Label>
                     <Input
                       value={workForm.jobTitle}
-                      onChange={(e) =>
+                      onChange={e =>
                         setWorkForm({ ...workForm, jobTitle: e.target.value })
                       }
                       placeholder="e.g., Partnerships Manager"
@@ -197,8 +200,11 @@ export default function ProfileEdit() {
                       <Input
                         type="date"
                         value={workForm.startDate}
-                        onChange={(e) =>
-                          setWorkForm({ ...workForm, startDate: e.target.value })
+                        onChange={e =>
+                          setWorkForm({
+                            ...workForm,
+                            startDate: e.target.value,
+                          })
                         }
                       />
                     </div>
@@ -207,7 +213,7 @@ export default function ProfileEdit() {
                       <Input
                         type="date"
                         value={workForm.endDate}
-                        onChange={(e) =>
+                        onChange={e =>
                           setWorkForm({ ...workForm, endDate: e.target.value })
                         }
                         disabled={workForm.isCurrent}
@@ -216,8 +222,11 @@ export default function ProfileEdit() {
                         <input
                           type="checkbox"
                           checked={workForm.isCurrent}
-                          onChange={(e) =>
-                            setWorkForm({ ...workForm, isCurrent: e.target.checked })
+                          onChange={e =>
+                            setWorkForm({
+                              ...workForm,
+                              isCurrent: e.target.checked,
+                            })
                           }
                         />
                         <Label className="text-sm">I currently work here</Label>
@@ -228,7 +237,7 @@ export default function ProfileEdit() {
                     <Label>Location</Label>
                     <Input
                       value={workForm.location}
-                      onChange={(e) =>
+                      onChange={e =>
                         setWorkForm({ ...workForm, location: e.target.value })
                       }
                       placeholder="e.g., Remote, San Francisco, CA"
@@ -238,8 +247,11 @@ export default function ProfileEdit() {
                     <Label>Role Overview</Label>
                     <Textarea
                       value={workForm.roleOverview}
-                      onChange={(e) =>
-                        setWorkForm({ ...workForm, roleOverview: e.target.value })
+                      onChange={e =>
+                        setWorkForm({
+                          ...workForm,
+                          roleOverview: e.target.value,
+                        })
                       }
                       placeholder="Brief description of your role and responsibilities..."
                       rows={3}
@@ -254,7 +266,11 @@ export default function ProfileEdit() {
                     </Button>
                     <Button
                       onClick={() => {
-                        if (!workForm.companyName || !workForm.jobTitle || !workForm.startDate) {
+                        if (
+                          !workForm.companyName ||
+                          !workForm.jobTitle ||
+                          !workForm.startDate
+                        ) {
                           toast.error("Please fill in required fields");
                           return;
                         }
@@ -262,7 +278,9 @@ export default function ProfileEdit() {
                           companyName: workForm.companyName,
                           jobTitle: workForm.jobTitle,
                           startDate: workForm.startDate,
-                          endDate: workForm.isCurrent ? null : workForm.endDate || null,
+                          endDate: workForm.isCurrent
+                            ? null
+                            : workForm.endDate || null,
                           location: workForm.location || null,
                           isCurrent: workForm.isCurrent,
                           roleOverview: workForm.roleOverview || null,
@@ -283,17 +301,21 @@ export default function ProfileEdit() {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <h3 className="font-semibold">{work.jobTitle}</h3>
-                    <p className="text-sm text-muted-foreground">{work.companyName}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {work.companyName}
+                    </p>
                     <p className="text-sm text-muted-foreground">
                       {new Date(work.startDate).toLocaleDateString()} -{" "}
                       {work.isCurrent
                         ? "Present"
                         : work.endDate
-                        ? new Date(work.endDate).toLocaleDateString()
-                        : ""}
+                          ? new Date(work.endDate).toLocaleDateString()
+                          : ""}
                     </p>
                     {work.location && (
-                      <p className="text-sm text-muted-foreground">{work.location}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {work.location}
+                      </p>
                     )}
                     {work.roleOverview && (
                       <p className="text-sm mt-2">{work.roleOverview}</p>
@@ -341,7 +363,7 @@ export default function ProfileEdit() {
                     <Label>Work Experience *</Label>
                     <Select
                       value={achievementForm.workExperienceId.toString()}
-                      onValueChange={(value) =>
+                      onValueChange={value =>
                         setAchievementForm({
                           ...achievementForm,
                           workExperienceId: parseInt(value),
@@ -364,7 +386,7 @@ export default function ProfileEdit() {
                     <Label>Achievement Description *</Label>
                     <Textarea
                       value={achievementForm.description}
-                      onChange={(e) =>
+                      onChange={e =>
                         setAchievementForm({
                           ...achievementForm,
                           description: e.target.value,
@@ -378,7 +400,7 @@ export default function ProfileEdit() {
                     <Label>Context (Optional)</Label>
                     <Textarea
                       value={achievementForm.context}
-                      onChange={(e) =>
+                      onChange={e =>
                         setAchievementForm({
                           ...achievementForm,
                           context: e.target.value,
@@ -393,7 +415,7 @@ export default function ProfileEdit() {
                       <Label>Metric Type</Label>
                       <Select
                         value={achievementForm.metricType}
-                        onValueChange={(value) =>
+                        onValueChange={value =>
                           setAchievementForm({
                             ...achievementForm,
                             metricType: value,
@@ -416,7 +438,7 @@ export default function ProfileEdit() {
                       <Label>Metric Value</Label>
                       <Input
                         value={achievementForm.metricValue}
-                        onChange={(e) =>
+                        onChange={e =>
                           setAchievementForm({
                             ...achievementForm,
                             metricValue: e.target.value,
@@ -429,7 +451,7 @@ export default function ProfileEdit() {
                       <Label>Metric Unit</Label>
                       <Select
                         value={achievementForm.metricUnit}
-                        onValueChange={(value) =>
+                        onValueChange={value =>
                           setAchievementForm({
                             ...achievementForm,
                             metricUnit: value,
@@ -527,7 +549,10 @@ export default function ProfileEdit() {
         <Card className="p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold">Skills</h2>
-            <Dialog open={showAddSkillModal} onOpenChange={setShowAddSkillModal}>
+            <Dialog
+              open={showAddSkillModal}
+              onOpenChange={setShowAddSkillModal}
+            >
               <DialogTrigger asChild>
                 <Button>
                   <Plus className="h-4 w-4 mr-2" />
@@ -543,8 +568,11 @@ export default function ProfileEdit() {
                     <Label>Skill Name *</Label>
                     <Input
                       value={skillForm.skillName}
-                      onChange={(e) =>
-                        setSkillForm({ ...skillForm, skillName: e.target.value })
+                      onChange={e =>
+                        setSkillForm({
+                          ...skillForm,
+                          skillName: e.target.value,
+                        })
                       }
                       placeholder="e.g., Partnership Development"
                     />
@@ -553,7 +581,7 @@ export default function ProfileEdit() {
                     <Label>Category</Label>
                     <Select
                       value={skillForm.skillCategory}
-                      onValueChange={(value) =>
+                      onValueChange={value =>
                         setSkillForm({ ...skillForm, skillCategory: value })
                       }
                     >
@@ -572,7 +600,7 @@ export default function ProfileEdit() {
                     <Label>Proficiency Level</Label>
                     <Select
                       value={skillForm.proficiencyLevel}
-                      onValueChange={(value) =>
+                      onValueChange={value =>
                         setSkillForm({ ...skillForm, proficiencyLevel: value })
                       }
                     >
@@ -581,7 +609,9 @@ export default function ProfileEdit() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="beginner">Beginner</SelectItem>
-                        <SelectItem value="intermediate">Intermediate</SelectItem>
+                        <SelectItem value="intermediate">
+                          Intermediate
+                        </SelectItem>
                         <SelectItem value="advanced">Advanced</SelectItem>
                         <SelectItem value="expert">Expert</SelectItem>
                       </SelectContent>
@@ -592,7 +622,7 @@ export default function ProfileEdit() {
                     <Input
                       type="number"
                       value={skillForm.yearsExperience}
-                      onChange={(e) =>
+                      onChange={e =>
                         setSkillForm({
                           ...skillForm,
                           yearsExperience: e.target.value,

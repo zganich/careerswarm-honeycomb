@@ -8,20 +8,23 @@ import { z } from "zod";
 import * as db from "./db";
 import { addJob, QueueName, type GtmPipelineData } from "./queue";
 
-const channelSchema = z.enum([
-  "linkedin",
-  "reddit",
-  "twitter",
-  "company_site",
-  "job_board",
-  "newsletter",
-  "event",
-]).optional();
+const channelSchema = z
+  .enum([
+    "linkedin",
+    "reddit",
+    "twitter",
+    "company_site",
+    "job_board",
+    "newsletter",
+    "event",
+  ])
+  .optional();
 
 export const gtmRouter = router({
   runStrategy: protectedProcedure.mutation(async ({ ctx }) => {
     const user = await db.getUserByOpenId(ctx.user.openId);
-    if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+    if (!user)
+      throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
     const job = await addJob<GtmPipelineData>(QueueName.GTM_PIPELINE, {
       step: "strategy",
       payload: {},
@@ -41,7 +44,8 @@ export const gtmRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const user = await db.getUserByOpenId(ctx.user.openId);
-      if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+      if (!user)
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
       const job = await addJob<GtmPipelineData>(QueueName.GTM_PIPELINE, {
         step: "lead_discovery",
         channel: input.channel,
@@ -57,7 +61,8 @@ export const gtmRouter = router({
 
   runScoring: protectedProcedure.mutation(async ({ ctx }) => {
     const user = await db.getUserByOpenId(ctx.user.openId);
-    if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+    if (!user)
+      throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
     const job = await addJob<GtmPipelineData>(QueueName.GTM_PIPELINE, {
       step: "scoring",
       payload: {},
@@ -69,7 +74,8 @@ export const gtmRouter = router({
     .input(z.object({ channel: channelSchema }))
     .mutation(async ({ ctx, input }) => {
       const user = await db.getUserByOpenId(ctx.user.openId);
-      if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+      if (!user)
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
       const job = await addJob<GtmPipelineData>(QueueName.GTM_PIPELINE, {
         step: "content",
         channel: input.channel ?? "linkedin",
@@ -80,7 +86,8 @@ export const gtmRouter = router({
 
   runReport: protectedProcedure.mutation(async ({ ctx }) => {
     const user = await db.getUserByOpenId(ctx.user.openId);
-    if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+    if (!user)
+      throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
     const job = await addJob<GtmPipelineData>(QueueName.GTM_PIPELINE, {
       step: "report",
       payload: {},
@@ -90,7 +97,8 @@ export const gtmRouter = router({
 
   runOutreachDraft: protectedProcedure.mutation(async ({ ctx }) => {
     const user = await db.getUserByOpenId(ctx.user.openId);
-    if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+    if (!user)
+      throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
     const job = await addJob<GtmPipelineData>(QueueName.GTM_PIPELINE, {
       step: "outreach_draft",
       payload: {},
@@ -100,7 +108,8 @@ export const gtmRouter = router({
 
   runOutreachSend: protectedProcedure.mutation(async ({ ctx }) => {
     const user = await db.getUserByOpenId(ctx.user.openId);
-    if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+    if (!user)
+      throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
     const job = await addJob<GtmPipelineData>(QueueName.GTM_PIPELINE, {
       step: "outreach_send",
       payload: {},
@@ -112,12 +121,15 @@ export const gtmRouter = router({
     .input(
       z.object({
         limit: z.number().min(1).max(500).default(100),
-        outreachStatus: z.enum(["none", "drafted", "sent", "replied", "converted"]).optional(),
+        outreachStatus: z
+          .enum(["none", "drafted", "sent", "replied", "converted"])
+          .optional(),
       })
     )
     .query(async ({ ctx, input }) => {
       const user = await db.getUserByOpenId(ctx.user.openId);
-      if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+      if (!user)
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
       return db.getB2BLeads(input.limit, input.outreachStatus);
     }),
 });

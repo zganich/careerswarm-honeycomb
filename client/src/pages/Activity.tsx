@@ -28,7 +28,9 @@ export default function Activity() {
   const { user } = useAuth();
   const [filter, setFilter] = useState<string>("all");
 
-  const { data: notifications, isLoading } = trpc.notifications.list.useQuery({ unreadOnly: false });
+  const { data: notifications, isLoading } = trpc.notifications.list.useQuery({
+    unreadOnly: false,
+  });
   const markAsReadMutation = trpc.notifications.markAsRead.useMutation();
 
   const getNotificationIcon = (type: string) => {
@@ -98,7 +100,9 @@ export default function Activity() {
               Jobs
             </Button>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">{user?.name}</span>
+              <span className="text-sm text-muted-foreground">
+                {user?.name}
+              </span>
             </div>
           </div>
         </div>
@@ -130,7 +134,8 @@ export default function Activity() {
           </Select>
           {filteredNotifications && (
             <span className="text-sm text-muted-foreground">
-              {filteredNotifications.length} {filteredNotifications.length === 1 ? "item" : "items"}
+              {filteredNotifications.length}{" "}
+              {filteredNotifications.length === 1 ? "item" : "items"}
             </span>
           )}
         </div>
@@ -155,7 +160,9 @@ export default function Activity() {
               >
                 <CardContent className="pt-6">
                   <div className="flex items-start gap-4">
-                    <div className="mt-1">{getNotificationIcon(notif.type)}</div>
+                    <div className="mt-1">
+                      {getNotificationIcon(notif.type)}
+                    </div>
                     <div className="flex-1">
                       <div className="flex items-start justify-between mb-2">
                         <h3 className="font-semibold text-sm">{notif.title}</h3>
@@ -172,12 +179,14 @@ export default function Activity() {
                           </span>
                         </div>
                       </div>
-                      <p className="text-sm text-muted-foreground mb-3">{notif.message}</p>
+                      <p className="text-sm text-muted-foreground mb-3">
+                        {notif.message}
+                      </p>
                       {notif.actionLabel && notif.actionUrl && (
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={(e) => {
+                          onClick={e => {
                             e.stopPropagation();
                             setLocation(notif.actionUrl);
                           }}

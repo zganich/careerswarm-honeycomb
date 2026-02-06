@@ -9,6 +9,7 @@
 ## Phase 1: Final Testing (2-4 hours)
 
 ### End-to-End User Flows
+
 - [ ] **New User Signup**
   - Create account with email/password
   - Verify email confirmation
@@ -71,6 +72,7 @@
   - Try to generate 4th resume → see error "Free tier limited to 3 resumes per month"
 
 ### Cross-Browser Testing
+
 - [ ] **Chrome (latest)**
   - All pages load correctly
   - Forms submit successfully
@@ -96,6 +98,7 @@
   - No console errors
 
 ### Mobile Testing
+
 - [ ] **iOS Safari**
   - Homepage responsive
   - Dashboard usable on mobile
@@ -111,6 +114,7 @@
   - No horizontal scroll
 
 ### Performance Testing
+
 - [ ] **Lighthouse Audit**
   - Run audit on homepage
   - Performance score: 90+ ✅
@@ -134,6 +138,7 @@
 ## Phase 2: Content & Copy (1-2 hours)
 
 ### Homepage
+
 - [ ] **Hero Section**
   - Headline is compelling and clear
   - Subheadline explains value proposition
@@ -156,6 +161,7 @@
   - Button text is clear
 
 ### Pricing Page
+
 - [ ] **Free Tier**
   - Clear feature list (10 achievements, 3 resumes/month)
   - Limitations are honest and transparent
@@ -172,6 +178,7 @@
   - CTA button: "Contact Sales"
 
 ### FAQ Section
+
 - [ ] **Add FAQ page or section with common questions:**
   - What is Careerswarm?
   - How does the Impact Meter work?
@@ -185,6 +192,7 @@
   - How do I export my data?
 
 ### Legal Pages
+
 - [ ] **Privacy Policy**
   - Create privacy policy page
   - Explain data collection (email, achievements, resumes)
@@ -206,6 +214,7 @@
   - Link from footer
 
 ### Email Templates
+
 - [ ] **Welcome Email**
   - Subject: "Welcome to Careerswarm!"
   - Body: Introduce platform, link to welcome wizard
@@ -219,6 +228,7 @@
   - Body: Remind user to prepare, link to interview prep
 
 ### SEO & Meta Tags
+
 - [ ] **Homepage**
   - `<title>`: "Careerswarm - AI-Powered Career Evidence Platform"
   - `<meta name="description">`: Compelling 150-character description
@@ -235,6 +245,7 @@
 ## Phase 3: Production Configuration (30 minutes)
 
 ### Stripe Setup
+
 - [ ] **Claim Stripe Sandbox**
   - Visit: https://dashboard.stripe.com/claim_sandbox/YWNjdF8xU3NCVFJESHZ1NFM0dk9CLDE3Njk2NDUzNDAv100pu2IaHJA
   - Claim before March 23, 2026
@@ -261,6 +272,7 @@
   - Verify minimum order value ($0.50 USD)
 
 ### Domain & Hosting
+
 - [ ] **Custom Domain** (Optional)
   - Purchase domain (e.g., careerswarm.com) from registrar
   - In Manus Settings → Domains, add custom domain
@@ -274,6 +286,7 @@
   - Verify HTTPS is enabled (automatic)
 
 ### Environment Variables
+
 - [ ] **Verify All Env Vars Are Set**
   - `DATABASE_URL` ✅ (automatic)
   - `JWT_SECRET` ✅ (automatic)
@@ -293,6 +306,7 @@ No additional configuration needed.
 ## Phase 4: Security & Performance (1 hour)
 
 ### Security Audit
+
 - [ ] **SQL Injection Prevention**
   - Verify all database queries use Drizzle ORM parameterized queries
   - No raw SQL with user input
@@ -321,6 +335,7 @@ No additional configuration needed.
   - Test by making cross-origin requests from different domain
 
 ### Performance Optimization
+
 - [ ] **Image Optimization**
   - Compress images (use TinyPNG or similar)
   - Convert to WebP format
@@ -349,6 +364,7 @@ No additional configuration needed.
 ## Phase 5: Monitoring & Analytics (15 minutes)
 
 ### Error Monitoring
+
 - [ ] **Set Up Sentry** (or similar)
   - Create Sentry account
   - Add Sentry SDK to project
@@ -357,6 +373,7 @@ No additional configuration needed.
   - Verify error appears in Sentry dashboard
 
 ### Analytics
+
 - [ ] **Verify Manus Analytics**
   - Manus built-in analytics is automatic
   - Check Manus Dashboard → Analytics
@@ -364,6 +381,7 @@ No additional configuration needed.
   - Verify unique visitors are tracked
 
 ### Uptime Monitoring
+
 - [ ] **Set Up Uptime Monitor** (optional)
   - Use service like UptimeRobot or Pingdom
   - Monitor homepage URL
@@ -371,6 +389,7 @@ No additional configuration needed.
   - Configure check interval (5 minutes)
 
 ### Database Backups
+
 - [ ] **Verify Backups Are Enabled**
   - Manus handles database backups automatically
   - Verify backup schedule in Manus settings
@@ -381,6 +400,7 @@ No additional configuration needed.
 ## Phase 6: Launch (30 minutes)
 
 ### Pre-Launch
+
 - [ ] **Create Final Checkpoint**
   - In Manus, create checkpoint
   - Description: "Production-ready: All features complete, design finalized, tested and ready for launch"
@@ -392,6 +412,7 @@ No additional configuration needed.
   - Fix any remaining issues
 
 ### Launch
+
 - [ ] **Click Publish Button**
   - In Manus Management UI, click "Publish"
   - Wait for deployment to complete
@@ -411,6 +432,7 @@ No additional configuration needed.
   - Verify all features work on production
 
 ### Post-Launch
+
 - [ ] **Monitor Error Logs**
   - Check Sentry dashboard (if set up)
   - Check Manus logs (if available)
@@ -430,6 +452,7 @@ No additional configuration needed.
 ## Phase 7: Post-Launch Monitoring (First Week)
 
 ### Daily Tasks
+
 - [ ] **Day 1: Monitor Closely**
   - Check error logs every 2 hours
   - Monitor user signups
@@ -445,6 +468,7 @@ No additional configuration needed.
   - Respond to support requests
 
 ### Metrics to Track
+
 - [ ] **User Acquisition**
   - Total signups
   - Signups per day
@@ -472,6 +496,7 @@ No additional configuration needed.
   - Database query performance
 
 ### First Update
+
 - [ ] **Plan First Feature Update**
   - Review user feedback
   - Identify most requested features
@@ -486,6 +511,7 @@ No additional configuration needed.
 **Total Estimated Time:** 5-8 hours
 
 **Phase Breakdown:**
+
 1. Final Testing: 2-4 hours
 2. Content & Copy: 1-2 hours
 3. Production Configuration: 30 minutes
@@ -495,6 +521,7 @@ No additional configuration needed.
 7. Post-Launch Monitoring: Ongoing
 
 **Critical Path:**
+
 1. Complete final testing (Phase 1)
 2. Claim Stripe sandbox (Phase 3)
 3. Create final checkpoint (Phase 6)

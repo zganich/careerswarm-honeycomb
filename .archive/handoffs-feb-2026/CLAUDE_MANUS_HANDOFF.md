@@ -4,7 +4,7 @@
 **Claude Session ID:** bd5fb451-bf96-4553-ad1c-7f6a3361d347
 **Status:** TypeScript Errors Fixed, Environment Setup Complete
 
-**Canonical repo:** `careerswarm-honeycomb` — https://github.com/zganich/careerswarm-honeycomb  
+**Canonical repo:** `careerswarm-honeycomb` — https://github.com/zganich/careerswarm-honeycomb
 
 **Copy-paste for Manus (single source):** Open `MANUS_UPDATE.md` or `.cursor/commands/copy-paste-prompt-for-manus.md` and copy **everything below the line** into a new Manus task. Both files have the same content.
 
@@ -40,6 +40,7 @@
    - Updated to match new database schema
 
 **Verification:**
+
 ```bash
 pnpm check  # ✅ PASSES with 0 errors
 ```
@@ -88,7 +89,9 @@ pnpm check  # ✅ PASSES with 0 errors
 **Goal:** Ensure the environment variables are correct and services are accessible.
 
 **Steps:**
+
 1. Review `.env` file and replace placeholder keys:
+
    ```bash
    # These need real keys from Manus deployment:
    BUILT_IN_FORGE_API_KEY="PLACEHOLDER_NEEDS_REAL_KEY"
@@ -97,6 +100,7 @@ pnpm check  # ✅ PASSES with 0 errors
    ```
 
 2. Set up local database:
+
    ```bash
    # Create database
    mysql -u root -p -e "CREATE DATABASE careerswarm_dev;"
@@ -111,6 +115,7 @@ pnpm check  # ✅ PASSES with 0 errors
    ```
 
 **Expected Output:**
+
 ```
 ✅ All environment variables present
 ✅ Database connection successful
@@ -125,6 +130,7 @@ pnpm check  # ✅ PASSES with 0 errors
 **Goal:** Test the complete package generation flow that Claude fixed.
 
 **Test Scenario:**
+
 ```
 User creates application → Triggers package generation →
 Files generated (PDF/DOCX/TXT) → ZIP created → Uploaded to S3 →
@@ -134,6 +140,7 @@ Notification sent
 **Steps:**
 
 1. **Start dev server:**
+
    ```bash
    pnpm dev
    ```
@@ -172,6 +179,7 @@ Notification sent
      - Links to correct application
 
 **Error Scenarios to Test:**
+
 - What happens if Forge API key is invalid?
 - What happens if S3 upload fails?
 - What happens if user has no achievements?
@@ -186,6 +194,7 @@ Notification sent
 **Test Cases:**
 
 #### 3A. Tailor Agent (Resume Generation)
+
 ```bash
 # Test input transformation
 {
@@ -217,6 +226,7 @@ Notification sent
 ```
 
 **Expected Output:**
+
 ```typescript
 {
   resumeMarkdown: "# Test User\n\ntest@example.com | 555-1234...",
@@ -226,6 +236,7 @@ Notification sent
 ```
 
 #### 3B. Scribe Agent (Outreach Generation)
+
 ```bash
 # Test input transformation
 {
@@ -246,6 +257,7 @@ Notification sent
 ```
 
 **Expected Output:**
+
 ```typescript
 {
   coverLetter: "Dear Hiring Manager...",
@@ -254,6 +266,7 @@ Notification sent
 ```
 
 #### 3C. Assembler Agent (Package Creation)
+
 ```bash
 # Test file generation and S3 upload
 {
@@ -268,6 +281,7 @@ Notification sent
 ```
 
 **Expected Output:**
+
 ```typescript
 {
   packageUrl: "https://s3.amazonaws.com/.../package.zip",
@@ -290,6 +304,7 @@ Notification sent
 **Steps:**
 
 1. **Run backend tests:**
+
    ```bash
    pnpm test
    ```
@@ -297,6 +312,7 @@ Notification sent
    **Expected:** 127 passing tests
 
 2. **Run E2E tests:**
+
    ```bash
    npx playwright test
    ```
@@ -315,11 +331,13 @@ Notification sent
 Use this checklist to track your testing progress:
 
 ### Environment Setup
+
 - [ ] `.env` file configured with real API keys
 - [ ] Database created and migrations run
 - [ ] `pnpm validate` passes all checks
 
 ### Package Generation Flow
+
 - [ ] Application created successfully
 - [ ] Package generation triggered
 - [ ] PDF file generated and uploaded
@@ -330,6 +348,7 @@ Use this checklist to track your testing progress:
 - [ ] Notification sent to user
 
 ### Agent Testing
+
 - [ ] Tailor agent generates resume markdown
 - [ ] Scribe agent generates cover letter
 - [ ] Scribe agent generates LinkedIn message
@@ -338,17 +357,20 @@ Use this checklist to track your testing progress:
 - [ ] All agents handle errors gracefully
 
 ### Resume Roast (optional)
+
 - [ ] Navigate to `/roast`, paste ≥50 chars of resume text, click "Get Roasted"
 - [ ] Score, verdict, brutal truth, and 3 mistakes display (requires LLM API key)
 - [ ] `pnpm exec vitest run server/roaster.test.ts` passes
 
 ### Automated Testing
+
 - [ ] Backend tests pass (127/127)
 - [ ] E2E tests pass (20/22)
 - [ ] TypeScript compilation clean
 - [ ] Build succeeds without errors
 
 ### Error Handling
+
 - [ ] Invalid API key handled gracefully
 - [ ] S3 upload failure handled
 - [ ] Empty achievements handled
@@ -359,6 +381,7 @@ Use this checklist to track your testing progress:
 ## 🚨 CRITICAL NOTES
 
 ### DO NOT:
+
 - ❌ Delete or rewrite the type transformations in `server/routers.ts` (lines 1312-1345)
 - ❌ Change function names back to `assemblePackage`
 - ❌ Revert property names to `resume` or `xyzAccomplishment`
@@ -366,6 +389,7 @@ Use this checklist to track your testing progress:
 - ❌ Delete `SETUP_GUIDE.md`
 
 ### DO:
+
 - ✅ Replace placeholder API keys in `.env` with real values
 - ✅ Test the complete package generation flow
 - ✅ Report any errors you find (with logs)
@@ -377,6 +401,7 @@ Use this checklist to track your testing progress:
 ## 📊 Test Results (Fill This In)
 
 ### Environment Setup
+
 ```
 Status: [ ] Pass / [ ] Fail
 Notes:
@@ -385,6 +410,7 @@ Notes:
 ```
 
 ### Package Generation
+
 ```
 Status: [ ] Pass / [ ] Fail
 Notes:
@@ -393,6 +419,7 @@ Notes:
 ```
 
 ### Agent Integration
+
 ```
 Tailor:    [ ] Pass / [ ] Fail
 Scribe:    [ ] Pass / [ ] Fail
@@ -404,6 +431,7 @@ Notes:
 ```
 
 ### Automated Tests
+
 ```
 Backend:   [ ] Pass / [ ] Fail (X/127 passing)
 E2E:       [ ] Pass / [ ] Fail (X/22 passing)
@@ -430,6 +458,7 @@ Notes:
 ## 📞 Questions?
 
 If you encounter issues or have questions about the changes:
+
 1. Check git diff: `git show c04d9a0`
 2. Review this document's testing steps
 3. Check error logs in console
@@ -448,7 +477,7 @@ If you want this handoff to be available automatically in Manus sessions:
 1. In Manus, click **"Create Project"** (the "+" icon next to "Projects" in the sidebar).
 2. Give it a name (e.g. "CareerSwarm Testing").
 3. In the Master Instruction field, add something like:  
-   *"When doing testing or validation, read CLAUDE_MANUS_HANDOFF.md first. Follow its phases and do not redo the fixes it describes."*
+   _"When doing testing or validation, read CLAUDE_MANUS_HANDOFF.md first. Follow its phases and do not redo the fixes it describes."_
 4. In **Knowledge Base**, click to add files and upload `CLAUDE_MANUS_HANDOFF.md` (or drag-and-drop it).
 5. Save the project. New tasks in this project will have the file available.
 
@@ -457,7 +486,7 @@ If you want this handoff to be available automatically in Manus sessions:
 1. When starting a new Manus task, look for **"Add knowledge"** or similar in the UI.
 2. Upload `CLAUDE_MANUS_HANDOFF.md` as a knowledge source for that session.
 3. Or paste this in your first message:  
-   *"Read CLAUDE_MANUS_HANDOFF.md in the project root and follow its testing instructions. Do not redo the fixes."*
+   _"Read CLAUDE_MANUS_HANDOFF.md in the project root and follow its testing instructions. Do not redo the fixes."_
 
 ### Option C: Paste as first message
 
@@ -467,4 +496,4 @@ Copy the contents of this file and paste them as your first message when startin
 
 **End of Handoff Document**
 
-*Generated by Claude Sonnet 4.5 on January 30, 2026*
+_Generated by Claude Sonnet 4.5 on January 30, 2026_

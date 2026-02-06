@@ -1,9 +1,16 @@
-import { motion } from 'framer-motion';
-import { FileText, Award, Users, Briefcase, Star, TrendingUp } from 'lucide-react';
+import { motion } from "framer-motion";
+import {
+  FileText,
+  Award,
+  Users,
+  Briefcase,
+  Star,
+  TrendingUp,
+} from "lucide-react";
 
 interface EvidenceCard {
   id: string;
-  type: 'resume' | 'reference' | 'award' | 'project' | 'skill' | 'achievement';
+  type: "resume" | "reference" | "award" | "project" | "skill" | "achievement";
   title: string;
   subtitle: string;
   score?: number;
@@ -25,21 +32,21 @@ const iconMap = {
 };
 
 const colorMap = {
-  resume: 'from-cyan-500/20 to-blue-500/20 border-cyan-500/30',
-  reference: 'from-purple-500/20 to-pink-500/20 border-purple-500/30',
-  award: 'from-amber-500/20 to-orange-500/20 border-amber-500/30',
-  project: 'from-emerald-500/20 to-green-500/20 border-emerald-500/30',
-  skill: 'from-yellow-500/20 to-amber-500/20 border-yellow-500/30',
-  achievement: 'from-indigo-500/20 to-purple-500/20 border-indigo-500/30',
+  resume: "from-cyan-500/20 to-blue-500/20 border-cyan-500/30",
+  reference: "from-purple-500/20 to-pink-500/20 border-purple-500/30",
+  award: "from-amber-500/20 to-orange-500/20 border-amber-500/30",
+  project: "from-emerald-500/20 to-green-500/20 border-emerald-500/30",
+  skill: "from-yellow-500/20 to-amber-500/20 border-yellow-500/30",
+  achievement: "from-indigo-500/20 to-purple-500/20 border-indigo-500/30",
 };
 
 const iconColorMap = {
-  resume: 'text-cyan-400',
-  reference: 'text-purple-400',
-  award: 'text-amber-400',
-  project: 'text-emerald-400',
-  skill: 'text-yellow-400',
-  achievement: 'text-indigo-400',
+  resume: "text-cyan-400",
+  reference: "text-purple-400",
+  award: "text-amber-400",
+  project: "text-emerald-400",
+  skill: "text-yellow-400",
+  achievement: "text-indigo-400",
 };
 
 export function EvidenceGrid({ cards, onCardClick }: EvidenceGridProps) {
@@ -52,7 +59,9 @@ export function EvidenceGrid({ cards, onCardClick }: EvidenceGridProps) {
           className="text-slate-400"
         >
           <FileText className="h-16 w-16 mx-auto mb-4 opacity-50" />
-          <p className="text-lg">No evidence yet. Start building your career trophy case!</p>
+          <p className="text-lg">
+            No evidence yet. Start building your career trophy case!
+          </p>
         </motion.div>
       </div>
     );
@@ -64,7 +73,7 @@ export function EvidenceGrid({ cards, onCardClick }: EvidenceGridProps) {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         className="text-3xl font-bold text-slate-200 mb-8"
-        style={{ fontFamily: 'Cabinet Grotesk, sans-serif' }}
+        style={{ fontFamily: "Cabinet Grotesk, sans-serif" }}
       >
         Your Career Evidence
       </motion.h2>
@@ -109,9 +118,7 @@ export function EvidenceGrid({ cards, onCardClick }: EvidenceGridProps) {
                 </h3>
 
                 {/* Subtitle */}
-                <p className="text-slate-400 text-sm mb-4">
-                  {card.subtitle}
-                </p>
+                <p className="text-slate-400 text-sm mb-4">{card.subtitle}</p>
 
                 {/* Footer */}
                 <div className="flex items-center justify-between">
@@ -124,17 +131,15 @@ export function EvidenceGrid({ cards, onCardClick }: EvidenceGridProps) {
                     </div>
                   )}
                   {card.date && (
-                    <div className="text-slate-500 text-xs">
-                      {card.date}
-                    </div>
+                    <div className="text-slate-500 text-xs">{card.date}</div>
                   )}
                 </div>
               </div>
 
               {/* Hover glow effect */}
               <motion.div
-                className={`absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity ${iconColor.replace('text-', 'bg-')}`}
-                style={{ filter: 'blur(40px)' }}
+                className={`absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity ${iconColor.replace("text-", "bg-")}`}
+                style={{ filter: "blur(40px)" }}
               />
 
               {/* Animated border glow */}
@@ -150,7 +155,7 @@ export function EvidenceGrid({ cards, onCardClick }: EvidenceGridProps) {
                 }}
                 className="absolute inset-0 rounded-2xl"
                 style={{
-                  background: `linear-gradient(135deg, transparent 0%, ${iconColor.replace('text-', 'rgba(').replace('-400', ', 0.2)')} 50%, transparent 100%)`,
+                  background: `linear-gradient(135deg, transparent 0%, ${iconColor.replace("text-", "rgba(").replace("-400", ", 0.2)")} 50%, transparent 100%)`,
                 }}
               />
             </motion.div>

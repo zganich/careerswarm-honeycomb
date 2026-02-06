@@ -1,6 +1,20 @@
 import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, FileText, CheckCircle2, Loader2, Lock, Shield, Clock, TrendingUp, Target, Sparkles, Award, AlertCircle, Users } from "lucide-react";
+import {
+  Upload,
+  FileText,
+  CheckCircle2,
+  Loader2,
+  Lock,
+  Shield,
+  Clock,
+  TrendingUp,
+  Target,
+  Sparkles,
+  Award,
+  AlertCircle,
+  Users,
+} from "lucide-react";
 import confetti from "canvas-confetti";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -33,7 +47,9 @@ interface ProfileStats {
   confidenceScore: number;
 }
 
-export function CareerArchaeologyOnboarding({ onComplete }: CareerArchaeologyOnboardingProps) {
+export function CareerArchaeologyOnboarding({
+  onComplete,
+}: CareerArchaeologyOnboardingProps) {
   const [currentStep, setCurrentStep] = useState<OnboardingStep>(1);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -98,12 +114,14 @@ export function CareerArchaeologyOnboarding({ onComplete }: CareerArchaeologyOnb
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    
+
     const files = Array.from(e.dataTransfer.files);
-    const validFiles = files.filter(file => 
-      file.type === "application/pdf" || 
-      file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
-      file.type === "text/plain"
+    const validFiles = files.filter(
+      file =>
+        file.type === "application/pdf" ||
+        file.type ===
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+        file.type === "text/plain"
     );
 
     if (validFiles.length > 0) {
@@ -111,12 +129,15 @@ export function CareerArchaeologyOnboarding({ onComplete }: CareerArchaeologyOnb
     }
   }, []);
 
-  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    if (files.length > 0) {
-      handleFilesUpload(files);
-    }
-  }, []);
+  const handleFileSelect = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = Array.from(e.target.files || []);
+      if (files.length > 0) {
+        handleFilesUpload(files);
+      }
+    },
+    []
+  );
 
   const handleFilesUpload = async (files: File[]) => {
     const newFiles: UploadedFile[] = files.map((file, index) => ({
@@ -134,9 +155,7 @@ export function CareerArchaeologyOnboarding({ onComplete }: CareerArchaeologyOnb
       for (let progress = 0; progress <= 100; progress += 20) {
         await new Promise(resolve => setTimeout(resolve, 100));
         setUploadedFiles(prev =>
-          prev.map(f =>
-            f.id === uploadedFile.id ? { ...f, progress } : f
-          )
+          prev.map(f => (f.id === uploadedFile.id ? { ...f, progress } : f))
         );
       }
 
@@ -151,7 +170,10 @@ export function CareerArchaeologyOnboarding({ onComplete }: CareerArchaeologyOnb
                 findings: {
                   roles: Math.floor(Math.random() * 5) + 3,
                   skills: Math.floor(Math.random() * 10) + 5,
-                  duplicates: Math.random() > 0.5 ? Math.floor(Math.random() * 3) : undefined,
+                  duplicates:
+                    Math.random() > 0.5
+                      ? Math.floor(Math.random() * 3)
+                      : undefined,
                 },
               }
             : f
@@ -163,7 +185,7 @@ export function CareerArchaeologyOnboarding({ onComplete }: CareerArchaeologyOnb
   const handleContinueToMerging = () => {
     setCurrentStep(2);
     setIsProcessing(true);
-    
+
     // Simulate merging process
     setTimeout(() => {
       setIsProcessing(false);
@@ -221,7 +243,8 @@ export function CareerArchaeologyOnboarding({ onComplete }: CareerArchaeologyOnb
                   🗂️ Upload Every Resume Version You've Ever Created
                 </h1>
                 <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                  We'll merge 15+ resume versions into one powerful Master Profile that tells your complete career story.
+                  We'll merge 15+ resume versions into one powerful Master
+                  Profile that tells your complete career story.
                 </p>
               </div>
 
@@ -231,14 +254,16 @@ export function CareerArchaeologyOnboarding({ onComplete }: CareerArchaeologyOnb
                   isDragging
                     ? "border-blue-600 bg-blue-100 border-solid scale-[1.01]"
                     : uploadedFiles.length > 0
-                    ? "border-gray-300 bg-gray-50 border-dashed"
-                    : "border-gray-300 bg-gray-50 border-dashed hover:border-blue-600 hover:bg-blue-50"
+                      ? "border-gray-300 bg-gray-50 border-dashed"
+                      : "border-gray-300 bg-gray-50 border-dashed hover:border-blue-600 hover:bg-blue-50"
                 }`}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
                 style={{
-                  animation: isDragging ? "var(--animate-gentle-pulse)" : undefined,
+                  animation: isDragging
+                    ? "var(--animate-gentle-pulse)"
+                    : undefined,
                 }}
               >
                 <div className="p-12 text-center">
@@ -246,16 +271,20 @@ export function CareerArchaeologyOnboarding({ onComplete }: CareerArchaeologyOnb
                     <h3 className="text-2xl font-semibold text-gray-900 mb-6">
                       📤 DRAG & DROP YOUR RESUME FILES
                     </h3>
-                    
+
                     {/* File Icons Grid (8x2 = 16 files) */}
                     <div className="grid grid-cols-8 gap-3 max-w-md mx-auto mb-6 opacity-30">
                       {[...Array(16)].map((_, i) => (
-                        <FileText key={i} className="h-8 w-8 text-gray-400 mx-auto" />
+                        <FileText
+                          key={i}
+                          className="h-8 w-8 text-gray-400 mx-auto"
+                        />
                       ))}
                     </div>
 
                     <p className="text-gray-600 mb-6 italic text-lg">
-                      Your career fragments<br />
+                      Your career fragments
+                      <br />
                       become one complete story
                     </p>
 
@@ -292,13 +321,19 @@ export function CareerArchaeologyOnboarding({ onComplete }: CareerArchaeologyOnb
                   <div className="mt-8 pt-6 border-t border-gray-200 space-y-4">
                     <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
                       <Lock className="h-4 w-4 text-green-600" />
-                      <span>🔒 Your files are processed securely and never stored in their original form</span>
+                      <span>
+                        🔒 Your files are processed securely and never stored in
+                        their original form
+                      </span>
                     </div>
-                    
+
                     {/* Social Proof */}
                     <div className="flex items-center justify-center gap-2 text-sm text-blue-700 font-medium">
                       <Users className="h-4 w-4" />
-                      <span>Join 12,847 professionals who've unified their career evidence</span>
+                      <span>
+                        Join 12,847 professionals who've unified their career
+                        evidence
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -318,7 +353,7 @@ export function CareerArchaeologyOnboarding({ onComplete }: CareerArchaeologyOnb
                       </span>
                     )}
                   </div>
-                  
+
                   {uploadedFiles.map((file, index) => (
                     <motion.div
                       key={file.id}
@@ -333,21 +368,32 @@ export function CareerArchaeologyOnboarding({ onComplete }: CareerArchaeologyOnb
                             <motion.div
                               initial={{ scale: 0 }}
                               animate={{ scale: 1 }}
-                              transition={{ type: "spring", stiffness: 200, damping: 10 }}
+                              transition={{
+                                type: "spring",
+                                stiffness: 200,
+                                damping: 10,
+                              }}
                             >
                               <CheckCircle2 className="h-5 w-5 text-green-600" />
                             </motion.div>
                           ) : (
                             <Loader2 className="h-5 w-5 text-blue-600 animate-spin" />
                           )}
-                          <span className="font-medium text-gray-900">{file.name}</span>
+                          <span className="font-medium text-gray-900">
+                            {file.name}
+                          </span>
                         </div>
-                        <span className="text-sm text-gray-500">{file.progress}%</span>
+                        <span className="text-sm text-gray-500">
+                          {file.progress}%
+                        </span>
                       </div>
                       {file.status === "complete" && file.findings && (
                         <div className="text-sm text-gray-600 ml-8">
-                          • Found {file.findings.roles} roles • {file.findings.skills} skills identified
-                          {file.findings.duplicates && file.findings.duplicates > 0 && ` • Merged ${file.findings.duplicates} duplicates`}
+                          • Found {file.findings.roles} roles •{" "}
+                          {file.findings.skills} skills identified
+                          {file.findings.duplicates &&
+                            file.findings.duplicates > 0 &&
+                            ` • Merged ${file.findings.duplicates} duplicates`}
                         </div>
                       )}
                       {file.status !== "complete" && (
@@ -399,7 +445,9 @@ export function CareerArchaeologyOnboarding({ onComplete }: CareerArchaeologyOnb
               <Card className="border-2 border-gray-200 p-8">
                 <div className="space-y-6">
                   <div className="text-center pb-6 border-b-2 border-gray-200">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">REAL-TIME MERGING PROGRESS</h2>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                      REAL-TIME MERGING PROGRESS
+                    </h2>
                     <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
                       <motion.div
                         className="h-full bg-gradient-to-r from-blue-600 to-orange-500"
@@ -417,7 +465,10 @@ export function CareerArchaeologyOnboarding({ onComplete }: CareerArchaeologyOnb
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
                     <div className="flex items-center justify-center gap-2 text-lg font-semibold text-blue-900">
                       <Clock className="h-6 w-6" />
-                      <span>⏱️ Time Saved: Already saved you {timeSaved.toFixed(1)} hours</span>
+                      <span>
+                        ⏱️ Time Saved: Already saved you {timeSaved.toFixed(1)}{" "}
+                        hours
+                      </span>
                     </div>
                   </div>
 
@@ -434,14 +485,23 @@ export function CareerArchaeologyOnboarding({ onComplete }: CareerArchaeologyOnb
                         <div className="flex items-start gap-3">
                           <CheckCircle2 className="h-6 w-6 text-green-600 flex-shrink-0 mt-1" />
                           <div className="flex-1">
-                            <h3 className="font-semibold text-gray-900 mb-2">{file.name}</h3>
+                            <h3 className="font-semibold text-gray-900 mb-2">
+                              {file.name}
+                            </h3>
                             {file.findings && (
                               <div className="text-sm text-gray-600 space-y-1">
                                 <div>• Found {file.findings.roles} roles</div>
-                                <div>• {file.findings.skills} skills identified</div>
-                                {file.findings.duplicates && file.findings.duplicates > 0 && (
-                                  <div>• Merged {file.findings.duplicates} duplicate{file.findings.duplicates > 1 ? 's' : ''}</div>
-                                )}
+                                <div>
+                                  • {file.findings.skills} skills identified
+                                </div>
+                                {file.findings.duplicates &&
+                                  file.findings.duplicates > 0 && (
+                                    <div>
+                                      • Merged {file.findings.duplicates}{" "}
+                                      duplicate
+                                      {file.findings.duplicates > 1 ? "s" : ""}
+                                    </div>
+                                  )}
                               </div>
                             )}
                           </div>
@@ -458,7 +518,9 @@ export function CareerArchaeologyOnboarding({ onComplete }: CareerArchaeologyOnb
                         <div className="flex items-start gap-3">
                           <Loader2 className="h-6 w-6 text-blue-600 flex-shrink-0 mt-1 animate-spin" />
                           <div className="flex-1">
-                            <h3 className="font-semibold text-gray-900 mb-2">{uploadedFiles[3]?.name || "Processing..."}</h3>
+                            <h3 className="font-semibold text-gray-900 mb-2">
+                              {uploadedFiles[3]?.name || "Processing..."}
+                            </h3>
                             <div className="text-sm text-gray-600 space-y-1">
                               <div>• Processing leadership data</div>
                               <div>• 65% complete</div>
@@ -487,7 +549,9 @@ export function CareerArchaeologyOnboarding({ onComplete }: CareerArchaeologyOnb
                     {isProcessing ? (
                       <span>Progress: 65% • 2 minutes remaining</span>
                     ) : (
-                      <span className="text-green-600 font-semibold">✓ Merging complete!</span>
+                      <span className="text-green-600 font-semibold">
+                        ✓ Merging complete!
+                      </span>
                     )}
                   </div>
 
@@ -525,7 +589,9 @@ export function CareerArchaeologyOnboarding({ onComplete }: CareerArchaeologyOnb
               <Card className="border-2 border-gray-200 p-8 mb-8">
                 <div className="space-y-6">
                   <div className="text-center pb-6 border-b-2 border-gray-200">
-                    <h2 className="text-2xl font-bold text-gray-900">MASTER PROFILE SUMMARY</h2>
+                    <h2 className="text-2xl font-bold text-gray-900">
+                      MASTER PROFILE SUMMARY
+                    </h2>
                   </div>
 
                   {/* Stats Grid */}
@@ -538,8 +604,12 @@ export function CareerArchaeologyOnboarding({ onComplete }: CareerArchaeologyOnb
                     >
                       <span className="text-2xl">📅</span>
                       <div>
-                        <div className="text-sm text-gray-600">Career Timeline</div>
-                        <div className="font-semibold">{profileStats.careerYears}</div>
+                        <div className="text-sm text-gray-600">
+                          Career Timeline
+                        </div>
+                        <div className="font-semibold">
+                          {profileStats.careerYears}
+                        </div>
                       </div>
                     </motion.div>
 
@@ -551,8 +621,12 @@ export function CareerArchaeologyOnboarding({ onComplete }: CareerArchaeologyOnb
                     >
                       <span className="text-2xl">👔</span>
                       <div>
-                        <div className="text-sm text-gray-600">Unique Roles</div>
-                        <div className="font-semibold">{profileStats.uniqueRoles} Roles</div>
+                        <div className="text-sm text-gray-600">
+                          Unique Roles
+                        </div>
+                        <div className="font-semibold">
+                          {profileStats.uniqueRoles} Roles
+                        </div>
                       </div>
                     </motion.div>
 
@@ -564,8 +638,12 @@ export function CareerArchaeologyOnboarding({ onComplete }: CareerArchaeologyOnb
                     >
                       <span className="text-2xl">🛠️</span>
                       <div>
-                        <div className="text-sm text-gray-600">Verified Skills</div>
-                        <div className="font-semibold">{profileStats.verifiedSkills} Skills</div>
+                        <div className="text-sm text-gray-600">
+                          Verified Skills
+                        </div>
+                        <div className="font-semibold">
+                          {profileStats.verifiedSkills} Skills
+                        </div>
                       </div>
                     </motion.div>
 
@@ -577,8 +655,12 @@ export function CareerArchaeologyOnboarding({ onComplete }: CareerArchaeologyOnb
                     >
                       <span className="text-2xl">🏆</span>
                       <div>
-                        <div className="text-sm text-gray-600">Proven Achievements</div>
-                        <div className="font-semibold">{profileStats.achievements} Achievements</div>
+                        <div className="text-sm text-gray-600">
+                          Proven Achievements
+                        </div>
+                        <div className="font-semibold">
+                          {profileStats.achievements} Achievements
+                        </div>
                       </div>
                     </motion.div>
 
@@ -590,8 +672,12 @@ export function CareerArchaeologyOnboarding({ onComplete }: CareerArchaeologyOnb
                     >
                       <span className="text-2xl">📈</span>
                       <div>
-                        <div className="text-sm text-gray-600">Major Career Themes</div>
-                        <div className="font-semibold">{profileStats.careerThemes} Themes</div>
+                        <div className="text-sm text-gray-600">
+                          Major Career Themes
+                        </div>
+                        <div className="font-semibold">
+                          {profileStats.careerThemes} Themes
+                        </div>
                       </div>
                     </motion.div>
                   </div>
@@ -648,10 +734,16 @@ export function CareerArchaeologyOnboarding({ onComplete }: CareerArchaeologyOnb
                       <div>• Specify metrics for 5 achievements</div>
                     </div>
                     <div className="flex gap-3">
-                      <Button variant="outline" className="border-orange-600 text-orange-700 hover:bg-orange-100">
+                      <Button
+                        variant="outline"
+                        className="border-orange-600 text-orange-700 hover:bg-orange-100"
+                      >
                         Auto-Fill These Gaps
                       </Button>
-                      <Button variant="outline" className="border-orange-600 text-orange-700 hover:bg-orange-100">
+                      <Button
+                        variant="outline"
+                        className="border-orange-600 text-orange-700 hover:bg-orange-100"
+                      >
                         Review Profile Details
                       </Button>
                     </div>
@@ -689,7 +781,9 @@ export function CareerArchaeologyOnboarding({ onComplete }: CareerArchaeologyOnb
               <Card className="border-2 border-gray-200 p-8 mb-8">
                 <div className="space-y-6">
                   <div className="text-center pb-6 border-b-2 border-gray-200">
-                    <h2 className="text-2xl font-bold text-gray-900">FIND YOUR PERFECT MATCH</h2>
+                    <h2 className="text-2xl font-bold text-gray-900">
+                      FIND YOUR PERFECT MATCH
+                    </h2>
                   </div>
 
                   <div className="text-center text-gray-700 mb-4">
@@ -697,10 +791,16 @@ export function CareerArchaeologyOnboarding({ onComplete }: CareerArchaeologyOnb
                   </div>
 
                   <div className="flex gap-3 justify-center mb-6">
-                    <Button variant="outline" className="border-blue-600 text-blue-700">
+                    <Button
+                      variant="outline"
+                      className="border-blue-600 text-blue-700"
+                    >
                       Search Jobs on LinkedIn
                     </Button>
-                    <Button variant="outline" className="border-blue-600 text-blue-700">
+                    <Button
+                      variant="outline"
+                      className="border-blue-600 text-blue-700"
+                    >
                       Browse Our Job Matches
                     </Button>
                   </div>
@@ -710,10 +810,10 @@ export function CareerArchaeologyOnboarding({ onComplete }: CareerArchaeologyOnb
                     <Textarea
                       placeholder="Paste job description here..."
                       value={jobDescription}
-                      onChange={(e) => setJobDescription(e.target.value)}
+                      onChange={e => setJobDescription(e.target.value)}
                       className="min-h-[200px] mb-4 bg-white"
                     />
-                    
+
                     {jobDescription.length > 50 && (
                       <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -721,10 +821,13 @@ export function CareerArchaeologyOnboarding({ onComplete }: CareerArchaeologyOnb
                         className="space-y-4"
                       >
                         <div className="text-sm text-gray-600 mb-2">
-                          <strong>Example:</strong> Senior Director of Engineering @ TechScale Startup
+                          <strong>Example:</strong> Senior Director of
+                          Engineering @ TechScale Startup
                         </div>
                         <div className="text-sm text-gray-700 space-y-1 mb-4">
-                          <div><strong>Requirements:</strong></div>
+                          <div>
+                            <strong>Requirements:</strong>
+                          </div>
                           <div>• 10+ years tech leadership</div>
                           <div>• Team scaling experience</div>
                           <div>• Revenue growth track record</div>
@@ -744,8 +847,8 @@ export function CareerArchaeologyOnboarding({ onComplete }: CareerArchaeologyOnb
                         {/* Perfect Matches */}
                         <div className="bg-green-50 border border-green-200 rounded-lg p-6">
                           <h3 className="font-semibold text-green-900 mb-3 flex items-center gap-2">
-                            <CheckCircle2 className="h-5 w-5" />
-                            ✅ Perfect Matches:
+                            <CheckCircle2 className="h-5 w-5" />✅ Perfect
+                            Matches:
                           </h3>
                           <div className="text-sm text-green-800 space-y-2">
                             <div>• 12 years leadership experience</div>
@@ -761,15 +864,22 @@ export function CareerArchaeologyOnboarding({ onComplete }: CareerArchaeologyOnb
                             🎯 AI Tailoring Strategy:
                           </h3>
                           <div className="text-sm text-blue-800">
-                            We'll emphasize your scaling experience and revenue impact
+                            We'll emphasize your scaling experience and revenue
+                            impact
                           </div>
                         </div>
 
                         <div className="flex gap-3">
-                          <Button variant="outline" className="flex-1 border-blue-600 text-blue-700">
+                          <Button
+                            variant="outline"
+                            className="flex-1 border-blue-600 text-blue-700"
+                          >
                             See Tailored Resume
                           </Button>
-                          <Button variant="outline" className="flex-1 border-blue-600 text-blue-700">
+                          <Button
+                            variant="outline"
+                            className="flex-1 border-blue-600 text-blue-700"
+                          >
                             Generate Cover Letter
                           </Button>
                         </div>
@@ -807,7 +917,7 @@ export function CareerArchaeologyOnboarding({ onComplete }: CareerArchaeologyOnb
                         particleCount: 100,
                         spread: 70,
                         origin: { y: 0.6 },
-                        colors: ['#2563EB', '#F97316', '#10B981'],
+                        colors: ["#2563EB", "#F97316", "#10B981"],
                       });
                       onComplete();
                     }}

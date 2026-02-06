@@ -80,9 +80,9 @@ Our team values collaboration, innovation, and work-life balance. We're a fast-p
     // Verify painPoints array (exactly 3)
     expect(Array.isArray(result.painPoints)).toBe(true);
     expect(result.painPoints.length).toBe(3);
-    
+
     // Verify each pain point is a non-empty string
-    result.painPoints.forEach((painPoint) => {
+    result.painPoints.forEach(painPoint => {
       expect(typeof painPoint).toBe("string");
       expect(painPoint.length).toBeGreaterThan(10);
     });
@@ -94,8 +94,8 @@ Our team values collaboration, innovation, and work-life balance. We're a fast-p
     // Verify interview questions array (exactly 3)
     expect(Array.isArray(result.interviewQuestions)).toBe(true);
     expect(result.interviewQuestions.length).toBe(3);
-    
-    result.interviewQuestions.forEach((question) => {
+
+    result.interviewQuestions.forEach(question => {
       expect(typeof question).toBe("string");
       expect(question.length).toBeGreaterThan(10);
       // Questions should typically end with a question mark
@@ -108,7 +108,9 @@ Our team values collaboration, innovation, and work-life balance. We're a fast-p
     console.log("\nStrategic Hook:");
     console.log(`  ${result.strategicHook}`);
     console.log("\nInterview Questions:");
-    result.interviewQuestions.forEach((q, i) => console.log(`  ${i + 1}. ${q}`));
+    result.interviewQuestions.forEach((q, i) =>
+      console.log(`  ${i + 1}. ${q}`)
+    );
   });
 
   it.skip("should persist profiler analysis in database (requires LLM)", async () => {

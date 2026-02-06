@@ -10,9 +10,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { 
-  ArrowLeft, Copy, CheckCircle2, ExternalLink, 
-  FileText, Mail, MessageSquare, Briefcase, Download, Loader2, FileDown
+import {
+  ArrowLeft,
+  Copy,
+  CheckCircle2,
+  ExternalLink,
+  FileText,
+  Mail,
+  MessageSquare,
+  Briefcase,
+  Download,
+  Loader2,
+  FileDown,
 } from "lucide-react";
 import StatusPipeline from "@/components/StatusPipeline";
 import NotesSection from "@/components/NotesSection";
@@ -25,22 +34,29 @@ export default function ApplicationDetail() {
   // Using sonner toast
   const [copiedItem, setCopiedItem] = useState<string | null>(null);
 
-  const { data: application, isLoading, refetch } = trpc.applications.getById.useQuery(
+  const {
+    data: application,
+    isLoading,
+    refetch,
+  } = trpc.applications.getById.useQuery(
     { id: parseInt(id!) },
     { enabled: !!id }
   );
 
-  const { data: packageStatus, isLoading: packageStatusLoading } = trpc.applications.getPackageStatus.useQuery(
-    { applicationId: parseInt(id!) },
-    { enabled: !!id && !!application }
-  );
+  const { data: packageStatus, isLoading: packageStatusLoading } =
+    trpc.applications.getPackageStatus.useQuery(
+      { applicationId: parseInt(id!) },
+      { enabled: !!id && !!application }
+    );
 
   const generatePackage = trpc.applications.generatePackage.useMutation({
     onSuccess: () => {
-      toast.success("Package generation started. You'll be notified when it's ready.");
+      toast.success(
+        "Package generation started. You'll be notified when it's ready."
+      );
       refetch();
     },
-    onError: (e) => toast.error(e.message),
+    onError: e => toast.error(e.message),
   });
 
   const { data: opportunity } = trpc.opportunities.getById.useQuery(
@@ -108,11 +124,17 @@ export default function ApplicationDetail() {
 
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-3xl font-bold mb-2">{opportunity?.roleTitle || "Job Title"}</h1>
-            <p className="text-xl text-muted-foreground mb-3">{opportunity?.companyName || "Company"}</p>
+            <h1 className="text-3xl font-bold mb-2">
+              {opportunity?.roleTitle || "Job Title"}
+            </h1>
+            <p className="text-xl text-muted-foreground mb-3">
+              {opportunity?.companyName || "Company"}
+            </p>
             <div className="flex items-center gap-3">
-              <Badge className={statusColors[application.status || 'draft']}>
-                {(application.status || 'draft').replace('_', ' ').toUpperCase()}
+              <Badge className={statusColors[application.status || "draft"]}>
+                {(application.status || "draft")
+                  .replace("_", " ")
+                  .toUpperCase()}
               </Badge>
               {application.appliedAt && (
                 <span className="text-sm text-muted-foreground">
@@ -139,7 +161,11 @@ export default function ApplicationDetail() {
                 <DropdownMenuContent align="end">
                   {packageStatus.files?.resumePDF && (
                     <DropdownMenuItem asChild>
-                      <a href={packageStatus.files.resumePDF} target="_blank" rel="noopener noreferrer">
+                      <a
+                        href={packageStatus.files.resumePDF}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         <FileText className="w-4 h-4 mr-2" />
                         Resume (PDF)
                       </a>
@@ -147,7 +173,11 @@ export default function ApplicationDetail() {
                   )}
                   {packageStatus.files?.resumeDOCX && (
                     <DropdownMenuItem asChild>
-                      <a href={packageStatus.files.resumeDOCX} target="_blank" rel="noopener noreferrer">
+                      <a
+                        href={packageStatus.files.resumeDOCX}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         <FileDown className="w-4 h-4 mr-2" />
                         Resume (DOCX)
                       </a>
@@ -155,7 +185,11 @@ export default function ApplicationDetail() {
                   )}
                   {packageStatus.packageUrl && (
                     <DropdownMenuItem asChild>
-                      <a href={packageStatus.packageUrl} target="_blank" rel="noopener noreferrer">
+                      <a
+                        href={packageStatus.packageUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         <Download className="w-4 h-4 mr-2" />
                         Full package (ZIP)
                       </a>
@@ -166,7 +200,9 @@ export default function ApplicationDetail() {
             ) : (
               <Button
                 variant="outline"
-                onClick={() => generatePackage.mutate({ applicationId: application!.id! })}
+                onClick={() =>
+                  generatePackage.mutate({ applicationId: application!.id! })
+                }
                 disabled={generatePackage.isPending}
               >
                 {generatePackage.isPending ? (
@@ -184,7 +220,11 @@ export default function ApplicationDetail() {
             )}
             {opportunity?.jobUrl && (
               <Button variant="outline" asChild>
-                <a href={opportunity.jobUrl} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={opportunity.jobUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   View Job Posting
                   <ExternalLink className="w-4 h-4 ml-2" />
                 </a>
@@ -237,7 +277,8 @@ export default function ApplicationDetail() {
                   <div className="mb-6">
                     <div className="absolute -left-2 w-4 h-4 rounded-full bg-blue-500 border-2 border-white" />
                     <div className="text-sm text-muted-foreground mb-1">
-                      {new Date(application.createdAt).toLocaleDateString()} at {new Date(application.createdAt).toLocaleTimeString()}
+                      {new Date(application.createdAt).toLocaleDateString()} at{" "}
+                      {new Date(application.createdAt).toLocaleTimeString()}
                     </div>
                     <div className="font-medium">Application Created</div>
                     <div className="text-sm text-muted-foreground mt-1">
@@ -250,11 +291,12 @@ export default function ApplicationDetail() {
                   <div className="mb-6">
                     <div className="absolute -left-2 w-4 h-4 rounded-full bg-green-500 border-2 border-white" />
                     <div className="text-sm text-muted-foreground mb-1">
-                      {new Date(application.appliedAt).toLocaleDateString()} at {new Date(application.appliedAt).toLocaleTimeString()}
+                      {new Date(application.appliedAt).toLocaleDateString()} at{" "}
+                      {new Date(application.appliedAt).toLocaleTimeString()}
                     </div>
                     <div className="font-medium">Application Submitted</div>
                     <div className="text-sm text-muted-foreground mt-1">
-                      Applied via {application.appliedVia || 'company website'}
+                      Applied via {application.appliedVia || "company website"}
                     </div>
                   </div>
                 )}
@@ -263,7 +305,13 @@ export default function ApplicationDetail() {
                   <div className="mb-6">
                     <div className="absolute -left-2 w-4 h-4 rounded-full bg-purple-500 border-2 border-white" />
                     <div className="text-sm text-muted-foreground mb-1">
-                      {new Date(application.responseReceivedAt).toLocaleDateString()} at {new Date(application.responseReceivedAt).toLocaleTimeString()}
+                      {new Date(
+                        application.responseReceivedAt
+                      ).toLocaleDateString()}{" "}
+                      at{" "}
+                      {new Date(
+                        application.responseReceivedAt
+                      ).toLocaleTimeString()}
                     </div>
                     <div className="font-medium">Response Received</div>
                     <div className="text-sm text-muted-foreground mt-1">
@@ -276,7 +324,9 @@ export default function ApplicationDetail() {
                   <div className="mb-6">
                     <div className="absolute -left-2 w-4 h-4 rounded-full bg-yellow-500 border-2 border-white" />
                     <div className="text-sm text-muted-foreground mb-1">
-                      {new Date(application.phoneScreenAt).toLocaleDateString()} at {new Date(application.phoneScreenAt).toLocaleTimeString()}
+                      {new Date(application.phoneScreenAt).toLocaleDateString()}{" "}
+                      at{" "}
+                      {new Date(application.phoneScreenAt).toLocaleTimeString()}
                     </div>
                     <div className="font-medium">Phone Screen Completed</div>
                   </div>
@@ -286,7 +336,13 @@ export default function ApplicationDetail() {
                   <div className="mb-6">
                     <div className="absolute -left-2 w-4 h-4 rounded-full bg-orange-500 border-2 border-white" />
                     <div className="text-sm text-muted-foreground mb-1">
-                      {new Date(application.interviewScheduledAt).toLocaleDateString()} at {new Date(application.interviewScheduledAt).toLocaleTimeString()}
+                      {new Date(
+                        application.interviewScheduledAt
+                      ).toLocaleDateString()}{" "}
+                      at{" "}
+                      {new Date(
+                        application.interviewScheduledAt
+                      ).toLocaleTimeString()}
                     </div>
                     <div className="font-medium">Interview Scheduled</div>
                   </div>
@@ -296,7 +352,13 @@ export default function ApplicationDetail() {
                   <div className="mb-6">
                     <div className="absolute -left-2 w-4 h-4 rounded-full bg-emerald-500 border-2 border-white" />
                     <div className="text-sm text-muted-foreground mb-1">
-                      {new Date(application.offerReceivedAt).toLocaleDateString()} at {new Date(application.offerReceivedAt).toLocaleTimeString()}
+                      {new Date(
+                        application.offerReceivedAt
+                      ).toLocaleDateString()}{" "}
+                      at{" "}
+                      {new Date(
+                        application.offerReceivedAt
+                      ).toLocaleTimeString()}
                     </div>
                     <div className="font-medium">Offer Received</div>
                     <div className="text-sm text-muted-foreground mt-1">
@@ -309,7 +371,13 @@ export default function ApplicationDetail() {
                   <div className="mb-6">
                     <div className="absolute -left-2 w-4 h-4 rounded-full bg-blue-400 border-2 border-white" />
                     <div className="text-sm text-muted-foreground mb-1">
-                      {new Date(application.lastFollowUpAt).toLocaleDateString()} at {new Date(application.lastFollowUpAt).toLocaleTimeString()}
+                      {new Date(
+                        application.lastFollowUpAt
+                      ).toLocaleDateString()}{" "}
+                      at{" "}
+                      {new Date(
+                        application.lastFollowUpAt
+                      ).toLocaleTimeString()}
                     </div>
                     <div className="font-medium">Follow-up Sent</div>
                     <div className="text-sm text-muted-foreground mt-1">
@@ -328,7 +396,9 @@ export default function ApplicationDetail() {
                         Next Follow-up Due
                       </div>
                       <div className="text-sm text-orange-700 dark:text-orange-300">
-                        {new Date(application.nextFollowUpDue).toLocaleDateString()}
+                        {new Date(
+                          application.nextFollowUpDue
+                        ).toLocaleDateString()}
                       </div>
                     </div>
                   </div>
@@ -348,7 +418,9 @@ export default function ApplicationDetail() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => copyToClipboard(application.tailoredResumeText!, "Resume")}
+                    onClick={() =>
+                      copyToClipboard(application.tailoredResumeText!, "Resume")
+                    }
                   >
                     {copiedItem === "Resume" ? (
                       <CheckCircle2 className="w-4 h-4 mr-2" />
@@ -360,7 +432,11 @@ export default function ApplicationDetail() {
                 )}
                 {application.tailoredResumeUrl && (
                   <Button variant="outline" size="sm" asChild>
-                    <a href={application.tailoredResumeUrl} target="_blank" rel="noopener noreferrer">
+                    <a
+                      href={application.tailoredResumeUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       Download PDF
                       <ExternalLink className="w-4 h-4 ml-2" />
                     </a>
@@ -392,7 +468,12 @@ export default function ApplicationDetail() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => copyToClipboard(application.coverLetterText!, "Cover Letter")}
+                  onClick={() =>
+                    copyToClipboard(
+                      application.coverLetterText!,
+                      "Cover Letter"
+                    )
+                  }
                 >
                   {copiedItem === "Cover Letter" ? (
                     <CheckCircle2 className="w-4 h-4 mr-2" />
@@ -422,12 +503,19 @@ export default function ApplicationDetail() {
         <TabsContent value="linkedin">
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">LinkedIn Connection Message</h3>
+              <h3 className="text-lg font-semibold">
+                LinkedIn Connection Message
+              </h3>
               {application.linkedinMessage && (
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => copyToClipboard(application.linkedinMessage!, "LinkedIn Message")}
+                  onClick={() =>
+                    copyToClipboard(
+                      application.linkedinMessage!,
+                      "LinkedIn Message"
+                    )
+                  }
                 >
                   {copiedItem === "LinkedIn Message" ? (
                     <CheckCircle2 className="w-4 h-4 mr-2" />
@@ -442,11 +530,16 @@ export default function ApplicationDetail() {
             {application.linkedinMessage ? (
               <div className="space-y-4">
                 <div className="bg-muted p-4 rounded-lg">
-                  <p className="text-sm font-medium mb-2">To: {opportunity?.hiringManagerName || "Hiring Manager"}</p>
-                  <p className="text-sm whitespace-pre-wrap">{application.linkedinMessage}</p>
+                  <p className="text-sm font-medium mb-2">
+                    To: {opportunity?.hiringManagerName || "Hiring Manager"}
+                  </p>
+                  <p className="text-sm whitespace-pre-wrap">
+                    {application.linkedinMessage}
+                  </p>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  💡 Tip: Personalize this message before sending. Mention a specific post or achievement from their profile.
+                  💡 Tip: Personalize this message before sending. Mention a
+                  specific post or achievement from their profile.
                 </p>
               </div>
             ) : (
@@ -466,7 +559,9 @@ export default function ApplicationDetail() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => copyToClipboard(application.emailTemplate!, "Email")}
+                  onClick={() =>
+                    copyToClipboard(application.emailTemplate!, "Email")
+                  }
                 >
                   {copiedItem === "Email" ? (
                     <CheckCircle2 className="w-4 h-4 mr-2" />
@@ -483,14 +578,22 @@ export default function ApplicationDetail() {
                 <div className="bg-muted p-4 rounded-lg space-y-3">
                   <div>
                     <p className="text-xs text-muted-foreground">Subject:</p>
-                    <p className="text-sm font-medium">Application for {opportunity?.roleTitle}</p>
+                    <p className="text-sm font-medium">
+                      Application for {opportunity?.roleTitle}
+                    </p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">To:</p>
-                    <p className="text-sm">{opportunity?.hiringManagerEmail || opportunity?.hiringManagerName || "hiring@company.com"}</p>
+                    <p className="text-sm">
+                      {opportunity?.hiringManagerEmail ||
+                        opportunity?.hiringManagerName ||
+                        "hiring@company.com"}
+                    </p>
                   </div>
                   <hr className="border-muted-foreground/20" />
-                  <p className="text-sm whitespace-pre-wrap">{application.emailTemplate}</p>
+                  <p className="text-sm whitespace-pre-wrap">
+                    {application.emailTemplate}
+                  </p>
                 </div>
                 <p className="text-xs text-muted-foreground">
                   💡 Tip: Send this within 24 hours of applying to stand out.
@@ -527,7 +630,9 @@ export default function ApplicationDetail() {
           </li>
           <li className="flex items-start">
             <span className="mr-2">3.</span>
-            <span>Send LinkedIn connection request to hiring manager within 24 hours</span>
+            <span>
+              Send LinkedIn connection request to hiring manager within 24 hours
+            </span>
           </li>
           <li className="flex items-start">
             <span className="mr-2">4.</span>

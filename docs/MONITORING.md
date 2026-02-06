@@ -32,22 +32,22 @@ Get your token from Cloudflare → My Profile → API Tokens. Zone ID is in the 
 
 ## Commands
 
-| Command | Description |
-|---------|-------------|
-| `pnpm run monitor` | One-shot: GitHub CI, Railway status, app health, Cloudflare (if configured) |
-| `pnpm run monitor:watch` | Poll every 60s; macOS desktop notifications on failures |
+| Command                  | Description                                                                 |
+| ------------------------ | --------------------------------------------------------------------------- |
+| `pnpm run monitor`       | One-shot: GitHub CI, Railway status, app health, Cloudflare (if configured) |
+| `pnpm run monitor:watch` | Poll every 60s; macOS desktop notifications on failures                     |
 
 ---
 
 ## What It Checks
 
-| Source | Check |
-|--------|-------|
-| **GitHub** | Last 5 workflow runs (`gh run list`); reports failures |
-| **Railway** | `railway status`; deployment state |
-| **Railway logs** | Recent log lines; flags ERROR/failed/500 patterns |
-| **App health** | `GET https://careerswarm.com/api/health` |
-| **Cloudflare** | Zone status (active) if `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ZONE_ID` set |
+| Source           | Check                                                                     |
+| ---------------- | ------------------------------------------------------------------------- |
+| **GitHub**       | Last 5 workflow runs (`gh run list`); reports failures                    |
+| **Railway**      | `railway status`; deployment state                                        |
+| **Railway logs** | Recent log lines; flags ERROR/failed/500 patterns                         |
+| **App health**   | `GET https://careerswarm.com/api/health`                                  |
+| **Cloudflare**   | Zone status (active) if `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ZONE_ID` set |
 
 ---
 

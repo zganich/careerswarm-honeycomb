@@ -14,8 +14,10 @@ describe("Resume Tailor Logic", () => {
         { id: 2, impactMeterScore: 50 },
         { id: 3, impactMeterScore: 80 },
       ];
-      
-      const sorted = achievements.sort((a, b) => b.impactMeterScore - a.impactMeterScore);
+
+      const sorted = achievements.sort(
+        (a, b) => b.impactMeterScore - a.impactMeterScore
+      );
       expect(sorted[0].impactMeterScore).toBe(90);
       expect(sorted[1].impactMeterScore).toBe(80);
     });
@@ -45,7 +47,7 @@ describe("Resume Tailor Logic", () => {
     it("should identify missing keywords", () => {
       const jdKeywords = ["Python", "AWS", "Docker", "Kubernetes"];
       const profileKeywords = ["Python", "AWS"];
-      
+
       const missing = jdKeywords.filter(k => !profileKeywords.includes(k));
       expect(missing).toEqual(["Docker", "Kubernetes"]);
     });
@@ -53,7 +55,7 @@ describe("Resume Tailor Logic", () => {
     it("should handle case when no keywords are missing", () => {
       const jdKeywords = ["Python", "AWS"];
       const profileKeywords = ["Python", "AWS", "Docker"];
-      
+
       const missing = jdKeywords.filter(k => !profileKeywords.includes(k));
       expect(missing).toEqual([]);
     });
@@ -61,7 +63,8 @@ describe("Resume Tailor Logic", () => {
 
   describe("Professional Summary Generation", () => {
     it("should generate summary with role-specific language", () => {
-      const summary = "Experienced Software Engineer with 5 years of expertise in full-stack development.";
+      const summary =
+        "Experienced Software Engineer with 5 years of expertise in full-stack development.";
       expect(summary).toContain("Software Engineer");
       expect(summary.length).toBeGreaterThan(50);
     });
@@ -77,8 +80,9 @@ describe("Resume Tailor Logic", () => {
   describe("Input Validation", () => {
     it("should require job description with minimum length", () => {
       const shortJD = "Software Engineer";
-      const longJD = "We are looking for an experienced Software Engineer with 5+ years of experience in Python and AWS.";
-      
+      const longJD =
+        "We are looking for an experienced Software Engineer with 5+ years of experience in Python and AWS.";
+
       expect(shortJD.length).toBeLessThan(50);
       expect(longJD.length).toBeGreaterThanOrEqual(50);
     });
@@ -89,7 +93,7 @@ describe("Resume Tailor Logic", () => {
         company: "Google",
         jobDescription: "Long description here...",
       };
-      
+
       expect(input.jobTitle.length).toBeGreaterThanOrEqual(2);
       expect(input.company.length).toBeGreaterThanOrEqual(2);
     });
@@ -111,7 +115,7 @@ Experienced engineer with proven track record.
 
 ## Professional Experience
 ...`;
-      
+
       expect(resumeContent).toContain("Professional Summary");
     });
 
@@ -123,7 +127,7 @@ Experienced engineer with proven track record.
 - **Task:** Reduce API latency by 50%
 - **Action:** Implemented caching layer
 - **Result:** Achieved 60% latency reduction`;
-      
+
       expect(resumeContent).toContain("Situation:");
       expect(resumeContent).toContain("Task:");
       expect(resumeContent).toContain("Action:");
@@ -144,7 +148,7 @@ Experienced engineer with proven track record.
         missingKeywords: ["Docker"],
         professionalSummary: "Experienced engineer...",
       });
-      
+
       const parsed = JSON.parse(jsonResponse);
       expect(parsed.selectedAchievementIds).toHaveLength(3);
       expect(parsed.matchScore).toBe(85);
@@ -152,7 +156,9 @@ Experienced engineer with proven track record.
 
     it("should handle JSON with markdown code blocks", () => {
       const responseWithMarkdown = '```json\n{"matchScore": 85}\n```';
-      const cleaned = responseWithMarkdown.replace(/```json\n?|```\n?/g, "").trim();
+      const cleaned = responseWithMarkdown
+        .replace(/```json\n?|```\n?/g, "")
+        .trim();
       const parsed = JSON.parse(cleaned);
       expect(parsed.matchScore).toBe(85);
     });
@@ -164,7 +170,7 @@ Experienced engineer with proven track record.
         missingKeywords: [],
         professionalSummary: "Summary",
       };
-      
+
       expect(validResponse.selectedAchievementIds).toBeDefined();
       expect(Array.isArray(validResponse.selectedAchievementIds)).toBe(true);
     });
@@ -174,7 +180,7 @@ Experienced engineer with proven track record.
         matchScore: 85,
         // missing selectedAchievementIds
       };
-      
+
       expect(invalidResponse.selectedAchievementIds).toBeUndefined();
     });
   });

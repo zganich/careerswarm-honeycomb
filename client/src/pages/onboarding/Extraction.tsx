@@ -24,7 +24,7 @@ export default function Extraction() {
     "Identifying achievements...",
     "Analyzing metrics and impact...",
     "Discovering your superpowers...",
-    "Building your Master Profile..."
+    "Building your Master Profile...",
   ];
 
   useEffect(() => {
@@ -37,9 +37,14 @@ export default function Extraction() {
         const progressUrl = `${window.location.origin}/api/resume-progress`;
         const es = new EventSource(progressUrl);
         progressEventSourceRef.current = es;
-        es.onmessage = (ev) => {
+        es.onmessage = ev => {
           try {
-            const data = JSON.parse(ev.data) as { phase?: string; message?: string; current?: number; total?: number };
+            const data = JSON.parse(ev.data) as {
+              phase?: string;
+              message?: string;
+              current?: number;
+              total?: number;
+            };
             if (data.message) setProgressMessage(data.message);
             if (data.phase === "done" || data.phase === "error") es.close();
           } catch (_) {}
@@ -47,7 +52,7 @@ export default function Extraction() {
         es.onerror = () => es.close();
 
         stepIntervalRef.current = setInterval(() => {
-          setCurrentStep((prev) => (prev < steps.length - 1 ? prev + 1 : prev));
+          setCurrentStep(prev => (prev < steps.length - 1 ? prev + 1 : prev));
         }, 1500);
 
         await processResumesMutation.mutateAsync();
@@ -72,7 +77,9 @@ export default function Extraction() {
           clearInterval(stepIntervalRef.current);
           stepIntervalRef.current = null;
         }
-        setError(err?.message || "Failed to extract profile. Please try again.");
+        setError(
+          err?.message || "Failed to extract profile. Please try again."
+        );
         toast.error("Failed to extract profile. Please try again.");
         console.error(err);
       }
@@ -99,9 +106,7 @@ export default function Extraction() {
             <Award className="h-6 w-6 text-primary" />
             <span className="font-bold text-xl">CareerSwarm</span>
           </div>
-          <div className="text-sm text-muted-foreground">
-            Step 3 of 5
-          </div>
+          <div className="text-sm text-muted-foreground">Step 3 of 5</div>
         </div>
       </header>
 
@@ -109,7 +114,10 @@ export default function Extraction() {
       <div className="bg-white border-b">
         <div className="container">
           <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-            <div className="h-full bg-primary transition-all duration-300" style={{ width: "60%" }} />
+            <div
+              className="h-full bg-primary transition-all duration-300"
+              style={{ width: "60%" }}
+            />
           </div>
         </div>
       </div>
@@ -125,18 +133,21 @@ export default function Extraction() {
             )}
           </div>
           <h1 className="text-3xl md:text-4xl font-bold mb-4">
-            {isComplete ? "Extraction Complete!" : "AI is Analyzing Your Resumes"}
+            {isComplete
+              ? "Extraction Complete!"
+              : "AI is Analyzing Your Resumes"}
           </h1>
           <p className="text-lg text-muted-foreground">
             {isComplete
               ? "Your Master Profile is ready for review"
-              : progressMessage || "This usually takes about 30 seconds..."
-            }
+              : progressMessage || "This usually takes about 30 seconds..."}
           </p>
         </div>
 
         {/* Labor Illusion Component */}
-        {!isComplete && !error && <LaborIllusion variant="extraction" onComplete={() => {}} />}
+        {!isComplete && !error && (
+          <LaborIllusion variant="extraction" onComplete={() => {}} />
+        )}
 
         {error && (
           <Card className="mb-6 border-destructive">
@@ -151,13 +162,15 @@ export default function Extraction() {
             </CardContent>
           </Card>
         )}
-        
+
         {isComplete && (
           <Card>
             <CardContent className="pt-6 text-center">
               <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
               <h3 className="text-xl font-bold mb-2">Master Profile Ready!</h3>
-              <p className="text-muted-foreground">Your career data has been analyzed and structured</p>
+              <p className="text-muted-foreground">
+                Your career data has been analyzed and structured
+              </p>
             </CardContent>
           </Card>
         )}

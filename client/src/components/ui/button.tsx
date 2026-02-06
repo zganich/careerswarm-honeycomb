@@ -10,23 +10,29 @@ const buttonVariants = cva(
     variants: {
       variant: {
         // Primary: Matte Orange background, White text, rounded, matte finish
-        default: "bg-[#E8934C] text-white hover:bg-[#D67F3A] active:bg-[#C46B28] rounded-lg shadow-none border-none",
-        
+        default:
+          "bg-[#E8934C] text-white hover:bg-[#D67F3A] active:bg-[#C46B28] rounded-lg shadow-none border-none",
+
         // Secondary: Soft Amber background, Charcoal text, light yellow border
-        secondary: "bg-[#D4A574] text-[#2A2D34] hover:bg-[#C89563] active:bg-[#BC8552] border border-[#F4E5A1] rounded-lg shadow-none",
-        
+        secondary:
+          "bg-[#D4A574] text-[#2A2D34] hover:bg-[#C89563] active:bg-[#BC8552] border border-[#F4E5A1] rounded-lg shadow-none",
+
         // Tertiary: Text only with Honey Gold underline on hover
-        tertiary: "bg-transparent text-[#2A2D34] dark:text-[#F9F5EF] hover:underline hover:decoration-[#E8D399] hover:underline-offset-4 rounded-none shadow-none",
-        
+        tertiary:
+          "bg-transparent text-[#2A2D34] dark:text-[#F9F5EF] hover:underline hover:decoration-[#E8D399] hover:underline-offset-4 rounded-none shadow-none",
+
         // Destructive: Soft Coral with darker text
-        destructive: "bg-[#F5E3E0] text-[#8C3A2B] hover:bg-[#EDD3CF] active:bg-[#E5C3BE] rounded-lg shadow-none border border-[#F4E5A1]",
-        
+        destructive:
+          "bg-[#F5E3E0] text-[#8C3A2B] hover:bg-[#EDD3CF] active:bg-[#E5C3BE] rounded-lg shadow-none border border-[#F4E5A1]",
+
         // Outline: Transparent with warm yellow border
-        outline: "border border-[#F4E5A1] bg-transparent text-[#2A2D34] dark:text-[#F9F5EF] hover:bg-[#F4E5A1]/20 dark:hover:bg-[#F4E5A1]/10 rounded-lg shadow-none",
-        
+        outline:
+          "border border-[#F4E5A1] bg-transparent text-[#2A2D34] dark:text-[#F9F5EF] hover:bg-[#F4E5A1]/20 dark:hover:bg-[#F4E5A1]/10 rounded-lg shadow-none",
+
         // Ghost: Minimal hover state with light beige
-        ghost: "bg-transparent text-[#2A2D34] dark:text-[#F9F5EF] hover:bg-[#F9F5EF] dark:hover:bg-[#5A5A5A]/20 rounded-lg shadow-none",
-        
+        ghost:
+          "bg-transparent text-[#2A2D34] dark:text-[#F9F5EF] hover:bg-[#F9F5EF] dark:hover:bg-[#5A5A5A]/20 rounded-lg shadow-none",
+
         // Link: Honey Gold text link
         link: "text-[#E8D399] underline-offset-4 hover:underline rounded-none shadow-none",
       },

@@ -14,7 +14,11 @@ interface NotesSectionProps {
 export default function NotesSection({ applicationId }: NotesSectionProps) {
   const [noteText, setNoteText] = useState("");
 
-  const { data: notes, isLoading, refetch } = trpc.applications.getNotes.useQuery(
+  const {
+    data: notes,
+    isLoading,
+    refetch,
+  } = trpc.applications.getNotes.useQuery(
     { applicationId },
     { enabled: !!applicationId }
   );
@@ -25,7 +29,7 @@ export default function NotesSection({ applicationId }: NotesSectionProps) {
       setNoteText("");
       refetch();
     },
-    onError: (error) => {
+    onError: error => {
       toast.error(`Failed to add note: ${error.message}`);
     },
   });
@@ -35,7 +39,7 @@ export default function NotesSection({ applicationId }: NotesSectionProps) {
       toast.success("Note deleted");
       refetch();
     },
-    onError: (error) => {
+    onError: error => {
       toast.error(`Failed to delete note: ${error.message}`);
     },
   });
@@ -71,7 +75,7 @@ export default function NotesSection({ applicationId }: NotesSectionProps) {
             <Textarea
               placeholder="Add a note about this application (e.g., follow-up sent, phone screen scheduled, feedback received)..."
               value={noteText}
-              onChange={(e) => setNoteText(e.target.value)}
+              onChange={e => setNoteText(e.target.value)}
               rows={3}
               className="resize-none"
             />
@@ -101,24 +105,31 @@ export default function NotesSection({ applicationId }: NotesSectionProps) {
             </div>
           ) : (
             <div className="space-y-4">
-              {notes.map((note) => (
+              {notes.map(note => (
                 <div
                   key={note.id}
                   className="p-4 bg-muted/50 rounded-lg border border-border hover:bg-muted/70 transition-colors"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1">
-                      <p className="text-sm whitespace-pre-wrap">{note.noteText}</p>
+                      <p className="text-sm whitespace-pre-wrap">
+                        {note.noteText}
+                      </p>
                       <p className="text-xs text-muted-foreground mt-2">
                         {note.createdAt
-                          ? formatDistanceToNow(new Date(note.createdAt), { addSuffix: true })
+                          ? formatDistanceToNow(new Date(note.createdAt), {
+                              addSuffix: true,
+                            })
                           : "Recently"}
                       </p>
                     </div>
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => note.id && deleteNoteMutation.mutate({ noteId: note.id })}
+                      onClick={() =>
+                        note.id &&
+                        deleteNoteMutation.mutate({ noteId: note.id })
+                      }
                       disabled={deleteNoteMutation.isPending}
                       className="shrink-0"
                     >

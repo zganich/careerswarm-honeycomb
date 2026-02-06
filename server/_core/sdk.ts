@@ -267,34 +267,34 @@ class SDKServer {
   async authenticateRequest(req: Request): Promise<User> {
     // Check for Bearer token in Authorization header (dev login)
     const authHeader = req.headers.authorization;
-    if (authHeader && authHeader.startsWith('Bearer ')) {
+    if (authHeader && authHeader.startsWith("Bearer ")) {
       const token = authHeader.substring(7);
       const session = await this.verifySession(token);
-      
+
       if (session) {
         const sessionUserId = session.openId;
         const signedInAt = new Date();
         let user = await db.getUserByOpenId(sessionUserId);
-        
+
         if (!user) {
           // Create user from session
           await db.upsertUser({
             openId: sessionUserId,
-            name: session.name || 'Test User',
-            email: sessionUserId.includes('@') ? sessionUserId : undefined,
+            name: session.name || "Test User",
+            email: sessionUserId.includes("@") ? sessionUserId : undefined,
             lastSignedIn: signedInAt,
           });
           user = await db.getUserByOpenId(sessionUserId);
         }
-        
+
         if (!user) {
           throw ForbiddenError("Failed to create user");
         }
-        
+
         return user;
       }
     }
-    
+
     // Regular cookie-based authentication flow
     const cookies = this.parseCookies(req.headers.cookie);
     const sessionCookie = cookies.get(COOKIE_NAME);
@@ -312,13 +312,16 @@ class SDKServer {
     if (!user) {
       if (!ENV.oAuthServerUrl) {
         // Email-only auth: create user from session (openId e.g. dev-email@example.com, test-user-*)
-        const email =
-          sessionUserId.startsWith("dev-") ? sessionUserId.replace(/^dev-/, "") : null;
+        const email = sessionUserId.startsWith("dev-")
+          ? sessionUserId.replace(/^dev-/, "")
+          : null;
         await db.upsertUser({
           openId: sessionUserId,
           name: session.name || "User",
           email,
-          loginMethod: sessionUserId.startsWith("test-user-") ? "test" : "email",
+          loginMethod: sessionUserId.startsWith("test-user-")
+            ? "test"
+            : "email",
           lastSignedIn: signedInAt,
         });
         user = await db.getUserByOpenId(sessionUserId);
@@ -334,12 +337,19 @@ class SDKServer {
           });
           user = await db.getUserByOpenId(userInfo.openId);
         } catch (error) {
-          if (sessionUserId.startsWith("test-user-") || sessionUserId.startsWith("dev-")) {
+          if (
+            sessionUserId.startsWith("test-user-") ||
+            sessionUserId.startsWith("dev-")
+          ) {
             await db.upsertUser({
               openId: sessionUserId,
               name: session.name || "User",
-              email: sessionUserId.startsWith("dev-") ? sessionUserId.replace(/^dev-/, "") : null,
-              loginMethod: sessionUserId.startsWith("test-user-") ? "test" : "email",
+              email: sessionUserId.startsWith("dev-")
+                ? sessionUserId.replace(/^dev-/, "")
+                : null,
+              loginMethod: sessionUserId.startsWith("test-user-")
+                ? "test"
+                : "email",
               lastSignedIn: signedInAt,
             });
             user = await db.getUserByOpenId(sessionUserId);

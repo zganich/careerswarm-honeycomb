@@ -19,12 +19,15 @@
 ## Test Setup
 
 ### Approach
+
 Since authentication flow had issues, created a test script (`test-package-simple.mjs`) that:
+
 1. Creates test data directly in database (user, profile, work experience, achievements, skills, opportunity, application)
 2. Invokes agents directly (Tailor → Scribe → Assembler)
 3. Verifies database updates
 
 ### Test Data Created
+
 - **User:** Test User (ID: 2190006)
 - **Work Experience:** Software Engineer at Acme Corp (2020-2023)
 - **Achievements:** 3 CAR-framework achievements
@@ -41,11 +44,13 @@ Since authentication flow had issues, created a test script (`test-package-simpl
 **Status:** PASSED
 
 **Input:**
+
 - User profile with 1 work experience, 3 achievements, 4 skills
 - Job description for Senior Software Engineer role
 - Company: Example Inc
 
 **Output:**
+
 ```
 ✅ Tailor agent completed
    - Confidence: 64.29%
@@ -54,6 +59,7 @@ Since authentication flow had issues, created a test script (`test-package-simpl
 ```
 
 **Analysis:**
+
 - Agent successfully generated tailored resume in Markdown format
 - Keyword matching working (27 keywords from job description)
 - Confidence score calculated correctly (64.29% - reasonable for test data)
@@ -67,12 +73,14 @@ Since authentication flow had issues, created a test script (`test-package-simpl
 **Status:** PASSED
 
 **Input:**
+
 - User profile (name, current title, top 3 achievements)
 - Company: Example Inc
 - Role: Senior Software Engineer
 - Strategic memo: "Strategic analysis pending"
 
 **Output:**
+
 ```
 ✅ Scribe agent completed
    - Cover letter length: 771 chars
@@ -80,6 +88,7 @@ Since authentication flow had issues, created a test script (`test-package-simpl
 ```
 
 **Analysis:**
+
 - Cover letter generated successfully (771 chars - within reasonable range)
 - LinkedIn message generated (210 chars - fits within 300 char limit)
 - Both outputs personalized to company and role
@@ -92,6 +101,7 @@ Since authentication flow had issues, created a test script (`test-package-simpl
 **Status:** FAILED
 
 **Error:**
+
 ```
 Error: ENOENT: no such file or directory, open '/tmp/temp-1769823369573.md'
 Emitted 'error' event on ReadStream instance
@@ -102,28 +112,31 @@ Emitted 'error' event on ReadStream instance
 Located in `server/services/pdfGenerator.ts`:
 
 ```typescript
-export async function generatePDF(options: PDFGeneratorOptions): Promise<string> {
+export async function generatePDF(
+  options: PDFGeneratorOptions
+): Promise<string> {
   const tempMdPath = path.join(tempDir, `temp-${Date.now()}.md`);
-  
+
   try {
-    await fs.writeFile(tempMdPath, markdown, 'utf-8');
-    
+    await fs.writeFile(tempMdPath, markdown, "utf-8");
+
     return new Promise((resolve, reject) => {
       markdownpdf()
-        .from(tempMdPath)  // ← Async operation starts
+        .from(tempMdPath) // ← Async operation starts
         .to(outputPath, (err: Error | null) => {
           // ...
         });
     });
   } finally {
-    await fs.unlink(tempMdPath);  // ← File deleted BEFORE markdownpdf reads it!
+    await fs.unlink(tempMdPath); // ← File deleted BEFORE markdownpdf reads it!
   }
 }
 ```
 
 **Issue:** Race condition - temp file is deleted in `finally` block before `markdownpdf` can read it.
 
-**Impact:** 
+**Impact:**
+
 - PDF generation fails
 - DOCX generation likely works (different library)
 - TXT files work (direct write, no conversion)
@@ -131,15 +144,18 @@ export async function generatePDF(options: PDFGeneratorOptions): Promise<string>
 - S3 uploads fail (no files to upload)
 
 **Recommended Fix:**
+
 ```typescript
-export async function generatePDF(options: PDFGeneratorOptions): Promise<string> {
+export async function generatePDF(
+  options: PDFGeneratorOptions
+): Promise<string> {
   const tempMdPath = path.join(tempDir, `temp-${Date.now()}.md`);
-  
+
   try {
-    await fs.writeFile(tempMdPath, markdown, 'utf-8');
+    await fs.writeFile(tempMdPath, markdown, "utf-8");
     const outputDir = path.dirname(outputPath);
     await fs.mkdir(outputDir, { recursive: true });
-    
+
     return new Promise((resolve, reject) => {
       markdownpdf()
         .from(tempMdPath)
@@ -148,9 +164,9 @@ export async function generatePDF(options: PDFGeneratorOptions): Promise<string>
           try {
             await fs.unlink(tempMdPath);
           } catch (cleanupErr) {
-            console.warn('Failed to cleanup temp file:', cleanupErr);
+            console.warn("Failed to cleanup temp file:", cleanupErr);
           }
-          
+
           if (err) {
             reject(err);
           } else {
@@ -175,10 +191,11 @@ export async function generatePDF(options: PDFGeneratorOptions): Promise<string>
 **Status:** NOT COMPLETED (due to Assembler failure)
 
 ### Expected Database Updates
+
 The following fields should be populated after successful package generation:
 
 ```sql
-SELECT 
+SELECT
   packageZipUrl,
   resumePdfUrl,
   resumeDocxUrl,
@@ -188,7 +205,7 @@ SELECT
   tailoredResumeText,
   coverLetterText,
   linkedinMessage
-FROM applications 
+FROM applications
 WHERE id = 2;
 ```
 
@@ -201,13 +218,14 @@ WHERE id = 2;
 **Status:** NOT COMPLETED
 
 ### Expected Notification
+
 After successful package generation, a notification should be created:
 
 ```sql
-SELECT * FROM notifications 
-WHERE userId = 2190006 
+SELECT * FROM notifications
+WHERE userId = 2190006
   AND type = 'application_package_ready'
-ORDER BY createdAt DESC 
+ORDER BY createdAt DESC
 LIMIT 1;
 ```
 
@@ -220,6 +238,7 @@ LIMIT 1;
 **Status:** NOT COMPLETED
 
 ### Expected S3 Files
+
 The following files should be uploaded to S3:
 
 1. `applications/2/resume.pdf`
@@ -303,6 +322,7 @@ The following files should be uploaded to S3:
    - Test full pipeline with real data
 
 5. **Install Playwright & Run E2E Tests**
+
    ```bash
    pnpm exec playwright install
    pnpm exec playwright test
@@ -335,16 +355,19 @@ The following files should be uploaded to S3:
 ## Test Artifacts
 
 ### Files Created
+
 - `/home/ubuntu/careerswarm/test-package-simple.mjs` - Test script
 - `/home/ubuntu/careerswarm/test-output-simple.log` - Test output log
 
 ### Test Script Usage
+
 ```bash
 cd /home/ubuntu/careerswarm
 pnpm exec tsx test-package-simple.mjs
 ```
 
 ### Database Cleanup (if needed)
+
 ```sql
 -- Remove test data
 DELETE FROM applications WHERE userId = 2190006;
@@ -373,6 +396,7 @@ Once the PDF generator is fixed, the entire package generation system should wor
 ---
 
 **Next Steps:**
+
 1. Fix `server/services/pdfGenerator.ts` race condition
 2. Re-run `test-package-simple.mjs`
 3. Verify database updates and S3 uploads

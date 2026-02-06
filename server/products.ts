@@ -1,12 +1,12 @@
 /**
  * Stripe Products & Pricing
- * 
+ *
  * Free Tier:
  * - 10 achievements
  * - 3 resume generations/month
  * - Manual job search
  * - Basic impact scoring
- * 
+ *
  * Pro Tier ($29/month):
  * - Unlimited achievements
  * - Unlimited resume generations

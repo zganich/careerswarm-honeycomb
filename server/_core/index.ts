@@ -25,7 +25,7 @@ if (process.env.NODE_ENV === "production") {
 if (process.env.SENTRY_DSN) {
   Sentry.init({
     dsn: process.env.SENTRY_DSN,
-    environment: process.env.NODE_ENV || 'development',
+    environment: process.env.NODE_ENV || "development",
     tracesSampleRate: 0.1,
     debug: false,
   });
@@ -53,44 +53,59 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 async function startServer() {
   const app = express();
   const server = createServer(app);
-  
+
   // Security middleware
-  app.use(helmet({
-    contentSecurityPolicy: process.env.NODE_ENV === "production" ? {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // Required for Vite/React
-        styleSrc: ["'self'", "'unsafe-inline'"],
-        imgSrc: ["'self'", "data:", "blob:", "https:"],
-        fontSrc: ["'self'", "data:"],
-        connectSrc: ["'self'", "https://api.stripe.com", "https://*.sentry.io"],
-        frameSrc: ["'self'", "https://js.stripe.com"],
-      },
-    } : false, // Disable CSP in development for Vite HMR
-    crossOriginEmbedderPolicy: false, // Required for some external resources
-  }));
-  
+  app.use(
+    helmet({
+      contentSecurityPolicy:
+        process.env.NODE_ENV === "production"
+          ? {
+              directives: {
+                defaultSrc: ["'self'"],
+                scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // Required for Vite/React
+                styleSrc: ["'self'", "'unsafe-inline'"],
+                imgSrc: ["'self'", "data:", "blob:", "https:"],
+                fontSrc: ["'self'", "data:"],
+                connectSrc: [
+                  "'self'",
+                  "https://api.stripe.com",
+                  "https://*.sentry.io",
+                ],
+                frameSrc: ["'self'", "https://js.stripe.com"],
+              },
+            }
+          : false, // Disable CSP in development for Vite HMR
+      crossOriginEmbedderPolicy: false, // Required for some external resources
+    })
+  );
+
   // CORS configuration
   const allowedOrigins = [
     process.env.APP_URL || "https://careerswarm.com",
     "https://www.careerswarm.com",
   ];
   if (process.env.NODE_ENV !== "production") {
-    allowedOrigins.push("http://localhost:3000", "http://localhost:3001", "http://localhost:5173");
+    allowedOrigins.push(
+      "http://localhost:3000",
+      "http://localhost:3001",
+      "http://localhost:5173"
+    );
   }
-  app.use(cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (mobile apps, Postman, etc.)
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-      callback(new Error("Not allowed by CORS"));
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  }));
-  
+  app.use(
+    cors({
+      origin: (origin, callback) => {
+        // Allow requests with no origin (mobile apps, Postman, etc.)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.includes(origin)) {
+          return callback(null, true);
+        }
+        callback(new Error("Not allowed by CORS"));
+      },
+      credentials: true,
+      methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    })
+  );
+
   // Rate limiting - general API protection
   const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
@@ -98,21 +113,23 @@ async function startServer() {
     message: { error: "Too many requests, please try again later." },
     standardHeaders: true,
     legacyHeaders: false,
-    skip: (req) => {
+    skip: req => {
       // Skip rate limiting for health checks and static assets
       return req.path === "/health" || req.path.startsWith("/assets");
     },
   });
-  
+
   // Stricter rate limit for auth endpoints
   const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 20, // 20 auth attempts per window
-    message: { error: "Too many authentication attempts, please try again later." },
+    message: {
+      error: "Too many authentication attempts, please try again later.",
+    },
     standardHeaders: true,
     legacyHeaders: false,
   });
-  
+
   // Apply rate limiters
   app.use("/api/trpc", apiLimiter);
   app.use("/api/oauth", authLimiter);
@@ -132,21 +149,21 @@ async function startServer() {
       return handleStripeWebhook(req, res);
     }
   );
-  
+
   // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
-  
+
   // Source material ingestion APIs - DISABLED (old system)
   // const ingestFileRouter = (await import("../api-ingest-file")).default;
   // const ingestLinkRouter = (await import("../api-ingest-link")).default;
   // app.use("/api/ingest/file", ingestFileRouter);
   // app.use("/api/ingest/link", ingestLinkRouter);
-  
+
   // PDF upload for Resume Roaster - DISABLED (old system)
   // const { createPDFUploadRouter } = await import("../pdf-upload-route");
   // app.use(createPDFUploadRouter());
-  
+
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
   // tRPC API
@@ -157,12 +174,12 @@ async function startServer() {
       createContext,
     })
   );
-  
+
   // Sentry error handler (must be after all routes)
   if (process.env.SENTRY_DSN) {
     Sentry.setupExpressErrorHandler(app);
   }
-  
+
   // development mode uses Vite, production mode uses static files
   if (process.env.NODE_ENV === "development") {
     await setupVite(app, server);
@@ -185,43 +202,74 @@ async function startServer() {
 
     // Optional: verify OpenAI key + egress (log only; use railway logs to debug roast 500s)
     checkOpenAIReachable()
-      .then((r) => console.log(r.ok ? "✓ OpenAI reachable" : `✗ OpenAI: ${r.message}`))
+      .then(r =>
+        console.log(r.ok ? "✓ OpenAI reachable" : `✗ OpenAI: ${r.message}`)
+      )
       .catch(() => console.log("✗ OpenAI check failed"));
 
     // Start GTM pipeline worker if Redis available
     try {
       const queueModule = await import("../queue");
-      const { processGtmJob } = await import("../agents/gtm/pipeline-processor");
+      const { processGtmJob } =
+        await import("../agents/gtm/pipeline-processor");
       const { createGtmJobRun, finishGtmJobRun } = await import("../db");
-      const worker = queueModule.createWorker<import("../queue").GtmPipelineData>(
+      const worker = queueModule.createWorker<
+        import("../queue").GtmPipelineData
+      >(
         queueModule.QueueName.GTM_PIPELINE,
-        async (job) => {
+        async job => {
           const data = job.data;
-          const runId = await createGtmJobRun(data.step, data.channel ?? null, job.id ?? "unknown");
+          const runId = await createGtmJobRun(
+            data.step,
+            data.channel ?? null,
+            job.id ?? "unknown"
+          );
           try {
             const result = await processGtmJob(data);
-            if (runId) await finishGtmJobRun(runId, result.ok ? "success" : "failed", result.message, JSON.stringify({ count: result.count }));
+            if (runId)
+              await finishGtmJobRun(
+                runId,
+                result.ok ? "success" : "failed",
+                result.message,
+                JSON.stringify({ count: result.count })
+              );
             return result;
           } catch (err: any) {
-            if (runId) await finishGtmJobRun(runId, "failed", err?.message ?? String(err));
+            if (runId)
+              await finishGtmJobRun(
+                runId,
+                "failed",
+                err?.message ?? String(err)
+              );
             throw err;
           }
         },
         { concurrency: 2 }
       );
       worker.on("completed", () => {});
-      worker.on("failed", (job, err) => console.error("[GTM Worker] Job failed:", job?.id, err));
+      worker.on("failed", (job, err) =>
+        console.error("[GTM Worker] Job failed:", job?.id, err)
+      );
 
       // Enqueue weekly strategy and report (every 7 days)
       const enqueueWeekly = () => {
-        queueModule.addJob(queueModule.QueueName.GTM_PIPELINE, { step: "strategy", payload: {} });
-        queueModule.addJob(queueModule.QueueName.GTM_PIPELINE, { step: "report", payload: {} });
+        queueModule.addJob(queueModule.QueueName.GTM_PIPELINE, {
+          step: "strategy",
+          payload: {},
+        });
+        queueModule.addJob(queueModule.QueueName.GTM_PIPELINE, {
+          step: "report",
+          payload: {},
+        });
       };
       const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
       setTimeout(enqueueWeekly, 60 * 1000); // first run 1 min after start
       setInterval(enqueueWeekly, SEVEN_DAYS_MS);
     } catch (err) {
-      console.warn("[GTM Worker] Not started (Redis or queue unavailable):", (err as Error).message);
+      console.warn(
+        "[GTM Worker] Not started (Redis or queue unavailable):",
+        (err as Error).message
+      );
     }
   });
 }

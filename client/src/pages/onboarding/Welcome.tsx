@@ -7,7 +7,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Award, Upload, Sparkles, Target, CheckCircle, Lock } from "lucide-react";
+import {
+  Award,
+  Upload,
+  Sparkles,
+  Target,
+  CheckCircle,
+  Lock,
+} from "lucide-react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useState, useEffect } from "react";
@@ -63,7 +70,8 @@ export default function Welcome() {
             </div>
             <DialogDescription className="space-y-3 pt-2">
               <p>
-                To build your Master Profile and save your career data securely, you need to create a free account.
+                To build your Master Profile and save your career data securely,
+                you need to create a free account.
               </p>
               <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 text-sm">
                 <p className="font-medium text-orange-900 mb-1">Why sign in?</p>
@@ -77,11 +85,7 @@ export default function Welcome() {
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 pt-4">
-            <Button 
-              size="lg" 
-              className="w-full"
-              onClick={handleLogin}
-            >
+            <Button size="lg" className="w-full" onClick={handleLogin}>
               Sign In to CareerSwarm
             </Button>
             <p className="text-xs text-center text-muted-foreground">
@@ -98,9 +102,7 @@ export default function Welcome() {
             <Award className="h-6 w-6 text-primary" />
             <span className="font-bold text-xl">CareerSwarm</span>
           </div>
-          <div className="text-sm text-muted-foreground">
-            Step 1 of 5
-          </div>
+          <div className="text-sm text-muted-foreground">Step 1 of 5</div>
         </div>
       </header>
 
@@ -162,7 +164,9 @@ export default function Welcome() {
         {/* What We'll Build */}
         <Card className="mb-8">
           <CardContent className="pt-6">
-            <h2 className="text-2xl font-bold mb-6 text-center">What We'll Build Together</h2>
+            <h2 className="text-2xl font-bold mb-6 text-center">
+              What We'll Build Together
+            </h2>
             <div className="space-y-4">
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
@@ -171,7 +175,8 @@ export default function Welcome() {
                 <div>
                   <h3 className="font-semibold mb-1">Upload Your Resumes</h3>
                   <p className="text-sm text-muted-foreground">
-                    Drag and drop your existing resumes (PDF, DOCX). We'll extract everything automatically.
+                    Drag and drop your existing resumes (PDF, DOCX). We'll
+                    extract everything automatically.
                   </p>
                 </div>
               </div>
@@ -181,9 +186,12 @@ export default function Welcome() {
                   <Sparkles className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold mb-1">AI Extracts Your Career Data</h3>
+                  <h3 className="font-semibold mb-1">
+                    AI Extracts Your Career Data
+                  </h3>
                   <p className="text-sm text-muted-foreground">
-                    Our AI parses your work history, achievements, skills, and identifies your top 3 "superpowers."
+                    Our AI parses your work history, achievements, skills, and
+                    identifies your top 3 "superpowers."
                   </p>
                 </div>
               </div>
@@ -195,7 +203,8 @@ export default function Welcome() {
                 <div>
                   <h3 className="font-semibold mb-1">Review & Refine</h3>
                   <p className="text-sm text-muted-foreground">
-                    Edit any extracted data, add missing achievements, and confirm your superpowers.
+                    Edit any extracted data, add missing achievements, and
+                    confirm your superpowers.
                   </p>
                 </div>
               </div>
@@ -207,7 +216,8 @@ export default function Welcome() {
                 <div>
                   <h3 className="font-semibold mb-1">Set Your Preferences</h3>
                   <p className="text-sm text-muted-foreground">
-                    Tell us your target roles, industries, salary range, and location preferences.
+                    Tell us your target roles, industries, salary range, and
+                    location preferences.
                   </p>
                 </div>
               </div>
@@ -217,11 +227,7 @@ export default function Welcome() {
 
         {/* CTA */}
         <div className="text-center">
-          <Button 
-            size="lg" 
-            className="text-lg px-12"
-            onClick={handleContinue}
-          >
+          <Button size="lg" className="text-lg px-12" onClick={handleContinue}>
             Let's Build Your Profile →
           </Button>
           <p className="text-sm text-muted-foreground mt-4">

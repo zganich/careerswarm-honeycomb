@@ -30,17 +30,20 @@ Traditional recruiting relies on resumes - static documents that don't reveal th
 ## Pricing Tiers
 
 ### Starter - $299/month
+
 - 50 candidate profile views/month
 - Basic achievement search
 - Email support
 
 ### Professional - $799/month
+
 - 200 candidate profile views/month
 - Advanced filters (verified achievements, trajectory scoring)
 - Skills gap analysis
 - Priority support
 
 ### Enterprise - Custom
+
 - Unlimited profile views
 - API access
 - Custom integrations (ATS, HRIS)
@@ -50,36 +53,44 @@ Traditional recruiting relies on resumes - static documents that don't reveal th
 ## Use Cases
 
 ### Tech Recruiting
+
 "Find senior engineers who've scaled systems to handle 10M+ requests/day"
 
 ### Sales Hiring
+
 "Show me sales reps who exceeded quota by >150% for 3+ consecutive years"
 
 ### Executive Search
+
 "Find leaders who've built teams from 0 to 50+ people"
 
 ### Diversity Hiring
+
 "Identify high-potential candidates from underrepresented backgrounds with proven track records"
 
 ## Dashboard Features
 
 ### Search Interface
+
 - Natural language queries powered by AI
 - Filter by skills, industries, companies, achievement types
 - Save searches and get alerts for new matches
 
 ### Candidate Profiles
+
 - Achievement timeline with context (company, role, dates)
 - Skills proven through evidence, not self-reported
 - Verification badges from colleagues
 - Career trajectory score and growth potential
 
 ### Analytics
+
 - Talent market insights (e.g., "Average Python engineer has 3.2 years experience")
 - Salary benchmarking based on achievement quality
 - Skills gap trends across industries
 
 ### Integration
+
 - Export candidates to your ATS
 - API for programmatic access
 - Webhook notifications for new matches
@@ -109,6 +120,7 @@ Authorization: Bearer {api_key}
 ```
 
 Response:
+
 ```json
 {
   "matches": [

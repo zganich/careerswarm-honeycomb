@@ -36,10 +36,15 @@ export const jdBuilderRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const user = await db.getUserByOpenId(ctx.user.openId);
-      if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+      if (!user)
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 
       const { periodStart, periodEnd } = getCurrentMonthPeriod();
-      const used = await db.getJdUsageForPeriod(user.id, periodStart, periodEnd);
+      const used = await db.getJdUsageForPeriod(
+        user.id,
+        periodStart,
+        periodEnd
+      );
       const limit = user.subscriptionTier === "pro" ? 999 : JD_FREE_PER_MONTH;
       if (used >= limit) {
         throw new TRPCError({
@@ -79,10 +84,13 @@ export const jdBuilderRouter = router({
     }),
 
   list: protectedProcedure
-    .input(z.object({ limit: z.number().min(1).max(100).default(50) }).optional())
+    .input(
+      z.object({ limit: z.number().min(1).max(100).default(50) }).optional()
+    )
     .query(async ({ ctx, input }) => {
       const user = await db.getUserByOpenId(ctx.user.openId);
-      if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+      if (!user)
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
       return db.getJdDraftsByUserId(user.id, input?.limit ?? 50);
     }),
 
@@ -90,9 +98,14 @@ export const jdBuilderRouter = router({
     .input(z.object({ id: z.number() }))
     .query(async ({ ctx, input }) => {
       const user = await db.getUserByOpenId(ctx.user.openId);
-      if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+      if (!user)
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
       const draft = await db.getJdDraftById(input.id, user.id);
-      if (!draft) throw new TRPCError({ code: "NOT_FOUND", message: "JD draft not found" });
+      if (!draft)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "JD draft not found",
+        });
       return draft;
     }),
 
@@ -100,9 +113,14 @@ export const jdBuilderRouter = router({
     .input(z.object({ id: z.number() }))
     .query(async ({ ctx, input }) => {
       const user = await db.getUserByOpenId(ctx.user.openId);
-      if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+      if (!user)
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
       const draft = await db.getJdDraftById(input.id, user.id);
-      if (!draft) throw new TRPCError({ code: "NOT_FOUND", message: "JD draft not found" });
+      if (!draft)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "JD draft not found",
+        });
       return { fullText: draft.fullText ?? "" };
     }),
 });

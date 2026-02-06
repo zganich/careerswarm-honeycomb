@@ -30,12 +30,14 @@ export function getSessionCookieOptions(
   sameSiteForEmailLogin?: boolean
 ): Pick<CookieOptions, "domain" | "httpOnly" | "path" | "sameSite" | "secure"> {
   const secure = isSecureRequest(req);
-  const sameSite =
-    sameSiteForEmailLogin || !secure ? "lax" : "none";
+  const sameSite = sameSiteForEmailLogin || !secure ? "lax" : "none";
   const hostname = (req.hostname || req.headers.host || "").split(":")[0];
   // Production: set domain so cookie works for apex and www (e.g. .careerswarm.com)
   const domain =
-    hostname && !LOCAL_HOSTS.has(hostname) && !isIpAddress(hostname) && hostname.includes(".")
+    hostname &&
+    !LOCAL_HOSTS.has(hostname) &&
+    !isIpAddress(hostname) &&
+    hostname.includes(".")
       ? `.${hostname.replace(/^www\./, "")}`
       : undefined;
   return {

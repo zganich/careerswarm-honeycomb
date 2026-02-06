@@ -13,8 +13,10 @@ function slug(s: string | undefined): string {
  * Dedupe key: prefer LinkedIn URL, else email, else name+company slug.
  */
 export function idempotencyKey(lead: RawB2BLead): string | null {
-  if (lead.linkedinUrl && lead.linkedinUrl.trim()) return lead.linkedinUrl.trim();
-  if (lead.email && lead.email.trim()) return `email:${lead.email.trim().toLowerCase()}`;
+  if (lead.linkedinUrl && lead.linkedinUrl.trim())
+    return lead.linkedinUrl.trim();
+  if (lead.email && lead.email.trim())
+    return `email:${lead.email.trim().toLowerCase()}`;
   const nameCompany = `${slug(lead.name)}|${slug(lead.companyName)}`;
   if (nameCompany !== "|") return nameCompany;
   return null;

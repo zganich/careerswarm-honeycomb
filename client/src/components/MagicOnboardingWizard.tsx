@@ -1,6 +1,16 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, FileText, Sparkles, CheckCircle2, Loader2, AlertCircle, Plus, Trash2, PenLine } from "lucide-react";
+import {
+  Upload,
+  FileText,
+  Sparkles,
+  CheckCircle2,
+  Loader2,
+  AlertCircle,
+  Plus,
+  Trash2,
+  PenLine,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -31,14 +41,16 @@ interface ParsedData {
   }>;
 }
 
-export function MagicOnboardingWizard({ onComplete }: MagicOnboardingWizardProps) {
+export function MagicOnboardingWizard({
+  onComplete,
+}: MagicOnboardingWizardProps) {
   const [currentStep, setCurrentStep] = useState<OnboardingStep>("upload");
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
   const [parsedData, setParsedData] = useState<ParsedData | null>(null);
   const [parseError, setParseError] = useState<string | null>(null);
   const [showManualEntry, setShowManualEntry] = useState(false);
-  
+
   // Manual entry form state
   const [manualForm, setManualForm] = useState({
     name: "",
@@ -110,40 +122,54 @@ export function MagicOnboardingWizard({ onComplete }: MagicOnboardingWizardProps
       };
 
       setParsedData(mockParsedData);
-      
+
       // Celebration moment
-      toast.success(`🎉 Found ${mockParsedData.skills.length} skills and ${mockParsedData.experiences.length} experiences!`);
-      
+      toast.success(
+        `🎉 Found ${mockParsedData.skills.length} skills and ${mockParsedData.experiences.length} experiences!`
+      );
+
       // Auto-advance after 1.5 seconds
       setTimeout(() => {
         setCurrentStep("score");
       }, 1500);
-
     } catch (error) {
       console.error("Parse error:", error);
-      setParseError("We couldn't parse your resume automatically. Would you like to enter your information manually?");
+      setParseError(
+        "We couldn't parse your resume automatically. Would you like to enter your information manually?"
+      );
       setShowManualEntry(true);
     } finally {
       setIsProcessing(false);
     }
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (file && (file.type === "application/pdf" || file.type === "text/plain" || file.name.endsWith(".docx"))) {
-      handleFileUpload(file);
-    } else {
-      toast.error("Please upload a PDF, TXT, or DOCX file");
-    }
-  }, [handleFileUpload]);
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      const file = e.dataTransfer.files[0];
+      if (
+        file &&
+        (file.type === "application/pdf" ||
+          file.type === "text/plain" ||
+          file.name.endsWith(".docx"))
+      ) {
+        handleFileUpload(file);
+      } else {
+        toast.error("Please upload a PDF, TXT, or DOCX file");
+      }
+    },
+    [handleFileUpload]
+  );
 
-  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      handleFileUpload(file);
-    }
-  }, [handleFileUpload]);
+  const handleFileSelect = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        handleFileUpload(file);
+      }
+    },
+    [handleFileUpload]
+  );
 
   return (
     <div className="fixed inset-0 z-50 bg-gradient-to-br from-slate-50 via-orange-50/30 to-slate-100 flex items-center justify-center p-4">
@@ -197,7 +223,7 @@ export function MagicOnboardingWizard({ onComplete }: MagicOnboardingWizardProps
               {!isProcessing && !parsedData && !parseError && (
                 <div
                   onDrop={handleDrop}
-                  onDragOver={(e) => e.preventDefault()}
+                  onDragOver={e => e.preventDefault()}
                   className="border-2 border-dashed border-slate-300 rounded-xl p-12 text-center hover:border-orange-500 hover:bg-orange-50/50 transition-all duration-300 cursor-pointer"
                 >
                   <FileText className="h-16 w-16 text-slate-400 mx-auto mb-4" />
@@ -228,9 +254,16 @@ export function MagicOnboardingWizard({ onComplete }: MagicOnboardingWizardProps
                   <p className="text-lg font-semibold text-slate-700 mb-2">
                     Reading your resume...
                   </p>
-                  <Progress value={uploadProgress} className="w-full max-w-md mx-auto mb-2" />
+                  <Progress
+                    value={uploadProgress}
+                    className="w-full max-w-md mx-auto mb-2"
+                  />
                   <p className="text-sm text-slate-500">
-                    {uploadProgress < 50 ? "Uploading..." : uploadProgress < 90 ? "Parsing..." : "Almost done..."}
+                    {uploadProgress < 50
+                      ? "Uploading..."
+                      : uploadProgress < 90
+                        ? "Parsing..."
+                        : "Almost done..."}
                   </p>
                 </div>
               )}
@@ -243,23 +276,33 @@ export function MagicOnboardingWizard({ onComplete }: MagicOnboardingWizardProps
                 >
                   <div className="flex items-center justify-center gap-3 text-green-600 mb-6">
                     <CheckCircle2 className="h-8 w-8" />
-                    <span className="text-xl font-semibold">Resume parsed successfully!</span>
+                    <span className="text-xl font-semibold">
+                      Resume parsed successfully!
+                    </span>
                   </div>
-                  
+
                   <div className="bg-slate-50 rounded-lg p-6 space-y-4">
                     <div>
-                      <h3 className="font-semibold text-slate-700 mb-2">Found:</h3>
+                      <h3 className="font-semibold text-slate-700 mb-2">
+                        Found:
+                      </h3>
                       <ul className="space-y-1 text-sm text-slate-600">
                         <li>✓ {parsedData.skills.length} skills</li>
-                        <li>✓ {parsedData.experiences.length} work experiences</li>
-                        <li>✓ {parsedData.education.length} education entries</li>
+                        <li>
+                          ✓ {parsedData.experiences.length} work experiences
+                        </li>
+                        <li>
+                          ✓ {parsedData.education.length} education entries
+                        </li>
                       </ul>
                     </div>
-                    
+
                     <div className="pt-4 border-t border-slate-200">
                       <p className="text-sm text-slate-500 mb-3">
-                        Skills detected: {parsedData.skills.slice(0, 5).join(", ")}
-                        {parsedData.skills.length > 5 && ` +${parsedData.skills.length - 5} more`}
+                        Skills detected:{" "}
+                        {parsedData.skills.slice(0, 5).join(", ")}
+                        {parsedData.skills.length > 5 &&
+                          ` +${parsedData.skills.length - 5} more`}
                       </p>
                     </div>
                   </div>
@@ -291,7 +334,8 @@ export function MagicOnboardingWizard({ onComplete }: MagicOnboardingWizardProps
               <div className="inline-flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-sm border border-slate-200">
                 <CheckCircle2 className="h-4 w-4 text-green-600" />
                 <span className="text-sm text-slate-600">
-                  <strong>No AI hallucination</strong> - We only use what's in your resume
+                  <strong>No AI hallucination</strong> - We only use what's in
+                  your resume
                 </span>
               </div>
             </div>
@@ -333,7 +377,12 @@ export function MagicOnboardingWizard({ onComplete }: MagicOnboardingWizardProps
                       id="name"
                       placeholder="John Doe"
                       value={manualForm.name}
-                      onChange={(e) => setManualForm(prev => ({ ...prev, name: e.target.value }))}
+                      onChange={e =>
+                        setManualForm(prev => ({
+                          ...prev,
+                          name: e.target.value,
+                        }))
+                      }
                     />
                   </div>
                   <div className="space-y-2">
@@ -343,7 +392,12 @@ export function MagicOnboardingWizard({ onComplete }: MagicOnboardingWizardProps
                       type="email"
                       placeholder="john@example.com"
                       value={manualForm.email}
-                      onChange={(e) => setManualForm(prev => ({ ...prev, email: e.target.value }))}
+                      onChange={e =>
+                        setManualForm(prev => ({
+                          ...prev,
+                          email: e.target.value,
+                        }))
+                      }
                     />
                   </div>
                 </div>
@@ -356,7 +410,12 @@ export function MagicOnboardingWizard({ onComplete }: MagicOnboardingWizardProps
                       id="currentTitle"
                       placeholder="Software Engineer"
                       value={manualForm.currentTitle}
-                      onChange={(e) => setManualForm(prev => ({ ...prev, currentTitle: e.target.value }))}
+                      onChange={e =>
+                        setManualForm(prev => ({
+                          ...prev,
+                          currentTitle: e.target.value,
+                        }))
+                      }
                     />
                   </div>
                   <div className="space-y-2">
@@ -365,7 +424,12 @@ export function MagicOnboardingWizard({ onComplete }: MagicOnboardingWizardProps
                       id="currentCompany"
                       placeholder="Acme Inc."
                       value={manualForm.currentCompany}
-                      onChange={(e) => setManualForm(prev => ({ ...prev, currentCompany: e.target.value }))}
+                      onChange={e =>
+                        setManualForm(prev => ({
+                          ...prev,
+                          currentCompany: e.target.value,
+                        }))
+                      }
                     />
                   </div>
                 </div>
@@ -379,10 +443,13 @@ export function MagicOnboardingWizard({ onComplete }: MagicOnboardingWizardProps
                         <Input
                           placeholder={`Skill ${index + 1}, e.g., React, Python, Project Management`}
                           value={skill}
-                          onChange={(e) => {
+                          onChange={e => {
                             const newSkills = [...manualForm.skills];
                             newSkills[index] = e.target.value;
-                            setManualForm(prev => ({ ...prev, skills: newSkills }));
+                            setManualForm(prev => ({
+                              ...prev,
+                              skills: newSkills,
+                            }));
                           }}
                         />
                         {manualForm.skills.length > 1 && (
@@ -391,8 +458,13 @@ export function MagicOnboardingWizard({ onComplete }: MagicOnboardingWizardProps
                             variant="ghost"
                             size="icon"
                             onClick={() => {
-                              const newSkills = manualForm.skills.filter((_, i) => i !== index);
-                              setManualForm(prev => ({ ...prev, skills: newSkills }));
+                              const newSkills = manualForm.skills.filter(
+                                (_, i) => i !== index
+                              );
+                              setManualForm(prev => ({
+                                ...prev,
+                                skills: newSkills,
+                              }));
                             }}
                           >
                             <Trash2 className="h-4 w-4 text-slate-400" />
@@ -405,7 +477,12 @@ export function MagicOnboardingWizard({ onComplete }: MagicOnboardingWizardProps
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={() => setManualForm(prev => ({ ...prev, skills: [...prev.skills, ""] }))}
+                        onClick={() =>
+                          setManualForm(prev => ({
+                            ...prev,
+                            skills: [...prev.skills, ""],
+                          }))
+                        }
                       >
                         <Plus className="h-4 w-4 mr-1" />
                         Add Skill
@@ -432,21 +509,25 @@ export function MagicOnboardingWizard({ onComplete }: MagicOnboardingWizardProps
                         toast.error("Please enter your name and email");
                         return;
                       }
-                      
+
                       // Create parsed data from manual form
                       const manualParsedData: ParsedData = {
                         name: manualForm.name,
                         email: manualForm.email,
                         phone: manualForm.phone,
                         skills: manualForm.skills.filter(s => s.trim() !== ""),
-                        experiences: manualForm.currentTitle ? [{
-                          title: manualForm.currentTitle,
-                          company: manualForm.currentCompany || "Current",
-                          duration: "Present",
-                        }] : [],
+                        experiences: manualForm.currentTitle
+                          ? [
+                              {
+                                title: manualForm.currentTitle,
+                                company: manualForm.currentCompany || "Current",
+                                duration: "Present",
+                              },
+                            ]
+                          : [],
                         education: [],
                       };
-                      
+
                       setParsedData(manualParsedData);
                       toast.success("Profile created! Let's continue.");
                       setCurrentStep("score");
@@ -482,7 +563,8 @@ export function MagicOnboardingWizard({ onComplete }: MagicOnboardingWizardProps
                   Your Career Score
                 </h2>
                 <p className="text-lg text-slate-600">
-                  Based on {parsedData?.experiences.length || 0} experiences and {parsedData?.skills.length || 0} skills
+                  Based on {parsedData?.experiences.length || 0} experiences and{" "}
+                  {parsedData?.skills.length || 0} skills
                 </p>
               </div>
 
@@ -497,8 +579,12 @@ export function MagicOnboardingWizard({ onComplete }: MagicOnboardingWizardProps
                   >
                     7.8/10
                   </motion.div>
-                  <p className="text-lg font-semibold text-slate-700">Strong Foundation</p>
-                  <p className="text-sm text-slate-600 mt-2">Better than 68% of profiles</p>
+                  <p className="text-lg font-semibold text-slate-700">
+                    Strong Foundation
+                  </p>
+                  <p className="text-sm text-slate-600 mt-2">
+                    Better than 68% of profiles
+                  </p>
                 </div>
               </div>
 
@@ -507,15 +593,23 @@ export function MagicOnboardingWizard({ onComplete }: MagicOnboardingWizardProps
                 <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg border border-green-200">
                   <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="font-semibold text-green-900">Strong metrics</p>
-                    <p className="text-sm text-green-700">Your achievements include quantifiable results</p>
+                    <p className="font-semibold text-green-900">
+                      Strong metrics
+                    </p>
+                    <p className="text-sm text-green-700">
+                      Your achievements include quantifiable results
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3 p-4 bg-amber-50 rounded-lg border border-amber-200">
                   <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="font-semibold text-amber-900">Add more context</p>
-                    <p className="text-sm text-amber-700">Include team size and budget to show scope</p>
+                    <p className="font-semibold text-amber-900">
+                      Add more context
+                    </p>
+                    <p className="text-sm text-amber-700">
+                      Include team size and budget to show scope
+                    </p>
                   </div>
                 </div>
               </div>
@@ -524,7 +618,9 @@ export function MagicOnboardingWizard({ onComplete }: MagicOnboardingWizardProps
                 size="lg"
                 className="w-full"
                 onClick={() => {
-                  toast.success("Great! Let's tailor your resume for a specific role");
+                  toast.success(
+                    "Great! Let's tailor your resume for a specific role"
+                  );
                   setTimeout(() => setCurrentStep("tailor"), 500);
                 }}
               >
@@ -613,7 +709,8 @@ export function MagicOnboardingWizard({ onComplete }: MagicOnboardingWizardProps
               <div className="inline-flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-sm border border-slate-200">
                 <Sparkles className="h-4 w-4 text-purple-600" />
                 <span className="text-sm text-slate-600">
-                  <strong>AI-powered matching</strong> - Highlights your most relevant achievements
+                  <strong>AI-powered matching</strong> - Highlights your most
+                  relevant achievements
                 </span>
               </div>
             </div>
@@ -663,7 +760,9 @@ export function MagicOnboardingWizard({ onComplete }: MagicOnboardingWizardProps
                 transition={{ delay: 0.7 }}
                 className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-6 mb-8"
               >
-                <h3 className="font-semibold text-slate-900 mb-4 text-center">What You've Built:</h3>
+                <h3 className="font-semibold text-slate-900 mb-4 text-center">
+                  What You've Built:
+                </h3>
                 <div className="grid grid-cols-3 gap-4">
                   <div className="text-center">
                     <div className="text-3xl font-bold text-orange-600 mb-1">
@@ -693,18 +792,32 @@ export function MagicOnboardingWizard({ onComplete }: MagicOnboardingWizardProps
                 transition={{ delay: 0.9 }}
                 className="space-y-3 mb-8"
               >
-                <h3 className="font-semibold text-slate-900 mb-3">Next Steps:</h3>
+                <h3 className="font-semibold text-slate-900 mb-3">
+                  Next Steps:
+                </h3>
                 <div className="flex items-start gap-3 p-3 bg-white rounded-lg border border-slate-200">
-                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-orange-500 text-white text-sm font-bold flex items-center justify-center">1</div>
-                  <p className="text-sm text-slate-700">Add more achievements to strengthen your profile</p>
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-orange-500 text-white text-sm font-bold flex items-center justify-center">
+                    1
+                  </div>
+                  <p className="text-sm text-slate-700">
+                    Add more achievements to strengthen your profile
+                  </p>
                 </div>
                 <div className="flex items-start gap-3 p-3 bg-white rounded-lg border border-slate-200">
-                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-orange-500 text-white text-sm font-bold flex items-center justify-center">2</div>
-                  <p className="text-sm text-slate-700">Tailor your resume for specific job opportunities</p>
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-orange-500 text-white text-sm font-bold flex items-center justify-center">
+                    2
+                  </div>
+                  <p className="text-sm text-slate-700">
+                    Tailor your resume for specific job opportunities
+                  </p>
                 </div>
                 <div className="flex items-start gap-3 p-3 bg-white rounded-lg border border-slate-200">
-                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-orange-500 text-white text-sm font-bold flex items-center justify-center">3</div>
-                  <p className="text-sm text-slate-700">Track your applications and interview progress</p>
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-orange-500 text-white text-sm font-bold flex items-center justify-center">
+                    3
+                  </div>
+                  <p className="text-sm text-slate-700">
+                    Track your applications and interview progress
+                  </p>
                 </div>
               </motion.div>
 

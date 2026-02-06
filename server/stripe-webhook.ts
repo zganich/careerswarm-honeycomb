@@ -5,7 +5,9 @@ import { users } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
 
 const stripeKey = process.env.STRIPE_SECRET_KEY?.trim();
-const stripe = stripeKey ? new Stripe(stripeKey, { apiVersion: "2025-12-15.clover" }) : null;
+const stripe = stripeKey
+  ? new Stripe(stripeKey, { apiVersion: "2025-12-15.clover" })
+  : null;
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
 
 export async function handleStripeWebhook(req: Request, res: Response) {
@@ -29,7 +31,9 @@ export async function handleStripeWebhook(req: Request, res: Response) {
 
   // Handle test events
   if (event.id.startsWith("evt_test_")) {
-    console.log("[Webhook] Test event detected, returning verification response");
+    console.log(
+      "[Webhook] Test event detected, returning verification response"
+    );
     return res.json({
       verified: true,
     });
@@ -100,11 +104,14 @@ export async function handleStripeWebhook(req: Request, res: Response) {
           .set({
             subscriptionStatus: status,
             subscriptionEndDate: endDate,
-            subscriptionTier: status === "active" || status === "trialing" ? "pro" : "free",
+            subscriptionTier:
+              status === "active" || status === "trialing" ? "pro" : "free",
           })
           .where(eq(users.id, user.id));
 
-        console.log(`[Webhook] Subscription updated for user ${user.id}: ${status}`);
+        console.log(
+          `[Webhook] Subscription updated for user ${user.id}: ${status}`
+        );
         break;
       }
 

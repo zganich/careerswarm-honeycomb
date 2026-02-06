@@ -1,6 +1,6 @@
-import { useLocation } from 'wouter';
-import { Rocket, Briefcase, User, ArrowRight, Bookmark } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { useLocation } from "wouter";
+import { Rocket, Briefcase, User, ArrowRight, Bookmark } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface PrimaryCTAProps {
   applicationsCount: number;
@@ -22,39 +22,39 @@ export function PrimaryCTA({
     if (applicationsCount === 0) {
       return {
         icon: Rocket,
-        label: 'Apply to Your First Job',
-        description: 'Browse AI-matched opportunities and apply with one click',
-        action: () => setLocation('/jobs'),
-        color: 'orange',
+        label: "Apply to Your First Job",
+        description: "Browse AI-matched opportunities and apply with one click",
+        action: () => setLocation("/jobs"),
+        color: "orange",
       };
     }
 
     if (hasIncompleteProfile) {
       return {
         icon: User,
-        label: 'Complete Your Profile',
+        label: "Complete Your Profile",
         description: `${profileCompleteness}% complete - Add achievements to improve match scores`,
-        action: () => setLocation('/profile'),
-        color: 'blue',
+        action: () => setLocation("/profile"),
+        color: "blue",
       };
     }
 
     if (savedJobsCount > 0) {
       return {
         icon: Bookmark,
-        label: `Apply to ${savedJobsCount} Saved ${savedJobsCount === 1 ? 'Job' : 'Jobs'}`,
-        description: 'You have bookmarked opportunities waiting for you',
-        action: () => setLocation('/saved'),
-        color: 'purple',
+        label: `Apply to ${savedJobsCount} Saved ${savedJobsCount === 1 ? "Job" : "Jobs"}`,
+        description: "You have bookmarked opportunities waiting for you",
+        action: () => setLocation("/saved"),
+        color: "purple",
       };
     }
 
     return {
       icon: Briefcase,
-      label: 'Browse New Jobs',
-      description: 'Discover fresh opportunities matched to your profile',
-      action: () => setLocation('/jobs'),
-      color: 'orange',
+      label: "Browse New Jobs",
+      description: "Discover fresh opportunities matched to your profile",
+      action: () => setLocation("/jobs"),
+      color: "orange",
     };
   };
 
@@ -62,28 +62,28 @@ export function PrimaryCTA({
   const getSecondaryAction = () => {
     if (applicationsCount === 0) {
       return {
-        label: 'Complete Your Profile',
-        action: () => setLocation('/profile'),
+        label: "Complete Your Profile",
+        action: () => setLocation("/profile"),
       };
     }
 
     if (hasIncompleteProfile) {
       return {
-        label: 'Browse Jobs',
-        action: () => setLocation('/jobs'),
+        label: "Browse Jobs",
+        action: () => setLocation("/jobs"),
       };
     }
 
     if (savedJobsCount > 0) {
       return {
-        label: 'Find More Jobs',
-        action: () => setLocation('/jobs'),
+        label: "Find More Jobs",
+        action: () => setLocation("/jobs"),
       };
     }
 
     return {
-      label: 'View Applications',
-        action: () => setLocation('/applications'),
+      label: "View Applications",
+      action: () => setLocation("/applications"),
     };
   };
 
@@ -93,22 +93,22 @@ export function PrimaryCTA({
 
   const colorClasses = {
     orange: {
-      bg: 'bg-orange-500',
-      hover: 'hover:bg-orange-600',
-      light: 'bg-orange-100',
-      text: 'text-orange-600',
+      bg: "bg-orange-500",
+      hover: "hover:bg-orange-600",
+      light: "bg-orange-100",
+      text: "text-orange-600",
     },
     blue: {
-      bg: 'bg-blue-500',
-      hover: 'hover:bg-blue-600',
-      light: 'bg-blue-100',
-      text: 'text-blue-600',
+      bg: "bg-blue-500",
+      hover: "hover:bg-blue-600",
+      light: "bg-blue-100",
+      text: "text-blue-600",
     },
     purple: {
-      bg: 'bg-purple-500',
-      hover: 'hover:bg-purple-600',
-      light: 'bg-purple-100',
-      text: 'text-purple-600',
+      bg: "bg-purple-500",
+      hover: "hover:bg-purple-600",
+      light: "bg-purple-100",
+      text: "text-purple-600",
     },
   };
 
@@ -117,12 +117,8 @@ export function PrimaryCTA({
   return (
     <div className="bg-white rounded-2xl p-8 shadow-lg border border-slate-200">
       {/* Header */}
-      <h2 className="text-2xl font-bold text-slate-900 mb-2">
-        What's Next?
-      </h2>
-      <p className="text-slate-600 mb-6">
-        Your recommended next step
-      </p>
+      <h2 className="text-2xl font-bold text-slate-900 mb-2">What's Next?</h2>
+      <p className="text-slate-600 mb-6">Your recommended next step</p>
 
       {/* Primary CTA */}
       <motion.button
@@ -132,7 +128,9 @@ export function PrimaryCTA({
         whileTap={{ scale: 0.98 }}
       >
         <div className="flex items-start gap-4">
-          <div className={`w-14 h-14 ${colors.light} rounded-xl flex items-center justify-center flex-shrink-0`}>
+          <div
+            className={`w-14 h-14 ${colors.light} rounded-xl flex items-center justify-center flex-shrink-0`}
+          >
             <PrimaryIcon className={`w-7 h-7 ${colors.text}`} />
           </div>
           <div className="flex-1 text-left">

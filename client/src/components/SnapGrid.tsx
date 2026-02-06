@@ -17,7 +17,7 @@ interface SnapGridProps {
 
 /**
  * SnapGrid - Background honeycomb grid that receives "flying" hexagon answers
- * 
+ *
  * Features:
  * - Hexagonal grid layout with breathing animation
  * - Amber glow effect when cells are filled
@@ -51,9 +51,9 @@ export function SnapGrid({ filledCells, className = "" }: SnapGridProps) {
 
   // Update grid when cells are filled
   useEffect(() => {
-    setGrid((prevGrid) =>
-      prevGrid.map((cell) => {
-        const filledCell = filledCells.find((fc) => fc.id === cell.id);
+    setGrid(prevGrid =>
+      prevGrid.map(cell => {
+        const filledCell = filledCells.find(fc => fc.id === cell.id);
         if (filledCell) {
           return {
             ...cell,
@@ -96,7 +96,7 @@ export function SnapGrid({ filledCells, className = "" }: SnapGridProps) {
           />
         </defs>
 
-        {grid.map((cell) => {
+        {grid.map(cell => {
           const x = cell.col * 32; // Horizontal spacing
           const y = cell.row * 30; // Vertical spacing
 

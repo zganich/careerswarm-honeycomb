@@ -54,26 +54,40 @@ So `sentry-cli` targets the right project without extra flags, set in `.env` (or
 - `SENTRY_ORG=careerswarm`
 - `SENTRY_PROJECT=careerswarm-backend`
 
+### Source maps (optional)
+
+Uploading source maps gives readable stack traces in Sentry (file names and line numbers instead of minified code). Options:
+
+1. **After build (CI or deploy):** Run `sentry-cli sourcemaps upload --org careerswarm --project careerswarm-backend ./dist` (or your backend build output path) after `pnpm build`. Requires `SENTRY_AUTH_TOKEN` in the environment (same token used by `sentry:login`).
+2. **Vite:** If you add `@sentry/vite-plugin`, the plugin can upload client source maps during `vite build` when `SENTRY_AUTH_TOKEN` is set.
+3. **Backend only:** If you only care about server errors, upload the server bundle’s source map (e.g. from `dist/server/` or equivalent) in your deploy pipeline.
+
+Without source maps, Sentry still captures errors; stack traces will reference compiled/minified code.
+
 ## Alert Configuration
 
 ### Recommended Alerts (Sentry Dashboard → Alerts)
 
 #### 1. Error Spike Alert
+
 - **Condition**: When number of errors > 10 in 1 hour
 - **Action**: Email + Slack notification
 - **Priority**: High
 
-#### 2. New Issue Alert  
+#### 2. New Issue Alert
+
 - **Condition**: When a new issue is created
 - **Action**: Email notification
 - **Priority**: Medium
 
 #### 3. Critical Error Alert
+
 - **Condition**: When error contains "FATAL" or "CRITICAL"
 - **Action**: Email + Slack + PagerDuty
 - **Priority**: Critical
 
 #### 4. AI Agent Failure Alert
+
 - **Condition**: When error message contains "LLM" or "Forge" or "agent"
 - **Action**: Email notification
 - **Priority**: High
@@ -87,6 +101,7 @@ So `sentry-cli` targets the right project without extra flags, set in `.env` (or
 ## What's Tracked
 
 ### Backend (Express/tRPC)
+
 - Unhandled exceptions
 - tRPC procedure errors
 - Database connection failures
@@ -94,6 +109,7 @@ So `sentry-cli` targets the right project without extra flags, set in `.env` (or
 - Rate limit violations
 
 ### Frontend (React)
+
 - JavaScript errors
 - React component errors
 - Network request failures
@@ -101,6 +117,7 @@ So `sentry-cli` targets the right project without extra flags, set in `.env` (or
 ## Environment Tags
 
 Events are tagged with:
+
 - `environment`: production / development
 - `release`: Auto-detected from git
 
@@ -109,6 +126,7 @@ Events are tagged with:
 Trace sampling is set to 10% (`tracesSampleRate: 0.1`) to balance insight with cost.
 
 To increase during debugging:
+
 ```typescript
 Sentry.init({
   tracesSampleRate: 1.0, // 100% sampling
@@ -128,10 +146,12 @@ Then check the Sentry project for the new event. For local/dev, add a temporary 
 ## Cost Management
 
 Free tier: 5,000 errors/month
+
 - Current config samples 10% of transactions
 - Errors are always captured (100%)
 
 If approaching limit:
+
 1. Reduce `tracesSampleRate`
 2. Add `beforeSend` filter for noisy errors
 3. Upgrade plan

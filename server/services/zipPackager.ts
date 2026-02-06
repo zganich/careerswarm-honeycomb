@@ -1,7 +1,7 @@
-import archiver from 'archiver';
-import { createWriteStream } from 'fs';
-import { promises as fs } from 'fs';
-import path from 'path';
+import archiver from "archiver";
+import { createWriteStream } from "fs";
+import { promises as fs } from "fs";
+import path from "path";
 
 export interface ZipPackagerOptions {
   files: Array<{
@@ -11,7 +11,9 @@ export interface ZipPackagerOptions {
   outputPath: string;
 }
 
-export async function createZipPackage(options: ZipPackagerOptions): Promise<string> {
+export async function createZipPackage(
+  options: ZipPackagerOptions
+): Promise<string> {
   const { files, outputPath } = options;
 
   // Ensure output directory exists
@@ -20,15 +22,15 @@ export async function createZipPackage(options: ZipPackagerOptions): Promise<str
 
   return new Promise((resolve, reject) => {
     const output = createWriteStream(outputPath);
-    const archive = archiver('zip', {
+    const archive = archiver("zip", {
       zlib: { level: 9 }, // Maximum compression
     });
 
-    output.on('close', () => {
+    output.on("close", () => {
       resolve(outputPath);
     });
 
-    archive.on('error', (err) => {
+    archive.on("error", err => {
       reject(err);
     });
 

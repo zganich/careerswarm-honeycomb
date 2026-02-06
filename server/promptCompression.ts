@@ -1,6 +1,6 @@
 /**
  * Prompt Compression - Reduce token usage by 70-80%
- * 
+ *
  * Strategies:
  * 1. Remove unnecessary words and formatting
  * 2. Use abbreviations and shorthand
@@ -161,18 +161,30 @@ export function truncateToTokens(text: string, maxTokens: number): string {
 /**
  * Extract key sentences using simple heuristics
  */
-export function extractKeySentences(text: string, maxSentences: number = 5): string {
+export function extractKeySentences(
+  text: string,
+  maxSentences: number = 5
+): string {
   const sentences = text.match(/[^.!?]+[.!?]+/g) || [];
-  
+
   // Score sentences by keywords
-  const scored = sentences.map((sentence) => {
+  const scored = sentences.map(sentence => {
     let score = 0;
     // Boost sentences with numbers
     if (/\d+/.test(sentence)) score += 2;
     // Boost sentences with action verbs
-    if (/\b(increased|decreased|improved|developed|led|managed|created|built)\b/i.test(sentence)) score += 1;
+    if (
+      /\b(increased|decreased|improved|developed|led|managed|created|built)\b/i.test(
+        sentence
+      )
+    )
+      score += 1;
     // Boost first and last sentences
-    if (sentence === sentences[0] || sentence === sentences[sentences.length - 1]) score += 1;
+    if (
+      sentence === sentences[0] ||
+      sentence === sentences[sentences.length - 1]
+    )
+      score += 1;
     return { sentence, score };
   });
 
@@ -180,7 +192,7 @@ export function extractKeySentences(text: string, maxSentences: number = 5): str
   return scored
     .sort((a, b) => b.score - a.score)
     .slice(0, maxSentences)
-    .map((s) => s.sentence)
+    .map(s => s.sentence)
     .join(" ");
 }
 
@@ -192,10 +204,10 @@ export function abbreviate(text: string): string {
     "for example": "e.g.",
     "that is": "i.e.",
     "and so on": "etc.",
-    "versus": "vs",
-    "approximately": "~",
-    "percent": "%",
-    "number": "#",
+    versus: "vs",
+    approximately: "~",
+    percent: "%",
+    number: "#",
     "at symbol": "@",
   };
 

@@ -61,7 +61,13 @@ describe.skip("Applications Router (requires db.createJob)", () => {
 
   it("should complete full application lifecycle", async () => {
     const caller = appRouter.createCaller({
-      user: { id: testUserId, openId: "test", name: "Test User", email: "test@example.com", role: "user" },
+      user: {
+        id: testUserId,
+        openId: "test",
+        name: "Test User",
+        email: "test@example.com",
+        role: "user",
+      },
       req: {} as any,
       res: {} as any,
     });
@@ -80,13 +86,15 @@ describe.skip("Applications Router (requires db.createJob)", () => {
     const applications = await caller.applications.list();
     expect(Array.isArray(applications)).toBe(true);
     expect(applications.length).toBeGreaterThan(0);
-    
+
     const app = applications.find(a => a.id === testApplicationId);
     expect(app).toBeDefined();
     expect(app?.status).toBe("draft");
 
     // 3. Get application by ID
-    const application = await caller.applications.get({ id: testApplicationId });
+    const application = await caller.applications.get({
+      id: testApplicationId,
+    });
     expect(application).toBeDefined();
     expect(application?.id).toBe(testApplicationId);
     expect(application?.jobId).toBe(testJobId);
@@ -114,7 +122,9 @@ describe.skip("Applications Router (requires db.createJob)", () => {
     expect(updateNotesResult.success).toBe(true);
 
     // Verify notes were updated
-    const appWithNotes = await caller.applications.get({ id: testApplicationId });
+    const appWithNotes = await caller.applications.get({
+      id: testApplicationId,
+    });
     expect(appWithNotes?.notes).toBe(testNotes);
 
     // 6. Delete the application
@@ -127,7 +137,7 @@ describe.skip("Applications Router (requires db.createJob)", () => {
     // Verify application was deleted
     const deletedApp = await caller.applications.get({ id: testApplicationId });
     expect(deletedApp).toBeUndefined();
-    
+
     testApplicationId = 0; // Mark as deleted so cleanup doesn't try to delete again
   });
 });

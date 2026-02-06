@@ -7,14 +7,14 @@
 
 ## Current State
 
-| Check | Status |
-|-------|--------|
-| TypeScript (`pnpm check`) | 0 errors |
-| Build (`pnpm build`) | Passing |
-| Unit Tests (`pnpm test`) | 122 passed, 51 skipped |
-| E2E Tests (Production) | 25/25 passed |
-| Smoke Tests (Production) | 22/22 passed |
-| Playbook (local) | 8/8 passed |
+| Check                          | Status                    |
+| ------------------------------ | ------------------------- |
+| TypeScript (`pnpm check`)      | 0 errors                  |
+| Build (`pnpm build`)           | Passing                   |
+| Unit Tests (`pnpm test`)       | 122 passed, 51 skipped    |
+| E2E Tests (Production)         | 25/25 passed              |
+| Smoke Tests (Production)       | 22/22 passed              |
+| Playbook (local)               | 8/8 passed                |
 | Migrations (`pnpm db:migrate`) | All 16 migrations applied |
 
 The assistant runs these checks when finishing work; no need for the user to run them. Human testing report: [docs/HUMAN_TESTING_REPORT.md](./docs/HUMAN_TESTING_REPORT.md).
@@ -35,7 +35,7 @@ The assistant runs these checks when finishing work; no need for the user to run
 - [x] Production E2E test suite - all 18 tests passing
 - [x] Production smoke tests - all 22 tests passing (desktop + mobile)
 - [x] Fixed 12 E2E test failures (UI selectors, Playwright locator methods)
-- [x] Production env validation: reject placeholder `BUILT_IN_FORGE_API_KEY` (server/_core/env.ts)
+- [x] Production env validation: reject placeholder `BUILT_IN_FORGE_API_KEY` (server/\_core/env.ts)
 - [x] Placeholder check in scripts/verify-env.mjs and scripts/validate-production.mjs
 - [x] RAILWAY_DEPLOYMENT_HANDOFF.md: "If you see errors" section, Railway CLI install/login note
 - [x] CONTEXT_FOR_NEW_CHAT.md for new chat context and handoff reference
@@ -80,16 +80,19 @@ See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md) for full deployment guide
 ## High Priority Next Steps
 
 ### Testing & CI/CD
+
 - [x] Add E2E tests to CI/CD pipeline (GitHub Actions) — runs on push to main, PRs targeting main, and workflow_dispatch
 - [x] Resume Roast integration test (actual API call, verify response) — server/roaster.test.ts (runs when OPENAI_API_KEY set)
 - [x] Stripe checkout flow test (test mode) — server/stripe-router.test.ts; stripe router mounted at appRouter.stripe
 - [x] Onboarding complete flow test (upload → extraction → review → preferences → dashboard) — tests/production-e2e.spec.ts
 
 ### Features
+
 - [x] Real-time progress updates (SSE for resume processing) — GET /api/resume-progress; DashboardHero and Extraction.tsx use EventSource
 - [x] Production metrics dashboard — /metrics page (getPackageSuccessRate, getAgentMetrics); nav link in DashboardLayout
 
 ### Infrastructure
+
 - [x] Set `OPENAI_API_KEY` in Railway Variables (switched from Manus Forge to OpenAI)
 - [x] GitHub Secrets configured for CI E2E tests
 - [x] DNS setup for careerswarm.com / www (optional) — see docs/CLOUDFLARE_DNS.md
@@ -102,6 +105,7 @@ See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md) for full deployment guide
 ## Future Enhancements (Backlog)
 
 ### Medium Priority
+
 - [x] Retry logic for LLM calls (handle transient failures)
 - [x] Profile completeness indicator (implemented; "Complete Your Profile" now links to /achievements)
 - [x] Achievement detail modal (implemented; wired to achievement cards in Profile)
@@ -111,6 +115,7 @@ See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md) for full deployment guide
 - [x] Live browser onboarding-flow tests: run production-e2e Onboarding Flow in headed mode with 5s human-like waits after each step; watch logs for errors
 
 ### Low Priority
+
 - [ ] Email automation (SendGrid/AWS SES)
 - [ ] LinkedIn OAuth integration
 - [ ] Interview Prep Agent
@@ -121,6 +126,7 @@ See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md) for full deployment guide
 ## Architecture Notes
 
 **Stack:**
+
 - Frontend: React 19 + Tailwind 4 + tRPC + shadcn/ui
 - Backend: Express 4 + tRPC 11 + Drizzle ORM
 - Database: MySQL (16 migrations, 23 tables)
@@ -128,6 +134,7 @@ See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md) for full deployment guide
 - AI: OpenAI API (GPT-4o-mini default)
 
 **7-Stage Agent Pipeline:**
+
 1. Scout → Find jobs
 2. Qualifier → Assess fit
 3. Profiler → Analyze company

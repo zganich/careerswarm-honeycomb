@@ -19,7 +19,12 @@ export type FileContent = {
   type: "file_url";
   file_url: {
     url: string;
-    mime_type?: "audio/mpeg" | "audio/wav" | "application/pdf" | "audio/mp4" | "video/mp4" ;
+    mime_type?:
+      | "audio/mpeg"
+      | "audio/wav"
+      | "application/pdf"
+      | "audio/mp4"
+      | "video/mp4";
   };
 };
 
@@ -215,7 +220,9 @@ const OPENAI_CHAT_URL = "https://api.openai.com/v1/chat/completions";
 
 const assertApiKey = () => {
   if (!ENV.openaiApiKey || ENV.openaiApiKey.trim() === "") {
-    throw new Error("OPENAI_API_KEY is not configured. Set OPENAI_API_KEY in environment variables.");
+    throw new Error(
+      "OPENAI_API_KEY is not configured. Set OPENAI_API_KEY in environment variables."
+    );
   }
 };
 
@@ -328,7 +335,10 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
   for (let attempt = 0; attempt <= LLM_MAX_RETRIES; attempt++) {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), LLM_REQUEST_TIMEOUT_MS);
+      const timeoutId = setTimeout(
+        () => controller.abort(),
+        LLM_REQUEST_TIMEOUT_MS
+      );
       const response = await fetch(OPENAI_CHAT_URL, {
         method: "POST",
         headers,
@@ -352,11 +362,13 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
 
       lastError = err;
       const delayMs = LLM_RETRY_DELAYS_MS[attempt] ?? 4000;
-      await new Promise((r) => setTimeout(r, delayMs));
+      await new Promise(r => setTimeout(r, delayMs));
     } catch (e) {
       const err = e instanceof Error ? e : new Error(String(e));
       if (err.name === "AbortError") {
-        const timeoutErr = new Error("LLM request timed out. The AI is taking longer than expected—please try again.");
+        const timeoutErr = new Error(
+          "LLM request timed out. The AI is taking longer than expected—please try again."
+        );
         if (attempt === LLM_MAX_RETRIES) throw timeoutErr;
         lastError = timeoutErr;
       } else {
@@ -369,13 +381,16 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
             : err.message;
         const enrichedErr =
           enrichedMessage !== err.message
-            ? Object.assign(new Error(enrichedMessage), { cause: err.cause ?? err, stack: err.stack })
+            ? Object.assign(new Error(enrichedMessage), {
+                cause: err.cause ?? err,
+                stack: err.stack,
+              })
             : err;
         if (attempt === LLM_MAX_RETRIES) throw enrichedErr;
         lastError = enrichedErr;
       }
       const delayMs = LLM_RETRY_DELAYS_MS[attempt] ?? 4000;
-      await new Promise((r) => setTimeout(r, delayMs));
+      await new Promise(r => setTimeout(r, delayMs));
     }
   }
 
@@ -385,7 +400,10 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
 const CHECK_TIMEOUT_MS = 8_000;
 
 /** Optional startup check: verify OpenAI key + egress. Log only; does not throw. */
-export async function checkOpenAIReachable(): Promise<{ ok: boolean; message: string }> {
+export async function checkOpenAIReachable(): Promise<{
+  ok: boolean;
+  message: string;
+}> {
   const key = ENV.openaiApiKey?.trim() ?? "";
   if (!key || key.length < 20) {
     return { ok: false, message: "OPENAI_API_KEY not set or too short" };
@@ -395,7 +413,10 @@ export async function checkOpenAIReachable(): Promise<{ ok: boolean; message: st
     const t = setTimeout(() => controller.abort(), CHECK_TIMEOUT_MS);
     const res = await fetch(OPENAI_CHAT_URL, {
       method: "POST",
-      headers: { "content-type": "application/json", authorization: `Bearer ${key}` },
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${key}`,
+      },
       body: JSON.stringify({
         model: "gpt-4o-mini",
         messages: [{ role: "user", content: "Say OK" }],
@@ -406,10 +427,15 @@ export async function checkOpenAIReachable(): Promise<{ ok: boolean; message: st
     clearTimeout(t);
     if (res.ok) return { ok: true, message: "OK" };
     const text = await res.text();
-    return { ok: false, message: `${res.status} ${res.statusText} – ${text.slice(0, 120)}` };
+    return {
+      ok: false,
+      message: `${res.status} ${res.statusText} – ${text.slice(0, 120)}`,
+    };
   } catch (e) {
     const err = e instanceof Error ? e : new Error(String(e));
-    const code = (err as NodeJS.ErrnoException).code ?? (err.cause as NodeJS.ErrnoException)?.code;
+    const code =
+      (err as NodeJS.ErrnoException).code ??
+      (err.cause as NodeJS.ErrnoException)?.code;
     const msg = code ? `fetch failed: ${code}` : err.message;
     return { ok: false, message: msg };
   }

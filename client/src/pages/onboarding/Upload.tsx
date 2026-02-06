@@ -26,27 +26,31 @@ export default function Upload() {
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    
+
     const droppedFiles = Array.from(e.dataTransfer.files).filter(
-      file => file.type === "application/pdf" || 
-              file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
-              file.type === "text/plain"
+      file =>
+        file.type === "application/pdf" ||
+        file.type ===
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+        file.type === "text/plain"
     );
-    
+
     if (droppedFiles.length === 0) {
       toast.error("Please upload PDF, DOCX, or TXT files only");
       return;
     }
-    
+
     setFiles(prev => [...prev, ...droppedFiles]);
   };
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const selectedFiles = Array.from(e.target.files).filter(
-        file => file.type === "application/pdf" || 
-                file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
-                file.type === "text/plain"
+        file =>
+          file.type === "application/pdf" ||
+          file.type ===
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+          file.type === "text/plain"
       );
       setFiles(prev => [...prev, ...selectedFiles]);
     }
@@ -68,14 +72,14 @@ export default function Upload() {
       // Upload each file
       for (const file of files) {
         const reader = new FileReader();
-        const fileData = await new Promise<string>((resolve) => {
+        const fileData = await new Promise<string>(resolve => {
           reader.onload = () => resolve(reader.result as string);
           reader.readAsDataURL(file);
         });
 
         await uploadMutation.mutateAsync({
           filename: file.name,
-          fileData: fileData.split(',')[1], // Remove data:mime;base64, prefix
+          fileData: fileData.split(",")[1], // Remove data:mime;base64, prefix
           mimeType: file.type,
         });
       }
@@ -99,9 +103,7 @@ export default function Upload() {
             <Award className="h-6 w-6 text-primary" />
             <span className="font-bold text-xl">CareerSwarm</span>
           </div>
-          <div className="text-sm text-muted-foreground">
-            Step 2 of 5
-          </div>
+          <div className="text-sm text-muted-foreground">Step 2 of 5</div>
         </div>
       </header>
 
@@ -109,7 +111,10 @@ export default function Upload() {
       <div className="bg-white border-b">
         <div className="container">
           <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-            <div className="h-full bg-primary transition-all duration-300" style={{ width: "40%" }} />
+            <div
+              className="h-full bg-primary transition-all duration-300"
+              style={{ width: "40%" }}
+            />
           </div>
         </div>
       </div>
@@ -121,7 +126,8 @@ export default function Upload() {
             Upload Your Resumes
           </h1>
           <p className="text-lg text-muted-foreground">
-            Upload one or more resumes. We'll extract all your career data automatically.
+            Upload one or more resumes. We'll extract all your career data
+            automatically.
           </p>
         </div>
 
@@ -169,7 +175,9 @@ export default function Upload() {
         {files.length > 0 && (
           <Card className="mb-8">
             <CardContent className="pt-6">
-              <h3 className="font-semibold mb-4">Uploaded Files ({files.length})</h3>
+              <h3 className="font-semibold mb-4">
+                Uploaded Files ({files.length})
+              </h3>
               <div className="space-y-2">
                 {files.map((file, index) => (
                   <div
@@ -212,7 +220,9 @@ export default function Upload() {
             onClick={handleContinue}
             disabled={files.length === 0 || isUploading}
           >
-            {isUploading ? "Uploading..." : `Continue with ${files.length} File(s) →`}
+            {isUploading
+              ? "Uploading..."
+              : `Continue with ${files.length} File(s) →`}
           </Button>
         </div>
       </div>

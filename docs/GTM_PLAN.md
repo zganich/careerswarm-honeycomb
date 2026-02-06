@@ -12,14 +12,14 @@ Agents must discover, qualify, and feed every viable B2B lead.
 
 **Lead types (all in scope):**
 
-| Lead type | Who | Signals agents must find | Required data per lead |
-|-----------|-----|---------------------------|-------------------------|
-| **In-house recruiter** | TA, Recruiter, Sourcer, Talent Partner at a company | Job posts, LinkedIn activity, company career page | name, title, company, company size, LinkedIn URL, email (if public), source URL, industry |
-| **Agency recruiter** | Staffing, contingency, retained; account manager, delivery lead | Agency name, client industries, posting volume | name, title, agency name, agency size, LinkedIn URL, specialties, source URL |
-| **HR / TA leader** | Head of TA, HR Director, VP HR, CHRO | Hiring initiatives, team size, tools mentioned | name, title, company, LinkedIn URL, source URL, team size if visible |
-| **Hiring manager** | Engineering Manager, Sales Director, etc. who posts roles | Own job posts, "we're hiring" posts | name, title, company, LinkedIn URL, function, source URL |
-| **Startup / first recruiter** | Founder hiring, first TA hire | "Hiring our first recruiter," job posts, HN/IH | name, company, stage, LinkedIn or site URL, source URL |
-| **Company (account)** | Employer with career page or job board presence | Career page URL, ATS (Greenhouse, Lever, etc.), # open roles | company name, domain, career page URL, ATS, industry, size, geography |
+| Lead type                     | Who                                                             | Signals agents must find                                     | Required data per lead                                                                    |
+| ----------------------------- | --------------------------------------------------------------- | ------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
+| **In-house recruiter**        | TA, Recruiter, Sourcer, Talent Partner at a company             | Job posts, LinkedIn activity, company career page            | name, title, company, company size, LinkedIn URL, email (if public), source URL, industry |
+| **Agency recruiter**          | Staffing, contingency, retained; account manager, delivery lead | Agency name, client industries, posting volume               | name, title, agency name, agency size, LinkedIn URL, specialties, source URL              |
+| **HR / TA leader**            | Head of TA, HR Director, VP HR, CHRO                            | Hiring initiatives, team size, tools mentioned               | name, title, company, LinkedIn URL, source URL, team size if visible                      |
+| **Hiring manager**            | Engineering Manager, Sales Director, etc. who posts roles       | Own job posts, "we're hiring" posts                          | name, title, company, LinkedIn URL, function, source URL                                  |
+| **Startup / first recruiter** | Founder hiring, first TA hire                                   | "Hiring our first recruiter," job posts, HN/IH               | name, company, stage, LinkedIn or site URL, source URL                                    |
+| **Company (account)**         | Employer with career page or job board presence                 | Career page URL, ATS (Greenhouse, Lever, etc.), # open roles | company name, domain, career page URL, ATS, industry, size, geography                     |
 
 **Per-lead fields agents should populate (B2B lead record):**
 
@@ -111,14 +111,14 @@ Within "career / jobs / recruiting," go deep per vertical and call out where to 
 
 ### 3.1 By Buyer Type
 
-| Vertical | Who | Untapped / low-hanging | Agent focus |
-|----------|-----|------------------------|-------------|
-| **Agency recruiters (SMB)** | Staffing firms, 5–50 recruiters | Don't have enterprise JD tools; high volume, price-sensitive | Find agencies (LinkedIn, agency directories); score by # of recruiters and posting frequency |
-| **In-house TA (SMB)** | 1–3 person TA team, company 50–500 | No Textio/Greenhouse JD add-on; do JDs in Word/Google Docs | Find "Talent Acquisition" + company size; Reddit "how do you write JDs" |
-| **Startups / first recruiter** | Founder or first TA hire | Zero budget for JD tools; need speed | HN "Who is hiring," AngelList, LinkedIn "first recruiter" or "hiring first" |
-| **Hiring managers (tech)** | Engineering managers, VPs | Post roles themselves; hate writing JDs | LinkedIn by title + "we're hiring"; Reddit r/ExperiencedDevs, r/cscareerquestions (employer side) |
-| **HR generalists** | HR at small companies | Wear many hats; JD writing is pain | LinkedIn "HR Manager" at companies &lt;200; Facebook HR groups |
-| **Industries with high JD churn** | Healthcare, retail hourly, hospitality | Many roles, high turnover; need many JDs fast | Industry-specific job boards; career pages for hospitals, retail chains |
+| Vertical                          | Who                                    | Untapped / low-hanging                                       | Agent focus                                                                                       |
+| --------------------------------- | -------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------- |
+| **Agency recruiters (SMB)**       | Staffing firms, 5–50 recruiters        | Don't have enterprise JD tools; high volume, price-sensitive | Find agencies (LinkedIn, agency directories); score by # of recruiters and posting frequency      |
+| **In-house TA (SMB)**             | 1–3 person TA team, company 50–500     | No Textio/Greenhouse JD add-on; do JDs in Word/Google Docs   | Find "Talent Acquisition" + company size; Reddit "how do you write JDs"                           |
+| **Startups / first recruiter**    | Founder or first TA hire               | Zero budget for JD tools; need speed                         | HN "Who is hiring," AngelList, LinkedIn "first recruiter" or "hiring first"                       |
+| **Hiring managers (tech)**        | Engineering managers, VPs              | Post roles themselves; hate writing JDs                      | LinkedIn by title + "we're hiring"; Reddit r/ExperiencedDevs, r/cscareerquestions (employer side) |
+| **HR generalists**                | HR at small companies                  | Wear many hats; JD writing is pain                           | LinkedIn "HR Manager" at companies &lt;200; Facebook HR groups                                    |
+| **Industries with high JD churn** | Healthcare, retail hourly, hospitality | Many roles, high turnover; need many JDs fast                | Industry-specific job boards; career pages for hospitals, retail chains                           |
 
 ### 3.2 By Industry (Examples)
 

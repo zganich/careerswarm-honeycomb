@@ -3,10 +3,10 @@ import { SignJWT } from "jose";
 
 /**
  * Auth Bypass Utility for E2E Tests
- * 
+ *
  * This utility creates a mock session cookie that mimics the Manus OAuth flow,
  * allowing tests to bypass the real OAuth redirect and focus on application logic.
- * 
+ *
  * The session cookie is a JWT token signed with HS256 algorithm containing:
  * - openId: Test user's unique identifier
  * - appId: Manus application ID
@@ -32,9 +32,9 @@ const TEST_USER = {
 async function createMockSessionToken(): Promise<string> {
   const JWT_SECRET = process.env.JWT_SECRET || "test-secret-key-for-playwright";
   const secretKey = new TextEncoder().encode(JWT_SECRET);
-  
+
   const expirationSeconds = Math.floor((Date.now() + ONE_YEAR_MS) / 1000);
-  
+
   const token = await new SignJWT({
     openId: TEST_USER.openId,
     appId: TEST_USER.appId,
@@ -43,24 +43,24 @@ async function createMockSessionToken(): Promise<string> {
     .setProtectedHeader({ alg: "HS256", typ: "JWT" })
     .setExpirationTime(expirationSeconds)
     .sign(secretKey);
-  
+
   return token;
 }
 
 /**
  * Bypass OAuth login by injecting a mock session cookie
- * 
+ *
  * Usage in tests:
  * ```typescript
  * import { bypassLogin } from './utils/auth-bypass';
- * 
+ *
  * test('should access protected page', async ({ page }) => {
  *   await bypassLogin(page);
  *   await page.goto('http://localhost:3000/dashboard');
  *   // Test continues with authenticated session
  * });
  * ```
- * 
+ *
  * @param page - Playwright Page object
  * @param baseURL - Base URL of the application (default: http://localhost:3000)
  */
@@ -70,10 +70,10 @@ export async function bypassLogin(
 ): Promise<void> {
   // Create mock session token
   const sessionToken = await createMockSessionToken();
-  
+
   // Navigate to base URL first (required to set cookies)
   await page.goto(baseURL);
-  
+
   // Inject session cookie
   await page.context().addCookies([
     {
@@ -87,13 +87,13 @@ export async function bypassLogin(
       expires: Math.floor((Date.now() + ONE_YEAR_MS) / 1000),
     },
   ]);
-  
+
   console.log(`[Auth Bypass] Injected session cookie for ${TEST_USER.name}`);
 }
 
 /**
  * Clear authentication session (logout)
- * 
+ *
  * @param page - Playwright Page object
  */
 export async function clearAuth(page: Page): Promise<void> {

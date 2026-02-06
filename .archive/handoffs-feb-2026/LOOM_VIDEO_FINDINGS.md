@@ -2,11 +2,12 @@
 
 **Video URL:** https://www.loom.com/share/796912aa48f048fe965117e7a44d1056  
 **Duration:** 2:56  
-**Recorded:** February 2, 2026  
+**Recorded:** February 2, 2026
 
 ## Observations from Video Playback
 
 ### Timestamp 0:00-0:27 - Homepage
+
 - ✅ Homepage loads correctly
 - ✅ "Stop Applying. Start Infiltrating." headline visible
 - ✅ SwarmNarrative animation running (showing "2. TARGETING" with Hunter agent)
@@ -15,6 +16,7 @@
 - ✅ Navigation links present: Pricing, For Recruiters, Resume Roast
 
 ### Timestamp 0:27-0:57 - Resume Roast Page
+
 - ✅ User navigated to Resume Roast page
 - ✅ Page shows "Get Your Resume Roasted" title
 - ✅ "Brutally honest feedback in 30 seconds" subtitle
@@ -25,18 +27,21 @@
 - ✅ CareerSwarm branding maintained throughout
 
 ### Transcript Status
+
 - ❌ No transcript available - "Loom could not detect any audible speech in this video"
 - This indicates the video is a silent screen recording
 
 ## Key Findings
 
 ### ✅ Working Correctly:
+
 1. **Homepage Layout** - All elements visible above fold, animation running smoothly
 2. **Navigation** - Resume Roast link works, redirects to `/roast` page
 3. **Resume Roast UI** - Clean interface with clear messaging and validation
 4. **Branding Consistency** - CareerSwarm orange/slate color scheme maintained
 
 ### ❓ Unable to Verify (Video Cuts Off):
+
 1. **Resume Roast Submission** - Video doesn't show user pasting resume text and clicking "Get Roasted"
 2. **OAuth Gate** - Video doesn't show user clicking "Build My Master Profile" to trigger OAuth modal
 3. **Onboarding Flow** - Video doesn't show upload, extraction, review, or preferences steps
@@ -45,6 +50,7 @@
 ## Next Steps for Complete E2E Testing
 
 To fully test the onboarding flow, we need a longer recording that shows:
+
 1. Pasting resume text into Resume Roast and getting results
 2. Clicking "Build My Master Profile" from roast results
 3. OAuth gate modal appearing

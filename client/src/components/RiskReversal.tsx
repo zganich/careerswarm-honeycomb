@@ -4,7 +4,7 @@ import { Button } from "./ui/button";
 
 /**
  * RiskReversal - Final conversion zone that removes all friction
- * 
+ *
  * Features:
  * - Three-column grid: 30-day guarantee, cancel anytime, data export
  * - Large CTA: "Start Building → Free Forever Tier Available"
@@ -21,17 +21,20 @@ export function RiskReversal({ onStart }: RiskReversalProps) {
     {
       icon: <DollarSign className="w-8 h-8" />,
       title: "30-Day Money Back Guarantee",
-      description: "Try Pro risk-free. Not satisfied? Get a full refund, no questions asked.",
+      description:
+        "Try Pro risk-free. Not satisfied? Get a full refund, no questions asked.",
     },
     {
       icon: <LogOut className="w-8 h-8" />,
       title: "Cancel Anytime, Keep Your Resumes",
-      description: "Downgrade or cancel anytime. All your resumes and data stay yours forever.",
+      description:
+        "Downgrade or cancel anytime. All your resumes and data stay yours forever.",
     },
     {
       icon: <Download className="w-8 h-8" />,
       title: "Data Export in One Click",
-      description: "Export all your profiles, resumes, and analyses in standard formats anytime.",
+      description:
+        "Export all your profiles, resumes, and analyses in standard formats anytime.",
     },
   ];
 
@@ -49,7 +52,8 @@ export function RiskReversal({ onStart }: RiskReversalProps) {
             Prove It To Yourself - Zero Risk
           </h2>
           <p className="text-xl text-slate-600 mb-12">
-            We're confident you'll love Careerswarm. That's why we make it easy to try.
+            We're confident you'll love Careerswarm. That's why we make it easy
+            to try.
           </p>
 
           {/* Three-Column Grid */}
@@ -66,8 +70,12 @@ export function RiskReversal({ onStart }: RiskReversalProps) {
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-50 rounded-full mb-4">
                   <div className="text-orange-500">{guarantee.icon}</div>
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-2">{guarantee.title}</h3>
-                <p className="text-sm text-slate-600 leading-relaxed">{guarantee.description}</p>
+                <h3 className="text-lg font-bold text-slate-900 mb-2">
+                  {guarantee.title}
+                </h3>
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  {guarantee.description}
+                </p>
               </motion.div>
             ))}
           </div>
@@ -96,8 +104,11 @@ export function RiskReversal({ onStart }: RiskReversalProps) {
               Free Forever Tier Available - No Credit Card Required
             </p>
             <p className="text-sm text-slate-500">
-              Join <span className="font-bold text-orange-500">14,327 candidates</span> who
-              optimized their careers this week
+              Join{" "}
+              <span className="font-bold text-orange-500">
+                14,327 candidates
+              </span>{" "}
+              who optimized their careers this week
             </p>
           </div>
 
@@ -110,34 +121,52 @@ export function RiskReversal({ onStart }: RiskReversalProps) {
             className="mt-12 pt-8 border-t border-slate-200 flex items-center justify-center gap-8 flex-wrap opacity-60"
           >
             <div className="flex items-center gap-2">
-              <svg className="w-5 h-5 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
+              <svg
+                className="w-5 h-5 text-emerald-500"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
                 <path
                   fillRule="evenodd"
                   d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                   clipRule="evenodd"
                 />
               </svg>
-              <span className="text-sm text-slate-600 font-medium">SSL Encrypted</span>
+              <span className="text-sm text-slate-600 font-medium">
+                SSL Encrypted
+              </span>
             </div>
             <div className="flex items-center gap-2">
-              <svg className="w-5 h-5 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
+              <svg
+                className="w-5 h-5 text-emerald-500"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
                 <path
                   fillRule="evenodd"
                   d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                   clipRule="evenodd"
                 />
               </svg>
-              <span className="text-sm text-slate-600 font-medium">GDPR Compliant</span>
+              <span className="text-sm text-slate-600 font-medium">
+                GDPR Compliant
+              </span>
             </div>
             <div className="flex items-center gap-2">
-              <svg className="w-5 h-5 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
+              <svg
+                className="w-5 h-5 text-emerald-500"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
                 <path
                   fillRule="evenodd"
                   d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                   clipRule="evenodd"
                 />
               </svg>
-              <span className="text-sm text-slate-600 font-medium">SOC 2 Certified</span>
+              <span className="text-sm text-slate-600 font-medium">
+                SOC 2 Certified
+              </span>
             </div>
           </motion.div>
         </motion.div>

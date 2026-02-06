@@ -22,15 +22,24 @@ export function scoreLead(lead: RawB2BLead): ScoredLead {
   const snippet = (lead.snippet ?? "").toLowerCase();
   const combined = `${signals} ${title} ${snippet}`;
 
-  if (/posted.*(job|role|position)|hiring|we're hiring|open role/i.test(combined)) score += 1;
-  if (/job description|jd |writing jd|write jd|job spec/i.test(combined)) score += 2;
+  if (
+    /posted.*(job|role|position)|hiring|we're hiring|open role/i.test(combined)
+  )
+    score += 1;
+  if (/job description|jd |writing jd|write jd|job spec/i.test(combined))
+    score += 2;
   const companySize = (lead.companySize ?? "").toLowerCase();
-  if (COMPANY_SIZE_HIGH_VALUE.some((s) => companySize.includes(s))) score += 1;
-  if (lead.leadType === "recruiter_agency" && AGENCY_SIZE_HIGH_VALUE.some((s) => companySize.includes(s))) score += 1;
+  if (COMPANY_SIZE_HIGH_VALUE.some(s => companySize.includes(s))) score += 1;
+  if (
+    lead.leadType === "recruiter_agency" &&
+    AGENCY_SIZE_HIGH_VALUE.some(s => companySize.includes(s))
+  )
+    score += 1;
   if (lead.linkedinUrl) score += 1;
   if (lead.email) score += 1;
 
-  const priority: Priority = score >= 4 ? "high" : score >= 2 ? "medium" : "low";
+  const priority: Priority =
+    score >= 4 ? "high" : score >= 2 ? "medium" : "low";
   return { ...lead, score, priority };
 }
 

@@ -39,10 +39,13 @@ export function AsyncQuickApply({
     // After 1.5s, close/minimize and show toast
     setTimeout(() => {
       setState("processing");
-      
+
       // Show toast notification
       toast.success(PSYCH_COPY.quickApply.toastStarted.title, {
-        description: PSYCH_COPY.quickApply.toastStarted.message(companyName, roleTitle),
+        description: PSYCH_COPY.quickApply.toastStarted.message(
+          companyName,
+          roleTitle
+        ),
         action: {
           label: PSYCH_COPY.quickApply.toastStarted.action,
           onClick: () => {
@@ -51,7 +54,6 @@ export function AsyncQuickApply({
         },
       });
     }, 1500);
-
   }, [jobId, companyName, roleTitle, onApplyStart, state, disabled]);
 
   return (
@@ -62,9 +64,10 @@ export function AsyncQuickApply({
         relative overflow-hidden
         px-6 py-3 rounded-xl font-semibold text-white
         transition-all duration-300
-        ${state === "idle" 
-          ? "bg-orange-500 hover:bg-orange-600 hover:shadow-lg hover:-translate-y-0.5" 
-          : "bg-orange-400 cursor-not-allowed"
+        ${
+          state === "idle"
+            ? "bg-orange-500 hover:bg-orange-600 hover:shadow-lg hover:-translate-y-0.5"
+            : "bg-orange-400 cursor-not-allowed"
         }
         ${disabled ? "opacity-50 cursor-not-allowed" : ""}
         ${className}
@@ -84,7 +87,7 @@ export function AsyncQuickApply({
             {PSYCH_COPY.quickApply.button}
           </motion.span>
         )}
-        
+
         {state === "initiating" && (
           <motion.span
             key="initiating"
@@ -97,7 +100,7 @@ export function AsyncQuickApply({
             Initiating...
           </motion.span>
         )}
-        
+
         {state === "processing" && (
           <motion.span
             key="processing"
@@ -119,5 +122,3 @@ export function AsyncQuickApply({
     </motion.button>
   );
 }
-
-

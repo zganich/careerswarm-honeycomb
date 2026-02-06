@@ -5,11 +5,13 @@
 ### 1. **Distinct Background Color Shifts Between Sections**
 
 **Hero Section:**
+
 - **Background**: Cream/beige (#FFF9E6 or similar)
 - **Purpose**: Main value proposition, CTA, agent builder prompt
 - **Visual**: Clean, minimal, focuses attention on the interactive prompt box
 
 **"How It Works" Section:**
+
 - **Background**: Off-white/very light beige
 - **Cards**: Three-step process with **soft pastel gradient cards**:
   - Card 1 (Describe): Light lavender/purple gradient
@@ -18,11 +20,13 @@
 - **Purpose**: Educate users on the 3-step process
 
 **Social Proof Section ("Your next hire isn't human"):**
+
 - **Background**: Pure white (#FFFFFF)
 - **Purpose**: Display customer logos in grayscale
 - **Visual**: Clean, professional, high contrast
 
 **Features Section ("Everything you need"):**
+
 - **Background**: Off-white/light cream
 - **Cards**: Individual feature cards with **soft colored backgrounds**:
   - Peach/coral tints for some cards
@@ -31,21 +35,25 @@
 - **Purpose**: Showcase platform capabilities with visual variety
 
 **Integrations Section:**
+
 - **Background**: Cream/beige (similar to hero)
 - **Visual**: Integration logos scattered organically
 - **Purpose**: Show ecosystem breadth
 
 **Enterprise Section:**
+
 - **Background**: Darker cream or light purple gradient
 - **Visual**: More serious, professional tone
 - **Purpose**: Target enterprise buyers with governance/security features
 
 **Customer Stories Section:**
+
 - **Background**: White or very light beige
 - **Cards**: Carousel with customer testimonials
 - **Visual**: Clean, testimonial-focused
 
 **Final CTA Section:**
+
 - **Background**: Soft purple or lavender gradient
 - **Visual**: Stands out from rest of page, creates urgency
 - **Purpose**: Drive conversions with final push
@@ -55,18 +63,21 @@
 ## Design Principles for Sectional Breaks
 
 ### **Color Transitions:**
+
 1. **Alternating backgrounds**: Cream → White → Off-white → Cream (creates rhythm)
 2. **Gradient accents**: Soft purple, pink, coral, yellow gradients on cards within sections
 3. **Never jarring**: All transitions are subtle, staying within the same warm/neutral family
 4. **Purpose-driven**: Each color shift signals a new concept or feature category
 
 ### **Visual Hierarchy:**
+
 1. **Section labels**: Small uppercase text with icon (e.g., "🔲 Features")
 2. **Large headlines**: Bold, dark navy/black text for maximum contrast
 3. **Generous padding**: 80-120px vertical spacing between major sections
 4. **Card-based layouts**: Features broken into digestible card grids
 
 ### **Marketing/SEO Structure:**
+
 1. **Clear H2 hierarchy**: Each section has a clear headline (H2) for SEO
 2. **Keyword-rich**: Headlines contain target keywords ("AI workforce", "integrations", "enterprise")
 3. **Scannable**: Users can quickly understand value by skimming section headlines

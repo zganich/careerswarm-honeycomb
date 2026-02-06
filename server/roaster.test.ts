@@ -3,7 +3,11 @@ import { appRouter } from "./routers";
 
 describe("Resume Roaster", () => {
   it("should reject resumes shorter than 50 characters", async () => {
-    const caller = appRouter.createCaller({ user: null, req: {} as any, res: {} as any });
+    const caller = appRouter.createCaller({
+      user: null,
+      req: {} as any,
+      res: {} as any,
+    });
 
     await expect(
       caller.public.roast({ resumeText: "Short resume" })
@@ -15,7 +19,11 @@ describe("Resume Roaster", () => {
       console.log("Skipping roast integration test: OPENAI_API_KEY not set");
       return;
     }
-    const caller = appRouter.createCaller({ user: null, req: {} as any, res: {} as any });
+    const caller = appRouter.createCaller({
+      user: null,
+      req: {} as any,
+      res: {} as any,
+    });
     const resumeText = `
     Jane Doe | jane.doe@email.com
     Senior Product Manager at TechCorp (2020-Present)
@@ -43,7 +51,11 @@ describe("Resume Roaster", () => {
   }, 20000);
 
   it.skip("should roast a buzzword-heavy resume with low score (LLM test)", async () => {
-    const caller = appRouter.createCaller({ user: null, req: {} as any, res: {} as any });
+    const caller = appRouter.createCaller({
+      user: null,
+      req: {} as any,
+      res: {} as any,
+    });
 
     const buzzwordResume = `
     John Smith
@@ -88,7 +100,11 @@ describe("Resume Roaster", () => {
   });
 
   it.skip("should roast a metrics-rich resume with higher score (LLM test)", async () => {
-    const caller = appRouter.createCaller({ user: null, req: {} as any, res: {} as any });
+    const caller = appRouter.createCaller({
+      user: null,
+      req: {} as any,
+      res: {} as any,
+    });
 
     const goodResume = `
     Jane Doe

@@ -36,6 +36,7 @@ Domains already configured on Railway: careerswarm.com, www.careerswarm.com.
 **See [docs/CLOUDFLARE_DNS.md](./CLOUDFLARE_DNS.md)** for step-by-step instructions with the exact Railway target.
 
 Summary: Add CNAME records in Cloudflare → **DNS** → **Records**:
+
 - `@` → `careerswarm-app-production.up.railway.app`
 - `www` → `careerswarm-app-production.up.railway.app`
 

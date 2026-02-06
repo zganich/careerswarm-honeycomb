@@ -13,7 +13,12 @@ describe("Scribe Agent - generateOutreach", () => {
 
   it.skip("should generate LinkedIn and email outreach based on strategic analysis", async () => {
     const caller = appRouter.createCaller({
-      user: { id: testUserId, openId: "test-user", name: "Test User", email: "test@example.com" },
+      user: {
+        id: testUserId,
+        openId: "test-user",
+        name: "Test User",
+        email: "test@example.com",
+      },
       req: {} as any,
       res: {} as any,
     });
@@ -24,7 +29,8 @@ describe("Scribe Agent - generateOutreach", () => {
       userId: testUserId,
       title: "Senior Software Engineer",
       companyName: "TechCorp",
-      description: "We are looking for a senior engineer to help us scale our platform. Must have experience with microservices, reducing technical debt, and improving system reliability.",
+      description:
+        "We are looking for a senior engineer to help us scale our platform. Must have experience with microservices, reducing technical debt, and improving system reliability.",
       platform: "manual",
     });
 
@@ -56,7 +62,11 @@ describe("Scribe Agent - generateOutreach", () => {
     expect(wordCount).toBeLessThanOrEqual(180); // Allow some buffer
 
     // Validate peer-level tone (should not contain subordinate phrases)
-    const subordinatePhrases = ["coffee chat", "pick your brain", "learn from you"];
+    const subordinatePhrases = [
+      "coffee chat",
+      "pick your brain",
+      "learn from you",
+    ];
     subordinatePhrases.forEach(phrase => {
       expect(outreach.linkedinMessage.toLowerCase()).not.toContain(phrase);
       expect(outreach.coldEmailBody.toLowerCase()).not.toContain(phrase);
@@ -69,7 +79,12 @@ describe("Scribe Agent - generateOutreach", () => {
 
   it.skip("should fail if strategic analysis hasn't been run (requires createJob in db)", async () => {
     const caller = appRouter.createCaller({
-      user: { id: testUserId, openId: "test-user", name: "Test User", email: "test@example.com" },
+      user: {
+        id: testUserId,
+        openId: "test-user",
+        name: "Test User",
+        email: "test@example.com",
+      },
       req: {} as any,
       res: {} as any,
     });
@@ -89,7 +104,10 @@ describe("Scribe Agent - generateOutreach", () => {
     const createResult = await caller.applications.create({
       jobId,
     });
-    const applicationId = typeof createResult === 'number' ? createResult : (createResult as any).id;
+    const applicationId =
+      typeof createResult === "number"
+        ? createResult
+        : (createResult as any).id;
 
     // Try to generate outreach without running profiler first
     await expect(

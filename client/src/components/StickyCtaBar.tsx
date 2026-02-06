@@ -5,7 +5,7 @@ import { getLoginUrl } from "@/const";
 
 /**
  * StickyCtaBar - Floating CTA that appears after scrolling 400px
- * 
+ *
  * Features:
  * - Shows after user scrolls past hero section
  * - Slide-in-up animation

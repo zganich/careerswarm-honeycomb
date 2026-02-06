@@ -29,7 +29,9 @@ const placeholders = [
 function isPlaceholder(value) {
   if (!value || typeof value !== "string") return true;
   const v = value.trim().toLowerCase();
-  return placeholders.some((p) => v === p.toLowerCase()) || v.includes("placeholder");
+  return (
+    placeholders.some(p => v === p.toLowerCase()) || v.includes("placeholder")
+  );
 }
 
 for (const envVar of requiredEnvVars) {
@@ -75,7 +77,7 @@ try {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
     apiVersion: "2025-12-15.clover",
   });
-  
+
   // Test API call
   await stripe.products.list({ limit: 1 });
   console.log("   ✅ Stripe API connection successful");
@@ -88,8 +90,10 @@ try {
 console.log("\n4️⃣  Checking tRPC routers...");
 try {
   const { appRouter } = await import("../server/routers.ts");
-  const routers = Object.keys(appRouter._def.procedures || appRouter._def.router || {});
-  
+  const routers = Object.keys(
+    appRouter._def.procedures || appRouter._def.router || {}
+  );
+
   if (routers.length > 0) {
     console.log(`   ✅ tRPC routers loaded (${routers.length} procedures)`);
   } else {
@@ -115,7 +119,9 @@ console.log("\n6️⃣  Checking CI/CD test credentials...");
 if (process.env.TEST_USER_EMAIL && process.env.TEST_USER_PASSWORD) {
   console.log("   ✅ E2E test credentials configured");
 } else {
-  console.warn("   ⚠️  TEST_USER_EMAIL/TEST_USER_PASSWORD not set - E2E tests will skip");
+  console.warn(
+    "   ⚠️  TEST_USER_EMAIL/TEST_USER_PASSWORD not set - E2E tests will skip"
+  );
   console.log("      → Add to GitHub Secrets for CI E2E tests");
 }
 

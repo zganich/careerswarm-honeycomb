@@ -4,19 +4,19 @@
  * This script creates test data and triggers package generation without requiring UI authentication
  */
 
-import * as db from './server/db.ts';
+import * as db from "./server/db.ts";
 
 async function createTestData() {
-  console.log('🔧 Creating test data...\n');
+  console.log("🔧 Creating test data...\n");
 
   // 1. Create test user
   const testUserData = {
-    openId: 'test-user-' + Date.now(),
-    name: 'Test User',
-    email: 'test@careerswarm.test',
-    role: 'user',
+    openId: "test-user-" + Date.now(),
+    name: "Test User",
+    email: "test@careerswarm.test",
+    role: "user",
   };
-  
+
   await db.upsertUser(testUserData);
   const user = await db.getUserByOpenId(testUserData.openId);
   const userId = user.id;
@@ -24,50 +24,50 @@ async function createTestData() {
 
   // 2. Create user profile
   await db.upsertUserProfile(userId, {
-    phone: '555-1234',
-    locationCity: 'San Francisco',
-    locationState: 'CA',
-    locationCountry: 'USA',
-    linkedinUrl: 'https://linkedin.com/in/testuser',
+    phone: "555-1234",
+    locationCity: "San Francisco",
+    locationState: "CA",
+    locationCountry: "USA",
+    linkedinUrl: "https://linkedin.com/in/testuser",
   });
   console.log(`✅ Created user profile`);
 
   // 3. Create work experience
   const workExpId = await db.createWorkExperience({
     userId: userId,
-    companyName: 'Acme Corp',
-    jobTitle: 'Software Engineer',
-    startDate: new Date('2020-01-01'),
-    endDate: new Date('2023-01-01'),
-    description: 'Built scalable APIs and microservices',
+    companyName: "Acme Corp",
+    jobTitle: "Software Engineer",
+    startDate: new Date("2020-01-01"),
+    endDate: new Date("2023-01-01"),
+    description: "Built scalable APIs and microservices",
   });
-  if (!workExpId) throw new Error('Failed to create work experience');
+  if (!workExpId) throw new Error("Failed to create work experience");
   console.log(`✅ Created work experience: ${workExpId}`);
 
   // 4. Create achievements
   const achievementDescriptions = [
-    'Built scalable API serving 1M requests/day, reducing response time by 40%',
-    'Led migration to microservices architecture, improving system reliability to 99.9%',
-    'Mentored 5 junior engineers, 3 of whom were promoted within 1 year',
+    "Built scalable API serving 1M requests/day, reducing response time by 40%",
+    "Led migration to microservices architecture, improving system reliability to 99.9%",
+    "Mentored 5 junior engineers, 3 of whom were promoted within 1 year",
   ];
-  
+
   for (const description of achievementDescriptions) {
     await db.createAchievement({
       userId: userId,
       workExperienceId: workExpId,
       description: description,
-      category: 'technical',
+      category: "technical",
     });
   }
   console.log(`✅ Created 3 achievements`);
 
   // 5. Create skills
-  const skillNames = ['React', 'Node.js', 'TypeScript', 'System Design'];
+  const skillNames = ["React", "Node.js", "TypeScript", "System Design"];
   for (const name of skillNames) {
     await db.createSkill({
       userId: userId,
       skillName: name,
-      skillCategory: 'technical',
+      skillCategory: "technical",
     });
   }
   console.log(`✅ Created 4 skills`);
@@ -89,38 +89,44 @@ Responsibilities:
 - Optimize system performance and reliability`;
 
   const oppId = await db.createOpportunity({
-    companyName: 'Example Inc',
-    roleTitle: 'Senior Software Engineer',
+    companyName: "Example Inc",
+    roleTitle: "Senior Software Engineer",
     jobDescription: jobDescription,
-    locationType: 'remote',
+    locationType: "remote",
     baseSalaryMin: 150000,
     baseSalaryMax: 200000,
   });
-  if (!oppId) throw new Error('Failed to create opportunity');
-  console.log(`✅ Created opportunity: ${oppId} (Senior Software Engineer at Example Inc)`);
+  if (!oppId) throw new Error("Failed to create opportunity");
+  console.log(
+    `✅ Created opportunity: ${oppId} (Senior Software Engineer at Example Inc)`
+  );
 
   // 7. Create application
-  console.log(`   - Creating application with userId=${userId}, opportunityId=${oppId}`);
+  console.log(
+    `   - Creating application with userId=${userId}, opportunityId=${oppId}`
+  );
   const appId = await db.createApplication({
     userId: userId,
     opportunityId: oppId,
-    status: 'draft',
+    status: "draft",
   });
-  if (!appId) throw new Error('Failed to create application');
+  if (!appId) throw new Error("Failed to create application");
   console.log(`✅ Created application: ${appId}\n`);
 
   return { userId, appId, oppId };
 }
 
 async function testPackageGeneration(userId, appId) {
-  console.log('📦 Testing package generation...\n');
+  console.log("📦 Testing package generation...\n");
 
   try {
     // Import the agents
-    const { generateTailoredResume } = await import('./server/agents/tailor.ts');
-    const { generateOutreach } = await import('./server/agents/scribe.ts');
-    const { assembleApplicationPackage } = await import('./server/agents/assembler.ts');
-    
+    const { generateTailoredResume } =
+      await import("./server/agents/tailor.ts");
+    const { generateOutreach } = await import("./server/agents/scribe.ts");
+    const { assembleApplicationPackage } =
+      await import("./server/agents/assembler.ts");
+
     // Fetch all required data using db helper functions
     const user = await db.getUserById(userId);
     const profile = await db.getUserProfile(userId);
@@ -130,26 +136,36 @@ async function testPackageGeneration(userId, appId) {
     const application = await db.getApplicationById(appId);
     const opportunity = await db.getOpportunityById(application.opportunityId);
 
-    console.log('✅ Fetched all required data');
+    console.log("✅ Fetched all required data");
     console.log(`   - User: ${user.name}`);
     console.log(`   - Work Experiences: ${workExperiences.length}`);
     console.log(`   - Achievements: ${achievements.length}`);
     console.log(`   - Skills: ${skillsList.length}`);
-    console.log(`   - Opportunity: ${opportunity.roleTitle} at ${opportunity.companyName}\n`);
+    console.log(
+      `   - Opportunity: ${opportunity.roleTitle} at ${opportunity.companyName}\n`
+    );
 
     // Build user profile for Tailor agent
     const tailorUserProfile = {
       fullName: user.name || "User",
       email: user.email || "",
       phone: profile?.phone || "",
-      location: [profile?.locationCity, profile?.locationState, profile?.locationCountry]
-        .filter(Boolean).join(', ') || "",
+      location:
+        [
+          profile?.locationCity,
+          profile?.locationState,
+          profile?.locationCountry,
+        ]
+          .filter(Boolean)
+          .join(", ") || "",
       linkedIn: profile?.linkedinUrl || "",
       workExperience: workExperiences.map(exp => ({
         company: exp.companyName,
         title: exp.jobTitle,
-        startDate: exp.startDate.toISOString().split('T')[0],
-        endDate: exp.endDate ? exp.endDate.toISOString().split('T')[0] : 'Present',
+        startDate: exp.startDate.toISOString().split("T")[0],
+        endDate: exp.endDate
+          ? exp.endDate.toISOString().split("T")[0]
+          : "Present",
         achievements: achievements
           .filter(ach => ach.workExperienceId === exp.id)
           .map(ach => ach.description),
@@ -158,7 +174,7 @@ async function testPackageGeneration(userId, appId) {
       education: [],
     };
 
-    console.log('🤖 Step 1: Calling Tailor agent (resume generation)...');
+    console.log("🤖 Step 1: Calling Tailor agent (resume generation)...");
     const resumeResult = await generateTailoredResume({
       userProfile: tailorUserProfile,
       jobDescription: opportunity.jobDescription || "",
@@ -168,7 +184,9 @@ async function testPackageGeneration(userId, appId) {
     console.log(`✅ Tailor agent completed`);
     console.log(`   - Confidence: ${resumeResult.confidence}%`);
     console.log(`   - Keywords matched: ${resumeResult.keywordMatches.length}`);
-    console.log(`   - Resume length: ${resumeResult.resumeMarkdown.length} chars\n`);
+    console.log(
+      `   - Resume length: ${resumeResult.resumeMarkdown.length} chars\n`
+    );
 
     // Build user profile for Scribe agent
     const scribeUserProfile = {
@@ -177,7 +195,7 @@ async function testPackageGeneration(userId, appId) {
       topAchievements: achievements.slice(0, 3).map(ach => ach.description),
     };
 
-    console.log('🤖 Step 2: Calling Scribe agent (outreach generation)...');
+    console.log("🤖 Step 2: Calling Scribe agent (outreach generation)...");
     const outreachResult = await generateOutreach({
       userProfile: scribeUserProfile,
       companyName: opportunity.companyName,
@@ -186,10 +204,16 @@ async function testPackageGeneration(userId, appId) {
       jobDescription: opportunity.jobDescription || "",
     });
     console.log(`✅ Scribe agent completed`);
-    console.log(`   - Cover letter length: ${outreachResult.coverLetter.length} chars`);
-    console.log(`   - LinkedIn message length: ${outreachResult.linkedInMessage.length} chars\n`);
+    console.log(
+      `   - Cover letter length: ${outreachResult.coverLetter.length} chars`
+    );
+    console.log(
+      `   - LinkedIn message length: ${outreachResult.linkedInMessage.length} chars\n`
+    );
 
-    console.log('🤖 Step 3: Calling Assembler agent (file generation + S3 upload)...');
+    console.log(
+      "🤖 Step 3: Calling Assembler agent (file generation + S3 upload)..."
+    );
     const packageResult = await assembleApplicationPackage({
       applicationId: appId.toString(),
       resumeMarkdown: resumeResult.resumeMarkdown,
@@ -214,44 +238,71 @@ async function testPackageGeneration(userId, appId) {
       linkedinMessage: outreachResult.linkedInMessage,
     });
 
-    console.log('✅ Updated application with package URLs\n');
+    console.log("✅ Updated application with package URLs\n");
 
     return { resumeResult, outreachResult, packageResult };
   } catch (error) {
-    console.error('❌ Error during package generation:', error);
+    console.error("❌ Error during package generation:", error);
     throw error;
   }
 }
 
 async function verifyResults(appId) {
-  console.log('🔍 Verifying results in database...\n');
+  console.log("🔍 Verifying results in database...\n");
 
   // Check application record
   const app = await db.getApplicationById(appId);
-  
-  console.log('📊 Application Record:');
-  console.log(`   - packageZipUrl: ${app.packageZipUrl ? '✅ ' + app.packageZipUrl : '❌ NULL'}`);
-  console.log(`   - resumePdfUrl: ${app.resumePdfUrl ? '✅ ' + app.resumePdfUrl : '❌ NULL'}`);
-  console.log(`   - resumeDocxUrl: ${app.resumeDocxUrl ? '✅ ' + app.resumeDocxUrl : '❌ NULL'}`);
-  console.log(`   - resumeTxtUrl: ${app.resumeTxtUrl ? '✅ ' + app.resumeTxtUrl : '❌ NULL'}`);
-  console.log(`   - coverLetterTxtUrl: ${app.coverLetterTxtUrl ? '✅ ' + app.coverLetterTxtUrl : '❌ NULL'}`);
-  console.log(`   - linkedinMessageTxtUrl: ${app.linkedinMessageTxtUrl ? '✅ ' + app.linkedinMessageTxtUrl : '❌ NULL'}`);
-  console.log(`   - tailoredResumeText: ${app.tailoredResumeText ? '✅ ' + app.tailoredResumeText.length + ' chars' : '❌ NULL'}`);
-  console.log(`   - coverLetterText: ${app.coverLetterText ? '✅ ' + app.coverLetterText.length + ' chars' : '❌ NULL'}`);
-  console.log(`   - linkedinMessage: ${app.linkedinMessage ? '✅ ' + app.linkedinMessage.length + ' chars' : '❌ NULL'}`);
 
-  const allFieldsPopulated = app.packageZipUrl && app.resumePdfUrl && app.resumeDocxUrl && 
-                              app.resumeTxtUrl && app.coverLetterTxtUrl && app.linkedinMessageTxtUrl &&
-                              app.tailoredResumeText && app.coverLetterText && app.linkedinMessage;
+  console.log("📊 Application Record:");
+  console.log(
+    `   - packageZipUrl: ${app.packageZipUrl ? "✅ " + app.packageZipUrl : "❌ NULL"}`
+  );
+  console.log(
+    `   - resumePdfUrl: ${app.resumePdfUrl ? "✅ " + app.resumePdfUrl : "❌ NULL"}`
+  );
+  console.log(
+    `   - resumeDocxUrl: ${app.resumeDocxUrl ? "✅ " + app.resumeDocxUrl : "❌ NULL"}`
+  );
+  console.log(
+    `   - resumeTxtUrl: ${app.resumeTxtUrl ? "✅ " + app.resumeTxtUrl : "❌ NULL"}`
+  );
+  console.log(
+    `   - coverLetterTxtUrl: ${app.coverLetterTxtUrl ? "✅ " + app.coverLetterTxtUrl : "❌ NULL"}`
+  );
+  console.log(
+    `   - linkedinMessageTxtUrl: ${app.linkedinMessageTxtUrl ? "✅ " + app.linkedinMessageTxtUrl : "❌ NULL"}`
+  );
+  console.log(
+    `   - tailoredResumeText: ${app.tailoredResumeText ? "✅ " + app.tailoredResumeText.length + " chars" : "❌ NULL"}`
+  );
+  console.log(
+    `   - coverLetterText: ${app.coverLetterText ? "✅ " + app.coverLetterText.length + " chars" : "❌ NULL"}`
+  );
+  console.log(
+    `   - linkedinMessage: ${app.linkedinMessage ? "✅ " + app.linkedinMessage.length + " chars" : "❌ NULL"}`
+  );
 
-  console.log(`\n${allFieldsPopulated ? '✅ All fields populated successfully!' : '❌ Some fields are missing'}\n`);
+  const allFieldsPopulated =
+    app.packageZipUrl &&
+    app.resumePdfUrl &&
+    app.resumeDocxUrl &&
+    app.resumeTxtUrl &&
+    app.coverLetterTxtUrl &&
+    app.linkedinMessageTxtUrl &&
+    app.tailoredResumeText &&
+    app.coverLetterText &&
+    app.linkedinMessage;
+
+  console.log(
+    `\n${allFieldsPopulated ? "✅ All fields populated successfully!" : "❌ Some fields are missing"}\n`
+  );
 
   return allFieldsPopulated;
 }
 
 async function main() {
-  console.log('🚀 Phase 2: Application Package Generation Testing\n');
-  console.log('=' .repeat(60) + '\n');
+  console.log("🚀 Phase 2: Application Package Generation Testing\n");
+  console.log("=".repeat(60) + "\n");
 
   try {
     // Step 1: Create test data
@@ -263,12 +314,14 @@ async function main() {
     // Step 3: Verify results
     const success = await verifyResults(appId);
 
-    console.log('=' .repeat(60));
-    console.log(`\n${success ? '✅ PHASE 2 TEST: PASSED' : '❌ PHASE 2 TEST: FAILED'}\n`);
+    console.log("=".repeat(60));
+    console.log(
+      `\n${success ? "✅ PHASE 2 TEST: PASSED" : "❌ PHASE 2 TEST: FAILED"}\n`
+    );
 
     process.exit(success ? 0 : 1);
   } catch (error) {
-    console.error('\n❌ Test failed with error:', error);
+    console.error("\n❌ Test failed with error:", error);
     console.error(error.stack);
     process.exit(1);
   }

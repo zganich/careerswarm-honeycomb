@@ -17,14 +17,14 @@
 
 ## Quick reference: symptom → cause → fix
 
-| Symptom | Likely cause | Fix / check |
-|--------|----------------|-------------|
-| **Resume Roast: "fetch failed"** in production, works locally | Railway proxy **keep-alive 60s**; request takes longer | LLM timeout is capped at **55s** in `server/_core/llm.ts`. Do not increase above ~55s without checking Railway docs. If still failing: `railway logs` for OpenAI errors; confirm `OPENAI_API_KEY` set and redeploy. |
-| **Resume Roast: 404** on `/roast` in dev | Vite middleware mode doesn’t serve SPA routes | SPA fallback runs **before** Vite in `server/_core/vite.ts` (GET routes with no dot → index.html). Ensure you’re on the port the dev server prints. |
-| **Resume Roast / AI: 401 or "isn't available"** | `OPENAI_API_KEY` missing or invalid in production | Set in Railway → Variables; **redeploy**. See [CRITICAL_SETUP_CHECKLIST.md](./CRITICAL_SETUP_CHECKLIST.md) § OPENAI_API_KEY. |
-| **Auth / login fails in production** | `DATABASE_URL` or `JWT_SECRET` wrong/missing | [CRITICAL_SETUP_CHECKLIST.md](./CRITICAL_SETUP_CHECKLIST.md) § Auth and env. |
-| **"Session verification failed" / JWT signature** in logs | Old cookie (signed with previous `JWT_SECRET`) or secret changed | Expected after deploy or secret rotation. User re-logs in; no code fix. Do not change `JWT_SECRET` in production unless you’re okay invalidating all sessions. |
-| **Works locally, fails in prod** (generic) | Platform timeout, env, or host-specific behavior | 1) Check platform timeout/limit docs. 2) `railway logs`. 3) Compare prod env to local `.env`. |
+| Symptom                                                       | Likely cause                                                     | Fix / check                                                                                                                                                                                                         |
+| ------------------------------------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Resume Roast: "fetch failed"** in production, works locally | Railway proxy **keep-alive 60s**; request takes longer           | LLM timeout is capped at **55s** in `server/_core/llm.ts`. Do not increase above ~55s without checking Railway docs. If still failing: `railway logs` for OpenAI errors; confirm `OPENAI_API_KEY` set and redeploy. |
+| **Resume Roast: 404** on `/roast` in dev                      | Vite middleware mode doesn’t serve SPA routes                    | SPA fallback runs **before** Vite in `server/_core/vite.ts` (GET routes with no dot → index.html). Ensure you’re on the port the dev server prints.                                                                 |
+| **Resume Roast / AI: 401 or "isn't available"**               | `OPENAI_API_KEY` missing or invalid in production                | Set in Railway → Variables; **redeploy**. See [CRITICAL_SETUP_CHECKLIST.md](./CRITICAL_SETUP_CHECKLIST.md) § OPENAI_API_KEY.                                                                                        |
+| **Auth / login fails in production**                          | `DATABASE_URL` or `JWT_SECRET` wrong/missing                     | [CRITICAL_SETUP_CHECKLIST.md](./CRITICAL_SETUP_CHECKLIST.md) § Auth and env.                                                                                                                                        |
+| **"Session verification failed" / JWT signature** in logs     | Old cookie (signed with previous `JWT_SECRET`) or secret changed | Expected after deploy or secret rotation. User re-logs in; no code fix. Do not change `JWT_SECRET` in production unless you’re okay invalidating all sessions.                                                      |
+| **Works locally, fails in prod** (generic)                    | Platform timeout, env, or host-specific behavior                 | 1) Check platform timeout/limit docs. 2) `railway logs`. 3) Compare prod env to local `.env`.                                                                                                                       |
 
 ---
 

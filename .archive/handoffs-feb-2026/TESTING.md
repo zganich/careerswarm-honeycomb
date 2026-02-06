@@ -5,6 +5,7 @@ This document outlines the manual tests that should be performed before each pro
 ## Pre-Launch Validation
 
 ### Automated Checks
+
 Run these commands before manual testing:
 
 ```bash
@@ -30,6 +31,7 @@ git secrets --scan
 ## Manual Test Scenarios
 
 ### 1. Authentication Flow
+
 - [ ] Visit landing page (unauthenticated)
 - [ ] Click "Start Application" button
 - [ ] Verify redirect to Manus OAuth login
@@ -40,6 +42,7 @@ git secrets --scan
 - [ ] Verify redirect to landing page
 
 ### 2. Resume Roaster (Free Feature)
+
 - [ ] Navigate to Resume Roaster
 - [ ] Paste sample resume text (100+ characters)
 - [ ] Click "Roast My Resume"
@@ -49,6 +52,7 @@ git secrets --scan
 - [ ] Test with short text (< 50 chars) - expect validation error
 
 ### 3. Career Score Calculator (Landing Page)
+
 - [ ] Scroll to Career Score Calculator section
 - [ ] Select "Current Role" from dropdown
 - [ ] Select "Target Role" from dropdown
@@ -59,6 +63,7 @@ git secrets --scan
 - [ ] Click "Fix These Gaps" CTA - verify redirect to signup
 
 ### 4. Stripe Checkout (Pro Upgrade)
+
 - [ ] Sign in as free user
 - [ ] Navigate to Pricing page
 - [ ] Click "Upgrade to Pro" on Pro tier card
@@ -70,6 +75,7 @@ git secrets --scan
 - [ ] Verify usage limits updated (unlimited analyses)
 
 ### 5. Subscription Management
+
 - [ ] Navigate to Settings → Billing
 - [ ] Verify current subscription displays (Pro, $29/month)
 - [ ] Click "Manage Subscription"
@@ -79,6 +85,7 @@ git secrets --scan
 - [ ] Verify usage limits restored (5 analyses/month)
 
 ### 6. Job Application Workflow
+
 - [ ] Create new job application
 - [ ] Paste job description URL
 - [ ] Verify JD scraping works
@@ -97,6 +104,7 @@ git secrets --scan
 - [ ] Verify PDF downloads correctly
 
 ### 7. Data Export
+
 - [ ] Navigate to Settings → Data
 - [ ] Click "Export All Data"
 - [ ] Verify JSON file downloads
@@ -107,6 +115,7 @@ git secrets --scan
   - [ ] Tailored resumes
 
 ### 8. Mobile Responsive
+
 - [ ] Open site on mobile device (or DevTools mobile view)
 - [ ] Test landing page layout
 - [ ] Test dashboard navigation (hamburger menu)
@@ -116,6 +125,7 @@ git secrets --scan
 - [ ] Verify no horizontal scroll
 
 ### 9. Error Handling
+
 - [ ] Disconnect internet, try to roast resume
   - [ ] Verify "Please check your connection" toast
 - [ ] Log out, try to access protected route
@@ -126,6 +136,7 @@ git secrets --scan
   - [ ] Verify graceful failure (no server crash)
 
 ### 10. Performance
+
 - [ ] Run Lighthouse audit (target: all scores > 90)
   - [ ] Performance
   - [ ] Accessibility
@@ -150,6 +161,7 @@ See `.env.example` for the placeholder variables.
 All checkboxes above must be checked ✅ before deploying to production.
 
 If any test fails:
+
 1. Document the issue in GitHub Issues
 2. Fix the bug
 3. Re-run all tests

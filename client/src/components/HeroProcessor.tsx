@@ -3,7 +3,7 @@ import { Check } from "lucide-react";
 
 /**
  * HeroProcessor - 3D-tilted glass interface showing the "Swarm" at work
- * 
+ *
  * Features:
  * - 3D perspective with rotated glass panel
  * - Messy inputs transforming into green badges with checkmarks
@@ -26,7 +26,10 @@ export function HeroProcessor() {
   ];
 
   return (
-    <div className="relative w-full h-full flex items-center justify-center" style={{ perspective: "1000px" }}>
+    <div
+      className="relative w-full h-full flex items-center justify-center"
+      style={{ perspective: "1000px" }}
+    >
       {/* 3D Glass Panel */}
       <motion.div
         className="relative w-full max-w-md bg-white/60 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl p-6"
@@ -42,7 +45,8 @@ export function HeroProcessor() {
         <motion.div
           className="absolute left-0 right-0 h-1 pointer-events-none"
           style={{
-            background: "linear-gradient(to right, transparent, rgba(249, 115, 22, 0.6), transparent)",
+            background:
+              "linear-gradient(to right, transparent, rgba(249, 115, 22, 0.6), transparent)",
             filter: "blur(4px)",
           }}
           animate={{

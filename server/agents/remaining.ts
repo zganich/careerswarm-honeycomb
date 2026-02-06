@@ -1,6 +1,6 @@
 /**
  * Remaining Agents: Qualifier, Hunter, Tailor, Scribe, Assembler
- * 
+ *
  * These agents complete the application generation pipeline
  */
 
@@ -66,7 +66,10 @@ export class QualifierAgent {
     };
   }
 
-  private verifyLocation(opportunity: any): { passed: boolean; reason: string } {
+  private verifyLocation(opportunity: any): {
+    passed: boolean;
+    reason: string;
+  } {
     const prefs = this.userPreferences;
     const locationType = prefs?.locationType || "remote";
     const allowedCities = prefs?.allowedCities || [];
@@ -79,9 +82,13 @@ export class QualifierAgent {
     // Check hybrid
     if (
       locationType === "hybrid" &&
-      (opportunity.locationType === "remote" || opportunity.locationType === "hybrid")
+      (opportunity.locationType === "remote" ||
+        opportunity.locationType === "hybrid")
     ) {
-      return { passed: true, reason: "Hybrid/remote position matches preference" };
+      return {
+        passed: true,
+        reason: "Hybrid/remote position matches preference",
+      };
     }
 
     // Check specific cities
@@ -89,7 +96,10 @@ export class QualifierAgent {
       const oppLocation = opportunity.location?.toLowerCase() || "";
       for (const city of allowedCities) {
         if (oppLocation.includes(city.toLowerCase())) {
-          return { passed: true, reason: `Location matches allowed city: ${city}` };
+          return {
+            passed: true,
+            reason: `Location matches allowed city: ${city}`,
+          };
         }
       }
     }
@@ -100,7 +110,10 @@ export class QualifierAgent {
     };
   }
 
-  private verifyCompensation(opportunity: any): { passed: boolean; reason: string } {
+  private verifyCompensation(opportunity: any): {
+    passed: boolean;
+    reason: string;
+  } {
     const prefs = this.userPreferences;
     const minBase = prefs?.minimumBaseSalary || 0;
 
@@ -117,7 +130,10 @@ export class QualifierAgent {
       };
     }
 
-    return { passed: true, reason: `Compensation meets requirements ($${oppMin}k+)` };
+    return {
+      passed: true,
+      reason: `Compensation meets requirements ($${oppMin}k+)`,
+    };
   }
 }
 
@@ -133,11 +149,13 @@ export class HunterAgent {
     recruiter: any;
     additionalContacts: any[];
   }> {
-    console.log(`[Hunter] 🎯 Finding contacts for ${opportunity.companyName}...`);
+    console.log(
+      `[Hunter] 🎯 Finding contacts for ${opportunity.companyName}...`
+    );
 
     // Use LLM to generate realistic contact info
     // In production, this would use LinkedIn API, web scraping, etc.
-    
+
     const prompt = `Generate realistic hiring manager and recruiter information for this job opportunity:
 
 Company: ${opportunity.companyName}
@@ -168,7 +186,8 @@ Return JSON with:
         messages: [
           {
             role: "system",
-            content: "You generate realistic contact information for hiring processes.",
+            content:
+              "You generate realistic contact information for hiring processes.",
           },
           {
             role: "user",
@@ -243,11 +262,10 @@ export class TailorAgent {
     private userProfile: any
   ) {}
 
-  async execute(
-    opportunity: any,
-    strategicAnalysis: any
-  ): Promise<string> {
-    console.log(`[Tailor] ✂️ Creating tailored resume for ${opportunity.companyName}...`);
+  async execute(opportunity: any, strategicAnalysis: any): Promise<string> {
+    console.log(
+      `[Tailor] ✂️ Creating tailored resume for ${opportunity.companyName}...`
+    );
 
     // Select 8-15 best achievements for this opportunity
     const selectedAchievements = this.selectRelevantAchievements(
@@ -256,14 +274,19 @@ export class TailorAgent {
     );
 
     // Build resume prompt
-    const prompt = this.buildResumePrompt(opportunity, strategicAnalysis, selectedAchievements);
+    const prompt = this.buildResumePrompt(
+      opportunity,
+      strategicAnalysis,
+      selectedAchievements
+    );
 
     try {
       const response = await invokeLLM({
         messages: [
           {
             role: "system",
-            content: "You are an expert resume writer specializing in ATS-optimized, achievement-focused resumes for partnerships and business development roles.",
+            content:
+              "You are an expert resume writer specializing in ATS-optimized, achievement-focused resumes for partnerships and business development roles.",
           },
           {
             role: "user",
@@ -287,7 +310,7 @@ export class TailorAgent {
   private selectRelevantAchievements(opportunity: any, analysis: any): any[] {
     // Select achievements that match the opportunity
     const achievements = this.userProfile.achievements || [];
-    
+
     // Sort by relevance score (if available) and usage success rate
     return achievements
       .sort((a: any, b: any) => {
@@ -364,16 +387,23 @@ export class ScribeAgent {
     linkedinMessage: string;
     emailOutreach: string;
   }> {
-    console.log(`[Scribe] ✍️ Writing outreach materials for ${opportunity.companyName}...`);
+    console.log(
+      `[Scribe] ✍️ Writing outreach materials for ${opportunity.companyName}...`
+    );
 
-    const prompt = this.buildOutreachPrompt(opportunity, strategicAnalysis, contacts);
+    const prompt = this.buildOutreachPrompt(
+      opportunity,
+      strategicAnalysis,
+      contacts
+    );
 
     try {
       const response = await invokeLLM({
         messages: [
           {
             role: "system",
-            content: "You are an expert at writing compelling, personalized outreach messages for job applications. Your messages are concise, strategic, and demonstrate deep understanding of the company's needs.",
+            content:
+              "You are an expert at writing compelling, personalized outreach messages for job applications. Your messages are concise, strategic, and demonstrate deep understanding of the company's needs.",
           },
           {
             role: "user",
@@ -400,7 +430,9 @@ export class ScribeAgent {
       });
 
       const content = response.choices[0].message.content;
-      const materials = JSON.parse(typeof content === "string" ? content : "{}");
+      const materials = JSON.parse(
+        typeof content === "string" ? content : "{}"
+      );
 
       console.log(`[Scribe] ✅ Outreach materials created`);
 
@@ -411,7 +443,11 @@ export class ScribeAgent {
     }
   }
 
-  private buildOutreachPrompt(opportunity: any, analysis: any, contacts: any): string {
+  private buildOutreachPrompt(
+    opportunity: any,
+    analysis: any,
+    contacts: any
+  ): string {
     const superpowers = this.userProfile.superpowers || [];
 
     return `Write personalized outreach materials for this opportunity:
@@ -471,7 +507,9 @@ export class AssemblerAgent {
     nextSteps: string[];
     estimatedTimeToApply: number;
   }> {
-    console.log(`[Assembler] 📦 Packaging application for ${applicationData.opportunity.companyName}...`);
+    console.log(
+      `[Assembler] 📦 Packaging application for ${applicationData.opportunity.companyName}...`
+    );
 
     // Generate application checklist
     const checklist = this.generateChecklist(applicationData);
@@ -509,7 +547,9 @@ export class AssemblerAgent {
     const steps = [];
 
     if (data.opportunity.jobUrl) {
-      steps.push(`1. Apply via ${data.opportunity.source || "job board"}: ${data.opportunity.jobUrl}`);
+      steps.push(
+        `1. Apply via ${data.opportunity.source || "job board"}: ${data.opportunity.jobUrl}`
+      );
     }
 
     if (data.contacts.hiringManager) {

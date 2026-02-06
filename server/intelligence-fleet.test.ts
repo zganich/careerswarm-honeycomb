@@ -53,7 +53,7 @@ Nice to Have:
   describe("Success Predictor Agent", () => {
     it("should validate input schema", async () => {
       const { predictSuccess } = await import("./routers");
-      
+
       // Missing applicationId should fail
       await expect(async () => {
         // @ts-ignore - intentionally testing invalid input
@@ -63,7 +63,7 @@ Nice to Have:
 
     it("should handle missing application gracefully", async () => {
       const { getApplicationById, updateApplication } = await import("./db");
-      
+
       const nonExistentApp = await getApplicationById(999999, testUserId);
       expect(nonExistentApp).toBeUndefined();
     });
@@ -80,16 +80,17 @@ Nice to Have:
     it("should validate success prediction schema", () => {
       const mockPrediction = {
         probability: 72,
-        reasoning: "Strong product management experience aligns with role requirements. Technical background is a plus.",
+        reasoning:
+          "Strong product management experience aligns with role requirements. Technical background is a plus.",
         greenFlags: [
           "5+ years of product management experience matches requirement",
           "B2B SaaS background directly relevant",
-          "Technical skills (SQL, analytics) are strong fit"
+          "Technical skills (SQL, analytics) are strong fit",
         ],
         redFlags: [
           "No explicit AI/ML product experience mentioned",
-          "Startup experience not highlighted in profile"
-        ]
+          "Startup experience not highlighted in profile",
+        ],
       };
 
       expect(mockPrediction).toHaveProperty("probability");
@@ -103,18 +104,18 @@ Nice to Have:
 
     it("should store prediction in analytics column", async () => {
       const { updateApplication, getApplicationById } = await import("./db");
-      
+
       const mockPrediction = {
         probability: 68,
         reasoning: "Good fit overall with some gaps",
         greenFlags: ["Strong PM experience", "B2B SaaS background"],
-        redFlags: ["Missing AI/ML experience"]
+        redFlags: ["Missing AI/ML experience"],
       };
 
       await updateApplication(testApplicationId, testUserId, {
         analytics: {
-          successPrediction: mockPrediction
-        }
+          successPrediction: mockPrediction,
+        },
       });
 
       const updated = await getApplicationById(testApplicationId, testUserId);
@@ -128,7 +129,7 @@ Nice to Have:
   describe("Skill Gap Analysis Agent", () => {
     it("should validate input schema", async () => {
       const { analyzeSkillGap } = await import("./routers");
-      
+
       // Missing applicationId should fail
       await expect(async () => {
         // @ts-ignore - intentionally testing invalid input
@@ -148,14 +149,14 @@ Nice to Have:
         missingSkills: [
           "AI/ML product development experience",
           "Payment systems and billing knowledge",
-          "Startup scaling experience"
+          "Startup scaling experience",
         ],
         upskillingPlan: [
           "Complete online course on AI/ML for Product Managers (Coursera or Udacity)",
           "Read 'Inspired' by Marty Cagan for product leadership best practices",
           "Build side project using Stripe API to gain payment systems experience",
-          "Attend startup product meetups to network and learn scaling strategies"
-        ]
+          "Attend startup product meetups to network and learn scaling strategies",
+        ],
       };
 
       expect(mockSkillGap).toHaveProperty("missingSkills");
@@ -168,19 +169,19 @@ Nice to Have:
 
     it("should store skill gap analysis in analytics column", async () => {
       const { updateApplication, getApplicationById } = await import("./db");
-      
+
       const mockSkillGap = {
         missingSkills: ["AI/ML experience", "Payment systems"],
         upskillingPlan: [
           "Take AI/ML course",
-          "Build Stripe integration project"
-        ]
+          "Build Stripe integration project",
+        ],
       };
 
       await updateApplication(testApplicationId, testUserId, {
         analytics: {
-          skillGap: mockSkillGap
-        }
+          skillGap: mockSkillGap,
+        },
       });
 
       const updated = await getApplicationById(testApplicationId, testUserId);
@@ -191,22 +192,22 @@ Nice to Have:
 
     it("should handle both analytics together", async () => {
       const { updateApplication, getApplicationById } = await import("./db");
-      
+
       const mockAnalytics = {
         successPrediction: {
           probability: 65,
           reasoning: "Moderate fit with some gaps",
           greenFlags: ["Strong PM background"],
-          redFlags: ["Missing technical skills"]
+          redFlags: ["Missing technical skills"],
         },
         skillGap: {
           missingSkills: ["AI/ML", "Payment systems"],
-          upskillingPlan: ["Take courses", "Build projects"]
-        }
+          upskillingPlan: ["Take courses", "Build projects"],
+        },
       };
 
       await updateApplication(testApplicationId, testUserId, {
-        analytics: mockAnalytics
+        analytics: mockAnalytics,
       });
 
       const updated = await getApplicationById(testApplicationId, testUserId);
@@ -220,7 +221,7 @@ Nice to Have:
   describe("Integration with Application Lifecycle", () => {
     it("should allow running analytics independently", async () => {
       const { getApplicationById, updateApplication } = await import("./db");
-      
+
       // Run success prediction first
       await updateApplication(testApplicationId, testUserId, {
         analytics: {
@@ -228,9 +229,9 @@ Nice to Have:
             probability: 70,
             reasoning: "Good match",
             greenFlags: ["Experience"],
-            redFlags: []
-          }
-        }
+            redFlags: [],
+          },
+        },
       });
 
       let app = await getApplicationById(testApplicationId, testUserId);
@@ -243,9 +244,9 @@ Nice to Have:
           ...app?.analytics,
           skillGap: {
             missingSkills: ["AI/ML"],
-            upskillingPlan: ["Learn AI"]
-          }
-        }
+            upskillingPlan: ["Learn AI"],
+          },
+        },
       });
 
       app = await getApplicationById(testApplicationId, testUserId);

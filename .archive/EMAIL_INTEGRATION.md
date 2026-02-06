@@ -26,6 +26,7 @@ Forward recruiter emails to get instant career match analysis.
 ### For Developers
 
 Email integration requires:
+
 - Email parsing service (e.g., SendGrid Inbound Parse, Mailgun Routes, AWS SES)
 - Webhook endpoint to receive parsed emails
 - Job description extraction from email body
@@ -48,6 +49,7 @@ POST /api/email/inbound
 ```
 
 Processing flow:
+
 1. Verify recipient email matches a Careerswarm user
 2. Extract job description from email body using AI
 3. Run career trajectory prediction

@@ -33,6 +33,7 @@ AI features will fail without a valid LLM API key. If you see **LLM / 401 / API 
 **App is LIVE at:** https://careerswarm-app-production.up.railway.app
 
 **Custom domains configured (need DNS records):**
+
 - careerswarm.com
 - www.careerswarm.com
 
@@ -78,6 +79,7 @@ To-do:
 See [docs/CLOUDFLARE_DNS.md](./docs/CLOUDFLARE_DNS.md) for Cloudflare API (curl) or dashboard steps. Railway target: `careerswarm-app-production.up.railway.app`.
 
 **Note:** Some registrars don't allow CNAME on root (@). In that case:
+
 - Use an ALIAS or ANAME record if available
 - Or use a service like Cloudflare that supports CNAME flattening
 
@@ -86,12 +88,14 @@ See [docs/CLOUDFLARE_DNS.md](./docs/CLOUDFLARE_DNS.md) for Cloudflare API (curl)
 ## Technical Details
 
 ### Database Connection
+
 ```
 Internal: mysql://root:GRXepLWiqebMoTgMiCEemFWmkCDITWCz@mysql-e6eq.railway.internal:3306/railway
 External: mysql://root:GRXepLWiqebMoTgMiCEemFWmkCDITWCz@trolley.proxy.rlwy.net:50885/railway
 ```
 
 ### Environment Variables (on careerswarm-app)
+
 - DATABASE_URL: ✅ (internal MySQL URL)
 - JWT_SECRET: ✅
 - VITE_APP_ID: ✅
@@ -102,12 +106,15 @@ External: mysql://root:GRXepLWiqebMoTgMiCEemFWmkCDITWCz@trolley.proxy.rlwy.net:5
 - OPENAI_API_KEY: placeholder (set real key for AI features)
 
 ### Service IDs
+
 - careerswarm-app: 05251ccb-a203-4403-bee5-022e7e0a63fb
 - MySQL-E6eq (database): 14ec0aaf-89a4-4cfe-ba33-2a6352bd9032
 - MySQL (DELETE THIS): b71d87a1-167e-42c9-90b3-655d2286915f
 
 ### Code Changes Made
+
 Fixed `server/_core/vite.ts` to handle Node.js 18 compatibility:
+
 - Made vite/viteConfig imports dynamic (only loaded in development)
 - Used process.cwd() for production static file paths
 - Wrapped import.meta.url in lazy function to avoid bundling issues

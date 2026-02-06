@@ -19,16 +19,20 @@ export function formatTRPCError(error: unknown): FormattedError {
   // Handle tRPC client errors
   if (error instanceof TRPCClientError) {
     const code = error.data?.code || "UNKNOWN_ERROR";
-    
+
     // Network errors (often proxy/connection timeout in production, e.g. Railway 60s keep-alive)
-    if (error.message.includes("fetch failed") || error.message.includes("NetworkError")) {
+    if (
+      error.message.includes("fetch failed") ||
+      error.message.includes("NetworkError")
+    ) {
       return {
-        message: "The request was interrupted—often when the AI takes too long. Please try again with a shorter paste or in a moment.",
+        message:
+          "The request was interrupted—often when the AI takes too long. Please try again with a shorter paste or in a moment.",
         code: "NETWORK_ERROR",
         isUserFriendly: true,
       };
     }
-    
+
     // Authentication errors
     if (code === "UNAUTHORIZED" || error.message.includes("Unauthorized")) {
       return {
@@ -37,7 +41,7 @@ export function formatTRPCError(error: unknown): FormattedError {
         isUserFriendly: true,
       };
     }
-    
+
     // Forbidden errors
     if (code === "FORBIDDEN") {
       return {
@@ -46,27 +50,33 @@ export function formatTRPCError(error: unknown): FormattedError {
         isUserFriendly: true,
       };
     }
-    
+
     // Not found errors (code or HTTP 404 message)
-    if (code === "NOT_FOUND" || error.message.includes("404") || /HTTP ERROR 404/i.test(error.message)) {
+    if (
+      code === "NOT_FOUND" ||
+      error.message.includes("404") ||
+      /HTTP ERROR 404/i.test(error.message)
+    ) {
       return {
-        message: "Resume Roast couldn't be reached. Check your connection or try again.",
+        message:
+          "Resume Roast couldn't be reached. Check your connection or try again.",
         code: "NOT_FOUND",
         isUserFriendly: true,
       };
     }
-    
+
     // Bad request errors (validation)
     if (code === "BAD_REQUEST") {
       // Try to extract validation message
-      const validationMessage = error.message || "Please check your input and try again";
+      const validationMessage =
+        error.message || "Please check your input and try again";
       return {
         message: validationMessage,
         code: "BAD_REQUEST",
         isUserFriendly: true,
       };
     }
-    
+
     // Server errors
     if (code === "INTERNAL_SERVER_ERROR") {
       console.error("[tRPC Error]", {
@@ -74,23 +84,25 @@ export function formatTRPCError(error: unknown): FormattedError {
         message: error.message,
         data: error.data,
       });
-      
+
       return {
         message: "Something went wrong on our end. Please try again later.",
         code: "INTERNAL_SERVER_ERROR",
         isUserFriendly: true,
       };
     }
-    
+
     // Service unavailable (e.g. roast LLM timeout or OpenAI down)
     if (code === "SERVICE_UNAVAILABLE" || code === "TIMEOUT") {
       return {
-        message: error.message || "Resume Roast isn't available right now. Please try again in a moment.",
+        message:
+          error.message ||
+          "Resume Roast isn't available right now. Please try again in a moment.",
         code: code as string,
         isUserFriendly: true,
       };
     }
-    
+
     // Generic tRPC error
     return {
       message: error.message || "An unexpected error occurred",
@@ -98,21 +110,21 @@ export function formatTRPCError(error: unknown): FormattedError {
       isUserFriendly: false,
     };
   }
-  
+
   // Handle generic errors
   if (error instanceof Error) {
     console.error("[Generic Error]", {
       message: error.message,
       stack: error.stack,
     });
-    
+
     return {
       message: "An unexpected error occurred. Please try again.",
       code: "UNKNOWN_ERROR",
       isUserFriendly: true,
     };
   }
-  
+
   // Unknown error type
   console.error("[Unknown Error]", error);
   return {
@@ -134,7 +146,10 @@ export function getUserFriendlyMessage(error: unknown): string {
  */
 export function isNetworkError(error: unknown): boolean {
   if (error instanceof TRPCClientError) {
-    return error.message.includes("fetch failed") || error.message.includes("NetworkError");
+    return (
+      error.message.includes("fetch failed") ||
+      error.message.includes("NetworkError")
+    );
   }
   return false;
 }
@@ -144,7 +159,10 @@ export function isNetworkError(error: unknown): boolean {
  */
 export function isAuthError(error: unknown): boolean {
   if (error instanceof TRPCClientError) {
-    return error.data?.code === "UNAUTHORIZED" || error.message.includes("Unauthorized");
+    return (
+      error.data?.code === "UNAUTHORIZED" ||
+      error.message.includes("Unauthorized")
+    );
   }
   return false;
 }

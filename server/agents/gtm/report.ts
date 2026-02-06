@@ -34,17 +34,21 @@ const OUTPUT_SCHEMA = {
 export async function executeReport(input: ReportInput): Promise<ReportOutput> {
   const context = [
     input.leadCount != null && `Leads in DB: ${input.leadCount}`,
-    input.outreachDrafted != null && `Outreach drafted: ${input.outreachDrafted}`,
+    input.outreachDrafted != null &&
+      `Outreach drafted: ${input.outreachDrafted}`,
     input.outreachSent != null && `Outreach sent: ${input.outreachSent}`,
     input.lastStrategy && `Last strategy: ${input.lastStrategy}`,
     input.kpiSnapshot && `KPIs: ${JSON.stringify(input.kpiSnapshot)}`,
-  ].filter(Boolean).join("\n");
+  ]
+    .filter(Boolean)
+    .join("\n");
 
   const response = await invokeLLM({
     messages: [
       {
         role: "system",
-        content: "You are a GTM analyst for CareerSwarm. Summarize performance, list highlights and risks, and suggest next priorities. Be concise. Markdown-friendly. JSON only.",
+        content:
+          "You are a GTM analyst for CareerSwarm. Summarize performance, list highlights and risks, and suggest next priorities. Be concise. Markdown-friendly. JSON only.",
       },
       {
         role: "user",
@@ -53,7 +57,11 @@ export async function executeReport(input: ReportInput): Promise<ReportOutput> {
     ],
     response_format: {
       type: "json_schema",
-      json_schema: { name: "report_output", strict: true, schema: OUTPUT_SCHEMA },
+      json_schema: {
+        name: "report_output",
+        strict: true,
+        schema: OUTPUT_SCHEMA,
+      },
     },
     model: "gpt-4o-mini",
   });

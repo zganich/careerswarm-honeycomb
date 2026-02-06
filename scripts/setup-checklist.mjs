@@ -57,9 +57,9 @@ let warnings = 0;
 for (const item of checks) {
   const passed = item.check();
   const icon = passed ? "✅" : item.status === "CRITICAL" ? "❌" : "⚠️";
-  
+
   console.log(`${icon} ${item.name} [${item.status}]`);
-  
+
   if (!passed) {
     console.log(item.instructions);
     console.log("");

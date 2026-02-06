@@ -17,7 +17,10 @@ config({ path: path.join(root, ".env") });
 const required = [
   { key: "DATABASE_URL", description: "MySQL connection string" },
   { key: "JWT_SECRET", description: "Session signing (min 32 chars)" },
-  { key: "OPENAI_API_KEY", description: "OpenAI API key for LLM (Resume Roast, Tailor, Scribe)" },
+  {
+    key: "OPENAI_API_KEY",
+    description: "OpenAI API key for LLM (Resume Roast, Tailor, Scribe)",
+  },
 ];
 
 const optional = [
@@ -46,7 +49,9 @@ for (const { key, description } of required) {
     console.error(`Missing or empty: ${key} (${description})`);
     failed = true;
   } else if (key === "OPENAI_API_KEY" && isPlaceholderOpenAIKey(value)) {
-    console.error(`${key}: set to a placeholder. Use a real OpenAI API key (see .env.example).`);
+    console.error(
+      `${key}: set to a placeholder. Use a real OpenAI API key (see .env.example).`
+    );
     failed = true;
   }
 }
@@ -55,7 +60,7 @@ if (failed) {
   process.exit(1);
 }
 
-const missingOptional = optional.filter((k) => !process.env[k]?.trim());
+const missingOptional = optional.filter(k => !process.env[k]?.trim());
 if (missingOptional.length > 0) {
   console.warn("Optional env not set:", missingOptional.join(", "));
 }

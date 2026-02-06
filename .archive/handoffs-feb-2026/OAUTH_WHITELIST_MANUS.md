@@ -29,7 +29,7 @@ The app uses this callback URL:
 
 2. If Manus supports **wildcard** preview URLs, add something like:
    - `https://*.manus.app/api/oauth/callback`  
-   (Confirm in Manus docs; if not, add each preview URI as you use it.)
+     (Confirm in Manus docs; if not, add each preview URI as you use it.)
 
 ---
 
@@ -42,8 +42,8 @@ The app uses this callback URL:
 
 ## Key files
 
-| File | Role |
-|------|------|
-| `client/src/const.ts` | Builds `redirectUri` and OAuth login URL |
-| `server/_core/oauth.ts` | Handles `GET /api/oauth/callback` |
-| `server/_core/sdk.ts` | Sends `redirectUri` to Manus in token exchange |
+| File                    | Role                                           |
+| ----------------------- | ---------------------------------------------- |
+| `client/src/const.ts`   | Builds `redirectUri` and OAuth login URL       |
+| `server/_core/oauth.ts` | Handles `GET /api/oauth/callback`              |
+| `server/_core/sdk.ts`   | Sends `redirectUri` to Manus in token exchange |

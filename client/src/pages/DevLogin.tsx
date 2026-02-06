@@ -15,7 +15,8 @@ export default function DevLogin() {
 
   const returnTo =
     typeof window !== "undefined"
-      ? new URLSearchParams(window.location.search).get("returnTo") || "/dashboard"
+      ? new URLSearchParams(window.location.search).get("returnTo") ||
+        "/dashboard"
       : "/dashboard";
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -34,7 +35,11 @@ export default function DevLogin() {
         window.location.href = returnTo;
         return;
       }
-      const data = (await res.json()) as { success?: boolean; redirect?: string; error?: string };
+      const data = (await res.json()) as {
+        success?: boolean;
+        redirect?: string;
+        error?: string;
+      };
       if (!res.ok) {
         setError(data.error || "Login failed");
         return;
@@ -56,7 +61,8 @@ export default function DevLogin() {
       <div className="w-full max-w-sm rounded-lg border bg-card p-6 shadow-sm">
         <h1 className="text-xl font-semibold">Sign in</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Enter your email to sign in. We’ll create your account if it’s your first time.
+          Enter your email to sign in. We’ll create your account if it’s your
+          first time.
         </p>
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
@@ -67,14 +73,12 @@ export default function DevLogin() {
               autoComplete="email"
               placeholder="you@example.com"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
               required
               className="mt-1.5"
             />
           </div>
-          {error && (
-            <p className="text-sm text-destructive">{error}</p>
-          )}
+          {error && <p className="text-sm text-destructive">{error}</p>}
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "Signing in…" : "Sign in"}
           </Button>

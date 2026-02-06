@@ -14,20 +14,22 @@ export const emailRouter = router({
    * Called by email service (SendGrid, Mailgun, etc.)
    */
   inbound: publicProcedure
-    .input(z.object({
-      from: z.string().email(),
-      to: z.string().email(),
-      subject: z.string(),
-      text: z.string(),
-      html: z.string().optional(),
-    }))
+    .input(
+      z.object({
+        from: z.string().email(),
+        to: z.string().email(),
+        subject: z.string(),
+        text: z.string(),
+        html: z.string().optional(),
+      })
+    )
     .mutation(async ({ input }) => {
       // Extract username from recipient email (user123@jobs.careerswarm.app)
-      const username = input.to.split('@')[0];
-      
+      const username = input.to.split("@")[0];
+
       // Find user by email or username (simplified - in production, use proper user lookup)
       // For now, we'll extract job description and return analysis
-      
+
       // Use AI to extract job description from email
       const extractPrompt = `Extract the job description from this email. If there's no clear job description, return null.
 
@@ -43,8 +45,12 @@ Extract:
 
       const extractResponse = await invokeLLM({
         messages: [
-          { role: "system", content: "You are an expert at extracting job descriptions from emails." },
-          { role: "user", content: extractPrompt }
+          {
+            role: "system",
+            content:
+              "You are an expert at extracting job descriptions from emails.",
+          },
+          { role: "user", content: extractPrompt },
         ],
         response_format: {
           type: "json_schema",
@@ -60,19 +66,27 @@ Extract:
                 jobDescription: { type: "string" },
                 compensation: { type: "string" },
               },
-              required: ["hasJobDescription", "jobTitle", "companyName", "jobDescription", "compensation"],
+              required: [
+                "hasJobDescription",
+                "jobTitle",
+                "companyName",
+                "jobDescription",
+                "compensation",
+              ],
               additionalProperties: false,
             },
           },
         },
       });
 
-      const extracted = JSON.parse(String(extractResponse.choices[0]?.message?.content || "{}"));
+      const extracted = JSON.parse(
+        String(extractResponse.choices[0]?.message?.content || "{}")
+      );
 
       if (!extracted.hasJobDescription) {
         return {
           success: false,
-          message: "No job description found in email"
+          message: "No job description found in email",
         };
       }
 
@@ -105,33 +119,33 @@ Extract:
               Careerswarm - Transform Your Achievements Into Powerful Resumes
             </p>
           </div>
-        `
+        `,
       };
 
       // In production, send email via SendGrid/Mailgun
-      console.log('[Email] Would send response:', responseEmail);
+      console.log("[Email] Would send response:", responseEmail);
 
       return {
         success: true,
         message: "Job description extracted and analysis email sent",
-        extracted
+        extracted,
       };
     }),
 
   /**
    * Get user's personal forwarding email address
    */
-  getForwardingAddress: publicProcedure
-    .query(({ ctx }) => {
-      if (!ctx.user) {
-        throw new Error("Not authenticated");
-      }
+  getForwardingAddress: publicProcedure.query(({ ctx }) => {
+    if (!ctx.user) {
+      throw new Error("Not authenticated");
+    }
 
-      // Generate forwarding address from user ID or email
-      const username = ctx.user.email?.split('@')[0] || `user${ctx.user.id}`;
-      return {
-        email: `${username}@jobs.careerswarm.app`,
-        instructions: "Forward any recruiter emails to this address for instant analysis"
-      };
-    }),
+    // Generate forwarding address from user ID or email
+    const username = ctx.user.email?.split("@")[0] || `user${ctx.user.id}`;
+    return {
+      email: `${username}@jobs.careerswarm.app`,
+      instructions:
+        "Forward any recruiter emails to this address for instant analysis",
+    };
+  }),
 });

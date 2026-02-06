@@ -45,7 +45,7 @@ export function OpportunityDetailModal({
       alert("Application generated successfully!");
       onClose();
     },
-    onError: (error) => {
+    onError: error => {
       alert(`Failed to generate application: ${error.message}`);
     },
   });
@@ -63,7 +63,7 @@ export function OpportunityDetailModal({
   if (!open || !opportunityId) return null;
 
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
+    <Dialog open={open} onOpenChange={isOpen => !isOpen && onClose()}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-start justify-between">
@@ -82,8 +82,9 @@ export function OpportunityDetailModal({
                 </div>
                 {(opportunity?.baseSalaryMin || opportunity?.baseSalaryMax) && (
                   <div className="flex items-center gap-1">
-                    <DollarSign className="h-4 w-4" />
-                    ${opportunity.baseSalaryMin?.toLocaleString()} - ${opportunity.baseSalaryMax?.toLocaleString()}
+                    <DollarSign className="h-4 w-4" />$
+                    {opportunity.baseSalaryMin?.toLocaleString()} - $
+                    {opportunity.baseSalaryMax?.toLocaleString()}
                   </div>
                 )}
               </div>
@@ -101,38 +102,41 @@ export function OpportunityDetailModal({
         ) : (
           <div className="space-y-6 mt-4">
             {/* Match Score */}
-            {((opportunity as any)?.matchScore !== undefined && (opportunity as any)?.matchScore !== null) && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <Sparkles className="h-5 w-5 text-yellow-500" />
-                    Match Score
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center gap-4">
-                    <div className="text-4xl font-bold text-primary">
-                      {(opportunity as any).matchScore}%
-                    </div>
-                    <div className="flex-1">
-                      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-gradient-to-r from-yellow-400 to-green-500"
-                          style={{ width: `${(opportunity as any).matchScore}%` }}
-                        />
+            {(opportunity as any)?.matchScore !== undefined &&
+              (opportunity as any)?.matchScore !== null && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <Sparkles className="h-5 w-5 text-yellow-500" />
+                      Match Score
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center gap-4">
+                      <div className="text-4xl font-bold text-primary">
+                        {(opportunity as any).matchScore}%
                       </div>
-                      <p className="text-sm text-muted-foreground mt-2">
-                        {(opportunity as any).matchScore >= 80
-                          ? "Excellent match for your profile"
-                          : (opportunity as any).matchScore >= 60
-                          ? "Good match for your skills"
-                          : "Moderate match"}
-                      </p>
+                      <div className="flex-1">
+                        <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-gradient-to-r from-yellow-400 to-green-500"
+                            style={{
+                              width: `${(opportunity as any).matchScore}%`,
+                            }}
+                          />
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-2">
+                          {(opportunity as any).matchScore >= 80
+                            ? "Excellent match for your profile"
+                            : (opportunity as any).matchScore >= 60
+                              ? "Good match for your skills"
+                              : "Moderate match"}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+                  </CardContent>
+                </Card>
+              )}
 
             {/* Job Description */}
             <Card>
@@ -159,9 +163,7 @@ export function OpportunityDetailModal({
                 </CardHeader>
                 <CardContent>
                   <div className="prose prose-sm max-w-none">
-                    <p className="whitespace-pre-wrap">
-                      {opportunity.whyNow}
-                    </p>
+                    <p className="whitespace-pre-wrap">{opportunity.whyNow}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -237,14 +239,18 @@ export function OpportunityDetailModal({
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   {opportunity?.companyStage && (
                     <div>
-                      <span className="text-muted-foreground">Company Stage:</span>
+                      <span className="text-muted-foreground">
+                        Company Stage:
+                      </span>
                       <p className="font-medium">{opportunity.companyStage}</p>
                     </div>
                   )}
                   {opportunity?.companyIndustry && (
                     <div>
                       <span className="text-muted-foreground">Industry:</span>
-                      <p className="font-medium">{opportunity.companyIndustry}</p>
+                      <p className="font-medium">
+                        {opportunity.companyIndustry}
+                      </p>
                     </div>
                   )}
                   {opportunity?.postedDate && (

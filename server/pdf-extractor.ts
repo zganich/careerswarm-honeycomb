@@ -12,7 +12,9 @@ export async function extractTextFromPDF(buffer: Buffer): Promise<string> {
     return result.text;
   } catch (error) {
     console.error("PDF extraction failed:", error);
-    throw new Error("Failed to extract text from PDF. Please ensure the file is a valid PDF.");
+    throw new Error(
+      "Failed to extract text from PDF. Please ensure the file is a valid PDF."
+    );
   }
 }
 

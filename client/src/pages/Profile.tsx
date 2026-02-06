@@ -32,18 +32,23 @@ export default function Profile() {
   const [, setLocation] = useLocation();
   const { user } = useAuth();
   const [expandedJob, setExpandedJob] = useState<number | null>(null);
-  const [selectedAchievement, setSelectedAchievement] = useState<any | null>(null);
+  const [selectedAchievement, setSelectedAchievement] = useState<any | null>(
+    null
+  );
   const [achievementModalOpen, setAchievementModalOpen] = useState(false);
   const [superpowerModalOpen, setSuperpowerModalOpen] = useState(false);
   const [preferencesModalOpen, setPreferencesModalOpen] = useState(false);
 
   const { data: profile, isLoading } = trpc.profile.get.useQuery();
-  const { data: achievementStats } = trpc.profile.getAchievementStats.useQuery();
+  const { data: achievementStats } =
+    trpc.profile.getAchievementStats.useQuery();
   const { data: completeness } = trpc.profile.getCompleteness.useQuery();
 
   // Helper to get stats for an achievement
   const getAchievementStat = (achievementId: number) => {
-    return achievementStats?.find((s: any) => s.achievementId === achievementId);
+    return achievementStats?.find(
+      (s: any) => s.achievementId === achievementId
+    );
   };
 
   if (isLoading) {
@@ -68,7 +73,12 @@ export default function Profile() {
   }
 
   const completenessScore = completeness?.score || 0;
-  const completenessColor = completenessScore >= 80 ? "text-green-600" : completenessScore >= 60 ? "text-yellow-600" : "text-red-600";
+  const completenessColor =
+    completenessScore >= 80
+      ? "text-green-600"
+      : completenessScore >= 60
+        ? "text-yellow-600"
+        : "text-red-600";
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
@@ -83,11 +93,16 @@ export default function Profile() {
             <Button variant="outline" onClick={() => setLocation("/jobs")}>
               Find Jobs
             </Button>
-            <Button variant="outline" onClick={() => setLocation("/applications")}>
+            <Button
+              variant="outline"
+              onClick={() => setLocation("/applications")}
+            >
               Applications
             </Button>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">{user?.name}</span>
+              <span className="text-sm text-muted-foreground">
+                {user?.name}
+              </span>
             </div>
           </div>
         </div>
@@ -114,31 +129,37 @@ export default function Profile() {
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium">Profile Completeness</span>
+                <span className="text-sm font-medium">
+                  Profile Completeness
+                </span>
                 <span className="text-sm font-bold">{completenessScore}%</span>
               </div>
               <Progress value={completenessScore} className="h-2" />
-              {completenessScore < 100 && completeness && completeness.missing.length > 0 && (
-                <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
-                  <p className="text-xs font-medium text-yellow-900 mb-1">Missing fields:</p>
-                  <ul className="text-xs text-yellow-800 space-y-0.5">
-                    {completeness.missing.slice(0, 3).map((item, idx) => (
-                      <li key={idx}>• {item}</li>
-                    ))}
-                    {completeness.missing.length > 3 && (
-                      <li>• and {completeness.missing.length - 3} more...</li>
-                    )}
-                  </ul>
-                  <Button
-                    variant="link"
-                    size="sm"
-                    className="h-auto p-0 mt-2 text-xs text-yellow-900"
-                    onClick={() => setLocation("/achievements")}
-                  >
-                    Complete Your Profile →
-                  </Button>
-                </div>
-              )}
+              {completenessScore < 100 &&
+                completeness &&
+                completeness.missing.length > 0 && (
+                  <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+                    <p className="text-xs font-medium text-yellow-900 mb-1">
+                      Missing fields:
+                    </p>
+                    <ul className="text-xs text-yellow-800 space-y-0.5">
+                      {completeness.missing.slice(0, 3).map((item, idx) => (
+                        <li key={idx}>• {item}</li>
+                      ))}
+                      {completeness.missing.length > 3 && (
+                        <li>• and {completeness.missing.length - 3} more...</li>
+                      )}
+                    </ul>
+                    <Button
+                      variant="link"
+                      size="sm"
+                      className="h-auto p-0 mt-2 text-xs text-yellow-900"
+                      onClick={() => setLocation("/achievements")}
+                    >
+                      Complete Your Profile →
+                    </Button>
+                  </div>
+                )}
             </CardContent>
           </Card>
         </div>
@@ -153,7 +174,9 @@ export default function Profile() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground whitespace-pre-wrap">{profile.profile.professionalSummary}</p>
+              <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                {profile.profile.professionalSummary}
+              </p>
             </CardContent>
           </Card>
         )}
@@ -166,7 +189,11 @@ export default function Profile() {
                 <Sparkles className="h-5 w-5 text-primary" />
                 Your Top 3 Superpowers
               </CardTitle>
-              <Button variant="ghost" size="sm" onClick={() => setSuperpowerModalOpen(true)}>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSuperpowerModalOpen(true)}
+              >
                 <Edit className="h-4 w-4" />
               </Button>
             </div>
@@ -175,13 +202,20 @@ export default function Profile() {
             {profile.superpowers && profile.superpowers.length > 0 ? (
               <div className="space-y-4">
                 {profile.superpowers.map((superpower: any, index: number) => (
-                  <div key={index} className="p-4 bg-primary/5 rounded-lg border border-primary/20">
+                  <div
+                    key={index}
+                    className="p-4 bg-primary/5 rounded-lg border border-primary/20"
+                  >
                     <div className="flex items-start gap-3">
                       <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <span className="text-sm font-bold text-primary">{index + 1}</span>
+                        <span className="text-sm font-bold text-primary">
+                          {index + 1}
+                        </span>
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-semibold mb-2">{superpower.title}</h3>
+                        <h3 className="font-semibold mb-2">
+                          {superpower.title}
+                        </h3>
                         <p className="text-sm text-muted-foreground mb-2">
                           {superpower.description}
                         </p>
@@ -196,7 +230,8 @@ export default function Profile() {
             ) : (
               <div className="text-center py-8">
                 <p className="text-muted-foreground mb-4">
-                  No superpowers defined yet. Complete onboarding to generate them.
+                  No superpowers defined yet. Complete onboarding to generate
+                  them.
                 </p>
                 <Button onClick={() => setLocation("/onboarding/welcome")}>
                   Complete Onboarding
@@ -227,29 +262,41 @@ export default function Profile() {
                   <div key={index} className="border rounded-lg">
                     <div
                       className="p-4 cursor-pointer hover:bg-gray-50"
-                      onClick={() => setExpandedJob(expandedJob === index ? null : index)}
+                      onClick={() =>
+                        setExpandedJob(expandedJob === index ? null : index)
+                      }
                     >
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
                           <h3 className="font-semibold">{job.jobTitle}</h3>
-                          <p className="text-sm text-muted-foreground">{job.companyName}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {job.companyName}
+                          </p>
                           {job.location && (
-                            <p className="text-xs text-muted-foreground">{job.location}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {job.location}
+                            </p>
                           )}
                         </div>
                         <div className="text-right flex items-start gap-2">
                           <div>
                             <p className="text-sm text-muted-foreground">
-                              {new Date(job.startDate).toLocaleDateString("en-US", {
-                                month: "short",
-                                year: "numeric",
-                              })}{" "}
+                              {new Date(job.startDate).toLocaleDateString(
+                                "en-US",
+                                {
+                                  month: "short",
+                                  year: "numeric",
+                                }
+                              )}{" "}
                               -{" "}
                               {job.endDate
-                                ? new Date(job.endDate).toLocaleDateString("en-US", {
-                                    month: "short",
-                                    year: "numeric",
-                                  })
+                                ? new Date(job.endDate).toLocaleDateString(
+                                    "en-US",
+                                    {
+                                      month: "short",
+                                      year: "numeric",
+                                    }
+                                  )
                                 : "Present"}
                             </p>
                             {job.isCurrent && (
@@ -271,25 +318,34 @@ export default function Profile() {
                       <div className="px-4 pb-4 border-t">
                         {job.roleOverview && (
                           <div className="mt-4 mb-4">
-                            <h4 className="text-sm font-medium mb-2">Role Overview</h4>
-                            <p className="text-sm text-muted-foreground">{job.roleOverview}</p>
+                            <h4 className="text-sm font-medium mb-2">
+                              Role Overview
+                            </h4>
+                            <p className="text-sm text-muted-foreground">
+                              {job.roleOverview}
+                            </p>
                           </div>
                         )}
 
                         {/* Achievements for this role */}
                         <div className="mt-4">
                           <div className="flex items-center justify-between mb-2">
-                            <h4 className="text-sm font-medium">Key Achievements</h4>
+                            <h4 className="text-sm font-medium">
+                              Key Achievements
+                            </h4>
                             <Button variant="ghost" size="sm">
                               <Plus className="h-3 w-3 mr-1" />
                               Add
                             </Button>
                           </div>
-                          {profile.achievements?.filter((a: any) => a.workExperienceId === job.id)
-                            .length > 0 ? (
+                          {profile.achievements?.filter(
+                            (a: any) => a.workExperienceId === job.id
+                          ).length > 0 ? (
                             <div className="space-y-2">
                               {profile.achievements
-                                .filter((a: any) => a.workExperienceId === job.id)
+                                .filter(
+                                  (a: any) => a.workExperienceId === job.id
+                                )
                                 .map((achievement: any, achIndex: number) => (
                                   <div
                                     key={achIndex}
@@ -298,29 +354,47 @@ export default function Profile() {
                                     <p>{achievement.description}</p>
                                     <div className="flex items-center gap-2 mt-2 flex-wrap">
                                       {achievement.metricValue && (
-                                        <Badge variant="secondary" className="text-xs">
-                                          📊 {achievement.metricType}: {achievement.metricValue}{" "}
+                                        <Badge
+                                          variant="secondary"
+                                          className="text-xs"
+                                        >
+                                          📊 {achievement.metricType}:{" "}
+                                          {achievement.metricValue}{" "}
                                           {achievement.metricUnit}
                                         </Badge>
                                       )}
                                       {(() => {
-                                        const stats = getAchievementStat(achievement.id);
+                                        const stats = getAchievementStat(
+                                          achievement.id
+                                        );
                                         if (stats && stats.usageCount > 0) {
                                           return (
                                             <>
-                                              <Badge variant="outline" className="text-xs">
-                                                📝 Used in {stats.usageCount} applications
+                                              <Badge
+                                                variant="outline"
+                                                className="text-xs"
+                                              >
+                                                📝 Used in {stats.usageCount}{" "}
+                                                applications
                                               </Badge>
                                               {stats.successRate > 0 && (
-                                                <Badge 
-                                                  variant={stats.successRate >= 50 ? "default" : "secondary"}
+                                                <Badge
+                                                  variant={
+                                                    stats.successRate >= 50
+                                                      ? "default"
+                                                      : "secondary"
+                                                  }
                                                   className="text-xs"
                                                 >
-                                                  ✨ {stats.successRate}% success rate
+                                                  ✨ {stats.successRate}%
+                                                  success rate
                                                 </Badge>
                                               )}
                                               {stats.successRate >= 70 && (
-                                                <Badge variant="default" className="text-xs bg-green-600">
+                                                <Badge
+                                                  variant="default"
+                                                  className="text-xs bg-green-600"
+                                                >
                                                   🏆 Top Performer
                                                 </Badge>
                                               )}
@@ -346,7 +420,9 @@ export default function Profile() {
               </div>
             ) : (
               <div className="text-center py-8">
-                <p className="text-muted-foreground mb-4">No work experience added yet</p>
+                <p className="text-muted-foreground mb-4">
+                  No work experience added yet
+                </p>
                 <Button onClick={() => setLocation("/onboarding/welcome")}>
                   Complete Onboarding
                 </Button>
@@ -372,32 +448,39 @@ export default function Profile() {
           <CardContent>
             {profile.achievements && profile.achievements.length > 0 ? (
               <div className="space-y-3">
-                {profile.achievements.slice(0, 10).map((achievement: any, index: number) => (
-                  <div
-                    key={index}
-                    className="p-3 bg-gray-50 rounded-lg border cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => {
-                      setSelectedAchievement(achievement);
-                      setAchievementModalOpen(true);
-                    }}
-                  >
-                    <p className="text-sm mb-2">{achievement.description}</p>
-                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                      {achievement.metricValue && (
-                        <span>
-                          📊 {achievement.metricType}: {achievement.metricValue}{" "}
-                          {achievement.metricUnit}
-                        </span>
-                      )}
-                      {achievement.usageCount > 0 && (
-                        <span>✓ Used in {achievement.usageCount} applications</span>
-                      )}
-                      {achievement.successRate && (
-                        <span>🎯 {Math.round(achievement.successRate * 100)}% success rate</span>
-                      )}
+                {profile.achievements
+                  .slice(0, 10)
+                  .map((achievement: any, index: number) => (
+                    <div
+                      key={index}
+                      className="p-3 bg-gray-50 rounded-lg border cursor-pointer hover:bg-gray-100 transition-colors"
+                      onClick={() => {
+                        setSelectedAchievement(achievement);
+                        setAchievementModalOpen(true);
+                      }}
+                    >
+                      <p className="text-sm mb-2">{achievement.description}</p>
+                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                        {achievement.metricValue && (
+                          <span>
+                            📊 {achievement.metricType}:{" "}
+                            {achievement.metricValue} {achievement.metricUnit}
+                          </span>
+                        )}
+                        {achievement.usageCount > 0 && (
+                          <span>
+                            ✓ Used in {achievement.usageCount} applications
+                          </span>
+                        )}
+                        {achievement.successRate && (
+                          <span>
+                            🎯 {Math.round(achievement.successRate * 100)}%
+                            success rate
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
                 {profile.achievements.length > 10 && (
                   <Button variant="outline" className="w-full">
                     View All {profile.achievements.length} Achievements
@@ -405,7 +488,9 @@ export default function Profile() {
                 )}
               </div>
             ) : (
-              <p className="text-center text-muted-foreground py-4">No achievements added yet</p>
+              <p className="text-center text-muted-foreground py-4">
+                No achievements added yet
+              </p>
             )}
           </CardContent>
         </Card>
@@ -420,7 +505,11 @@ export default function Profile() {
                   <TrendingUp className="h-5 w-5 text-primary" />
                   Target Preferences
                 </CardTitle>
-                <Button variant="ghost" size="sm" onClick={() => setPreferencesModalOpen(true)}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setPreferencesModalOpen(true)}
+                >
                   <Edit className="h-4 w-4" />
                 </Button>
               </div>
@@ -431,32 +520,49 @@ export default function Profile() {
                   <div>
                     <p className="text-sm font-medium mb-2">Target Roles</p>
                     <div className="flex flex-wrap gap-2">
-                      {profile.preferences.roleTitles?.map((role: string, i: number) => (
-                        <Badge key={i} variant="secondary">{role}</Badge>
-                      ))}
+                      {profile.preferences.roleTitles?.map(
+                        (role: string, i: number) => (
+                          <Badge key={i} variant="secondary">
+                            {role}
+                          </Badge>
+                        )
+                      )}
                     </div>
                   </div>
                   <div>
                     <p className="text-sm font-medium mb-2">Industries</p>
                     <div className="flex flex-wrap gap-2">
-                      {profile.preferences.industries?.map((industry: string, i: number) => (
-                        <Badge key={i} variant="secondary">{industry}</Badge>
-                      ))}
+                      {profile.preferences.industries?.map(
+                        (industry: string, i: number) => (
+                          <Badge key={i} variant="secondary">
+                            {industry}
+                          </Badge>
+                        )
+                      )}
                     </div>
                   </div>
                   <div>
-                    <p className="text-sm font-medium mb-2">Location Preference</p>
-                    <Badge variant="outline">{profile.preferences.locationType}</Badge>
+                    <p className="text-sm font-medium mb-2">
+                      Location Preference
+                    </p>
+                    <Badge variant="outline">
+                      {profile.preferences.locationType}
+                    </Badge>
                   </div>
                   {profile.preferences.minimumBaseSalary && (
                     <div>
                       <p className="text-sm font-medium mb-2">Minimum Salary</p>
-                      <p className="text-sm">${profile.preferences.minimumBaseSalary.toLocaleString()}</p>
+                      <p className="text-sm">
+                        $
+                        {profile.preferences.minimumBaseSalary.toLocaleString()}
+                      </p>
                     </div>
                   )}
                 </div>
               ) : (
-                <p className="text-sm text-muted-foreground">No preferences set yet</p>
+                <p className="text-sm text-muted-foreground">
+                  No preferences set yet
+                </p>
               )}
             </CardContent>
           </Card>
@@ -479,7 +585,9 @@ export default function Profile() {
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-muted-foreground">No skills added yet</p>
+                <p className="text-sm text-muted-foreground">
+                  No skills added yet
+                </p>
               )}
             </CardContent>
           </Card>
@@ -500,17 +608,23 @@ export default function Profile() {
                       <p className="font-medium">{edu.institution}</p>
                       {(edu.degreeType || edu.fieldOfStudy) && (
                         <p className="text-muted-foreground">
-                          {[edu.degreeType, edu.fieldOfStudy].filter(Boolean).join(" in ")}
+                          {[edu.degreeType, edu.fieldOfStudy]
+                            .filter(Boolean)
+                            .join(" in ")}
                         </p>
                       )}
                       {edu.graduationYear && (
-                        <p className="text-xs text-muted-foreground">{edu.graduationYear}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {edu.graduationYear}
+                        </p>
                       )}
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-muted-foreground">No education added yet</p>
+                <p className="text-sm text-muted-foreground">
+                  No education added yet
+                </p>
               )}
             </CardContent>
           </Card>
@@ -529,24 +643,35 @@ export default function Profile() {
               {profile?.certifications && profile.certifications.length > 0 ? (
                 <div className="space-y-2">
                   {profile.certifications.map((cert: any, index: number) => (
-                    <div key={index} className="flex items-start justify-between gap-2 text-sm">
+                    <div
+                      key={index}
+                      className="flex items-start justify-between gap-2 text-sm"
+                    >
                       <div>
                         <p className="font-medium">{cert.certificationName}</p>
                         {cert.issuingOrganization && (
-                          <p className="text-muted-foreground text-xs">{cert.issuingOrganization}</p>
+                          <p className="text-muted-foreground text-xs">
+                            {cert.issuingOrganization}
+                          </p>
                         )}
                         {cert.issueYear && (
-                          <p className="text-xs text-muted-foreground">{cert.issueYear}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {cert.issueYear}
+                          </p>
                         )}
                       </div>
                       {cert.type === "license" && (
-                        <Badge variant="outline" className="text-xs">License</Badge>
+                        <Badge variant="outline" className="text-xs">
+                          License
+                        </Badge>
                       )}
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-muted-foreground">No certifications or licenses added yet</p>
+                <p className="text-sm text-muted-foreground">
+                  No certifications or licenses added yet
+                </p>
               )}
             </CardContent>
           </Card>
@@ -565,17 +690,23 @@ export default function Profile() {
                       <p className="font-medium">{award.awardName}</p>
                       {(award.organization || award.year) && (
                         <p className="text-muted-foreground text-xs">
-                          {[award.organization, award.year].filter(Boolean).join(" · ")}
+                          {[award.organization, award.year]
+                            .filter(Boolean)
+                            .join(" · ")}
                         </p>
                       )}
                       {award.context && (
-                        <p className="text-xs text-muted-foreground mt-1">{award.context}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {award.context}
+                        </p>
                       )}
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-muted-foreground">No awards added yet</p>
+                <p className="text-sm text-muted-foreground">
+                  No awards added yet
+                </p>
               )}
             </CardContent>
           </Card>
@@ -604,34 +735,43 @@ export default function Profile() {
               </CardContent>
             </Card>
           )}
-          {profile?.volunteerExperiences && profile.volunteerExperiences.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Heart className="h-5 w-5 text-primary" />
-                  Volunteer & Community
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {profile.volunteerExperiences.map((v: any, index: number) => (
-                    <div key={index} className="text-sm">
-                      <p className="font-medium">{v.organization}</p>
-                      {v.role && <p className="text-muted-foreground text-xs">{v.role}</p>}
-                      {(v.startDate || v.endDate) && (
-                        <p className="text-xs text-muted-foreground">
-                          {v.startDate || "?"} – {v.endDate || "Present"}
-                        </p>
-                      )}
-                      {v.description && (
-                        <p className="text-xs text-muted-foreground mt-1">{v.description}</p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
+          {profile?.volunteerExperiences &&
+            profile.volunteerExperiences.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Heart className="h-5 w-5 text-primary" />
+                    Volunteer & Community
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {profile.volunteerExperiences.map(
+                      (v: any, index: number) => (
+                        <div key={index} className="text-sm">
+                          <p className="font-medium">{v.organization}</p>
+                          {v.role && (
+                            <p className="text-muted-foreground text-xs">
+                              {v.role}
+                            </p>
+                          )}
+                          {(v.startDate || v.endDate) && (
+                            <p className="text-xs text-muted-foreground">
+                              {v.startDate || "?"} – {v.endDate || "Present"}
+                            </p>
+                          )}
+                          {v.description && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {v.description}
+                            </p>
+                          )}
+                        </div>
+                      )
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           {profile?.projects && profile.projects.length > 0 && (
             <Card>
               <CardHeader>
@@ -657,14 +797,20 @@ export default function Profile() {
                           </a>
                         )}
                       </div>
-                      {p.role && <p className="text-muted-foreground text-xs">{p.role}</p>}
+                      {p.role && (
+                        <p className="text-muted-foreground text-xs">
+                          {p.role}
+                        </p>
+                      )}
                       {(p.startDate || p.endDate) && (
                         <p className="text-xs text-muted-foreground">
                           {p.startDate || "?"} – {p.endDate || "Present"}
                         </p>
                       )}
                       {p.description && (
-                        <p className="text-xs text-muted-foreground mt-1">{p.description}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {p.description}
+                        </p>
                       )}
                     </div>
                   ))}
@@ -687,7 +833,9 @@ export default function Profile() {
                       <p className="font-medium">{pub.title}</p>
                       {(pub.publisherOrVenue || pub.year) && (
                         <p className="text-muted-foreground text-xs">
-                          {[pub.publisherOrVenue, pub.year].filter(Boolean).join(" · ")}
+                          {[pub.publisherOrVenue, pub.year]
+                            .filter(Boolean)
+                            .join(" · ")}
                         </p>
                       )}
                       {pub.url && (
@@ -701,7 +849,9 @@ export default function Profile() {
                         </a>
                       )}
                       {pub.context && (
-                        <p className="text-xs text-muted-foreground mt-1">{pub.context}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {pub.context}
+                        </p>
                       )}
                     </div>
                   ))}
@@ -709,61 +859,79 @@ export default function Profile() {
               </CardContent>
             </Card>
           )}
-          {profile?.securityClearances && profile.securityClearances.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Shield className="h-5 w-5 text-primary" />
-                  Security Clearances
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {profile.securityClearances.map((c: any, index: number) => (
-                    <div key={index} className="text-sm flex items-center gap-2 flex-wrap">
-                      <Badge variant="secondary">{c.clearanceType}</Badge>
-                      {c.level && <span className="text-muted-foreground text-xs">{c.level}</span>}
-                      {c.expiryDate && (
-                        <span className="text-xs text-muted-foreground">Expires: {c.expiryDate}</span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-          {profile?.profile?.portfolioUrls && Array.isArray(profile.profile.portfolioUrls) && profile.profile.portfolioUrls.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Link2 className="h-5 w-5 text-primary" />
-                  Portfolio & Links
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {profile.profile.portfolioUrls.map((item: string | { label: string; url: string }, index: number) => {
-                    // Handle both string[] and {label, url}[] formats
-                    const isObject = typeof item === 'object' && item !== null;
-                    const url = isObject ? item.url : item;
-                    const label = isObject ? item.label : item;
-                    return (
-                      <a
+          {profile?.securityClearances &&
+            profile.securityClearances.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Shield className="h-5 w-5 text-primary" />
+                    Security Clearances
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {profile.securityClearances.map((c: any, index: number) => (
+                      <div
                         key={index}
-                        href={url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+                        className="text-sm flex items-center gap-2 flex-wrap"
                       >
-                        <Link2 className="h-4 w-4" />
-                        {label}
-                      </a>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-          )}
+                        <Badge variant="secondary">{c.clearanceType}</Badge>
+                        {c.level && (
+                          <span className="text-muted-foreground text-xs">
+                            {c.level}
+                          </span>
+                        )}
+                        {c.expiryDate && (
+                          <span className="text-xs text-muted-foreground">
+                            Expires: {c.expiryDate}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          {profile?.profile?.portfolioUrls &&
+            Array.isArray(profile.profile.portfolioUrls) &&
+            profile.profile.portfolioUrls.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Link2 className="h-5 w-5 text-primary" />
+                    Portfolio & Links
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-2">
+                    {profile.profile.portfolioUrls.map(
+                      (
+                        item: string | { label: string; url: string },
+                        index: number
+                      ) => {
+                        // Handle both string[] and {label, url}[] formats
+                        const isObject =
+                          typeof item === "object" && item !== null;
+                        const url = isObject ? item.url : item;
+                        const label = isObject ? item.label : item;
+                        return (
+                          <a
+                            key={index}
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+                          >
+                            <Link2 className="h-4 w-4" />
+                            {label}
+                          </a>
+                        );
+                      }
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
         </div>
       </div>
 
@@ -779,7 +947,9 @@ export default function Profile() {
         onDelete={() => {
           // Delete handled via mutation - show confirmation
           if (selectedAchievement) {
-            const confirmed = window.confirm("Are you sure you want to delete this achievement?");
+            const confirmed = window.confirm(
+              "Are you sure you want to delete this achievement?"
+            );
             if (confirmed) {
               // Deletion would be handled by tRPC mutation
               window.location.reload();
@@ -804,15 +974,24 @@ export default function Profile() {
       <PreferencesEditModal
         open={preferencesModalOpen}
         onClose={() => setPreferencesModalOpen(false)}
-        preferences={profile?.preferences ? {
-          roleTitles: profile.preferences.roleTitles || [],
-          industries: profile.preferences.industries || [],
-          companyStages: profile.preferences.companyStages || [],
-          locationType: (profile.preferences.locationType as "remote" | "hybrid" | "onsite" | "flexible") || "remote",
-          allowedCities: profile.preferences.allowedCities || [],
-          minimumBaseSalary: profile.preferences.minimumBaseSalary,
-          dealBreakers: profile.preferences.dealBreakers || [],
-        } : null}
+        preferences={
+          profile?.preferences
+            ? {
+                roleTitles: profile.preferences.roleTitles || [],
+                industries: profile.preferences.industries || [],
+                companyStages: profile.preferences.companyStages || [],
+                locationType:
+                  (profile.preferences.locationType as
+                    | "remote"
+                    | "hybrid"
+                    | "onsite"
+                    | "flexible") || "remote",
+                allowedCities: profile.preferences.allowedCities || [],
+                minimumBaseSalary: profile.preferences.minimumBaseSalary,
+                dealBreakers: profile.preferences.dealBreakers || [],
+              }
+            : null
+        }
       />
     </div>
   );

@@ -50,12 +50,14 @@ Added `ENABLE_DEV_LOGIN` documentation.
 ## Session 2 Additions (Feb 2, 2026)
 
 ### OAuth returnTo Deep-Linking
+
 - **Client:** `getLoginUrl(returnTo?: string)` — encodes `{ redirectUri, returnTo }` in state
 - **Server:** OAuth callback parses state, redirects to `returnTo` (default `/`)
 - **DashboardLayout:** Passes current path to `getLoginUrl()` and Dev Login `?returnTo=`
 - **main.tsx:** tRPC unauthorized redirect includes `returnTo` (current path)
 
 ### Headline Wrapping (320/768/1024/1920px)
+
 - **TransformationHero:** `text-4xl sm:text-5xl md:text-6xl lg:text-7xl` + `break-words`
 - **Welcome, OnboardingSentence, MagicOnboardingWizard, HeroMetric:** Responsive typography + break-words
 
@@ -83,14 +85,14 @@ Added `ENABLE_DEV_LOGIN` documentation.
 
 ## Key Files Touched
 
-| File | Change |
-|------|--------|
-| `server/_core/oauth.ts` | Added test-login endpoint |
-| `server/routers.ts` | Logout clears cookie |
-| `client/src/pages/DevLogin.tsx` | New page |
-| `client/src/App.tsx` | Route `/login` |
-| `client/src/components/DashboardLayout.tsx` | Dev Login button |
-| `.env.example` | ENABLE_DEV_LOGIN docs |
+| File                                        | Change                    |
+| ------------------------------------------- | ------------------------- |
+| `server/_core/oauth.ts`                     | Added test-login endpoint |
+| `server/routers.ts`                         | Logout clears cookie      |
+| `client/src/pages/DevLogin.tsx`             | New page                  |
+| `client/src/App.tsx`                        | Route `/login`            |
+| `client/src/components/DashboardLayout.tsx` | Dev Login button          |
+| `.env.example`                              | ENABLE_DEV_LOGIN docs     |
 
 ---
 

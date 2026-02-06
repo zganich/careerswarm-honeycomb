@@ -41,7 +41,7 @@ export function getRedisConnection() {
 }
 
 if (redis) {
-  redis.on("error", (err) => {
+  redis.on("error", err => {
     console.error("[Cache] Redis error:", err);
   });
   redis.on("connect", () => {
@@ -50,7 +50,7 @@ if (redis) {
 }
 
 if (cacheRedis) {
-  cacheRedis.on("error", (err) => {
+  cacheRedis.on("error", err => {
     console.error("[Cache] Redis error:", err);
   });
   cacheRedis.on("connect", () => {
@@ -204,7 +204,7 @@ export async function cacheGetMulti<T>(keys: string[]): Promise<(T | null)[]> {
     if (!redis) return keys.map(() => null);
     if (keys.length === 0) return [];
     const values = await redis.mget(...keys);
-    return values.map((v) => (v ? JSON.parse(v) : null));
+    return values.map(v => (v ? JSON.parse(v) : null));
   } catch (error) {
     console.error("Cache get multi error:", error);
     return keys.map(() => null);
@@ -238,7 +238,10 @@ export async function cacheSetMulti(
 /**
  * Generate cache key with prefix and params
  */
-export function cacheKey(prefix: string, ...params: (string | number)[]): string {
+export function cacheKey(
+  prefix: string,
+  ...params: (string | number)[]
+): string {
   return `${prefix}${params.join(":")}`;
 }
 

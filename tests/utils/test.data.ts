@@ -5,24 +5,43 @@
 
 export const SAMPLE_STAR_ACHIEVEMENTS = [
   {
-    situation: "Led a cross-functional team to migrate legacy monolith to microservices",
+    situation:
+      "Led a cross-functional team to migrate legacy monolith to microservices",
     task: "Reduce deployment time and improve system reliability",
-    action: "Architected and implemented containerized microservices using Docker and Kubernetes, established CI/CD pipeline with GitHub Actions",
-    result: "Reduced deployment time by 75% (from 2 hours to 30 minutes), decreased system downtime by 90%, enabled independent team deployments",
-    skills: ["Kubernetes", "Docker", "Microservices", "CI/CD", "System Architecture"],
+    action:
+      "Architected and implemented containerized microservices using Docker and Kubernetes, established CI/CD pipeline with GitHub Actions",
+    result:
+      "Reduced deployment time by 75% (from 2 hours to 30 minutes), decreased system downtime by 90%, enabled independent team deployments",
+    skills: [
+      "Kubernetes",
+      "Docker",
+      "Microservices",
+      "CI/CD",
+      "System Architecture",
+    ],
   },
   {
     situation: "Company faced declining user engagement (30% drop in 6 months)",
     task: "Identify root causes and implement data-driven improvements",
-    action: "Conducted user interviews, analyzed behavioral data with Mixpanel, A/B tested 12 UX improvements",
-    result: "Increased user engagement by 45%, improved retention rate from 35% to 52%, generated $2.3M additional revenue",
-    skills: ["Product Analytics", "A/B Testing", "User Research", "Data-Driven Decision Making"],
+    action:
+      "Conducted user interviews, analyzed behavioral data with Mixpanel, A/B tested 12 UX improvements",
+    result:
+      "Increased user engagement by 45%, improved retention rate from 35% to 52%, generated $2.3M additional revenue",
+    skills: [
+      "Product Analytics",
+      "A/B Testing",
+      "User Research",
+      "Data-Driven Decision Making",
+    ],
   },
   {
-    situation: "Manual data entry process consuming 20 hours/week across 5 team members",
+    situation:
+      "Manual data entry process consuming 20 hours/week across 5 team members",
     task: "Automate repetitive data processing workflow",
-    action: "Built Python automation script with pandas and requests library, integrated with Salesforce API",
-    result: "Eliminated 100 hours/month of manual work, reduced data entry errors by 95%, saved $150K annually in labor costs",
+    action:
+      "Built Python automation script with pandas and requests library, integrated with Salesforce API",
+    result:
+      "Eliminated 100 hours/month of manual work, reduced data entry errors by 95%, saved $150K annually in labor costs",
     skills: ["Python", "Automation", "API Integration", "Process Optimization"],
   },
 ];
@@ -57,9 +76,17 @@ Requirements:
 
 Benefits: Competitive salary, equity, health insurance, remote work
     `.trim(),
-    keywords: ["Node.js", "Python", "PostgreSQL", "Kubernetes", "Docker", "Microservices", "RESTful API"],
+    keywords: [
+      "Node.js",
+      "Python",
+      "PostgreSQL",
+      "Kubernetes",
+      "Docker",
+      "Microservices",
+      "RESTful API",
+    ],
   },
-  
+
   productManager: {
     title: "Senior Product Manager",
     company: "GrowthCo",
@@ -83,7 +110,13 @@ Requirements:
 
 Benefits: $150K-$200K base + equity, unlimited PTO
     `.trim(),
-    keywords: ["Product Strategy", "User Research", "B2B SaaS", "Data-Driven", "Stakeholder Management"],
+    keywords: [
+      "Product Strategy",
+      "User Research",
+      "B2B SaaS",
+      "Data-Driven",
+      "Stakeholder Management",
+    ],
   },
 };
 

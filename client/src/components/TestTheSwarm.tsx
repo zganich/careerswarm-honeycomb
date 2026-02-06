@@ -5,7 +5,7 @@ import { Button } from "./ui/button";
 
 /**
  * TestTheSwarm - Interactive mini-tool that proves value in 3 seconds
- * 
+ *
  * Features:
  * - Sleek input field for resume bullet points
  * - Instant "Roast" or "Improved Version" with typewriter effect
@@ -17,11 +17,16 @@ export function TestTheSwarm() {
   const [isTyping, setIsTyping] = useState(false);
 
   const mockResponses: Record<string, string> = {
-    default: "Led 8-person engineering team to deliver 3 major features 2 weeks ahead of schedule, increasing user engagement by 34% (12K → 16K DAU)",
-    "managed team": "Led 8-person engineering team to deliver 3 major features 2 weeks ahead of schedule, increasing user engagement by 34% (12K → 16K DAU)",
-    "improved performance": "Optimized database queries and caching layer, reducing API response time by 47% (2.1s → 1.1s) and saving $12K/month in infrastructure costs",
-    "worked on": "Resolved 156 customer support tickets with 98% satisfaction rating (4.9/5), reducing average response time from 4 hours to 45 minutes",
-    "led initiative": "Designed and implemented automation system that eliminated 12 hours/week of manual work, saving team $48K annually in operational costs",
+    default:
+      "Led 8-person engineering team to deliver 3 major features 2 weeks ahead of schedule, increasing user engagement by 34% (12K → 16K DAU)",
+    "managed team":
+      "Led 8-person engineering team to deliver 3 major features 2 weeks ahead of schedule, increasing user engagement by 34% (12K → 16K DAU)",
+    "improved performance":
+      "Optimized database queries and caching layer, reducing API response time by 47% (2.1s → 1.1s) and saving $12K/month in infrastructure costs",
+    "worked on":
+      "Resolved 156 customer support tickets with 98% satisfaction rating (4.9/5), reducing average response time from 4 hours to 45 minutes",
+    "led initiative":
+      "Designed and implemented automation system that eliminated 12 hours/week of manual work, saving team $48K annually in operational costs",
   };
 
   const getResponse = (text: string): string => {
@@ -40,7 +45,7 @@ export function TestTheSwarm() {
     let i = 0;
     const interval = setInterval(() => {
       if (i < text.length) {
-        setOutput((prev) => prev + text.charAt(i));
+        setOutput(prev => prev + text.charAt(i));
         i++;
       } else {
         clearInterval(interval);
@@ -77,7 +82,7 @@ export function TestTheSwarm() {
             <input
               type="text"
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={e => setInput(e.target.value)}
               placeholder="Paste a resume bullet point here..."
               className="w-full px-4 py-3 text-sm bg-white/80 backdrop-blur-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
             />
@@ -108,7 +113,9 @@ export function TestTheSwarm() {
             </div>
             <p className="text-sm text-slate-700 leading-relaxed">
               {output}
-              {isTyping && <span className="inline-block w-1 h-4 bg-orange-500 ml-1 animate-pulse" />}
+              {isTyping && (
+                <span className="inline-block w-1 h-4 bg-orange-500 ml-1 animate-pulse" />
+              )}
             </p>
           </motion.div>
         )}

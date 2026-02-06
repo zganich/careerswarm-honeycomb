@@ -32,19 +32,27 @@ export default function Jobs() {
   const [, setLocation] = useLocation();
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedOpportunityId, setSelectedOpportunityId] = useState<number | null>(null);
-  const [sortBy, setSortBy] = useState<"matchScore" | "postedDate" | "company">("matchScore");
+  const [selectedOpportunityId, setSelectedOpportunityId] = useState<
+    number | null
+  >(null);
+  const [sortBy, setSortBy] = useState<"matchScore" | "postedDate" | "company">(
+    "matchScore"
+  );
   const [filterStage, setFilterStage] = useState<string>("all");
   const [filterLocation, setFilterLocation] = useState<string>("all");
 
-  const { data: opportunities, isLoading, refetch } = trpc.opportunities.list.useQuery({});
-  
+  const {
+    data: opportunities,
+    isLoading,
+    refetch,
+  } = trpc.opportunities.list.useQuery({});
+
   // Filter and sort opportunities
   const filteredAndSortedOpportunities = useMemo(() => {
     if (!opportunities) return [];
-    
+
     let filtered = [...opportunities];
-    
+
     // Apply filters
     if (filterStage !== "all") {
       filtered = filtered.filter(opp => opp.companyStage === filterStage);
@@ -54,42 +62,46 @@ export default function Jobs() {
         const location = (opp as any).location?.toLowerCase() || "";
         if (filterLocation === "remote") return location.includes("remote");
         if (filterLocation === "hybrid") return location.includes("hybrid");
-        if (filterLocation === "onsite") return !location.includes("remote") && !location.includes("hybrid");
+        if (filterLocation === "onsite")
+          return !location.includes("remote") && !location.includes("hybrid");
         return true;
       });
     }
-    
+
     // Apply sorting
     filtered.sort((a, b) => {
       if (sortBy === "matchScore") {
         return ((b as any).matchScore || 0) - ((a as any).matchScore || 0);
       } else if (sortBy === "postedDate") {
-        return new Date(b.postedDate || b.createdAt).getTime() - new Date(a.postedDate || a.createdAt).getTime();
+        return (
+          new Date(b.postedDate || b.createdAt).getTime() -
+          new Date(a.postedDate || a.createdAt).getTime()
+        );
       } else if (sortBy === "company") {
         return (a.companyName || "").localeCompare(b.companyName || "");
       }
       return 0;
     });
-    
+
     return filtered;
   }, [opportunities, filterStage, filterLocation, sortBy]);
-  
+
   const runScout = trpc.agents.runScout.useMutation({
-    onSuccess: (data) => {
+    onSuccess: data => {
       toast.success(`Found ${data.count} new opportunities!`);
       refetch();
     },
-    onError: (error) => {
+    onError: error => {
       toast.error(`Scout failed: ${error.message}`);
     },
   });
 
   const quickApply = trpc.applications.quickApply.useMutation({
-    onSuccess: (data) => {
+    onSuccess: data => {
       toast.success(`Application created! Match score: ${data.matchScore}%`);
       setLocation("/applications");
     },
-    onError: (error) => {
+    onError: error => {
       toast.error(`1-Click Apply failed: ${error.message}`);
     },
   });
@@ -114,11 +126,16 @@ export default function Jobs() {
             <Button variant="outline" onClick={() => setLocation("/profile")}>
               Profile
             </Button>
-            <Button variant="outline" onClick={() => setLocation("/applications")}>
+            <Button
+              variant="outline"
+              onClick={() => setLocation("/applications")}
+            >
               Applications
             </Button>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">{user?.name}</span>
+              <span className="text-sm text-muted-foreground">
+                {user?.name}
+              </span>
             </div>
           </div>
         </div>
@@ -147,13 +164,10 @@ export default function Jobs() {
               <Input
                 placeholder="Optional: Add specific search keywords..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={e => setSearchQuery(e.target.value)}
                 className="flex-1"
               />
-              <Button
-                onClick={handleRunScout}
-                disabled={runScout.isPending}
-              >
+              <Button onClick={handleRunScout} disabled={runScout.isPending}>
                 {runScout.isPending ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -168,7 +182,8 @@ export default function Jobs() {
               </Button>
             </div>
             <p className="text-xs text-muted-foreground mt-2">
-              Scout will search LinkedIn, job boards, and recently-funded companies matching your preferences
+              Scout will search LinkedIn, job boards, and recently-funded
+              companies matching your preferences
             </p>
           </CardContent>
         </Card>
@@ -178,19 +193,28 @@ export default function Jobs() {
           <div className="flex gap-4 mb-6">
             <div className="flex-1">
               <label className="text-sm font-medium mb-2 block">Sort By</label>
-              <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
+              <Select
+                value={sortBy}
+                onValueChange={(value: any) => setSortBy(value)}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="matchScore">Match Score (High to Low)</SelectItem>
-                  <SelectItem value="postedDate">Posted Date (Newest)</SelectItem>
+                  <SelectItem value="matchScore">
+                    Match Score (High to Low)
+                  </SelectItem>
+                  <SelectItem value="postedDate">
+                    Posted Date (Newest)
+                  </SelectItem>
                   <SelectItem value="company">Company Name (A-Z)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="flex-1">
-              <label className="text-sm font-medium mb-2 block">Company Stage</label>
+              <label className="text-sm font-medium mb-2 block">
+                Company Stage
+              </label>
               <Select value={filterStage} onValueChange={setFilterStage}>
                 <SelectTrigger>
                   <SelectValue />
@@ -234,7 +258,12 @@ export default function Jobs() {
               </h2>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <TrendingUp className="h-4 w-4" />
-                Sorted by {sortBy === "matchScore" ? "match score" : sortBy === "postedDate" ? "posted date" : "company name"}
+                Sorted by{" "}
+                {sortBy === "matchScore"
+                  ? "match score"
+                  : sortBy === "postedDate"
+                    ? "posted date"
+                    : "company name"}
               </div>
             </div>
 
@@ -248,8 +277,12 @@ export default function Jobs() {
                           <Building2 className="h-6 w-6 text-primary" />
                         </div>
                         <div className="flex-1">
-                          <h3 className="font-semibold text-lg mb-1">{opp.roleTitle}</h3>
-                          <p className="text-muted-foreground">{opp.companyName}</p>
+                          <h3 className="font-semibold text-lg mb-1">
+                            {opp.roleTitle}
+                          </h3>
+                          <p className="text-muted-foreground">
+                            {opp.companyName}
+                          </p>
                         </div>
                       </div>
 
@@ -260,8 +293,9 @@ export default function Jobs() {
                         </div>
                         {opp.baseSalaryMin && (
                           <div className="flex items-center gap-1">
-                            <DollarSign className="h-4 w-4" />
-                            ${(opp.baseSalaryMin / 1000).toFixed(0)}k - ${(opp.baseSalaryMax / 1000).toFixed(0)}k
+                            <DollarSign className="h-4 w-4" />$
+                            {(opp.baseSalaryMin / 1000).toFixed(0)}k - $
+                            {(opp.baseSalaryMax / 1000).toFixed(0)}k
                           </div>
                         )}
                         {opp.companyStage && (
@@ -278,7 +312,11 @@ export default function Jobs() {
                       <div className="flex items-center gap-2">
                         {opp.jobUrl && (
                           <Button variant="outline" size="sm" asChild>
-                            <a href={opp.jobUrl} target="_blank" rel="noopener noreferrer">
+                            <a
+                              href={opp.jobUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
                               <ExternalLink className="h-3 w-3 mr-1" />
                               View Job
                             </a>
@@ -286,21 +324,23 @@ export default function Jobs() {
                         )}
                         <SaveOpportunityButton opportunityId={opp.id} />
                         <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => setSelectedOpportunityId(opp.id)}
-                  >
-                    View Details
-                  </Button>
-                  <AsyncQuickApply
-                    jobId={opp.id.toString()}
-                    companyName={opp.companyName || "Company"}
-                    roleTitle={opp.title}
-                    onApplyStart={async (jobId) => {
-                      await quickApply.mutateAsync({ opportunityId: parseInt(jobId) });
-                    }}
-                    disabled={quickApply.isPending}
-                  />
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setSelectedOpportunityId(opp.id)}
+                        >
+                          View Details
+                        </Button>
+                        <AsyncQuickApply
+                          jobId={opp.id.toString()}
+                          companyName={opp.companyName || "Company"}
+                          roleTitle={opp.title}
+                          onApplyStart={async jobId => {
+                            await quickApply.mutateAsync({
+                              opportunityId: parseInt(jobId),
+                            });
+                          }}
+                          disabled={quickApply.isPending}
+                        />
                       </div>
                     </div>
 
@@ -311,7 +351,9 @@ export default function Jobs() {
                           <div className="text-2xl font-bold text-primary">
                             {opp.matchScore || opp.fitScore || 75}
                           </div>
-                          <div className="text-xs text-muted-foreground">match</div>
+                          <div className="text-xs text-muted-foreground">
+                            match
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -325,7 +367,9 @@ export default function Jobs() {
             <CardContent className="py-12">
               <div className="text-center">
                 <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No opportunities yet</h3>
+                <h3 className="text-lg font-semibold mb-2">
+                  No opportunities yet
+                </h3>
                 <p className="text-muted-foreground mb-4">
                   Click "Run Scout" to discover jobs matching your profile
                 </p>

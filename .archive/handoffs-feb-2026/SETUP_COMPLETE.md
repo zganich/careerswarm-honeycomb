@@ -15,6 +15,7 @@
 ## Next Steps
 
 ### 1. Install pnpm (Required for honeycomb)
+
 ```bash
 npm install -g pnpm
 # OR
@@ -22,6 +23,7 @@ brew install pnpm
 ```
 
 ### 2. Install Dependencies
+
 ```bash
 cd /Users/jamesknight/GitHub/careerswarm-honeycomb
 pnpm install
@@ -29,6 +31,7 @@ npx playwright install chromium
 ```
 
 ### 3. Run Playbook Tests
+
 ```bash
 # Run all playbook tests
 npx playwright test playbook
@@ -40,6 +43,7 @@ npx playwright test playbook-runner
 ```
 
 ### 4. Run Validation Script
+
 ```bash
 pnpm validate
 # (runs scripts/validate-production.mjs)
@@ -48,6 +52,7 @@ pnpm validate
 ## Test Both Repos
 
 ### Test Honeycomb (Active)
+
 ```bash
 cd /Users/jamesknight/GitHub/careerswarm-honeycomb
 pnpm install && npx playwright install chromium
@@ -55,6 +60,7 @@ npx playwright test playbook
 ```
 
 ### Test Old Repo (For Comparison)
+
 ```bash
 cd /Users/jamesknight/GitHub/careerswarm
 npm install && npx playwright install chromium
@@ -64,6 +70,7 @@ npm run test:browser
 ## What the Tests Do
 
 ### Play 1: What's Actually Broken?
+
 - Opens homepage
 - Captures console errors
 - Monitors network requests (especially tRPC)
@@ -71,11 +78,13 @@ npm run test:browser
 - Generates error report
 
 ### Play 2: API Validation
+
 - Checks tRPC endpoint accessibility
 - Tests homepage/dashboard routes
 - Verifies tRPC client initialization
 
 ### Playbook Runner
+
 - Runs all tests
 - Generates `test-results/playbook-report-honeycomb.json`
 - Provides actionable recommendations
@@ -97,6 +106,7 @@ careerswarm-honeycomb/
 ## Status
 
 ✅ **Ready to test!** Just need to:
+
 1. Install pnpm
 2. Run `pnpm install`
 3. Run the tests

@@ -1,6 +1,6 @@
 /**
  * Profiler Agent - Company Analysis & Strategic Reasoning
- * 
+ *
  * Analyzes companies to identify:
  * - Strategic needs and pain points
  * - Why they need this role NOW
@@ -46,7 +46,8 @@ export class ProfilerAgent {
         messages: [
           {
             role: "system",
-            content: "You are a strategic business analyst specializing in partnerships and business development. Analyze companies to identify why they need partnerships leadership NOW and how specific candidates fit.",
+            content:
+              "You are a strategic business analyst specializing in partnerships and business development. Analyze companies to identify why they need partnerships leadership NOW and how specific candidates fit.",
           },
           {
             role: "user",
@@ -75,7 +76,12 @@ export class ProfilerAgent {
                     },
                     candidateFit: { type: "string" },
                   },
-                  required: ["whyNow", "painPoints", "opportunityAreas", "candidateFit"],
+                  required: [
+                    "whyNow",
+                    "painPoints",
+                    "opportunityAreas",
+                    "candidateFit",
+                  ],
                   additionalProperties: false,
                 },
                 companyContext: {
@@ -85,7 +91,11 @@ export class ProfilerAgent {
                     competitivePosition: { type: "string" },
                     partnershipMaturity: { type: "string" },
                   },
-                  required: ["growthTrajectory", "competitivePosition", "partnershipMaturity"],
+                  required: [
+                    "growthTrajectory",
+                    "competitivePosition",
+                    "partnershipMaturity",
+                  ],
                   additionalProperties: false,
                 },
                 strategicFitScore: { type: "number" },
@@ -106,7 +116,9 @@ export class ProfilerAgent {
       const content = response.choices[0].message.content;
       const analysis = JSON.parse(typeof content === "string" ? content : "{}");
 
-      console.log(`[Profiler] ✅ Analysis complete (fit score: ${analysis.strategicFitScore})`);
+      console.log(
+        `[Profiler] ✅ Analysis complete (fit score: ${analysis.strategicFitScore})`
+      );
 
       return analysis;
     } catch (error) {

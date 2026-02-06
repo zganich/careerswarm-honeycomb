@@ -5,7 +5,9 @@ import { users } from "../../drizzle/schema";
 import { eq } from "drizzle-orm";
 
 const stripeKey = process.env.STRIPE_SECRET_KEY?.trim();
-const stripe = stripeKey ? new Stripe(stripeKey, { apiVersion: "2025-12-15.clover" }) : null;
+const stripe = stripeKey
+  ? new Stripe(stripeKey, { apiVersion: "2025-12-15.clover" })
+  : null;
 
 /**
  * Helper function to handle checkout.session.completed events
@@ -37,7 +39,8 @@ async function handleCheckoutSession(session: Stripe.Checkout.Session) {
   const userId = parseInt(session.metadata.user_id);
 
   // Update user subscription
-  await db.update(users)
+  await db
+    .update(users)
     .set({
       subscriptionTier: "pro",
       stripeCustomerId: session.customer as string,
@@ -71,7 +74,8 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
   }
 
   // Find user by customer ID
-  const [user] = await db.select()
+  const [user] = await db
+    .select()
     .from(users)
     .where(eq(users.stripeCustomerId, subscription.customer as string));
 
@@ -84,11 +88,12 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
   }
 
   // Update subscription status
-  await db.update(users)
+  await db
+    .update(users)
     .set({
       subscriptionStatus: subscription.status,
-      subscriptionEndDate: (subscription as any).current_period_end 
-        ? new Date((subscription as any).current_period_end * 1000) 
+      subscriptionEndDate: (subscription as any).current_period_end
+        ? new Date((subscription as any).current_period_end * 1000)
         : null,
     })
     .where(eq(users.id, user.id));
@@ -118,7 +123,8 @@ async function handleSubscriptionDeletion(subscription: Stripe.Subscription) {
   }
 
   // Find user by customer ID
-  const [user] = await db.select()
+  const [user] = await db
+    .select()
     .from(users)
     .where(eq(users.stripeCustomerId, subscription.customer as string));
 
@@ -131,7 +137,8 @@ async function handleSubscriptionDeletion(subscription: Stripe.Subscription) {
   }
 
   // Downgrade to free tier
-  await db.update(users)
+  await db
+    .update(users)
     .set({
       subscriptionTier: "free",
       subscriptionStatus: "canceled",
@@ -149,7 +156,9 @@ async function handleSubscriptionDeletion(subscription: Stripe.Subscription) {
  */
 export async function handleStripeWebhook(req: Request, res: Response) {
   if (!stripe) {
-    return res.status(503).json({ success: false, error: "Stripe not configured" });
+    return res
+      .status(503)
+      .json({ success: false, error: "Stripe not configured" });
   }
   const sig = req.headers["stripe-signature"];
 
@@ -176,7 +185,8 @@ export async function handleStripeWebhook(req: Request, res: Response) {
     console.error("[Webhook] Signature verification failed", {
       error: err.message,
       stack: err.stack,
-      signature: typeof sig === 'string' ? sig.substring(0, 20) + "..." : "[array]", // Log partial signature for debugging
+      signature:
+        typeof sig === "string" ? sig.substring(0, 20) + "..." : "[array]", // Log partial signature for debugging
     });
     return res.status(400).json({
       success: false,
@@ -186,8 +196,10 @@ export async function handleStripeWebhook(req: Request, res: Response) {
 
   // Handle test events
   if (event.id.startsWith("evt_test_")) {
-    console.log("[Webhook] Test event detected, returning verification response");
-    return res.json({ 
+    console.log(
+      "[Webhook] Test event detected, returning verification response"
+    );
+    return res.json({
       verified: true,
       eventType: event.type,
     });
@@ -232,7 +244,7 @@ export async function handleStripeWebhook(req: Request, res: Response) {
         console.log(`[Webhook] Unhandled event type: ${event.type}`);
     }
 
-    res.json({ 
+    res.json({
       success: true,
       received: true,
       eventType: event.type,

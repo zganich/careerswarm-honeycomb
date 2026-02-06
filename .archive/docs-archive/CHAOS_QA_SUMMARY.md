@@ -32,6 +32,7 @@ Conducted comprehensive Chaos QA testing to identify edge cases and vulnerabilit
 **Issue:** STAR achievement wizard allows users to progress through all steps with completely blank input fields. No validation errors are shown.
 
 **Steps to Reproduce:**
+
 1. Navigate to `/achievements/new`
 2. Click "Next" on Situation step without entering text
 3. Click "Next" on Task step without entering text
@@ -40,17 +41,20 @@ Conducted comprehensive Chaos QA testing to identify edge cases and vulnerabilit
 6. Reach Context step with all fields blank
 
 **Expected Behavior:**
+
 - Show validation error: "This field is required"
 - Disable "Next" button until field has content
 - Prevent progression to next step
 
 **Impact:**
+
 - Users can create meaningless achievements with no data
 - Database pollution with empty records
 - Breaks Impact Meter scoring system (expects text content)
 - Poor user experience (no guidance on required fields)
 
 **Recommended Fix:**
+
 ```typescript
 // Add validation to each STAR step
 const validateStep = (value: string) => {
@@ -75,24 +79,28 @@ const validateStep = (value: string) => {
 **Issue:** Textarea fields accept 2000+ word input without character limits, causing UI layout to break. Textarea expands to 3703 pixels below viewport, pushing "Next" button off-screen.
 
 **Steps to Reproduce:**
+
 1. Navigate to Action step (Step 3) of STAR wizard
 2. Paste 2000-word lorem ipsum text into textarea
 3. Observe textarea expansion and layout break
 4. Scroll to bottom of page to find "Next" button
 
 **Expected Behavior:**
+
 - Enforce character limit (e.g., 2000-3000 characters)
 - Show character counter: "1850 / 2000 characters"
 - Set max-height on textarea with vertical scrolling
 - Display warning when approaching limit
 
 **Impact:**
+
 - Poor UX for users who paste long content
 - Navigation difficulty (button off-screen)
 - Potential database bloat from extremely long text
 - Performance degradation on achievement list page
 
 **Recommended Fix:**
+
 ```typescript
 // Add character limit and counter
 <textarea
@@ -117,12 +125,14 @@ const validateStep = (value: string) => {
 **Test:** Injected SQL command string `'; DROP TABLE achievements; --` into Result field to test database security.
 
 **Results:**
+
 - System safely handled SQL injection string
 - No database errors or table drops occurred
 - Achievement saved successfully with SQL string as plain text
 - Drizzle ORM properly parameterizes queries
 
 **Technical Details:**
+
 - Backend uses Drizzle ORM with parameterized queries
 - User input is never directly concatenated into SQL statements
 - SQL injection attacks are automatically neutralized at ORM level
@@ -138,6 +148,7 @@ const validateStep = (value: string) => {
 **Issue:** Free Plan limits (10 achievements, 3 resumes/month) are NOT enforced. User has 26 achievements on Free Plan, exceeding limit by 260%.
 
 **Steps to Reproduce:**
+
 1. Navigate to Dashboard
 2. Observe Usage & Limits section shows "Achievements 26 / 10" with red progress bar
 3. Click "Add Achievement" button (still active)
@@ -145,12 +156,14 @@ const validateStep = (value: string) => {
 5. No blocking, no warning, no upgrade prompt
 
 **Expected Behavior:**
+
 1. Block achievement creation when limit reached
 2. Show upgrade prompt modal: "You've reached your Free Plan limit of 10 achievements. Upgrade to Pro for unlimited achievements."
 3. Disable "Add Achievement" button when at/over limit
 4. Return server-side error if limit exceeded
 
 **Impact:**
+
 - **Revenue Loss:** Users can bypass paywall completely
 - **No Value Proposition:** Pro plan has no differentiation
 - **Database Bloat:** Unlimited free usage
@@ -159,6 +172,7 @@ const validateStep = (value: string) => {
 **Recommended Fix:**
 
 **Server-Side (Critical):**
+
 ```typescript
 // In server/routers.ts - achievements.create procedure
 create: protectedProcedure
@@ -168,11 +182,11 @@ create: protectedProcedure
     const user = await db.query.users.findFirst({
       where: eq(users.id, ctx.user.id),
     });
-    
+
     const achievementCount = await db.query.achievements.count({
       where: eq(achievements.userId, ctx.user.id),
     });
-    
+
     // Enforce limits for free users
     if (user.subscriptionStatus !== 'active' && achievementCount >= 10) {
       throw new TRPCError({
@@ -180,18 +194,19 @@ create: protectedProcedure
         message: 'Achievement limit reached. Please upgrade to Pro for unlimited achievements.',
       });
     }
-    
+
     // Continue with creation...
   }),
 ```
 
 **Client-Side (UX Enhancement):**
+
 ```typescript
 // In client/src/pages/Achievements.tsx
 const { data: stats } = trpc.achievements.getStats.useQuery();
 const isAtLimit = stats.subscriptionStatus !== 'active' && stats.count >= 10;
 
-<Button 
+<Button
   disabled={isAtLimit}
   onClick={() => {
     if (isAtLimit) {
@@ -260,10 +275,12 @@ Due to critical bugs discovered, remaining tests were deferred:
 **Status:** 🚨 **NOT READY FOR LAUNCH**
 
 **Blockers:**
+
 1. ❌ Blank form submission vulnerability
 2. ❌ Usage limit bypass (revenue loss)
 
 **Once Fixed:**
+
 - ✅ Security: SQL injection protection verified
 - ✅ Performance: 42fps stable, adaptive quality working
 - ✅ Mobile: Touch support implemented
@@ -284,6 +301,7 @@ Chaos QA testing successfully identified 2 critical bugs that would have caused 
 Both issues are fixable within 12-17 hours. Once resolved, platform will be production-ready for launch.
 
 **Next Steps:**
+
 1. Implement blank form validation
 2. Implement usage limit enforcement
 3. Add input length limits

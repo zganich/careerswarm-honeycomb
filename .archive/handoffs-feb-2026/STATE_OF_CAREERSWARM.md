@@ -23,32 +23,32 @@ The [Manus Status Report](CareerSwarm_Status_Report_2026-02-01.md) (Feb 1, 2026)
 
 ## Git and GitHub
 
-- **Repo:** https://github.com/zganich/careerswarm-honeycomb  
-- **Branch:** `main`.  
+- **Repo:** https://github.com/zganich/careerswarm-honeycomb
+- **Branch:** `main`.
 - **Status:** All intended changes are committed and pushed; working tree is clean after the “migration helpers + docs + archive” commit.
 
 ---
 
 ## What’s in the repo (summary)
 
-| Area | State |
-|------|--------|
-| **Core app** | React 19 + Tailwind 4 + tRPC client; Express + tRPC server; Drizzle + MySQL. |
-| **Database** | 14+ tables; migration 0015 adds Master Profile sections (userProfiles columns, certifications type, languages, volunteerExperiences, projects, publications, securityClearances). |
+| Area               | State                                                                                                                                                                                                                                                                                    |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Core app**       | React 19 + Tailwind 4 + tRPC client; Express + tRPC server; Drizzle + MySQL.                                                                                                                                                                                                             |
+| **Database**       | 14+ tables; migration 0015 adds Master Profile sections (userProfiles columns, certifications type, languages, volunteerExperiences, projects, publications, securityClearances).                                                                                                        |
 | **Master Profile** | Parse + store: work experience, achievements, skills, education, certifications, awards, superpowers, **plus** professional summary, languages, volunteer, projects, publications, security clearances, licenses, portfolio URLs, parsed contact. Profile + Review UI show all of these. |
-| **Onboarding** | Extraction calls `parseResumes`; Review shows all profile sections. |
-| **Migration** | `pnpm db:migrate` applies pending migrations (e.g. 0015); see RUN_MIGRATION_STEP_BY_STEP.md if needed. |
-| **Tests** | Vitest (e.g. 90+ passing); Playwright E2E present. |
-| **Docs** | README, SETUP_GUIDE, PROJECT_SUMMARY, CHANGELOG, todo.md, docs (GTM, marketing, migration, Manus status). |
-| **Archive** | .archive/ holds older design/reference docs and a copy of the Feb 1 Status Report. |
+| **Onboarding**     | Extraction calls `parseResumes`; Review shows all profile sections.                                                                                                                                                                                                                      |
+| **Migration**      | `pnpm db:migrate` applies pending migrations (e.g. 0015); see RUN_MIGRATION_STEP_BY_STEP.md if needed.                                                                                                                                                                                   |
+| **Tests**          | Vitest (e.g. 90+ passing); Playwright E2E present.                                                                                                                                                                                                                                       |
+| **Docs**           | README, SETUP_GUIDE, PROJECT_SUMMARY, CHANGELOG, todo.md, docs (GTM, marketing, migration, Manus status).                                                                                                                                                                                |
+| **Archive**        | .archive/ holds older design/reference docs and a copy of the Feb 1 Status Report.                                                                                                                                                                                                       |
 
 ---
 
 ## What’s archived
 
-- **.archive/**  
-  - Older design/analysis docs (e.g. API_DOCUMENTATION, B2B_TALENT_INTELLIGENCE, BUILD_GUIDELINES, design tests).  
-  - **CareerSwarm_Status_Report_2026-02-01.md** – snapshot of Manus status report.  
+- **.archive/**
+  - Older design/analysis docs (e.g. API_DOCUMENTATION, B2B_TALENT_INTELLIGENCE, BUILD_GUIDELINES, design tests).
+  - **CareerSwarm_Status_Report_2026-02-01.md** – snapshot of Manus status report.
 
 Nothing required for build or run has been archived; only reference/obsolete material.
 

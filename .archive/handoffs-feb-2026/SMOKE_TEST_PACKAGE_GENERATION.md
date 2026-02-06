@@ -18,6 +18,7 @@
 ## Steps
 
 1. **Start the app** (if local):
+
    ```bash
    pnpm dev
    ```

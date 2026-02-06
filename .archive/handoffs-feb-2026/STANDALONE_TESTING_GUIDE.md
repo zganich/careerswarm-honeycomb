@@ -55,6 +55,7 @@ npx playwright show-report
 ### Test Categories
 
 #### 1. **Playbook Tests** (Lost but Launching)
+
 Location: `tests/playbook-*.spec.ts`
 
 - **playbook-whats-broken.spec.ts** - Console errors, network requests, feature checks
@@ -62,6 +63,7 @@ Location: `tests/playbook-*.spec.ts`
 - **playbook-runner.spec.ts** - Complete playbook runner with comprehensive report
 
 #### 2. **Existing E2E Tests**
+
 Location: `tests/*.spec.ts`
 
 - **auth.spec.ts** - Authentication flow tests
@@ -70,6 +72,7 @@ Location: `tests/*.spec.ts`
 ### Test Configuration
 
 **Playwright Config:** `playwright.config.ts`
+
 - Base URL: `http://localhost:3000`
 - Browser: Chromium (Firefox/WebKit optional)
 - Video: Recorded for all tests
@@ -136,11 +139,13 @@ pnpm validate
 ### Test Output
 
 **✅ Passing Test:**
+
 ```
 ✓ [chromium] › tests/playbook-api-validation.spec.ts:13:3 › PLAY 2: API Validation (Honeycomb) › 1. Check tRPC endpoint accessibility (255ms)
 ```
 
 **❌ Failing Test:**
+
 ```
 ✘ [chromium] › tests/playbook-whats-broken.spec.ts:43:7 › PLAY 1: What's Actually Broken? (Honeycomb) › 1. Open homepage and check console errors (4.8s)
 ```
@@ -148,6 +153,7 @@ pnpm validate
 ### Test Report Structure
 
 After running tests, check:
+
 - **HTML Report:** `playwright-report/index.html`
 - **JSON Report:** `test-results/results.json`
 - **Playbook Report:** `test-results/playbook-report-honeycomb.json`
@@ -209,11 +215,13 @@ After running tests, check:
 ### Expected Results
 
 **✅ All Tests Passing:**
+
 ```
 9 passed (38.6s)
 ```
 
 **⚠️ Some Tests Failing:**
+
 ```
 6 passed, 3 failed (45.2s)
 ```
@@ -223,12 +231,14 @@ After running tests, check:
 #### 1. Environment Variables Missing
 
 **Error:**
+
 ```
 VITE_ANALYTICS_ENDPOINT is not defined
 VITE_OAUTH_PORTAL_URL is not defined
 ```
 
 **Solution:**
+
 - These are **expected in development**
 - Set in production:
   ```bash
@@ -240,6 +250,7 @@ VITE_OAUTH_PORTAL_URL is not defined
 #### 2. Analytics Endpoint Error
 
 **Error:**
+
 ```
 Failed to load resource: the server responded with a status of 400 (Bad Request)
 URL: http://localhost:3000/%VITE_ANALYTICS_ENDPOINT%/umami
@@ -248,12 +259,14 @@ URL: http://localhost:3000/%VITE_ANALYTICS_ENDPOINT%/umami
 **Impact:** Low - Analytics script fails, but app works
 
 **Solution:**
+
 - Set `VITE_ANALYTICS_ENDPOINT` and `VITE_ANALYTICS_WEBSITE_ID`
 - Or disable analytics in development
 
 #### 3. OAuth Warnings
 
 **Error:**
+
 ```
 VITE_OAUTH_PORTAL_URL is not defined
 OAUTH_SERVER_URL is not configured
@@ -262,28 +275,33 @@ OAUTH_SERVER_URL is not configured
 **Impact:** None in development - Expected without OAuth setup
 
 **Solution:**
+
 - Configure OAuth for production
 - Set `OAUTH_SERVER_URL` and `VITE_OAUTH_PORTAL_URL`
 
 #### 4. Database Connection Errors
 
 **Error:**
+
 ```
 Database error: Cannot find module 'drizzle/schema'
 ```
 
 **Solution:**
+
 - Ensure database is set up: `pnpm db:push`
 - Check `DATABASE_URL` environment variable
 
 #### 5. tRPC Router Errors
 
 **Error:**
+
 ```
 tRPC router error: Cannot find package '@shared/const'
 ```
 
 **Solution:**
+
 - Ensure all dependencies installed: `pnpm install`
 - Check TypeScript compilation: `pnpm check`
 
@@ -296,6 +314,7 @@ tRPC router error: Cannot find package '@shared/const'
 **Problem:** Dev server doesn't start
 
 **Solution:**
+
 ```bash
 # Check if port 3000 is in use
 lsof -i :3000
@@ -312,6 +331,7 @@ FRONTEND_URL=http://localhost:3001 npx playwright test
 **Problem:** Tests timeout waiting for elements
 
 **Solution:**
+
 - Increase timeout in test:
   ```typescript
   await expect(element).toBeVisible({ timeout: 30000 });
@@ -324,6 +344,7 @@ FRONTEND_URL=http://localhost:3001 npx playwright test
 **Problem:** `Browser not found`
 
 **Solution:**
+
 ```bash
 # Install browsers
 npx playwright install chromium
@@ -336,6 +357,7 @@ npx playwright install webkit  # Optional
 **Problem:** `Cannot find module`
 
 **Solution:**
+
 ```bash
 # Reinstall dependencies
 rm -rf node_modules pnpm-lock.yaml
@@ -347,6 +369,7 @@ pnpm install
 **Problem:** Type errors in tests
 
 **Solution:**
+
 ```bash
 # Check TypeScript
 pnpm check
@@ -390,6 +413,7 @@ cat test-results/playbook-report-honeycomb.json | jq
 ### Report Contents
 
 **playbook-report-honeycomb.json:**
+
 ```json
 {
   "timestamp": "2026-01-26T16:03:52.025Z",
@@ -429,6 +453,7 @@ Before deploying, run this checklist:
 ### Environment Variables
 
 **Required for Production:**
+
 ```bash
 DATABASE_URL=mysql://...
 JWT_SECRET=...
@@ -439,6 +464,7 @@ BUILT_IN_FORGE_API_KEY=...
 ```
 
 **Optional (Analytics):**
+
 ```bash
 VITE_ANALYTICS_ENDPOINT=...
 VITE_ANALYTICS_WEBSITE_ID=...
@@ -448,6 +474,7 @@ VITE_OAUTH_PORTAL_URL=...
 ### Playwright Configuration
 
 Edit `playwright.config.ts` to:
+
 - Change base URL
 - Add/remove browsers
 - Adjust timeouts

@@ -1,5 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Check, Hexagon } from "lucide-react";
 import { useLocation } from "wouter";
 
@@ -67,18 +74,25 @@ export default function Pricing() {
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 backdrop-blur-md bg-white/80 border-b border-slate-200/50">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <button onClick={() => setLocation('/')} className="flex items-center space-x-2">
+          <button
+            onClick={() => setLocation("/")}
+            className="flex items-center space-x-2"
+          >
             <Hexagon className="w-8 h-8 text-orange-500 fill-orange-500" />
-            <span className="text-xl font-bold tracking-tight text-slate-900">CareerSwarm</span>
+            <span className="text-xl font-bold tracking-tight text-slate-900">
+              CareerSwarm
+            </span>
           </button>
           <div className="flex items-center space-x-4">
-            <button 
-              onClick={() => window.location.href = `${import.meta.env.VITE_OAUTH_PORTAL_URL}?app_id=${import.meta.env.VITE_APP_ID}&redirect_uri=${window.location.origin}/api/oauth/callback`}
+            <button
+              onClick={() =>
+                (window.location.href = `${import.meta.env.VITE_OAUTH_PORTAL_URL}?app_id=${import.meta.env.VITE_APP_ID}&redirect_uri=${window.location.origin}/api/oauth/callback`)
+              }
               className="text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors"
             >
               Sign In
             </button>
-            <Button onClick={() => setLocation('/onboarding/welcome')}>
+            <Button onClick={() => setLocation("/onboarding/welcome")}>
               Get Started
             </Button>
           </div>
@@ -100,10 +114,14 @@ export default function Pricing() {
       {/* Pricing Cards */}
       <div className="max-w-7xl mx-auto px-6 pb-24">
         <div className="grid md:grid-cols-3 gap-8">
-          {tiers.map((tier) => (
-            <Card 
+          {tiers.map(tier => (
+            <Card
               key={tier.name}
-              className={tier.highlighted ? "border-2 border-orange-500 shadow-xl relative" : ""}
+              className={
+                tier.highlighted
+                  ? "border-2 border-orange-500 shadow-xl relative"
+                  : ""
+              }
             >
               {tier.highlighted && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-orange-500 text-white px-4 py-1 rounded-full text-sm font-medium">
@@ -114,7 +132,9 @@ export default function Pricing() {
                 <CardTitle className="text-2xl">{tier.name}</CardTitle>
                 <CardDescription>{tier.description}</CardDescription>
                 <div className="mt-4">
-                  <span className="text-4xl font-bold text-slate-900">{tier.price}</span>
+                  <span className="text-4xl font-bold text-slate-900">
+                    {tier.price}
+                  </span>
                   {tier.period && (
                     <span className="text-slate-600 ml-2">/ {tier.period}</span>
                   )}
@@ -122,7 +142,7 @@ export default function Pricing() {
               </CardHeader>
               <CardContent>
                 <ul className="space-y-3">
-                  {tier.features.map((feature) => (
+                  {tier.features.map(feature => (
                     <li key={feature} className="flex items-start">
                       <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5" />
                       <span className="text-slate-700">{feature}</span>
@@ -131,14 +151,14 @@ export default function Pricing() {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button 
+                <Button
                   className="w-full"
                   variant={tier.highlighted ? "default" : "outline"}
                   onClick={() => {
                     if (tier.name === "Enterprise") {
                       window.location.href = "mailto:sales@careerswarm.com";
                     } else {
-                      setLocation('/onboarding/welcome');
+                      setLocation("/onboarding/welcome");
                     }
                   }}
                 >
@@ -162,7 +182,8 @@ export default function Pricing() {
                 Can I cancel anytime?
               </h3>
               <p className="text-slate-600">
-                Yes! You can cancel your subscription at any time. No questions asked, no hidden fees.
+                Yes! You can cancel your subscription at any time. No questions
+                asked, no hidden fees.
               </p>
             </div>
             <div>
@@ -170,7 +191,8 @@ export default function Pricing() {
                 What payment methods do you accept?
               </h3>
               <p className="text-slate-600">
-                We accept all major credit cards (Visa, Mastercard, American Express) and PayPal.
+                We accept all major credit cards (Visa, Mastercard, American
+                Express) and PayPal.
               </p>
             </div>
             <div>
@@ -178,7 +200,8 @@ export default function Pricing() {
                 Is there a free trial?
               </h3>
               <p className="text-slate-600">
-                Yes! Pro plan includes a 7-day free trial. No credit card required to start.
+                Yes! Pro plan includes a 7-day free trial. No credit card
+                required to start.
               </p>
             </div>
             <div>
@@ -186,7 +209,9 @@ export default function Pricing() {
                 What happens to my data if I cancel?
               </h3>
               <p className="text-slate-600">
-                Your Master Profile and application history remain accessible for 30 days after cancellation. You can export your data at any time.
+                Your Master Profile and application history remain accessible
+                for 30 days after cancellation. You can export your data at any
+                time.
               </p>
             </div>
             <div>
@@ -194,7 +219,9 @@ export default function Pricing() {
                 Do you offer discounts for students or nonprofits?
               </h3>
               <p className="text-slate-600">
-                Yes! We offer 50% off Pro plans for students and nonprofit employees. Contact us at support@careerswarm.com with proof of eligibility.
+                Yes! We offer 50% off Pro plans for students and nonprofit
+                employees. Contact us at support@careerswarm.com with proof of
+                eligibility.
               </p>
             </div>
           </div>
@@ -210,9 +237,9 @@ export default function Pricing() {
           <p className="text-slate-300 text-lg mb-8">
             Join thousands of professionals who've automated their applications
           </p>
-          <Button 
+          <Button
             size="lg"
-            onClick={() => setLocation('/onboarding/welcome')}
+            onClick={() => setLocation("/onboarding/welcome")}
             className="bg-orange-500 hover:bg-orange-600 text-white"
           >
             Start Building Your Master Profile

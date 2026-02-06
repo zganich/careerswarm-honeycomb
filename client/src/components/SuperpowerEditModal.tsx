@@ -1,5 +1,10 @@
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -27,7 +32,9 @@ export function SuperpowerEditModal({
   onSuccess,
 }: SuperpowerEditModalProps) {
   const [editedSuperpowers, setEditedSuperpowers] = useState<any[]>([]);
-  const [selectedAchievements, setSelectedAchievements] = useState<{ [key: number]: number[] }>({});
+  const [selectedAchievements, setSelectedAchievements] = useState<{
+    [key: number]: number[];
+  }>({});
 
   const updateSuperpowerMutation = trpc.profile.updateSuperpower.useMutation({
     onSuccess: () => {
@@ -78,11 +85,14 @@ export function SuperpowerEditModal({
     setEditedSuperpowers(updated);
   };
 
-  const toggleAchievement = (superpowerIndex: number, achievementId: number) => {
-    setSelectedAchievements((prev) => {
+  const toggleAchievement = (
+    superpowerIndex: number,
+    achievementId: number
+  ) => {
+    setSelectedAchievements(prev => {
       const current = prev[superpowerIndex] || [];
       const updated = current.includes(achievementId)
-        ? current.filter((id) => id !== achievementId)
+        ? current.filter(id => id !== achievementId)
         : [...current, achievementId];
       return { ...prev, [superpowerIndex]: updated };
     });
@@ -95,8 +105,8 @@ export function SuperpowerEditModal({
 
       const evidenceIds = selectedAchievements[idx] || [];
       const evidence = evidenceIds
-        .map((id) => {
-          const achievement = achievements.find((a) => a.id === id);
+        .map(id => {
+          const achievement = achievements.find(a => a.id === id);
           return achievement ? achievement.description : "";
         })
         .filter(Boolean)
@@ -130,7 +140,9 @@ export function SuperpowerEditModal({
               <CardContent className="pt-6">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                    <span className="text-sm font-bold text-primary">{index + 1}</span>
+                    <span className="text-sm font-bold text-primary">
+                      {index + 1}
+                    </span>
                   </div>
                   <h3 className="font-semibold">Superpower {index + 1}</h3>
                 </div>
@@ -142,7 +154,7 @@ export function SuperpowerEditModal({
                     <Input
                       id={`title-${index}`}
                       value={superpower.title}
-                      onChange={(e) => handleTitleChange(index, e.target.value)}
+                      onChange={e => handleTitleChange(index, e.target.value)}
                       placeholder="e.g., Revenue Growth Architect"
                       className="mt-1"
                     />
@@ -150,11 +162,15 @@ export function SuperpowerEditModal({
 
                   {/* Description */}
                   <div>
-                    <Label htmlFor={`description-${index}`}>Description *</Label>
+                    <Label htmlFor={`description-${index}`}>
+                      Description *
+                    </Label>
                     <Textarea
                       id={`description-${index}`}
                       value={superpower.description}
-                      onChange={(e) => handleDescriptionChange(index, e.target.value)}
+                      onChange={e =>
+                        handleDescriptionChange(index, e.target.value)
+                      }
                       placeholder="Describe this superpower and how it sets you apart..."
                       className="mt-1 min-h-[80px]"
                     />
@@ -175,8 +191,12 @@ export function SuperpowerEditModal({
                           >
                             <Checkbox
                               id={`achievement-${index}-${achievement.id}`}
-                              checked={selectedAchievements[index]?.includes(achievement.id)}
-                              onCheckedChange={() => toggleAchievement(index, achievement.id)}
+                              checked={selectedAchievements[index]?.includes(
+                                achievement.id
+                              )}
+                              onCheckedChange={() =>
+                                toggleAchievement(index, achievement.id)
+                              }
                             />
                             <label
                               htmlFor={`achievement-${index}-${achievement.id}`}
@@ -188,7 +208,8 @@ export function SuperpowerEditModal({
                         ))
                       ) : (
                         <p className="text-sm text-muted-foreground">
-                          No achievements available. Add achievements to your profile first.
+                          No achievements available. Add achievements to your
+                          profile first.
                         </p>
                       )}
                     </div>
@@ -196,7 +217,10 @@ export function SuperpowerEditModal({
                       <div className="mt-2">
                         <Badge variant="secondary">
                           {selectedAchievements[index].length} achievement
-                          {selectedAchievements[index].length !== 1 ? "s" : ""} selected
+                          {selectedAchievements[index].length !== 1
+                            ? "s"
+                            : ""}{" "}
+                          selected
                         </Badge>
                       </div>
                     )}
@@ -215,10 +239,12 @@ export function SuperpowerEditModal({
               onClick={handleSave}
               disabled={
                 updateSuperpowerMutation.isPending ||
-                editedSuperpowers.every((sp) => !sp.title || !sp.description)
+                editedSuperpowers.every(sp => !sp.title || !sp.description)
               }
             >
-              {updateSuperpowerMutation.isPending ? "Saving..." : "Save Changes"}
+              {updateSuperpowerMutation.isPending
+                ? "Saving..."
+                : "Save Changes"}
             </Button>
           </div>
         </div>

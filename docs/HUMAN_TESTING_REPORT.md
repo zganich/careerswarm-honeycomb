@@ -7,15 +7,15 @@
 
 ## Summary
 
-| Suite | Target | Result | Notes |
-|-------|--------|--------|-------|
-| TypeScript | — | ✅ 0 errors | `pnpm check` |
-| Build | — | ✅ Pass | `pnpm build` |
-| Unit tests | — | ✅ 122 passed, 51 skipped | `pnpm test` (includes onboarding.flow.test.ts) |
-| Production smoke | careerswarm.com | ✅ 22/22 | Desktop + mobile; public pages, no critical errors |
-| Production E2E | careerswarm.com | ✅ 25/25 | Auth, onboarding, core pages, Roast, pricing |
-| Playbook (what’s broken) | localhost:3000 | ✅ 8/8 | Homepage, dashboard, console/network checks |
-| Onboarding-flow (local) | localhost:3000 | ⏭️ Skipped | Auth-bypass; use production E2E for onboarding coverage |
+| Suite                    | Target          | Result                    | Notes                                                   |
+| ------------------------ | --------------- | ------------------------- | ------------------------------------------------------- |
+| TypeScript               | —               | ✅ 0 errors               | `pnpm check`                                            |
+| Build                    | —               | ✅ Pass                   | `pnpm build`                                            |
+| Unit tests               | —               | ✅ 122 passed, 51 skipped | `pnpm test` (includes onboarding.flow.test.ts)          |
+| Production smoke         | careerswarm.com | ✅ 22/22                  | Desktop + mobile; public pages, no critical errors      |
+| Production E2E           | careerswarm.com | ✅ 25/25                  | Auth, onboarding, core pages, Roast, pricing            |
+| Playbook (what’s broken) | localhost:3000  | ✅ 8/8                    | Homepage, dashboard, console/network checks             |
+| Onboarding-flow (local)  | localhost:3000  | ⏭️ Skipped                | Auth-bypass; use production E2E for onboarding coverage |
 
 **Verdict:** Production and playbook flows are working. Full “human” coverage is provided by production smoke + production E2E. Local onboarding-flow.spec.ts is skipped (both describes); use production E2E for full onboarding coverage.
 

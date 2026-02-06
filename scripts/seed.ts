@@ -21,7 +21,7 @@ async function seedDatabase() {
     // Note: Since the schema doesn't have dedicated tables for power verbs,
     // skills taxonomy, or ATS keywords, we'll log them for now.
     // In a production system, you would create tables and insert data here.
-    
+
     console.log(`✅ Power Verbs: ${powerVerbs.length} entries ready`);
     console.log(`✅ Skills Taxonomy: ${skillsTaxonomy.length} entries ready`);
     console.log(`✅ ATS Keywords: ${atsKeywords.length} entries ready`);
@@ -40,7 +40,7 @@ async function seedDatabase() {
 
     const duration = Date.now() - startTime;
     console.log(`\n🎉 Database seed completed in ${duration}ms`);
-    
+
     if (duration > 10000) {
       console.warn(`⚠️  Seed took longer than 10 seconds (${duration}ms)`);
     }

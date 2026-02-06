@@ -99,18 +99,18 @@ pnpm db:migrate
 
 Open `.env` and set these **required** variables:
 
-| Variable | What to put | Example |
-|----------|------------------|--------|
-| `JWT_SECRET` | A long random string (at least 32 characters). Used to sign session cookies. | `JWT_SECRET="my-super-secret-key-at-least-32-chars-long"` |
-| `OPENAI_API_KEY` | OpenAI API key (for Resume Roast, Tailor, Scribe). | `OPENAI_API_KEY="sk-..."` |
+| Variable         | What to put                                                                  | Example                                                   |
+| ---------------- | ---------------------------------------------------------------------------- | --------------------------------------------------------- |
+| `JWT_SECRET`     | A long random string (at least 32 characters). Used to sign session cookies. | `JWT_SECRET="my-super-secret-key-at-least-32-chars-long"` |
+| `OPENAI_API_KEY` | OpenAI API key (for Resume Roast, Tailor, Scribe).                           | `OPENAI_API_KEY="sk-..."`                                 |
 
 **Optional — only if you want OAuth (Manus) sign-in:** If you skip these, the app still runs and users sign in with **email at `/login`** (or Dev Login in non-production).
 
-| Variable | What to put | Example |
-|----------|------------------|--------|
-| `OAUTH_SERVER_URL` | Manus OAuth server URL. | `OAUTH_SERVER_URL="https://oauth.manus.im"` |
+| Variable                | What to put                  | Example                                          |
+| ----------------------- | ---------------------------- | ------------------------------------------------ |
+| `OAUTH_SERVER_URL`      | Manus OAuth server URL.      | `OAUTH_SERVER_URL="https://oauth.manus.im"`      |
 | `VITE_OAUTH_PORTAL_URL` | Manus OAuth portal base URL. | `VITE_OAUTH_PORTAL_URL="https://oauth.manus.im"` |
-| `VITE_APP_ID` | Your app id in Manus. | `VITE_APP_ID="careerswarm"` |
+| `VITE_APP_ID`           | Your app id in Manus.        | `VITE_APP_ID="careerswarm"`                      |
 
 Without OAuth vars, go to `/login` and sign in with any email (or use Dev Login when enabled).
 
@@ -181,19 +181,19 @@ Use the same URL and port your server is configured for (e.g. `PORT=3000` in `.e
 
 ## Quick reference
 
-| I want to… | Do this |
-|------------|--------|
-| Run the app locally | Step 1 → 2 → 3 → 4 → 6 → 8. (Step 5 only if you use OAuth.) |
-| Fix "ECONNREFUSED" on migrate | Step 2: start MySQL or fix `DATABASE_URL`. |
-| Sign in (no OAuth) | Go to **/login**, enter your email (or use Dev Login when enabled). |
+| I want to…                               | Do this                                                              |
+| ---------------------------------------- | -------------------------------------------------------------------- |
+| Run the app locally                      | Step 1 → 2 → 3 → 4 → 6 → 8. (Step 5 only if you use OAuth.)          |
+| Fix "ECONNREFUSED" on migrate            | Step 2: start MySQL or fix `DATABASE_URL`.                           |
+| Sign in (no OAuth)                       | Go to **/login**, enter your email (or use Dev Login when enabled).  |
 | Fix OAuth redirect loop (if using OAuth) | Step 5: whitelist `https://YOUR_DOMAIN/api/oauth/callback` in Manus. |
-| See what env vars are required | Run `pnpm run verify-env` or read Step 4. |
+| See what env vars are required           | Run `pnpm run verify-env` or read Step 4.                            |
 
 ---
 
 ## More detail (if you need it)
 
-- **Database migration:** `pnpm db:migrate`  
-- **OAuth (optional):** Step 5 above  
-- **Handoff context:** [CONTEXT_FOR_NEW_CHAT.md](../CONTEXT_FOR_NEW_CHAT.md)  
+- **Database migration:** `pnpm db:migrate`
+- **OAuth (optional):** Step 5 above
+- **Handoff context:** [CONTEXT_FOR_NEW_CHAT.md](../CONTEXT_FOR_NEW_CHAT.md)
 - **Short deploy checklist:** [SHIP_CHECKLIST.md](./SHIP_CHECKLIST.md)

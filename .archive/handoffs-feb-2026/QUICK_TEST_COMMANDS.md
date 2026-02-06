@@ -97,6 +97,7 @@ npx playwright test playbook --debug --headed
 ---
 
 **Pro Tip:** Add to your `package.json` scripts:
+
 ```json
 {
   "scripts": {

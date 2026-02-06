@@ -26,6 +26,9 @@ pnpm-lock.yaml
 # Environment files
 .env*
 
+# Archived / generated handoffs
+.archive/
+
 # IDE files
 .vscode/
 .idea/

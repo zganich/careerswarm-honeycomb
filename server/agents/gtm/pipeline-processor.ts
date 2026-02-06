@@ -14,14 +14,22 @@ import type { RawB2BLead, SourceChannel } from "./types";
 import * as db from "../../db";
 
 const SOURCE_CHANNELS: SourceChannel[] = [
-  "linkedin", "reddit", "twitter", "company_site", "job_board", "newsletter", "event",
+  "linkedin",
+  "reddit",
+  "twitter",
+  "company_site",
+  "job_board",
+  "newsletter",
+  "event",
 ];
 
 function isSourceChannel(s: string): s is SourceChannel {
   return SOURCE_CHANNELS.includes(s as SourceChannel);
 }
 
-export async function processGtmJob(data: GtmPipelineData): Promise<{ ok: boolean; message?: string; count?: number }> {
+export async function processGtmJob(
+  data: GtmPipelineData
+): Promise<{ ok: boolean; message?: string; count?: number }> {
   const { step, channel, vertical, payload } = data;
   const start = Date.now();
 
@@ -39,7 +47,10 @@ export async function processGtmJob(data: GtmPipelineData): Promise<{ ok: boolea
       const scored = scoreLeads(finderResult.leads) as ScoredLead[];
       let upserted = 0;
       for (const lead of scored) {
-        const normalized = normalizeLeadForDb(lead, { sourceChannel: ch, sourceUrl: (payload?.sourceUrl as string) || undefined });
+        const normalized = normalizeLeadForDb(lead, {
+          sourceChannel: ch,
+          sourceUrl: (payload?.sourceUrl as string) || undefined,
+        });
         const key = (normalized.idempotencyKey as string) || undefined;
         if (!key) continue;
         const id = await db.upsertB2BLeadByKey({
@@ -50,12 +61,19 @@ export async function processGtmJob(data: GtmPipelineData): Promise<{ ok: boolea
         } as Parameters<typeof db.upsertB2BLeadByKey>[0]);
         if (id) upserted++;
       }
-      result = { ok: true, count: upserted, message: `Upserted ${upserted} leads` };
+      result = {
+        ok: true,
+        count: upserted,
+        message: `Upserted ${upserted} leads`,
+      };
       break;
     }
 
     case "scoring": {
-      result = { ok: true, message: "Scoring step: use lead_discovery output (already scored)" };
+      result = {
+        ok: true,
+        message: "Scoring step: use lead_discovery output (already scored)",
+      };
       break;
     }
 
@@ -63,7 +81,10 @@ export async function processGtmJob(data: GtmPipelineData): Promise<{ ok: boolea
       const leads = await db.getB2BLeads(5, "none");
       let drafted = 0;
       for (const lead of leads) {
-        const audience = (lead.leadType === "hr_leader" || lead.leadType === "recruiter_inhouse") ? "hr" as const : "recruiter" as const;
+        const audience =
+          lead.leadType === "hr_leader" || lead.leadType === "recruiter_inhouse"
+            ? ("hr" as const)
+            : ("recruiter" as const);
         const outreach = await executeRecruiterOutreach({
           audience,
           leadName: lead.name ?? undefined,
@@ -81,7 +102,11 @@ export async function processGtmJob(data: GtmPipelineData): Promise<{ ok: boolea
         await db.updateB2BLead(lead.id, { outreachStatus: "drafted" });
         drafted++;
       }
-      result = { ok: true, count: drafted, message: `Drafted ${drafted} outreach emails` };
+      result = {
+        ok: true,
+        count: drafted,
+        message: `Drafted ${drafted} outreach emails`,
+      };
       break;
     }
 
@@ -94,22 +119,41 @@ export async function processGtmJob(data: GtmPipelineData): Promise<{ ok: boolea
         await db.updateB2BLead(draft.leadId, { outreachStatus: "sent" });
         sent++;
       }
-      result = { ok: true, count: sent, message: `Marked ${sent} drafts as sent` };
+      result = {
+        ok: true,
+        count: sent,
+        message: `Marked ${sent} drafts as sent`,
+      };
       break;
     }
 
     case "strategy": {
       const lastRun = (payload?.lastRunSummary as string) || undefined;
-      const kpiSnapshot = (payload?.kpiSnapshot as Record<string, number>) || undefined;
-      const strategyResult = await executeStrategy({ lastRunSummary: lastRun, kpiSnapshot });
-      await db.createGtmRun("strategy", { lastRunSummary: lastRun, kpiSnapshot }, strategyResult, "success");
+      const kpiSnapshot =
+        (payload?.kpiSnapshot as Record<string, number>) || undefined;
+      const strategyResult = await executeStrategy({
+        lastRunSummary: lastRun,
+        kpiSnapshot,
+      });
+      await db.createGtmRun(
+        "strategy",
+        { lastRunSummary: lastRun, kpiSnapshot },
+        strategyResult,
+        "success"
+      );
       result = { ok: true, message: "Strategy run saved" };
       break;
     }
 
     case "content": {
-      const ch = (channel || "linkedin") as "linkedin" | "reddit" | "x" | "tiktok" | "email";
-      const theme = (payload?.theme as string) || "CareerSwarm: better job applications";
+      const ch = (channel || "linkedin") as
+        | "linkedin"
+        | "reddit"
+        | "x"
+        | "tiktok"
+        | "email";
+      const theme =
+        (payload?.theme as string) || "CareerSwarm: better job applications";
       const contentResult = await executeContent({ channel: ch, theme });
       await db.createGtmContent({
         channel: ch,
@@ -125,16 +169,26 @@ export async function processGtmJob(data: GtmPipelineData): Promise<{ ok: boolea
     case "report": {
       const leads = await db.getB2BLeads(1000);
       const leadCount = leads.length;
-      const outreachDrafted = leads.filter((l) => l.outreachStatus === "drafted").length;
-      const outreachSent = leads.filter((l) => l.outreachStatus === "sent").length;
+      const outreachDrafted = leads.filter(
+        l => l.outreachStatus === "drafted"
+      ).length;
+      const outreachSent = leads.filter(
+        l => l.outreachStatus === "sent"
+      ).length;
       const reportResult = await executeReport({
         leadCount,
         outreachDrafted,
         outreachSent,
         lastStrategy: (payload?.lastStrategy as string) || undefined,
-        kpiSnapshot: (payload?.kpiSnapshot as Record<string, number>) || undefined,
+        kpiSnapshot:
+          (payload?.kpiSnapshot as Record<string, number>) || undefined,
       });
-      await db.createGtmRun("report", { leadCount, outreachDrafted, outreachSent }, reportResult, "success");
+      await db.createGtmRun(
+        "report",
+        { leadCount, outreachDrafted, outreachSent },
+        reportResult,
+        "success"
+      );
       result = { ok: true, message: "Report saved" };
       break;
     }
@@ -150,7 +204,11 @@ export async function processGtmJob(data: GtmPipelineData): Promise<{ ok: boolea
 
   const durationMs = Date.now() - start;
   if (process.env.NODE_ENV !== "test") {
-    console.log(`[GTM] ${step} ${channel ?? ""} completed in ${durationMs}ms`, result.message ?? "", result.count ?? "");
+    console.log(
+      `[GTM] ${step} ${channel ?? ""} completed in ${durationMs}ms`,
+      result.message ?? "",
+      result.count ?? ""
+    );
   }
   return result;
 }

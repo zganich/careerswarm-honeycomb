@@ -32,11 +32,19 @@ const OUTPUT_SCHEMA = {
     benefits: { type: "string" },
     fullText: { type: "string" },
   },
-  required: ["summary", "responsibilities", "requirements", "benefits", "fullText"],
+  required: [
+    "summary",
+    "responsibilities",
+    "requirements",
+    "benefits",
+    "fullText",
+  ],
   additionalProperties: false,
 };
 
-export async function executeJDBuilder(input: JDBuilderInput): Promise<JDBuilderOutput> {
+export async function executeJDBuilder(
+  input: JDBuilderInput
+): Promise<JDBuilderOutput> {
   const mustHaves = (input.mustHaves ?? []).join(", ") || "Not specified";
   const niceToHaves = (input.niceToHaves ?? []).join(", ") || "None";
   const level = input.level ?? "Not specified";

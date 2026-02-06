@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { X, Sparkles, Target, Briefcase, FileText, Rocket } from "lucide-react";
 import { Button } from "./ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
 import { useLocation } from "wouter";
 
 interface WelcomeWizardProps {
@@ -14,14 +20,16 @@ const steps = [
     title: "Welcome to Careerswarm!",
     description: "Your AI-powered career evidence platform",
     icon: Sparkles,
-    content: "Transform your achievements into powerful resumes that stand out. Let's get you started in 3 simple steps.",
+    content:
+      "Transform your achievements into powerful resumes that stand out. Let's get you started in 3 simple steps.",
   },
   {
     id: 2,
     title: "Build Your Master Profile",
     description: "Document your career achievements",
     icon: Target,
-    content: "Start by adding your achievements. Each one becomes evidence you can use across multiple resumes. Think: projects completed, metrics improved, problems solved.",
+    content:
+      "Start by adding your achievements. Each one becomes evidence you can use across multiple resumes. Think: projects completed, metrics improved, problems solved.",
     action: { label: "Add Your First Achievement", route: "/dashboard" },
   },
   {
@@ -29,7 +37,8 @@ const steps = [
     title: "Find Your Perfect Job",
     description: "AI-powered job search and matching",
     icon: Briefcase,
-    content: "Search jobs across LinkedIn, Indeed, and Glassdoor. Our AI automatically scores how well you match each role and identifies skill gaps.",
+    content:
+      "Search jobs across LinkedIn, Indeed, and Glassdoor. Our AI automatically scores how well you match each role and identifies skill gaps.",
     action: { label: "Search Jobs Now", route: "/jobs" },
   },
   {
@@ -37,7 +46,8 @@ const steps = [
     title: "Generate Tailored Resumes",
     description: "One-click resume customization",
     icon: FileText,
-    content: "Select a job, and we'll automatically generate a tailored resume using your best-matching achievements. Choose from 3 ATS-optimized templates.",
+    content:
+      "Select a job, and we'll automatically generate a tailored resume using your best-matching achievements. Choose from 3 ATS-optimized templates.",
     action: { label: "View Templates", route: "/resume-templates" },
   },
   {
@@ -45,7 +55,8 @@ const steps = [
     title: "You're All Set!",
     description: "Start your job search journey",
     icon: Rocket,
-    content: "You now have everything you need to land your dream job. Track applications, prepare for interviews, and let AI handle the heavy lifting.",
+    content:
+      "You now have everything you need to land your dream job. Track applications, prepare for interviews, and let AI handle the heavy lifting.",
     action: { label: "Go to Dashboard", route: "/dashboard" },
   },
 ];
@@ -92,7 +103,9 @@ export function WelcomeWizard({ onComplete }: WelcomeWizardProps) {
             <Icon className="h-8 w-8 text-primary" />
           </div>
           <CardTitle className="text-2xl">{step.title}</CardTitle>
-          <CardDescription className="text-base">{step.description}</CardDescription>
+          <CardDescription className="text-base">
+            {step.description}
+          </CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-6">
@@ -109,8 +122,8 @@ export function WelcomeWizard({ onComplete }: WelcomeWizardProps) {
                   index === currentStep
                     ? "w-8 bg-primary"
                     : index < currentStep
-                    ? "w-2 bg-primary/50"
-                    : "w-2 bg-muted"
+                      ? "w-2 bg-primary/50"
+                      : "w-2 bg-muted"
                 }`}
               />
             ))}

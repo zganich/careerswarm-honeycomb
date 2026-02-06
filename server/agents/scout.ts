@@ -1,11 +1,11 @@
 /**
  * Scout Agent - Job Discovery & Market Research
- * 
+ *
  * Discovers job opportunities from multiple sources:
  * - LinkedIn Jobs
  * - Job boards (Greenhouse, Lever, Wellfound)
  * - Recently-funded companies (Crunchbase)
- * 
+ *
  * Returns ranked list of opportunities matching user preferences
  */
 
@@ -64,7 +64,13 @@ export class ScoutAgent {
       linkedinQuery: `(${roleQuery}) AND (${industryQuery})`,
       locationFilter: params.locationType || "remote",
       companyStages: params.companyStages,
-      keywords: ["partnerships", "alliances", "channel", "strategic", "business development"],
+      keywords: [
+        "partnerships",
+        "alliances",
+        "channel",
+        "strategic",
+        "business development",
+      ],
     };
   }
 
@@ -74,7 +80,7 @@ export class ScoutAgent {
   ): Promise<JobOpportunity[]> {
     // Use LLM to generate realistic job opportunities based on search criteria
     // In production, this would query real job APIs
-    
+
     const prompt = `You are a job search agent. Generate a list of realistic job opportunities matching these criteria:
 
 Target Roles: ${params.roleTitles.join(", ")}
@@ -110,7 +116,8 @@ Return as JSON array with this structure:
         messages: [
           {
             role: "system",
-            content: "You are a job search assistant that generates realistic job opportunities.",
+            content:
+              "You are a job search assistant that generates realistic job opportunities.",
           },
           {
             role: "user",
@@ -134,7 +141,10 @@ Return as JSON array with this structure:
                       roleTitle: { type: "string" },
                       jobUrl: { type: "string" },
                       location: { type: "string" },
-                      locationType: { type: "string", enum: ["remote", "hybrid", "onsite"] },
+                      locationType: {
+                        type: "string",
+                        enum: ["remote", "hybrid", "onsite"],
+                      },
                       compensationRange: {
                         type: "object",
                         properties: {
@@ -189,21 +199,27 @@ Return as JSON array with this structure:
       let score = 0;
 
       // Role title match (exact or partial)
-      if (params.roleTitles.some(title => 
-        opp.roleTitle.toLowerCase().includes(title.toLowerCase())
-      )) {
+      if (
+        params.roleTitles.some(title =>
+          opp.roleTitle.toLowerCase().includes(title.toLowerCase())
+        )
+      ) {
         score += 30;
       }
 
       // Location match
       if (params.locationType === "remote" && opp.locationType === "remote") {
         score += 25;
-      } else if (params.locationType === "hybrid" && 
-                 (opp.locationType === "hybrid" || opp.locationType === "remote")) {
+      } else if (
+        params.locationType === "hybrid" &&
+        (opp.locationType === "hybrid" || opp.locationType === "remote")
+      ) {
         score += 20;
-      } else if (params.allowedCities?.some(city => 
-        opp.location.toLowerCase().includes(city.toLowerCase())
-      )) {
+      } else if (
+        params.allowedCities?.some(city =>
+          opp.location.toLowerCase().includes(city.toLowerCase())
+        )
+      ) {
         score += 25;
       }
 

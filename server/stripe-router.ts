@@ -17,15 +17,19 @@ export const stripeRouter = router({
    * Create a checkout session for Pro subscription
    */
   createCheckoutSession: protectedProcedure
-    .input(z.object({
-      priceId: z.string().optional(),
-    }))
+    .input(
+      z.object({
+        priceId: z.string().optional(),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
-      if (!stripe) throw new Error("Stripe is not configured (STRIPE_SECRET_KEY missing)");
+      if (!stripe)
+        throw new Error("Stripe is not configured (STRIPE_SECRET_KEY missing)");
       const origin = ctx.req.headers.origin || "http://localhost:3000";
-      
+
       // Use default Pro price if not provided
-      const priceId = input.priceId || process.env.STRIPE_PRO_PRICE_ID || "price_pro_monthly";
+      const priceId =
+        input.priceId || process.env.STRIPE_PRO_PRICE_ID || "price_pro_monthly";
 
       const session = await stripe.checkout.sessions.create({
         mode: "subscription",
@@ -77,7 +81,9 @@ export const stripeRouter = router({
     let stripeSubscription = null;
     if (stripe && user.stripeSubscriptionId) {
       try {
-        stripeSubscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
+        stripeSubscription = await stripe.subscriptions.retrieve(
+          user.stripeSubscriptionId
+        );
       } catch (error) {
         console.error("[Stripe] Failed to retrieve subscription:", error);
       }
@@ -96,7 +102,8 @@ export const stripeRouter = router({
    * Create a billing portal session for managing subscription
    */
   createBillingPortalSession: protectedProcedure.mutation(async ({ ctx }) => {
-    if (!stripe) throw new Error("Stripe is not configured (STRIPE_SECRET_KEY missing)");
+    if (!stripe)
+      throw new Error("Stripe is not configured (STRIPE_SECRET_KEY missing)");
     const database = await db.getDb();
     if (!database) throw new Error("Database not available");
 
@@ -126,7 +133,8 @@ export const stripeRouter = router({
    * Cancel subscription
    */
   cancelSubscription: protectedProcedure.mutation(async ({ ctx }) => {
-    if (!stripe) throw new Error("Stripe is not configured (STRIPE_SECRET_KEY missing)");
+    if (!stripe)
+      throw new Error("Stripe is not configured (STRIPE_SECRET_KEY missing)");
     const database = await db.getDb();
     if (!database) throw new Error("Database not available");
 
@@ -141,9 +149,12 @@ export const stripeRouter = router({
     }
 
     // Cancel at period end (don't immediately revoke access)
-    const subscription = await stripe.subscriptions.update(user.stripeSubscriptionId, {
-      cancel_at_period_end: true,
-    });
+    const subscription = await stripe.subscriptions.update(
+      user.stripeSubscriptionId,
+      {
+        cancel_at_period_end: true,
+      }
+    );
 
     return {
       success: true,

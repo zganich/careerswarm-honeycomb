@@ -1,24 +1,60 @@
 import { eq, and, desc, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { 
-  InsertUser, users, achievements, skills,
-  workExperiences, userProfiles, superpowers,
-  uploadedResumes, targetPreferences,
-  opportunities, applications, agentExecutionLogs, notifications,
-  certifications, education, awards, savedOpportunities, applicationNotes,
-  agentMetrics, languages, volunteerExperiences, projects, publications, securityClearances,
-  type Achievement, type Skill, type WorkExperience, type UserProfile,
-  type Superpower, type UploadedResume, type TargetPreferences,
-  type Opportunity, type Application, type AgentExecutionLog, type Notification,
-  type Certification, type Education, type Award, type SavedOpportunity, type ApplicationNote,
-  type AgentMetric, type InsertAgentMetric,
-  type Language, type InsertLanguage,
-  type VolunteerExperience, type InsertVolunteerExperience,
-  type Project, type InsertProject,
-  type Publication, type InsertPublication,
-  type SecurityClearance, type InsertSecurityClearance
+import {
+  InsertUser,
+  users,
+  achievements,
+  skills,
+  workExperiences,
+  userProfiles,
+  superpowers,
+  uploadedResumes,
+  targetPreferences,
+  opportunities,
+  applications,
+  agentExecutionLogs,
+  notifications,
+  certifications,
+  education,
+  awards,
+  savedOpportunities,
+  applicationNotes,
+  agentMetrics,
+  languages,
+  volunteerExperiences,
+  projects,
+  publications,
+  securityClearances,
+  type Achievement,
+  type Skill,
+  type WorkExperience,
+  type UserProfile,
+  type Superpower,
+  type UploadedResume,
+  type TargetPreferences,
+  type Opportunity,
+  type Application,
+  type AgentExecutionLog,
+  type Notification,
+  type Certification,
+  type Education,
+  type Award,
+  type SavedOpportunity,
+  type ApplicationNote,
+  type AgentMetric,
+  type InsertAgentMetric,
+  type Language,
+  type InsertLanguage,
+  type VolunteerExperience,
+  type InsertVolunteerExperience,
+  type Project,
+  type InsertProject,
+  type Publication,
+  type InsertPublication,
+  type SecurityClearance,
+  type InsertSecurityClearance,
 } from "../drizzle/schema";
-import { ENV } from './_core/env';
+import { ENV } from "./_core/env";
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
@@ -54,20 +90,32 @@ export async function upsertUser(user: InsertUser): Promise<void> {
     }
   });
 
-  await db.insert(users).values(values).onDuplicateKeyUpdate({ set: updateSet });
+  await db
+    .insert(users)
+    .values(values)
+    .onDuplicateKeyUpdate({ set: updateSet });
 }
 
 export async function getUserByOpenId(openId: string) {
   const db = await getDb();
   if (!db) return null;
-  const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
+  const result = await db
+    .select()
+    .from(users)
+    .where(eq(users.openId, openId))
+    .limit(1);
   return result[0] || null;
 }
 
-export async function updateUserOnboardingStep(userId: number, step: number, completed: boolean = false) {
+export async function updateUserOnboardingStep(
+  userId: number,
+  step: number,
+  completed: boolean = false
+) {
   const db = await getDb();
   if (!db) return;
-  await db.update(users)
+  await db
+    .update(users)
     .set({ onboardingStep: step, onboardingCompleted: completed })
     .where(eq(users.id, userId));
 }
@@ -79,17 +127,27 @@ export async function updateUserOnboardingStep(userId: number, step: number, com
 export async function getUserProfile(userId: number) {
   const db = await getDb();
   if (!db) return null;
-  const result = await db.select().from(userProfiles).where(eq(userProfiles.userId, userId)).limit(1);
+  const result = await db
+    .select()
+    .from(userProfiles)
+    .where(eq(userProfiles.userId, userId))
+    .limit(1);
   return result[0] || null;
 }
 
-export async function upsertUserProfile(userId: number, data: Partial<UserProfile>) {
+export async function upsertUserProfile(
+  userId: number,
+  data: Partial<UserProfile>
+) {
   const db = await getDb();
   if (!db) return;
-  
+
   const existing = await getUserProfile(userId);
   if (existing) {
-    await db.update(userProfiles).set(data).where(eq(userProfiles.userId, userId));
+    await db
+      .update(userProfiles)
+      .set(data)
+      .where(eq(userProfiles.userId, userId));
   } else {
     await db.insert(userProfiles).values({ userId, ...data } as any);
   }
@@ -102,7 +160,9 @@ export async function upsertUserProfile(userId: number, data: Partial<UserProfil
 export async function getWorkExperiences(userId: number) {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(workExperiences)
+  return db
+    .select()
+    .from(workExperiences)
     .where(eq(workExperiences.userId, userId))
     .orderBy(desc(workExperiences.startDate));
 }
@@ -114,10 +174,15 @@ export async function createWorkExperience(data: Partial<WorkExperience>) {
   return result.insertId;
 }
 
-export async function updateWorkExperience(id: number, userId: number, data: Partial<WorkExperience>) {
+export async function updateWorkExperience(
+  id: number,
+  userId: number,
+  data: Partial<WorkExperience>
+) {
   const db = await getDb();
   if (!db) return;
-  await db.update(workExperiences)
+  await db
+    .update(workExperiences)
     .set(data)
     .where(and(eq(workExperiences.id, id), eq(workExperiences.userId, userId)));
 }
@@ -125,7 +190,8 @@ export async function updateWorkExperience(id: number, userId: number, data: Par
 export async function deleteWorkExperience(id: number, userId: number) {
   const db = await getDb();
   if (!db) return;
-  await db.delete(workExperiences)
+  await db
+    .delete(workExperiences)
     .where(and(eq(workExperiences.id, id), eq(workExperiences.userId, userId)));
 }
 
@@ -136,15 +202,21 @@ export async function deleteWorkExperience(id: number, userId: number) {
 export async function getAchievements(userId: number) {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(achievements)
+  return db
+    .select()
+    .from(achievements)
     .where(eq(achievements.userId, userId))
     .orderBy(desc(achievements.importanceScore));
 }
 
-export async function getAchievementsByWorkExperience(workExperienceId: number) {
+export async function getAchievementsByWorkExperience(
+  workExperienceId: number
+) {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(achievements)
+  return db
+    .select()
+    .from(achievements)
     .where(eq(achievements.workExperienceId, workExperienceId))
     .orderBy(desc(achievements.importanceScore));
 }
@@ -156,10 +228,15 @@ export async function createAchievement(data: Partial<Achievement>) {
   return result.insertId;
 }
 
-export async function updateAchievement(id: number, userId: number, data: Partial<Achievement>) {
+export async function updateAchievement(
+  id: number,
+  userId: number,
+  data: Partial<Achievement>
+) {
   const db = await getDb();
   if (!db) return;
-  await db.update(achievements)
+  await db
+    .update(achievements)
     .set(data)
     .where(and(eq(achievements.id, id), eq(achievements.userId, userId)));
 }
@@ -167,17 +244,19 @@ export async function updateAchievement(id: number, userId: number, data: Partia
 export async function deleteAchievement(id: number, userId: number) {
   const db = await getDb();
   if (!db) return;
-  await db.delete(achievements)
+  await db
+    .delete(achievements)
     .where(and(eq(achievements.id, id), eq(achievements.userId, userId)));
 }
 
 export async function incrementAchievementUsage(achievementId: number) {
   const db = await getDb();
   if (!db) return;
-  await db.update(achievements)
-    .set({ 
+  await db
+    .update(achievements)
+    .set({
       timesUsed: sql`${achievements.timesUsed} + 1`,
-      lastUsedAt: new Date()
+      lastUsedAt: new Date(),
     })
     .where(eq(achievements.id, achievementId));
 }
@@ -202,7 +281,8 @@ export async function createSkill(data: Partial<Skill>) {
 export async function deleteSkill(id: number, userId: number) {
   const db = await getDb();
   if (!db) return;
-  await db.delete(skills)
+  await db
+    .delete(skills)
     .where(and(eq(skills.id, id), eq(skills.userId, userId)));
 }
 
@@ -213,7 +293,9 @@ export async function deleteSkill(id: number, userId: number) {
 export async function getUploadedResumes(userId: number) {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(uploadedResumes)
+  return db
+    .select()
+    .from(uploadedResumes)
     .where(eq(uploadedResumes.userId, userId))
     .orderBy(desc(uploadedResumes.uploadedAt));
 }
@@ -226,19 +308,23 @@ export async function createUploadedResume(data: Partial<UploadedResume>) {
 }
 
 export async function updateResumeProcessingStatus(
-  id: number, 
-  status: 'pending' | 'processing' | 'completed' | 'failed',
+  id: number,
+  status: "pending" | "processing" | "completed" | "failed",
   extractedText?: string,
   error?: string
 ) {
   const db = await getDb();
   if (!db) return;
-  await db.update(uploadedResumes).set({ 
-    processingStatus: status,
-    extractedText,
-    processingError: error,
-    processedAt: status === 'completed' || status === 'failed' ? new Date() : undefined
-  }).where(eq(uploadedResumes.id, id));
+  await db
+    .update(uploadedResumes)
+    .set({
+      processingStatus: status,
+      extractedText,
+      processingError: error,
+      processedAt:
+        status === "completed" || status === "failed" ? new Date() : undefined,
+    })
+    .where(eq(uploadedResumes.id, id));
 }
 
 // ================================================================
@@ -248,18 +334,27 @@ export async function updateResumeProcessingStatus(
 export async function getSuperpowers(userId: number) {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(superpowers)
+  return db
+    .select()
+    .from(superpowers)
     .where(eq(superpowers.userId, userId))
     .orderBy(superpowers.rank);
 }
 
-export async function upsertSuperpowers(userId: number, superpowersData: Array<{ title: string; evidenceAchievementIds: number[]; rank: number }>) {
+export async function upsertSuperpowers(
+  userId: number,
+  superpowersData: Array<{
+    title: string;
+    evidenceAchievementIds: number[];
+    rank: number;
+  }>
+) {
   const db = await getDb();
   if (!db) return;
-  
+
   // Delete existing superpowers
   await db.delete(superpowers).where(eq(superpowers.userId, userId));
-  
+
   // Insert new superpowers
   for (const sp of superpowersData) {
     await db.insert(superpowers).values({ userId, ...sp } as any);
@@ -273,19 +368,27 @@ export async function upsertSuperpowers(userId: number, superpowersData: Array<{
 export async function getTargetPreferences(userId: number) {
   const db = await getDb();
   if (!db) return null;
-  const result = await db.select().from(targetPreferences)
+  const result = await db
+    .select()
+    .from(targetPreferences)
     .where(eq(targetPreferences.userId, userId))
     .limit(1);
   return result[0] || null;
 }
 
-export async function upsertTargetPreferences(userId: number, data: Partial<TargetPreferences>) {
+export async function upsertTargetPreferences(
+  userId: number,
+  data: Partial<TargetPreferences>
+) {
   const db = await getDb();
   if (!db) return;
-  
+
   const existing = await getTargetPreferences(userId);
   if (existing) {
-    await db.update(targetPreferences).set(data).where(eq(targetPreferences.userId, userId));
+    await db
+      .update(targetPreferences)
+      .set(data)
+      .where(eq(targetPreferences.userId, userId));
   } else {
     await db.insert(targetPreferences).values({ userId, ...data } as any);
   }
@@ -295,23 +398,30 @@ export async function upsertTargetPreferences(userId: number, data: Partial<Targ
 // OPPORTUNITY OPERATIONS
 // ================================================================
 
-export async function getOpportunities(filters?: { isActive?: boolean; companyStage?: string }) {
+export async function getOpportunities(filters?: {
+  isActive?: boolean;
+  companyStage?: string;
+}) {
   const db = await getDb();
   if (!db) return [];
-  
+
   let query = db.select().from(opportunities);
-  
+
   if (filters?.isActive !== undefined) {
     query = query.where(eq(opportunities.isActive, filters.isActive)) as any;
   }
-  
+
   return query.orderBy(desc(opportunities.discoveredAt));
 }
 
 export async function getOpportunityById(id: number) {
   const db = await getDb();
   if (!db) return null;
-  const result = await db.select().from(opportunities).where(eq(opportunities.id, id)).limit(1);
+  const result = await db
+    .select()
+    .from(opportunities)
+    .where(eq(opportunities.id, id))
+    .limit(1);
   return result[0] || null;
 }
 
@@ -326,16 +436,21 @@ export async function createOpportunity(data: Partial<Opportunity>) {
 // APPLICATION OPERATIONS
 // ================================================================
 
-export async function getApplications(userId: number, filters?: { status?: string }) {
+export async function getApplications(
+  userId: number,
+  filters?: { status?: string }
+) {
   const db = await getDb();
   if (!db) return [];
-  
+
   let conditions = [eq(applications.userId, userId)];
   if (filters?.status) {
     conditions.push(eq(applications.status, filters.status as any));
   }
-  
-  return db.select().from(applications)
+
+  return db
+    .select()
+    .from(applications)
     .where(and(...conditions))
     .orderBy(desc(applications.createdAt));
 }
@@ -343,7 +458,9 @@ export async function getApplications(userId: number, filters?: { status?: strin
 export async function getApplicationById(id: number, userId: number) {
   const db = await getDb();
   if (!db) return null;
-  const result = await db.select().from(applications)
+  const result = await db
+    .select()
+    .from(applications)
     .where(and(eq(applications.id, id), eq(applications.userId, userId)))
     .limit(1);
   return result[0] || null;
@@ -356,10 +473,15 @@ export async function createApplication(data: Partial<Application>) {
   return result.insertId;
 }
 
-export async function updateApplication(id: number, userId: number, data: Partial<Application>) {
+export async function updateApplication(
+  id: number,
+  userId: number,
+  data: Partial<Application>
+) {
   const db = await getDb();
   if (!db) return;
-  await db.update(applications)
+  await db
+    .update(applications)
     .set(data)
     .where(and(eq(applications.id, id), eq(applications.userId, userId)));
 }
@@ -375,16 +497,21 @@ export async function logAgentExecution(data: Partial<AgentExecutionLog>) {
   return result.insertId;
 }
 
-export async function getAgentExecutionLogs(userId: number, agentName?: string) {
+export async function getAgentExecutionLogs(
+  userId: number,
+  agentName?: string
+) {
   const db = await getDb();
   if (!db) return [];
-  
+
   let conditions = [eq(agentExecutionLogs.userId, userId)];
   if (agentName) {
     conditions.push(eq(agentExecutionLogs.agentName, agentName));
   }
-  
-  return db.select().from(agentExecutionLogs)
+
+  return db
+    .select()
+    .from(agentExecutionLogs)
     .where(and(...conditions))
     .orderBy(desc(agentExecutionLogs.executedAt))
     .limit(100);
@@ -394,16 +521,21 @@ export async function getAgentExecutionLogs(userId: number, agentName?: string) 
 // NOTIFICATION OPERATIONS
 // ================================================================
 
-export async function getNotifications(userId: number, unreadOnly: boolean = false) {
+export async function getNotifications(
+  userId: number,
+  unreadOnly: boolean = false
+) {
   const db = await getDb();
   if (!db) return [];
-  
+
   let conditions = [eq(notifications.userId, userId)];
   if (unreadOnly) {
     conditions.push(eq(notifications.isRead, false));
   }
-  
-  return db.select().from(notifications)
+
+  return db
+    .select()
+    .from(notifications)
     .where(and(...conditions))
     .orderBy(desc(notifications.createdAt))
     .limit(50);
@@ -419,7 +551,8 @@ export async function createNotification(data: Partial<Notification>) {
 export async function markNotificationAsRead(id: number, userId: number) {
   const db = await getDb();
   if (!db) return;
-  await db.update(notifications)
+  await db
+    .update(notifications)
     .set({ isRead: true, readAt: new Date() })
     .where(and(eq(notifications.id, id), eq(notifications.userId, userId)));
 }
@@ -438,7 +571,9 @@ export async function createCertification(data: Partial<Certification>) {
 export async function getCertifications(userId: number) {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(certifications)
+  return db
+    .select()
+    .from(certifications)
     .where(eq(certifications.userId, userId))
     .orderBy(desc(certifications.issueYear));
 }
@@ -457,7 +592,9 @@ export async function createEducation(data: Partial<Education>) {
 export async function getEducation(userId: number) {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(education)
+  return db
+    .select()
+    .from(education)
     .where(eq(education.userId, userId))
     .orderBy(desc(education.graduationYear));
 }
@@ -476,7 +613,9 @@ export async function createAward(data: Partial<Award>) {
 export async function getAwards(userId: number) {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(awards)
+  return db
+    .select()
+    .from(awards)
     .where(eq(awards.userId, userId))
     .orderBy(desc(awards.year));
 }
@@ -484,24 +623,34 @@ export async function getAwards(userId: number) {
 // Note: Superpower operations are already defined earlier in this file
 // Note: Update/Delete operations for work experiences, achievements, and skills are already defined earlier in this file
 
-
 // ================================================================
 // SAVED OPPORTUNITIES OPERATIONS
 // ================================================================
 
-export async function saveOpportunity(userId: number, opportunityId: number, notes?: string) {
+export async function saveOpportunity(
+  userId: number,
+  opportunityId: number,
+  notes?: string
+) {
   const db = await getDb();
   if (!db) return null;
-  
+
   // Check if already saved
-  const existing = await db.select().from(savedOpportunities)
-    .where(and(eq(savedOpportunities.userId, userId), eq(savedOpportunities.opportunityId, opportunityId)))
+  const existing = await db
+    .select()
+    .from(savedOpportunities)
+    .where(
+      and(
+        eq(savedOpportunities.userId, userId),
+        eq(savedOpportunities.opportunityId, opportunityId)
+      )
+    )
     .limit(1);
-  
+
   if (existing.length > 0) {
     return existing[0];
   }
-  
+
   const result: any = await db.insert(savedOpportunities).values({
     userId,
     opportunityId,
@@ -513,23 +662,41 @@ export async function saveOpportunity(userId: number, opportunityId: number, not
 export async function unsaveOpportunity(userId: number, opportunityId: number) {
   const db = await getDb();
   if (!db) return;
-  await db.delete(savedOpportunities)
-    .where(and(eq(savedOpportunities.userId, userId), eq(savedOpportunities.opportunityId, opportunityId)));
+  await db
+    .delete(savedOpportunities)
+    .where(
+      and(
+        eq(savedOpportunities.userId, userId),
+        eq(savedOpportunities.opportunityId, opportunityId)
+      )
+    );
 }
 
 export async function getSavedOpportunities(userId: number) {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(savedOpportunities)
+  return db
+    .select()
+    .from(savedOpportunities)
     .where(eq(savedOpportunities.userId, userId))
     .orderBy(desc(savedOpportunities.createdAt));
 }
 
-export async function isOpportunitySaved(userId: number, opportunityId: number): Promise<boolean> {
+export async function isOpportunitySaved(
+  userId: number,
+  opportunityId: number
+): Promise<boolean> {
   const db = await getDb();
   if (!db) return false;
-  const result = await db.select().from(savedOpportunities)
-    .where(and(eq(savedOpportunities.userId, userId), eq(savedOpportunities.opportunityId, opportunityId)))
+  const result = await db
+    .select()
+    .from(savedOpportunities)
+    .where(
+      and(
+        eq(savedOpportunities.userId, userId),
+        eq(savedOpportunities.opportunityId, opportunityId)
+      )
+    )
     .limit(1);
   return result.length > 0;
 }
@@ -541,25 +708,35 @@ export async function isOpportunitySaved(userId: number, opportunityId: number):
 export async function getApplicationNotes(applicationId: number) {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(applicationNotes)
+  return db
+    .select()
+    .from(applicationNotes)
     .where(eq(applicationNotes.applicationId, applicationId))
     .orderBy(desc(applicationNotes.createdAt));
 }
 
-export async function createApplicationNote(applicationId: number, userId: number, noteText: string) {
+export async function createApplicationNote(
+  applicationId: number,
+  userId: number,
+  noteText: string
+) {
   const db = await getDb();
   if (!db) return null;
-  const result: any = await db.insert(applicationNotes).values({ applicationId, userId, noteText });
+  const result: any = await db
+    .insert(applicationNotes)
+    .values({ applicationId, userId, noteText });
   return result.insertId;
 }
 
 export async function deleteApplicationNote(noteId: number, userId: number) {
   const db = await getDb();
   if (!db) return;
-  await db.delete(applicationNotes)
-    .where(and(eq(applicationNotes.id, noteId), eq(applicationNotes.userId, userId)));
+  await db
+    .delete(applicationNotes)
+    .where(
+      and(eq(applicationNotes.id, noteId), eq(applicationNotes.userId, userId))
+    );
 }
-
 
 // ================================================================
 // SUPERPOWER OPERATIONS
@@ -576,7 +753,8 @@ export async function updateSuperpower(
 ) {
   const db = await getDb();
   if (!db) return null;
-  await db.update(superpowers)
+  await db
+    .update(superpowers)
     .set({
       title: data.title,
       description: data.description,
@@ -607,7 +785,6 @@ export async function createSuperpower(data: {
   return result.insertId;
 }
 
-
 // ================================================================
 // TARGET PREFERENCES OPERATIONS
 // ================================================================
@@ -626,10 +803,14 @@ export async function updateTargetPreferences(
 ) {
   const db = await getDb();
   if (!db) return null;
-  
+
   // Get existing preferences
-  const existing = await db.select().from(targetPreferences).where(eq(targetPreferences.userId, userId)).limit(1);
-  
+  const existing = await db
+    .select()
+    .from(targetPreferences)
+    .where(eq(targetPreferences.userId, userId))
+    .limit(1);
+
   if (existing.length === 0) {
     // Create new preferences if they don't exist
     const insertData: any = {
@@ -645,26 +826,28 @@ export async function updateTargetPreferences(
     await db.insert(targetPreferences).values(insertData);
   } else {
     // Update existing preferences
-    await db.update(targetPreferences)
+    await db
+      .update(targetPreferences)
       .set({
         ...data,
         updatedAt: new Date(),
       })
       .where(eq(targetPreferences.userId, userId));
   }
-  
+
   return userId;
 }
-
 
 // ================================================================
 // AGENT METRICS OPERATIONS (Production Monitoring)
 // ================================================================
 
-export async function insertAgentMetric(metric: InsertAgentMetric): Promise<void> {
+export async function insertAgentMetric(
+  metric: InsertAgentMetric
+): Promise<void> {
   const db = await getDb();
   if (!db) return;
-  
+
   await db.insert(agentMetrics).values(metric);
 }
 
@@ -676,9 +859,9 @@ export async function getAgentMetrics(options?: {
 }): Promise<AgentMetric[]> {
   const db = await getDb();
   if (!db) return [];
-  
+
   let query = db.select().from(agentMetrics);
-  
+
   // Apply filters if provided
   const conditions = [];
   if (options?.agentType) {
@@ -690,26 +873,26 @@ export async function getAgentMetrics(options?: {
   if (options?.endDate) {
     conditions.push(sql`${agentMetrics.createdAt} <= ${options.endDate}`);
   }
-  
+
   if (conditions.length > 0) {
     query = query.where(and(...conditions)) as any;
   }
-  
+
   query = query.orderBy(desc(agentMetrics.createdAt)) as any;
-  
+
   if (options?.limit) {
     query = query.limit(options.limit) as any;
   }
-  
+
   return await query;
 }
 
 export async function getAgentPerformanceStats(agentType?: string) {
   const db = await getDb();
   if (!db) return null;
-  
+
   const last24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
-  
+
   let query = sql`
     SELECT 
       agentType,
@@ -722,13 +905,13 @@ export async function getAgentPerformanceStats(agentType?: string) {
     FROM agentMetrics
     WHERE createdAt >= ${last24h}
   `;
-  
+
   if (agentType) {
     query = sql`${query} AND agentType = ${agentType}`;
   }
-  
+
   query = sql`${query} GROUP BY agentType`;
-  
+
   const result = await db.execute(query);
   return result;
 }
@@ -741,7 +924,7 @@ export async function getAgentPerformanceStats(agentType?: string) {
 export async function getUserLanguages(userId: number) {
   const db = await getDb();
   if (!db) return [];
-  
+
   return await db
     .select()
     .from(languages)
@@ -752,15 +935,19 @@ export async function getUserLanguages(userId: number) {
 export async function insertLanguage(data: InsertLanguage) {
   const db = await getDb();
   if (!db) return null;
-  
+
   const result = await db.insert(languages).values(data);
   return result;
 }
 
-export async function updateLanguage(id: number, userId: number, data: Partial<InsertLanguage>) {
+export async function updateLanguage(
+  id: number,
+  userId: number,
+  data: Partial<InsertLanguage>
+) {
   const db = await getDb();
   if (!db) return null;
-  
+
   return await db
     .update(languages)
     .set(data)
@@ -770,7 +957,7 @@ export async function updateLanguage(id: number, userId: number, data: Partial<I
 export async function deleteLanguage(id: number, userId: number) {
   const db = await getDb();
   if (!db) return null;
-  
+
   return await db
     .delete(languages)
     .where(and(eq(languages.id, id), eq(languages.userId, userId)));
@@ -780,7 +967,7 @@ export async function deleteLanguage(id: number, userId: number) {
 export async function getUserVolunteerExperiences(userId: number) {
   const db = await getDb();
   if (!db) return [];
-  
+
   return await db
     .select()
     .from(volunteerExperiences)
@@ -788,38 +975,54 @@ export async function getUserVolunteerExperiences(userId: number) {
     .orderBy(desc(volunteerExperiences.createdAt));
 }
 
-export async function insertVolunteerExperience(data: InsertVolunteerExperience) {
+export async function insertVolunteerExperience(
+  data: InsertVolunteerExperience
+) {
   const db = await getDb();
   if (!db) return null;
-  
+
   const result = await db.insert(volunteerExperiences).values(data);
   return result;
 }
 
-export async function updateVolunteerExperience(id: number, userId: number, data: Partial<InsertVolunteerExperience>) {
+export async function updateVolunteerExperience(
+  id: number,
+  userId: number,
+  data: Partial<InsertVolunteerExperience>
+) {
   const db = await getDb();
   if (!db) return null;
-  
+
   return await db
     .update(volunteerExperiences)
     .set(data)
-    .where(and(eq(volunteerExperiences.id, id), eq(volunteerExperiences.userId, userId)));
+    .where(
+      and(
+        eq(volunteerExperiences.id, id),
+        eq(volunteerExperiences.userId, userId)
+      )
+    );
 }
 
 export async function deleteVolunteerExperience(id: number, userId: number) {
   const db = await getDb();
   if (!db) return null;
-  
+
   return await db
     .delete(volunteerExperiences)
-    .where(and(eq(volunteerExperiences.id, id), eq(volunteerExperiences.userId, userId)));
+    .where(
+      and(
+        eq(volunteerExperiences.id, id),
+        eq(volunteerExperiences.userId, userId)
+      )
+    );
 }
 
 // Projects
 export async function getUserProjects(userId: number) {
   const db = await getDb();
   if (!db) return [];
-  
+
   return await db
     .select()
     .from(projects)
@@ -830,15 +1033,19 @@ export async function getUserProjects(userId: number) {
 export async function insertProject(data: InsertProject) {
   const db = await getDb();
   if (!db) return null;
-  
+
   const result = await db.insert(projects).values(data);
   return result;
 }
 
-export async function updateProject(id: number, userId: number, data: Partial<InsertProject>) {
+export async function updateProject(
+  id: number,
+  userId: number,
+  data: Partial<InsertProject>
+) {
   const db = await getDb();
   if (!db) return null;
-  
+
   return await db
     .update(projects)
     .set(data)
@@ -848,7 +1055,7 @@ export async function updateProject(id: number, userId: number, data: Partial<In
 export async function deleteProject(id: number, userId: number) {
   const db = await getDb();
   if (!db) return null;
-  
+
   return await db
     .delete(projects)
     .where(and(eq(projects.id, id), eq(projects.userId, userId)));
@@ -858,7 +1065,7 @@ export async function deleteProject(id: number, userId: number) {
 export async function getUserPublications(userId: number) {
   const db = await getDb();
   if (!db) return [];
-  
+
   return await db
     .select()
     .from(publications)
@@ -869,15 +1076,19 @@ export async function getUserPublications(userId: number) {
 export async function insertPublication(data: InsertPublication) {
   const db = await getDb();
   if (!db) return null;
-  
+
   const result = await db.insert(publications).values(data);
   return result;
 }
 
-export async function updatePublication(id: number, userId: number, data: Partial<InsertPublication>) {
+export async function updatePublication(
+  id: number,
+  userId: number,
+  data: Partial<InsertPublication>
+) {
   const db = await getDb();
   if (!db) return null;
-  
+
   return await db
     .update(publications)
     .set(data)
@@ -887,7 +1098,7 @@ export async function updatePublication(id: number, userId: number, data: Partia
 export async function deletePublication(id: number, userId: number) {
   const db = await getDb();
   if (!db) return null;
-  
+
   return await db
     .delete(publications)
     .where(and(eq(publications.id, id), eq(publications.userId, userId)));
@@ -897,7 +1108,7 @@ export async function deletePublication(id: number, userId: number) {
 export async function getUserSecurityClearances(userId: number) {
   const db = await getDb();
   if (!db) return [];
-  
+
   return await db
     .select()
     .from(securityClearances)
@@ -908,28 +1119,36 @@ export async function getUserSecurityClearances(userId: number) {
 export async function insertSecurityClearance(data: InsertSecurityClearance) {
   const db = await getDb();
   if (!db) return null;
-  
+
   const result = await db.insert(securityClearances).values(data);
   return result;
 }
 
-export async function updateSecurityClearance(id: number, userId: number, data: Partial<InsertSecurityClearance>) {
+export async function updateSecurityClearance(
+  id: number,
+  userId: number,
+  data: Partial<InsertSecurityClearance>
+) {
   const db = await getDb();
   if (!db) return null;
-  
+
   return await db
     .update(securityClearances)
     .set(data)
-    .where(and(eq(securityClearances.id, id), eq(securityClearances.userId, userId)));
+    .where(
+      and(eq(securityClearances.id, id), eq(securityClearances.userId, userId))
+    );
 }
 
 export async function deleteSecurityClearance(id: number, userId: number) {
   const db = await getDb();
   if (!db) return null;
-  
+
   return await db
     .delete(securityClearances)
-    .where(and(eq(securityClearances.id, id), eq(securityClearances.userId, userId)));
+    .where(
+      and(eq(securityClearances.id, id), eq(securityClearances.userId, userId))
+    );
 }
 
 // ================================================================
@@ -946,14 +1165,18 @@ export const createSecurityClearance = insertSecurityClearance;
 // REFERRAL / FLYWHEEL OPERATIONS
 // ================================================================
 
-export async function setUserReferredBy(userId: number, referrerUserId: number) {
+export async function setUserReferredBy(
+  userId: number,
+  referrerUserId: number
+) {
   const db = await getDb();
   if (!db) return;
-  
+
   // Add referredBy column if user doesn't already have a referrer
   // Note: This requires a 'referredBy' column in users table, or we store in user profile
-  await db.update(users)
-    .set({ 
+  await db
+    .update(users)
+    .set({
       // Store referrer info - using a JSON field or adding a column
       // For now, store in profile metadata
     } as any)
@@ -963,7 +1186,7 @@ export async function setUserReferredBy(userId: number, referrerUserId: number) 
 export async function grantReferrer30DaysProIfReferred(userId: number) {
   const db = await getDb();
   if (!db) return;
-  
+
   // This function would:
   // 1. Check if user has a referrer
   // 2. If so, extend referrer's Pro subscription by 30 days
@@ -975,9 +1198,14 @@ export async function grantReferrer30DaysProIfReferred(userId: number) {
 // GTM / B2B OPERATIONS (Stubs for pipeline-processor)
 // ================================================================
 
-export async function getB2BLeads(limit: number = 100, outreachStatus?: string) {
+export async function getB2BLeads(
+  limit: number = 100,
+  outreachStatus?: string
+) {
   // Stub - B2B leads table not yet created
-  console.log(`[GTM] getB2BLeads called with limit=${limit}, status=${outreachStatus}`);
+  console.log(
+    `[GTM] getB2BLeads called with limit=${limit}, status=${outreachStatus}`
+  );
   return [] as any[];
 }
 
@@ -993,7 +1221,13 @@ export async function updateB2BLead(leadId: number, data: any) {
   return null;
 }
 
-export async function createOutreachDraft(leadId: number, channel: string, subject: string | null, body: string, campaignId?: string) {
+export async function createOutreachDraft(
+  leadId: number,
+  channel: string,
+  subject: string | null,
+  body: string,
+  campaignId?: string
+) {
   // Stub - Outreach drafts table not yet created
   console.log(`[GTM] createOutreachDraft called for lead ${leadId}`);
   return null;
@@ -1011,25 +1245,45 @@ export async function markOutreachDraftSent(draftId: number) {
   return null;
 }
 
-export async function createGtmRun(runType: string, input: any, output: any, status: string) {
+export async function createGtmRun(
+  runType: string,
+  input: any,
+  output: any,
+  status: string
+) {
   // Stub - GTM runs table not yet created
   console.log(`[GTM] createGtmRun called for type ${runType}`);
   return null;
 }
 
-export async function createGtmContent(data: { channel: string; contentType: string; title: string; body: string; metadata?: any }) {
+export async function createGtmContent(data: {
+  channel: string;
+  contentType: string;
+  title: string;
+  body: string;
+  metadata?: any;
+}) {
   // Stub - GTM content table not yet created
   console.log(`[GTM] createGtmContent called for channel ${data.channel}`);
   return null;
 }
 
-export async function createGtmJobRun(step: string, channel: string | null, jobId: string) {
+export async function createGtmJobRun(
+  step: string,
+  channel: string | null,
+  jobId: string
+) {
   // Stub - GTM job runs table not yet created
   console.log(`[GTM] createGtmJobRun called for step ${step}`);
   return null;
 }
 
-export async function finishGtmJobRun(runId: any, status: string, message?: string, metadata?: string) {
+export async function finishGtmJobRun(
+  runId: any,
+  status: string,
+  message?: string,
+  metadata?: string
+) {
   // Stub - GTM job runs table not yet created
   console.log(`[GTM] finishGtmJobRun called for run ${runId}`);
   return null;
@@ -1039,7 +1293,11 @@ export async function finishGtmJobRun(runId: any, status: string, message?: stri
 // JD BUILDER OPERATIONS (Stubs)
 // ================================================================
 
-export async function getJdUsageForPeriod(userId: number, periodStart: string, periodEnd: string) {
+export async function getJdUsageForPeriod(
+  userId: number,
+  periodStart: string,
+  periodEnd: string
+) {
   // Stub - JD usage tracking not yet implemented
   console.log(`[JD] getJdUsageForPeriod called for user ${userId}`);
   return 0;
@@ -1059,11 +1317,18 @@ export async function createJdDraft(data: {
   fullText: string;
 }) {
   // Stub - JD drafts table not yet created
-  console.log(`[JD] createJdDraft called for ${data.roleTitle} at ${data.companyName}`);
+  console.log(
+    `[JD] createJdDraft called for ${data.roleTitle} at ${data.companyName}`
+  );
   return 1; // Return fake ID
 }
 
-export async function incrementJdUsage(userId: number, companyId: number | null, periodStart: string, periodEnd: string) {
+export async function incrementJdUsage(
+  userId: number,
+  companyId: number | null,
+  periodStart: string,
+  periodEnd: string
+) {
   // Stub - JD usage tracking not yet implemented
   console.log(`[JD] incrementJdUsage called for user ${userId}`);
   return null;
@@ -1075,7 +1340,10 @@ export async function getJdDraftsByUserId(userId: number, limit: number = 50) {
   return [] as any[];
 }
 
-export async function getJdDraftById(id: number, userId: number): Promise<{ fullText?: string } | null> {
+export async function getJdDraftById(
+  id: number,
+  userId: number
+): Promise<{ fullText?: string } | null> {
   // Stub - JD drafts table not yet created
   console.log(`[JD] getJdDraftById called for id ${id}`);
   return null;

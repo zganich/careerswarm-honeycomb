@@ -14,32 +14,32 @@ const tasks: Task[] = [
     name: "Finding relevant jobs that match your profile",
     manual: "30-45 min",
     careerswarm: "Automatic",
-    agent: "Scout Agent"
+    agent: "Scout Agent",
   },
   {
     name: "Sifting through resume for relevant bullets",
     manual: "30-45 min",
     careerswarm: "Automatic",
-    agent: "Tailor Agent"
+    agent: "Tailor Agent",
   },
   {
     name: "Editing & formatting for ATS compliance",
     manual: "45-60 min",
     careerswarm: "Automatic",
-    agent: "Tailor Agent"
+    agent: "Tailor Agent",
   },
   {
     name: "Finding hiring managers & decision makers",
     manual: "30-45 min",
     careerswarm: "Automatic",
-    agent: "Hunter Agent"
+    agent: "Hunter Agent",
   },
   {
     name: "Writing cover letter & outreach cadence",
     manual: "60-90 min",
     careerswarm: "Automatic",
-    agent: "Scribe Agent"
-  }
+    agent: "Scribe Agent",
+  },
 ];
 
 interface TaskComparisonCardProps {
@@ -47,7 +47,10 @@ interface TaskComparisonCardProps {
   showCTA?: boolean;
 }
 
-export function TaskComparisonCard({ onGetStarted, showCTA = true }: TaskComparisonCardProps) {
+export function TaskComparisonCard({
+  onGetStarted,
+  showCTA = true,
+}: TaskComparisonCardProps) {
   return (
     <Card className="max-w-4xl mx-auto border-2 border-orange-200 shadow-lg">
       <CardHeader className="text-center pb-4">
@@ -58,7 +61,7 @@ export function TaskComparisonCard({ onGetStarted, showCTA = true }: TaskCompari
           See exactly how much time you save on every job application
         </p>
       </CardHeader>
-      
+
       <CardContent className="space-y-6">
         {/* Header Row */}
         <div className="grid grid-cols-12 gap-4 items-center pb-2 border-b-2 border-slate-200">
@@ -76,12 +79,14 @@ export function TaskComparisonCard({ onGetStarted, showCTA = true }: TaskCompari
         {/* Task Rows */}
         <div className="space-y-3">
           {tasks.map((task, i) => (
-            <div 
-              key={i} 
+            <div
+              key={i}
               className="grid grid-cols-12 gap-4 items-center p-3 rounded-lg hover:bg-slate-50 transition-colors"
             >
               <div className="col-span-6">
-                <p className="text-sm font-medium text-slate-800">{task.name}</p>
+                <p className="text-sm font-medium text-slate-800">
+                  {task.name}
+                </p>
               </div>
               <div className="col-span-3 text-center">
                 <div className="flex flex-col items-center gap-1">
@@ -92,7 +97,9 @@ export function TaskComparisonCard({ onGetStarted, showCTA = true }: TaskCompari
               <div className="col-span-3 text-center">
                 <div className="flex flex-col items-center gap-1">
                   <Check className="w-4 h-4 text-green-500" />
-                  <p className="font-semibold text-green-600">{task.careerswarm}</p>
+                  <p className="font-semibold text-green-600">
+                    {task.careerswarm}
+                  </p>
                   <p className="text-xs text-slate-500">{task.agent}</p>
                 </div>
               </div>
@@ -103,20 +110,28 @@ export function TaskComparisonCard({ onGetStarted, showCTA = true }: TaskCompari
         {/* Total Comparison */}
         <div className="border-t-2 border-slate-200 pt-6 space-y-4">
           <div className="flex items-center justify-between px-4">
-            <span className="text-lg font-bold text-slate-900">Total per application:</span>
+            <span className="text-lg font-bold text-slate-900">
+              Total per application:
+            </span>
             <div className="flex items-center gap-4">
-              <span className="text-2xl font-bold text-red-600 line-through">3-4 hours</span>
+              <span className="text-2xl font-bold text-red-600 line-through">
+                3-4 hours
+              </span>
               <ArrowRight className="w-6 h-6 text-orange-500" />
-              <span className="text-2xl font-bold text-green-600">5-10 minutes</span>
+              <span className="text-2xl font-bold text-green-600">
+                5-10 minutes
+              </span>
             </div>
           </div>
-          
+
           <div className="bg-gradient-to-r from-orange-50 to-green-50 p-6 rounded-xl text-center border-2 border-orange-200">
             <p className="text-2xl font-bold text-orange-600 mb-2">
               You save ~3.5 hours per application
             </p>
             <p className="text-slate-600 text-lg">
-              For 100 applications: <strong className="text-orange-600">350 hours saved</strong> (8.75 work weeks!)
+              For 100 applications:{" "}
+              <strong className="text-orange-600">350 hours saved</strong> (8.75
+              work weeks!)
             </p>
           </div>
         </div>
@@ -124,7 +139,7 @@ export function TaskComparisonCard({ onGetStarted, showCTA = true }: TaskCompari
         {/* CTA */}
         {showCTA && (
           <div className="pt-4">
-            <Button 
+            <Button
               className="w-full bg-orange-500 hover:bg-orange-600 text-white text-lg py-6 shadow-lg"
               size="lg"
               onClick={onGetStarted}

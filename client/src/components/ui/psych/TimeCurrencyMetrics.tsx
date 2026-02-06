@@ -29,7 +29,7 @@ export function TimeCurrencyMetrics({
     const steps = 30;
     const increment = totalHoursSaved / steps;
     let current = 0;
-    
+
     const timer = setInterval(() => {
       current += increment;
       if (current >= totalHoursSaved) {
@@ -45,9 +45,8 @@ export function TimeCurrencyMetrics({
 
   return (
     <div className={`grid grid-cols-2 lg:grid-cols-4 gap-4 ${className}`}>
-      
       {/* PRIMARY: Hours Reclaimed (Pillar 5 Focus) */}
-      <motion.div 
+      <motion.div
         className="col-span-2 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-6 text-white shadow-lg"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -61,18 +60,16 @@ export function TimeCurrencyMetrics({
             {PSYCH_COPY.dashboard.timeSaved}
           </span>
         </div>
-        
+
         <div className="flex items-baseline gap-2">
-          <span className="text-5xl font-bold">
-            {animatedHours.toFixed(1)}
-          </span>
+          <span className="text-5xl font-bold">{animatedHours.toFixed(1)}</span>
           <span className="text-xl text-orange-200">hours</span>
         </div>
-        
+
         <p className="text-orange-100 text-sm mt-2">
           {PSYCH_COPY.dashboard.timeSavedSubtext}
         </p>
-        
+
         {/* Mini breakdown */}
         <div className="mt-4 pt-4 border-t border-white/20 flex items-center justify-between text-sm">
           <span className="text-orange-200">
@@ -83,7 +80,7 @@ export function TimeCurrencyMetrics({
       </motion.div>
 
       {/* Secondary: Active Applications */}
-      <motion.div 
+      <motion.div
         className="bg-white rounded-2xl p-5 shadow-md border border-slate-200"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -101,7 +98,7 @@ export function TimeCurrencyMetrics({
       </motion.div>
 
       {/* Secondary: Profile Strength */}
-      <motion.div 
+      <motion.div
         className="bg-white rounded-2xl p-5 shadow-md border border-slate-200"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -119,10 +116,10 @@ export function TimeCurrencyMetrics({
           </span>
           <span className="text-slate-500">%</span>
         </div>
-        
+
         {/* Progress bar */}
         <div className="mt-3 h-2 bg-slate-100 rounded-full overflow-hidden">
-          <motion.div 
+          <motion.div
             className="h-full bg-green-500"
             initial={{ width: 0 }}
             animate={{ width: `${profileStrength}%` }}

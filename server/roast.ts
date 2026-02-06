@@ -16,7 +16,11 @@ const SCHEMA = {
       type: "array",
       items: {
         type: "object",
-        properties: { title: { type: "string" }, explanation: { type: "string" }, fix: { type: "string" } },
+        properties: {
+          title: { type: "string" },
+          explanation: { type: "string" },
+          fix: { type: "string" },
+        },
         required: ["title", "explanation", "fix"],
         additionalProperties: false,
       },
@@ -37,14 +41,21 @@ export type RoastResult = {
   wordCount: number;
 };
 
-export type RoastOutcome = { ok: true; data: RoastResult } | { ok: false; message: string };
+export type RoastOutcome =
+  | { ok: true; data: RoastResult }
+  | { ok: false; message: string };
 
 const FALLBACK_RESULT: RoastResult = {
   score: 50,
   verdict: "Could not parse feedback.",
-  brutalTruth: "The analysis could not be structured. Try again with plain text only.",
+  brutalTruth:
+    "The analysis could not be structured. Try again with plain text only.",
   mistakes: [
-    { title: "Parse issue", explanation: "Response format was unexpected.", fix: "Retry with resume text only." },
+    {
+      title: "Parse issue",
+      explanation: "Response format was unexpected.",
+      fix: "Retry with resume text only.",
+    },
     { title: "—", explanation: "—", fix: "—" },
     { title: "—", explanation: "—", fix: "—" },
   ],
@@ -71,18 +82,34 @@ export async function runRoast(resumeText: string): Promise<RoastOutcome> {
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Resume roast failed.";
     console.error("[Roast]", msg);
-    return { ok: false, message: "Resume roast isn't available right now. Please try again in a moment." };
+    return {
+      ok: false,
+      message:
+        "Resume roast isn't available right now. Please try again in a moment.",
+    };
   }
 
   if (!response?.choices?.[0]?.message) {
     console.error("[Roast] LLM returned empty or invalid response");
-    return { ok: false, message: "Resume roast isn't available right now. Please try again in a moment." };
+    return {
+      ok: false,
+      message:
+        "Resume roast isn't available right now. Please try again in a moment.",
+    };
   }
 
   const raw = response.choices[0].message.content;
   const rawStr = typeof raw === "string" ? raw : "";
-  const jsonStr = rawStr.replace(/^```(?:json)?\s*/i, "").replace(/\s*```\s*$/i, "").trim();
-  let parsed: { score?: number; verdict?: string; brutalTruth?: string; mistakes?: Array<{ title?: string; explanation?: string; fix?: string }> };
+  const jsonStr = rawStr
+    .replace(/^```(?:json)?\s*/i, "")
+    .replace(/\s*```\s*$/i, "")
+    .trim();
+  let parsed: {
+    score?: number;
+    verdict?: string;
+    brutalTruth?: string;
+    mistakes?: Array<{ title?: string; explanation?: string; fix?: string }>;
+  };
   try {
     parsed = JSON.parse(jsonStr || "{}");
   } catch {
@@ -96,8 +123,11 @@ export async function runRoast(resumeText: string): Promise<RoastOutcome> {
     };
   }
 
-  const score = Math.max(0, Math.min(100, Math.round(Number(parsed.score) ?? 0)));
-  const mistakes = (parsed.mistakes ?? []).slice(0, 3).map((m) => ({
+  const score = Math.max(
+    0,
+    Math.min(100, Math.round(Number(parsed.score) ?? 0))
+  );
+  const mistakes = (parsed.mistakes ?? []).slice(0, 3).map(m => ({
     title: String(m.title ?? "").trim() || "Mistake",
     explanation: String(m.explanation ?? "").trim() || "",
     fix: String(m.fix ?? "").trim() || "",
@@ -108,7 +138,8 @@ export async function runRoast(resumeText: string): Promise<RoastOutcome> {
     data: {
       score,
       verdict: String(parsed.verdict ?? "").trim() || "See feedback below.",
-      brutalTruth: String(parsed.brutalTruth ?? "").trim() || "Review the mistakes below.",
+      brutalTruth:
+        String(parsed.brutalTruth ?? "").trim() || "Review the mistakes below.",
       mistakes,
       characterCount,
       wordCount,

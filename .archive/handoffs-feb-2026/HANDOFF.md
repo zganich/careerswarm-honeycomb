@@ -14,11 +14,11 @@ Or copy the prompt from the top of **MANUS_PROMPT.md** (the block under “Give 
 
 ## Next owner: start here
 
-| Goal | Do this |
-|------|--------|
-| **Manus / deploy** | Follow **[MANUS_PROMPT.md](MANUS_PROMPT.md)** — one file with all steps and the prompt to give Manus. |
-| **Run locally** | Follow **[docs/SHIP_STEP_BY_STEP.md](docs/SHIP_STEP_BY_STEP.md)** (Docker MySQL, `.env`, migrate, dev login). |
-| **Run on your domain** | Same as Manus: [MANUS_PROMPT.md](MANUS_PROMPT.md) or [docs/SHIP_CHECKLIST.md](docs/SHIP_CHECKLIST.md). |
+| Goal                   | Do this                                                                                                       |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------- |
+| **Manus / deploy**     | Follow **[MANUS_PROMPT.md](MANUS_PROMPT.md)** — one file with all steps and the prompt to give Manus.         |
+| **Run locally**        | Follow **[docs/SHIP_STEP_BY_STEP.md](docs/SHIP_STEP_BY_STEP.md)** (Docker MySQL, `.env`, migrate, dev login). |
+| **Run on your domain** | Same as Manus: [MANUS_PROMPT.md](MANUS_PROMPT.md) or [docs/SHIP_CHECKLIST.md](docs/SHIP_CHECKLIST.md).        |
 
 - **OAuth redirect URI:** `https://<your-app-domain>/api/oauth/callback` — must be whitelisted in the Manus dashboard. See [docs/OAUTH_WHITELIST_MANUS.md](docs/OAUTH_WHITELIST_MANUS.md).
 - **Dev Login:** If OAuth isn’t set up yet, use `/login` and enter any email (works in dev or when `ENABLE_DEV_LOGIN=true`).

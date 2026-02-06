@@ -45,17 +45,30 @@ export default function Analytics() {
   ];
 
   const applicationsByStatusData = [
-    { name: "Applied", value: analytics?.totalApplications || 0, color: "#3b82f6" },
-    { name: "Interviewing", value: analytics?.interviewingCount || 0, color: "#10b981" },
+    {
+      name: "Applied",
+      value: analytics?.totalApplications || 0,
+      color: "#3b82f6",
+    },
+    {
+      name: "Interviewing",
+      value: analytics?.interviewingCount || 0,
+      color: "#10b981",
+    },
     { name: "Offer", value: analytics?.offerCount || 0, color: "#f59e0b" },
-    { name: "Rejected", value: analytics?.rejectedCount || 0, color: "#ef4444" },
+    {
+      name: "Rejected",
+      value: analytics?.rejectedCount || 0,
+      color: "#ef4444",
+    },
   ];
 
-  const topAchievementsData = analytics?.topAchievements?.map((a: any) => ({
-    name: a.title?.substring(0, 30) + "..." || "Achievement",
-    successRate: a.successRate || 0,
-    timesUsed: a.timesUsed || 0,
-  })) || [];
+  const topAchievementsData =
+    analytics?.topAchievements?.map((a: any) => ({
+      name: a.title?.substring(0, 30) + "..." || "Achievement",
+      successRate: a.successRate || 0,
+      timesUsed: a.timesUsed || 0,
+    })) || [];
 
   return (
     <div className="container py-8">
@@ -70,11 +83,15 @@ export default function Analytics() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Applications</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Applications
+            </CardTitle>
             <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{analytics?.totalApplications || 0}</div>
+            <div className="text-2xl font-bold">
+              {analytics?.totalApplications || 0}
+            </div>
             <p className="text-xs text-muted-foreground">
               {analytics?.thisWeekApplications || 0} this week
             </p>
@@ -83,11 +100,15 @@ export default function Analytics() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Hours Reclaimed</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Hours Reclaimed
+            </CardTitle>
             <TrendingUp className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{((analytics?.totalApplications || 0) * 4.5).toFixed(1)}</div>
+            <div className="text-2xl font-bold">
+              {((analytics?.totalApplications || 0) * 4.5).toFixed(1)}
+            </div>
             <p className="text-xs text-muted-foreground">
               Time you'd spend manually applying
             </p>
@@ -96,11 +117,15 @@ export default function Analytics() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg. Response Time</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Avg. Response Time
+            </CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{analytics?.avgResponseTime || 0} days</div>
+            <div className="text-2xl font-bold">
+              {analytics?.avgResponseTime || 0} days
+            </div>
             <p className="text-xs text-muted-foreground">
               Median time to first response
             </p>
@@ -109,11 +134,15 @@ export default function Analytics() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Interview Rate</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Interview Rate
+            </CardTitle>
             <Award className="h-4 w-4 text-yellow-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{analytics?.interviewRate || 0}%</div>
+            <div className="text-2xl font-bold">
+              {analytics?.interviewRate || 0}%
+            </div>
             <p className="text-xs text-muted-foreground">
               {analytics?.interviewingCount || 0} active interviews
             </p>
@@ -161,7 +190,7 @@ export default function Analytics() {
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={(entry) => `${entry.name}: ${entry.value}`}
+                  label={entry => `${entry.name}: ${entry.value}`}
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="value"
@@ -190,7 +219,11 @@ export default function Analytics() {
               <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="successRate" fill="#10b981" name="Success Rate (%)" />
+              <Bar
+                dataKey="successRate"
+                fill="#10b981"
+                name="Success Rate (%)"
+              />
               <Bar dataKey="timesUsed" fill="#3b82f6" name="Times Used" />
             </BarChart>
           </ResponsiveContainer>
@@ -208,24 +241,44 @@ export default function Analytics() {
         <CardContent>
           <div className="space-y-4">
             {analytics?.insights && analytics.insights.length > 0 ? (
-              analytics.insights.map((insight: { type: 'positive' | 'negative' | 'neutral'; message: string }, index: number) => (
-                <div key={index} className="flex items-start gap-3 p-4 bg-muted rounded-lg">
-                  {insight.type === 'positive' && <TrendingUp className="h-5 w-5 text-green-500 mt-0.5" />}
-                  {insight.type === 'negative' && <TrendingDown className="h-5 w-5 text-red-500 mt-0.5" />}
-                  {insight.type === 'neutral' && <Target className="h-5 w-5 text-blue-500 mt-0.5" />}
-                  <div className="flex-1">
-                    <p className="text-sm">{insight.message}</p>
+              analytics.insights.map(
+                (
+                  insight: {
+                    type: "positive" | "negative" | "neutral";
+                    message: string;
+                  },
+                  index: number
+                ) => (
+                  <div
+                    key={index}
+                    className="flex items-start gap-3 p-4 bg-muted rounded-lg"
+                  >
+                    {insight.type === "positive" && (
+                      <TrendingUp className="h-5 w-5 text-green-500 mt-0.5" />
+                    )}
+                    {insight.type === "negative" && (
+                      <TrendingDown className="h-5 w-5 text-red-500 mt-0.5" />
+                    )}
+                    {insight.type === "neutral" && (
+                      <Target className="h-5 w-5 text-blue-500 mt-0.5" />
+                    )}
+                    <div className="flex-1">
+                      <p className="text-sm">{insight.message}</p>
+                    </div>
                   </div>
-                </div>
-              ))
+                )
+              )
             ) : (
               <div className="space-y-4">
                 <div className="flex items-start gap-3 p-4 bg-muted rounded-lg">
                   <TrendingUp className="h-5 w-5 text-green-500 mt-0.5" />
                   <div className="flex-1">
-                    <p className="text-sm font-medium mb-1">Strong Performance</p>
+                    <p className="text-sm font-medium mb-1">
+                      Strong Performance
+                    </p>
                     <p className="text-sm text-muted-foreground">
-                      Your response rate is 15% above average. Keep highlighting quantifiable achievements in your applications.
+                      Your response rate is 15% above average. Keep highlighting
+                      quantifiable achievements in your applications.
                     </p>
                   </div>
                 </div>
@@ -234,7 +287,8 @@ export default function Analytics() {
                   <div className="flex-1">
                     <p className="text-sm font-medium mb-1">Opportunity</p>
                     <p className="text-sm text-muted-foreground">
-                      Applications to Series B companies show 2x higher response rates. Consider targeting more mid-stage startups.
+                      Applications to Series B companies show 2x higher response
+                      rates. Consider targeting more mid-stage startups.
                     </p>
                   </div>
                 </div>
@@ -243,7 +297,8 @@ export default function Analytics() {
                   <div className="flex-1">
                     <p className="text-sm font-medium mb-1">Top Achievement</p>
                     <p className="text-sm text-muted-foreground">
-                      "425% pipeline growth" has a 92% success rate across 8 applications. Use this achievement prominently.
+                      "425% pipeline growth" has a 92% success rate across 8
+                      applications. Use this achievement prominently.
                     </p>
                   </div>
                 </div>

@@ -3,7 +3,12 @@
  * Used by SSE endpoint so the client can show real-time progress.
  */
 
-export type ResumeProgressPhase = "idle" | "processing" | "parsing" | "done" | "error";
+export type ResumeProgressPhase =
+  | "idle"
+  | "processing"
+  | "parsing"
+  | "done"
+  | "error";
 
 export interface ResumeProgress {
   phase: ResumeProgressPhase;

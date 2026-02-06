@@ -10,11 +10,13 @@ import { Link } from "wouter";
 import { formatDistanceToNow } from "date-fns";
 
 export default function NotificationBell() {
-  const { data: notifications } = trpc.notifications.list.useQuery({ unreadOnly: false });
+  const { data: notifications } = trpc.notifications.list.useQuery({
+    unreadOnly: false,
+  });
   const markAsRead = trpc.notifications.markAsRead.useMutation();
   const utils = trpc.useUtils();
 
-  const unreadCount = notifications?.filter((n) => !n.isRead).length || 0;
+  const unreadCount = notifications?.filter(n => !n.isRead).length || 0;
 
   const handleMarkAsRead = async (id: number) => {
     await markAsRead.mutateAsync({ id });
@@ -50,7 +52,9 @@ export default function NotificationBell() {
         <div className="border-b p-4">
           <h3 className="font-semibold">Notifications</h3>
           {unreadCount > 0 && (
-            <p className="text-sm text-muted-foreground">{unreadCount} unread</p>
+            <p className="text-sm text-muted-foreground">
+              {unreadCount} unread
+            </p>
           )}
         </div>
         <div className="max-h-[400px] overflow-y-auto">
@@ -61,18 +65,22 @@ export default function NotificationBell() {
             </div>
           ) : (
             <div className="divide-y">
-              {notifications.map((notification) => (
+              {notifications.map(notification => (
                 <div
                   key={notification.id}
                   className={`p-4 hover:bg-muted/50 cursor-pointer transition-colors ${
                     !notification.isRead ? "bg-blue-50 dark:bg-blue-950/20" : ""
                   }`}
-                  onClick={() => !notification.isRead && handleMarkAsRead(notification.id)}
+                  onClick={() =>
+                    !notification.isRead && handleMarkAsRead(notification.id)
+                  }
                 >
                   <div className="flex items-start gap-3">
                     {getIcon(notification.type || "")}
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-sm">{notification.title}</h4>
+                      <h4 className="font-medium text-sm">
+                        {notification.title}
+                      </h4>
                       {notification.message && (
                         <p className="text-sm text-muted-foreground mt-1">
                           {notification.message}
@@ -80,13 +88,22 @@ export default function NotificationBell() {
                       )}
                       <p className="text-xs text-muted-foreground mt-2">
                         {notification.createdAt &&
-                          formatDistanceToNow(new Date(notification.createdAt), {
-                            addSuffix: true,
-                          })}
+                          formatDistanceToNow(
+                            new Date(notification.createdAt),
+                            {
+                              addSuffix: true,
+                            }
+                          )}
                       </p>
                       {notification.applicationId && (
-                        <Link href={`/applications/${notification.applicationId}`}>
-                          <Button size="sm" variant="link" className="h-auto p-0 mt-1">
+                        <Link
+                          href={`/applications/${notification.applicationId}`}
+                        >
+                          <Button
+                            size="sm"
+                            variant="link"
+                            className="h-auto p-0 mt-1"
+                          >
                             View Application →
                           </Button>
                         </Link>

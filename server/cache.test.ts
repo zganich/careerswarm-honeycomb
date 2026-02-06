@@ -8,13 +8,13 @@ import {
   cacheIncr,
   cacheKey,
   CachePrefix,
-  redis
+  redis,
 } from "./cache";
 
 describe.skip("Cache Layer (requires Redis)", () => {
   beforeAll(async () => {
     // Wait for Redis connection
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 1000));
   });
 
   afterAll(async () => {
@@ -90,7 +90,13 @@ describe.skip("Cache Layer (requires Redis)", () => {
     const key1 = cacheKey(CachePrefix.JOB_LISTING, "123");
     expect(key1).toBe("job:123");
 
-    const key2 = cacheKey(CachePrefix.ACHIEVEMENT_ANALYSIS, "user", "456", "achievement", "789");
+    const key2 = cacheKey(
+      CachePrefix.ACHIEVEMENT_ANALYSIS,
+      "user",
+      "456",
+      "achievement",
+      "789"
+    );
     expect(key2).toBe("achievement:user:456:achievement:789");
   });
 
@@ -102,7 +108,7 @@ describe.skip("Cache Layer (requires Redis)", () => {
     expect(exists1).toBe(true);
 
     // Wait for expiration
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    await new Promise(resolve => setTimeout(resolve, 1500));
 
     const exists2 = await cacheExists(key);
     expect(exists2).toBe(false);

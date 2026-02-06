@@ -46,24 +46,31 @@ Requirements:
       bridgeSkills: [
         {
           skill: "Client needs analysis",
-          fromContext: "Understanding enterprise customer pain points and requirements",
+          fromContext:
+            "Understanding enterprise customer pain points and requirements",
           toContext: "Market opportunity assessment and customer segmentation",
-          strategicFrame: "My experience analyzing complex client needs translates directly to identifying market opportunities",
+          strategicFrame:
+            "My experience analyzing complex client needs translates directly to identifying market opportunities",
         },
         {
           skill: "Stakeholder management",
-          fromContext: "Navigating enterprise buying committees with multiple decision-makers",
+          fromContext:
+            "Navigating enterprise buying committees with multiple decision-makers",
           toContext: "Cross-functional collaboration and executive alignment",
-          strategicFrame: "I excel at building consensus among diverse stakeholders with competing priorities",
+          strategicFrame:
+            "I excel at building consensus among diverse stakeholders with competing priorities",
         },
         {
           skill: "Executive communication",
-          fromContext: "Presenting proposals and business cases to C-level buyers",
+          fromContext:
+            "Presenting proposals and business cases to C-level buyers",
           toContext: "Strategic recommendations and board-level presentations",
-          strategicFrame: "I craft compelling narratives that drive executive decision-making",
+          strategicFrame:
+            "I craft compelling narratives that drive executive decision-making",
         },
       ],
-      pivotStrategy: "Moving from Sales to Strategy builds on my deep understanding of customer needs and market dynamics. My track record of analyzing complex buying decisions translates directly to strategic market assessment.",
+      pivotStrategy:
+        "Moving from Sales to Strategy builds on my deep understanding of customer needs and market dynamics. My track record of analyzing complex buying decisions translates directly to strategic market assessment.",
       transferableStrengths: [
         "Data-driven decision making",
         "Market analysis from customer interactions",
@@ -115,7 +122,9 @@ Requirements:
 
     const result = await db.getApplicationById(testApplicationId, testUserId);
     expect(result?.pivotAnalysis?.bridgeSkills).toBeDefined();
-    expect(result?.pivotAnalysis?.bridgeSkills.length).toBeGreaterThanOrEqual(3);
+    expect(result?.pivotAnalysis?.bridgeSkills.length).toBeGreaterThanOrEqual(
+      3
+    );
     expect(result?.pivotAnalysis?.bridgeSkills.length).toBeLessThanOrEqual(5);
   });
 
@@ -139,7 +148,7 @@ Requirements:
 
     const result = await db.getApplicationById(testApplicationId, testUserId);
     const bridgeSkill = result?.pivotAnalysis?.bridgeSkills[0];
-    
+
     expect(bridgeSkill).toBeDefined();
     expect(bridgeSkill?.skill).toBeDefined();
     expect(bridgeSkill?.fromContext).toBeDefined();
@@ -157,7 +166,8 @@ Requirements:
           strategicFrame: "Frame",
         },
       ],
-      pivotStrategy: "This is a strategic career transition that builds on existing strengths",
+      pivotStrategy:
+        "This is a strategic career transition that builds on existing strengths",
       transferableStrengths: ["Strength 1"],
     };
 
@@ -194,14 +204,24 @@ Requirements:
 
     const result = await db.getApplicationById(testApplicationId, testUserId);
     expect(result?.pivotAnalysis?.transferableStrengths).toBeDefined();
-    expect(result?.pivotAnalysis?.transferableStrengths.length).toBeGreaterThanOrEqual(3);
+    expect(
+      result?.pivotAnalysis?.transferableStrengths.length
+    ).toBeGreaterThanOrEqual(3);
   });
 
   it("should not contain fluff words", async () => {
     const fluffWords = [
-      'synergy', 'leverage', 'utilize', 'robust', 'dynamic', 
-      'innovative', 'cutting-edge', 'best-in-class', 'world-class', 
-      'game-changing', 'disruptive'
+      "synergy",
+      "leverage",
+      "utilize",
+      "robust",
+      "dynamic",
+      "innovative",
+      "cutting-edge",
+      "best-in-class",
+      "world-class",
+      "game-changing",
+      "disruptive",
     ];
 
     const mockAnalysis = {
@@ -210,11 +230,17 @@ Requirements:
           skill: "Market analysis",
           fromContext: "Analyzing customer needs and pain points",
           toContext: "Strategic market assessment",
-          strategicFrame: "I translate customer insights into market opportunities",
+          strategicFrame:
+            "I translate customer insights into market opportunities",
         },
       ],
-      pivotStrategy: "Moving from sales to strategy builds on my experience understanding markets through direct customer interaction",
-      transferableStrengths: ["Customer insight", "Market knowledge", "Executive communication"],
+      pivotStrategy:
+        "Moving from sales to strategy builds on my experience understanding markets through direct customer interaction",
+      transferableStrengths: [
+        "Customer insight",
+        "Market knowledge",
+        "Executive communication",
+      ],
     };
 
     await db.updateApplication(testApplicationId, testUserId, {
@@ -223,7 +249,7 @@ Requirements:
 
     const result = await db.getApplicationById(testApplicationId, testUserId);
     const fullText = JSON.stringify(result?.pivotAnalysis).toLowerCase();
-    
+
     fluffWords.forEach(fluffWord => {
       expect(fullText).not.toContain(fluffWord);
     });

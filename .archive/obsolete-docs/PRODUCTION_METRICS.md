@@ -7,7 +7,9 @@ This document outlines the production metrics monitoring system for CareerSwarm,
 ## Current Monitoring Infrastructure
 
 ### Built-in Analytics
+
 CareerSwarm already has analytics infrastructure via environment variables:
+
 - `VITE_ANALYTICS_ENDPOINT` - Analytics API endpoint
 - `VITE_ANALYTICS_WEBSITE_ID` - Website tracking ID
 - `VITE_POSTHOG_HOST` - PostHog analytics host
@@ -16,7 +18,9 @@ CareerSwarm already has analytics infrastructure via environment variables:
 ### Database Tables for Metrics
 
 #### 1. Applications Table
+
 Already tracks package generation:
+
 ```sql
 - packageZipUrl (TEXT)
 - resumePdfUrl (TEXT)
@@ -32,7 +36,9 @@ Already tracks package generation:
 ```
 
 #### 2. Notifications Table
+
 Tracks system events:
+
 ```sql
 - type (ENUM: 'application_package_ready', 'application_package_error', etc.)
 - title (TEXT)
@@ -49,9 +55,10 @@ Tracks system events:
 **Formula:** `(successful_packages / total_attempts) * 100`
 
 **Implementation:**
+
 ```sql
 -- Query for success rate
-SELECT 
+SELECT
   COUNT(*) as total_attempts,
   COUNT(CASE WHEN packageZipUrl IS NOT NULL THEN 1 END) as successful,
   (COUNT(CASE WHEN packageZipUrl IS NOT NULL THEN 1 END) * 100.0 / COUNT(*)) as success_rate
@@ -60,19 +67,20 @@ WHERE createdAt >= DATE_SUB(NOW(), INTERVAL 24 HOUR);
 ```
 
 **Dashboard Query (tRPC):**
+
 ```typescript
 // Add to server/routers.ts
 packageGenerationMetrics: protectedProcedure
   .query(async () => {
     const last24h = await db.execute(sql`
-      SELECT 
+      SELECT
         COUNT(*) as totalAttempts,
         COUNT(CASE WHEN packageZipUrl IS NOT NULL THEN 1 END) as successful,
         (COUNT(CASE WHEN packageZipUrl IS NOT NULL THEN 1 END) * 100.0 / COUNT(*)) as successRate
       FROM applications
       WHERE createdAt >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
     `);
-    
+
     return last24h[0];
   }),
 ```
@@ -80,6 +88,7 @@ packageGenerationMetrics: protectedProcedure
 ### 2. Agent Performance Metrics
 
 **Metrics:**
+
 - Average generation time per agent
 - Error rates by agent type
 - Keyword match rates (Tailor agent)
@@ -95,7 +104,7 @@ try {
   // Agent logic
   const result = await generateResume(...);
   const duration = Date.now() - startTime;
-  
+
   // Log performance metric
   await db.insert(agentMetrics).values({
     agentType: 'tailor',
@@ -103,11 +112,11 @@ try {
     success: true,
     applicationId: input.applicationId
   });
-  
+
   return result;
 } catch (error) {
   const duration = Date.now() - startTime;
-  
+
   // Log error metric
   await db.insert(agentMetrics).values({
     agentType: 'tailor',
@@ -116,27 +125,31 @@ try {
     errorMessage: error.message,
     applicationId: input.applicationId
   });
-  
+
   throw error;
 }
 ```
 
 **New Table Schema:**
+
 ```typescript
-export const agentMetrics = sqliteTable('agent_metrics', {
-  id: integer('id').primaryKey({ autoIncrement: true }),
-  agentType: text('agent_type').notNull(), // 'tailor', 'scribe', 'assembler'
-  duration: integer('duration').notNull(), // milliseconds
-  success: integer('success', { mode: 'boolean' }).notNull(),
-  errorMessage: text('error_message'),
-  applicationId: integer('application_id').references(() => applications.id),
-  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
+export const agentMetrics = sqliteTable("agent_metrics", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  agentType: text("agent_type").notNull(), // 'tailor', 'scribe', 'assembler'
+  duration: integer("duration").notNull(), // milliseconds
+  success: integer("success", { mode: "boolean" }).notNull(),
+  errorMessage: text("error_message"),
+  applicationId: integer("application_id").references(() => applications.id),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
 });
 ```
 
 ### 3. User Conversion Metrics
 
 **Funnel Stages:**
+
 1. Homepage visit
 2. Resume Roast usage
 3. Onboarding start
@@ -149,24 +162,25 @@ Track conversion events with PostHog or custom analytics:
 
 ```typescript
 // In client/src/pages/ResumeRoast.tsx
-import posthog from 'posthog-js';
+import posthog from "posthog-js";
 
 // After roast completes
-posthog.capture('resume_roast_completed', {
+posthog.capture("resume_roast_completed", {
   score: result.score,
-  verdict: result.verdict
+  verdict: result.verdict,
 });
 
 // When user clicks "Build My Master Profile"
-posthog.capture('conversion_cta_clicked', {
-  source: 'resume_roast',
-  destination: '/onboarding'
+posthog.capture("conversion_cta_clicked", {
+  source: "resume_roast",
+  destination: "/onboarding",
 });
 ```
 
 ### 4. Real-time Dashboard
 
 **Create Analytics Page:**
+
 ```typescript
 // client/src/pages/Analytics.tsx (already exists)
 // Add package generation metrics
@@ -195,17 +209,19 @@ const { data: metrics } = trpc.analytics.packageGenerationMetrics.useQuery();
 ## Monitoring Alerts
 
 ### Set up notifications for:
+
 1. **Success rate drops below 90%** → Email owner
 2. **Agent duration exceeds 60 seconds** → Log warning
 3. **3+ consecutive failures** → Trigger investigation
 
 **Implementation:**
+
 ```typescript
 // In server/routers.ts - generatePackage procedure
 if (successRate < 0.9) {
   await notifyOwner({
-    title: 'Package Generation Success Rate Alert',
-    content: `Success rate dropped to ${(successRate * 100).toFixed(1)}% in the last hour.`
+    title: "Package Generation Success Rate Alert",
+    content: `Success rate dropped to ${(successRate * 100).toFixed(1)}% in the last hour.`,
   });
 }
 ```
@@ -223,8 +239,9 @@ if (successRate < 0.9) {
 ## Quick Start Queries
 
 ### Check recent package generation success
+
 ```sql
-SELECT 
+SELECT
   id,
   opportunityId,
   packageZipUrl IS NOT NULL as hasPackage,
@@ -235,6 +252,7 @@ LIMIT 10;
 ```
 
 ### Count failures in last hour
+
 ```sql
 SELECT COUNT(*) as failures
 FROM applications
@@ -243,8 +261,9 @@ WHERE packageZipUrl IS NULL
 ```
 
 ### Average generation time (requires agentMetrics table)
+
 ```sql
-SELECT 
+SELECT
   agentType,
   AVG(duration) as avgDuration,
   COUNT(*) as totalRuns,

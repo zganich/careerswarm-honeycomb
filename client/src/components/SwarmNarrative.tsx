@@ -17,48 +17,57 @@ export function SwarmNarrative() {
     const sequence = async () => {
       // Start sequence
       await delay(500);
-      
+
       // Phase 1: Intelligence
       setPhase("INTELLIGENCE");
       await delay(1200);
-      setCompletedStages(prev => [...prev, {
-        id: "intelligence",
-        title: "1. DEEP RESEARCH",
-        agents: [
-          { icon: "🔍", name: "Scout", description: "Finds Roles" },
-          { icon: "🧠", name: "Profiler", description: "Analyzes Strategy" },
-          { icon: "✅", name: "Qualifier", description: "Verifies Fit" },
-        ]
-      }]);
-      
+      setCompletedStages(prev => [
+        ...prev,
+        {
+          id: "intelligence",
+          title: "1. DEEP RESEARCH",
+          agents: [
+            { icon: "🔍", name: "Scout", description: "Finds Roles" },
+            { icon: "🧠", name: "Profiler", description: "Analyzes Strategy" },
+            { icon: "✅", name: "Qualifier", description: "Verifies Fit" },
+          ],
+        },
+      ]);
+
       // Phase 2: Targeting
       setPhase("TARGETING");
       await delay(1200);
-      setCompletedStages(prev => [...prev, {
-        id: "targeting",
-        title: "2. TARGETING",
-        agents: [
-          { icon: "🎯", name: "Hunter", description: "Finds Hiring Mgr" },
-        ]
-      }]);
-      
+      setCompletedStages(prev => [
+        ...prev,
+        {
+          id: "targeting",
+          title: "2. TARGETING",
+          agents: [
+            { icon: "🎯", name: "Hunter", description: "Finds Hiring Mgr" },
+          ],
+        },
+      ]);
+
       // Phase 3: Production
       setPhase("PRODUCTION");
       await delay(1200);
-      setCompletedStages(prev => [...prev, {
-        id: "production",
-        title: "3. PRODUCTION",
-        agents: [
-          { icon: "⚡", name: "Tailor", description: "Rewrites Resume" },
-          { icon: "✍️", name: "Scribe", description: "Drafts Outreach" },
-          { icon: "📦", name: "Assembler", description: "Builds Package" },
-        ]
-      }]);
-      
+      setCompletedStages(prev => [
+        ...prev,
+        {
+          id: "production",
+          title: "3. PRODUCTION",
+          agents: [
+            { icon: "⚡", name: "Tailor", description: "Rewrites Resume" },
+            { icon: "✍️", name: "Scribe", description: "Drafts Outreach" },
+            { icon: "📦", name: "Assembler", description: "Builds Package" },
+          ],
+        },
+      ]);
+
       // Phase 4: Complete
       setPhase("COMPLETE");
       await delay(5000);
-      
+
       // Loop: Reset
       setCompletedStages([]);
       setPhase("IDLE");
@@ -72,7 +81,6 @@ export function SwarmNarrative() {
   return (
     <div className="w-full max-w-6xl mx-auto">
       <div className="flex flex-col lg:flex-row gap-6 items-start justify-center min-h-[320px]">
-        
         {/* LEFT COLUMN: History Stack */}
         <div className="w-full lg:w-64 space-y-4">
           <AnimatePresence>
@@ -88,11 +96,13 @@ export function SwarmNarrative() {
                   {stage.title}
                 </div>
                 <div className="space-y-2">
-                  {stage.agents.map((agent) => (
+                  {stage.agents.map(agent => (
                     <div key={agent.name} className="flex items-center gap-2">
                       <span className="text-sm">{agent.icon}</span>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-semibold text-slate-600 truncate">{agent.name}</p>
+                        <p className="text-xs font-semibold text-slate-600 truncate">
+                          {agent.name}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -105,7 +115,6 @@ export function SwarmNarrative() {
         {/* CENTER/RIGHT: Active Stage */}
         <div className="flex-1 flex items-center justify-center">
           <AnimatePresence mode="wait">
-            
             {/* INTELLIGENCE STAGE */}
             {phase === "INTELLIGENCE" && (
               <motion.div
@@ -119,13 +128,28 @@ export function SwarmNarrative() {
                 <div className="text-sm uppercase tracking-wider text-orange-500 font-bold mb-6 text-center">
                   1. DEEP RESEARCH
                 </div>
-                
+
                 <div className="space-y-4">
                   {[
-                    { icon: "🔍", name: "Scout", description: "Finds Roles", delay: 0 },
-                    { icon: "🧠", name: "Profiler", description: "Analyzes Strategy", delay: 0.3 },
-                    { icon: "✅", name: "Qualifier", description: "Verifies Fit", delay: 0.6 },
-                  ].map((agent) => (
+                    {
+                      icon: "🔍",
+                      name: "Scout",
+                      description: "Finds Roles",
+                      delay: 0,
+                    },
+                    {
+                      icon: "🧠",
+                      name: "Profiler",
+                      description: "Analyzes Strategy",
+                      delay: 0.3,
+                    },
+                    {
+                      icon: "✅",
+                      name: "Qualifier",
+                      description: "Verifies Fit",
+                      delay: 0.6,
+                    },
+                  ].map(agent => (
                     <motion.div
                       key={agent.name}
                       initial={{ opacity: 0, x: -20 }}
@@ -136,13 +160,21 @@ export function SwarmNarrative() {
                       <motion.span
                         className="text-2xl"
                         animate={{ scale: [1, 1.2, 1] }}
-                        transition={{ duration: 1, repeat: Infinity, delay: agent.delay }}
+                        transition={{
+                          duration: 1,
+                          repeat: Infinity,
+                          delay: agent.delay,
+                        }}
                       >
                         {agent.icon}
                       </motion.span>
                       <div className="flex-1">
-                        <p className="text-sm font-bold text-slate-800">{agent.name}</p>
-                        <p className="text-xs text-slate-500">{agent.description}</p>
+                        <p className="text-sm font-bold text-slate-800">
+                          {agent.name}
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          {agent.description}
+                        </p>
                       </div>
                     </motion.div>
                   ))}
@@ -163,10 +195,10 @@ export function SwarmNarrative() {
                 <div className="text-sm uppercase tracking-wider text-purple-500 font-bold mb-6 text-center">
                   2. TARGETING
                 </div>
-                
+
                 <div className="relative flex items-center justify-center h-40">
                   {/* Radar Rings */}
-                  {[0, 0.5, 1].map((delay) => (
+                  {[0, 0.5, 1].map(delay => (
                     <motion.div
                       key={delay}
                       className="absolute w-32 h-32 rounded-full border-2 border-purple-300"
@@ -175,12 +207,14 @@ export function SwarmNarrative() {
                       transition={{ duration: 2, repeat: Infinity, delay }}
                     />
                   ))}
-                  
+
                   {/* Hunter Agent */}
                   <div className="relative bg-white rounded-full px-6 py-4 shadow-lg flex items-center gap-3 z-10">
                     <span className="text-3xl">🎯</span>
                     <div>
-                      <p className="text-base font-bold text-slate-800">Hunter</p>
+                      <p className="text-base font-bold text-slate-800">
+                        Hunter
+                      </p>
                       <p className="text-sm text-slate-500">Finds Hiring Mgr</p>
                     </div>
                   </div>
@@ -201,13 +235,28 @@ export function SwarmNarrative() {
                 <div className="text-sm uppercase tracking-wider text-orange-600 font-bold mb-6 text-center">
                   3. PRODUCTION
                 </div>
-                
+
                 <div className="space-y-4">
                   {[
-                    { icon: "⚡", name: "Tailor", description: "Rewrites Resume", delay: 0 },
-                    { icon: "✍️", name: "Scribe", description: "Drafts Outreach", delay: 0.3 },
-                    { icon: "📦", name: "Assembler", description: "Builds Package", delay: 0.6 },
-                  ].map((agent) => (
+                    {
+                      icon: "⚡",
+                      name: "Tailor",
+                      description: "Rewrites Resume",
+                      delay: 0,
+                    },
+                    {
+                      icon: "✍️",
+                      name: "Scribe",
+                      description: "Drafts Outreach",
+                      delay: 0.3,
+                    },
+                    {
+                      icon: "📦",
+                      name: "Assembler",
+                      description: "Builds Package",
+                      delay: 0.6,
+                    },
+                  ].map(agent => (
                     <motion.div
                       key={agent.name}
                       initial={{ opacity: 0, x: -20 }}
@@ -217,7 +266,9 @@ export function SwarmNarrative() {
                     >
                       <span className="text-2xl">{agent.icon}</span>
                       <div className="flex-1">
-                        <p className="text-sm font-bold text-slate-800">{agent.name}</p>
+                        <p className="text-sm font-bold text-slate-800">
+                          {agent.name}
+                        </p>
                         <motion.p
                           className="text-xs text-slate-500"
                           initial={{ opacity: 0 }}
@@ -261,13 +312,25 @@ export function SwarmNarrative() {
                     animate={{ rotate: [0, 5, -5, 0] }}
                     transition={{ duration: 2, repeat: Infinity }}
                   >
-                    <svg className="w-10 h-10 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                    <svg
+                      className="w-10 h-10 text-orange-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
+                      />
                     </svg>
                   </motion.div>
 
                   <div className="flex-1">
-                    <p className="text-2xl font-bold text-slate-900">Application Package</p>
+                    <p className="text-2xl font-bold text-slate-900">
+                      Application Package
+                    </p>
                     <p className="text-base text-slate-600">Ready to Send</p>
                   </div>
                 </div>
@@ -287,14 +350,15 @@ export function SwarmNarrative() {
                       transition={{ delay: 0.2 + index * 0.1 }}
                       className="flex items-center gap-3 text-slate-700"
                     >
-                      <span className="text-orange-600 font-bold text-lg">✓</span>
+                      <span className="text-orange-600 font-bold text-lg">
+                        ✓
+                      </span>
                       <span className="text-sm font-medium">{item}</span>
                     </motion.div>
                   ))}
                 </div>
               </motion.div>
             )}
-
           </AnimatePresence>
         </div>
       </div>

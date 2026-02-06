@@ -1,15 +1,15 @@
-import { useState, useEffect } from 'react';
-import { Clock, TrendingUp, ChevronDown, ChevronUp } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from "react";
+import { Clock, TrendingUp, ChevronDown, ChevronUp } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface HeroMetricProps {
   applicationsCount: number;
   hoursPerApplication?: number;
 }
 
-export function HeroMetric({ 
-  applicationsCount, 
-  hoursPerApplication = 4.5 
+export function HeroMetric({
+  applicationsCount,
+  hoursPerApplication = 4.5,
 }: HeroMetricProps) {
   const totalHoursSaved = applicationsCount * hoursPerApplication;
   const [displayHours, setDisplayHours] = useState(0);
@@ -45,7 +45,7 @@ export function HeroMetric({
       return "Ready to start applying? Let's get your first application out there.";
     }
     if (applicationsCount < 5) {
-      return `You've applied to ${applicationsCount} ${applicationsCount === 1 ? 'job' : 'jobs'} without lifting a finger`;
+      return `You've applied to ${applicationsCount} ${applicationsCount === 1 ? "job" : "jobs"} without lifting a finger`;
     }
     if (applicationsCount < 10) {
       return `You're on a roll! ${applicationsCount} applications submitted automatically`;
@@ -56,12 +56,12 @@ export function HeroMetric({
   const getComparisonText = () => {
     const weeks = Math.floor(totalHoursSaved / 40);
     const days = Math.floor(totalHoursSaved / 8);
-    
+
     if (weeks > 0) {
-      return `That's ${weeks} work ${weeks === 1 ? 'week' : 'weeks'} of time saved`;
+      return `That's ${weeks} work ${weeks === 1 ? "week" : "weeks"} of time saved`;
     }
     if (days > 0) {
-      return `That's ${days} work ${days === 1 ? 'day' : 'days'} of time saved`;
+      return `That's ${days} work ${days === 1 ? "day" : "days"} of time saved`;
     }
     return `That's ${totalHoursSaved.toFixed(1)} hours you'd spend manually customizing`;
   };
@@ -96,7 +96,7 @@ export function HeroMetric({
           {/* Big Number */}
           <div className="mb-4">
             <div className="flex items-baseline gap-3">
-              <motion.span 
+              <motion.span
                 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tabular-nums"
                 initial={{ scale: 0.5, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
@@ -104,7 +104,9 @@ export function HeroMetric({
               >
                 {displayHours.toFixed(1)}
               </motion.span>
-              <span className="text-3xl text-orange-200 font-medium">hours</span>
+              <span className="text-3xl text-orange-200 font-medium">
+                hours
+              </span>
             </div>
           </div>
 
@@ -148,7 +150,7 @@ export function HeroMetric({
         {showBreakdown && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
+            animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
             className="overflow-hidden"
@@ -158,22 +160,30 @@ export function HeroMetric({
                 <TrendingUp className="w-5 h-5 text-orange-500" />
                 Time Breakdown
               </h3>
-              
+
               <div className="space-y-3">
                 <div className="flex justify-between items-center py-2 border-b border-slate-100">
                   <span className="text-slate-600">Applications submitted</span>
-                  <span className="font-semibold text-slate-900">{applicationsCount}</span>
+                  <span className="font-semibold text-slate-900">
+                    {applicationsCount}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-slate-100">
                   <span className="text-slate-600">Time per application</span>
-                  <span className="font-semibold text-slate-900">{hoursPerApplication}h</span>
+                  <span className="font-semibold text-slate-900">
+                    {hoursPerApplication}h
+                  </span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-slate-100">
                   <span className="text-slate-600">AI processing time</span>
-                  <span className="font-semibold text-green-600">~60 seconds</span>
+                  <span className="font-semibold text-green-600">
+                    ~60 seconds
+                  </span>
                 </div>
                 <div className="flex justify-between items-center py-3 bg-orange-50 rounded-lg px-3">
-                  <span className="font-semibold text-slate-900">Total time saved</span>
+                  <span className="font-semibold text-slate-900">
+                    Total time saved
+                  </span>
                   <span className="font-bold text-orange-600 text-xl">
                     {totalHoursSaved.toFixed(1)}h
                   </span>
@@ -181,8 +191,8 @@ export function HeroMetric({
               </div>
 
               <p className="text-sm text-slate-500 mt-4 italic">
-                * Based on average 4.5 hours to manually tailor resume, write cover letter, 
-                and draft outreach message per application
+                * Based on average 4.5 hours to manually tailor resume, write
+                cover letter, and draft outreach message per application
               </p>
             </div>
           </motion.div>

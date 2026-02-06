@@ -1,5 +1,5 @@
 import { invokeLLM } from "../_core/llm";
-import { insertAgentMetric } from '../db';
+import { insertAgentMetric } from "../db";
 
 interface ScribeInput {
   userProfile: {
@@ -18,11 +18,14 @@ interface ScribeOutput {
   linkedInMessage: string;
 }
 
-export async function generateOutreach(input: ScribeInput, options?: { applicationId?: number; userId?: number }): Promise<ScribeOutput> {
+export async function generateOutreach(
+  input: ScribeInput,
+  options?: { applicationId?: number; userId?: number }
+): Promise<ScribeOutput> {
   const startTime = Date.now();
-  
+
   try {
-  const systemPrompt = `You are a peer-level candidate writing to a Hiring Manager.
+    const systemPrompt = `You are a peer-level candidate writing to a Hiring Manager.
 
 **Your task:** Write a cover letter and LinkedIn connection message.
 
@@ -55,7 +58,7 @@ export async function generateOutreach(input: ScribeInput, options?: { applicati
 
 **Your Goal:** Sound like an equal who has something valuable to offer, not someone begging for a job.`;
 
-  const userPrompt = `**COMPANY:** ${input.companyName}
+    const userPrompt = `**COMPANY:** ${input.companyName}
 **ROLE:** ${input.roleTitle}
 
 **STRATEGIC MEMO (from company analysis):**
@@ -69,7 +72,7 @@ Name: ${input.userProfile.fullName}
 Current: ${input.userProfile.currentTitle}
 
 Top Achievements:
-${input.userProfile.topAchievements.map((a, i) => `${i + 1}. ${a}`).join('\n')}
+${input.userProfile.topAchievements.map((a, i) => `${i + 1}. ${a}`).join("\n")}
 
 ---
 
@@ -93,35 +96,37 @@ ${input.userProfile.topAchievements.map((a, i) => `${i + 1}. ${a}`).join('\n')}
 ## LINKEDIN MESSAGE
 [300 characters max]`;
 
-  const response = await invokeLLM({
-    messages: [
-      {
-        role: "system",
-        content: systemPrompt,
-      },
-      {
-        role: "user",
-        content: userPrompt,
-      },
-    ],
-  });
+    const response = await invokeLLM({
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt,
+        },
+        {
+          role: "user",
+          content: userPrompt,
+        },
+      ],
+    });
 
-  const messageContent = response.choices[0]?.message?.content;
-  const output = typeof messageContent === 'string' ? messageContent : '';
+    const messageContent = response.choices[0]?.message?.content;
+    const output = typeof messageContent === "string" ? messageContent : "";
 
-  // Parse output
-  const coverLetterMatch = output.match(/## COVER LETTER\n([\s\S]*?)(?=## LINKEDIN MESSAGE|$)/);
-  const linkedInMatch = output.match(/## LINKEDIN MESSAGE\n([\s\S]*?)$/);
+    // Parse output
+    const coverLetterMatch = output.match(
+      /## COVER LETTER\n([\s\S]*?)(?=## LINKEDIN MESSAGE|$)/
+    );
+    const linkedInMatch = output.match(/## LINKEDIN MESSAGE\n([\s\S]*?)$/);
 
-  const coverLetter = coverLetterMatch ? coverLetterMatch[1].trim() : '';
-  const linkedInMessage = linkedInMatch ? linkedInMatch[1].trim() : '';
+    const coverLetter = coverLetterMatch ? coverLetterMatch[1].trim() : "";
+    const linkedInMessage = linkedInMatch ? linkedInMatch[1].trim() : "";
 
     const duration = Date.now() - startTime;
-    
+
     // Log success metric
     if (options?.applicationId || options?.userId) {
       await insertAgentMetric({
-        agentType: 'scribe',
+        agentType: "scribe",
         duration,
         success: true,
         applicationId: options.applicationId,
@@ -132,18 +137,18 @@ ${input.userProfile.topAchievements.map((a, i) => `${i + 1}. ${a}`).join('\n')}
         },
       });
     }
-    
+
     return {
       coverLetter,
       linkedInMessage,
     };
   } catch (error) {
     const duration = Date.now() - startTime;
-    
+
     // Log error metric
     if (options?.applicationId || options?.userId) {
       await insertAgentMetric({
-        agentType: 'scribe',
+        agentType: "scribe",
         duration,
         success: false,
         errorMessage: error instanceof Error ? error.message : String(error),
@@ -151,7 +156,7 @@ ${input.userProfile.topAchievements.map((a, i) => `${i + 1}. ${a}`).join('\n')}
         userId: options.userId,
       });
     }
-    
+
     throw error;
   }
 }

@@ -35,21 +35,22 @@ export function createPDFUploadRouter() {
       const text = await extractTextFromPDF(req.file.buffer);
 
       if (!text || text.trim().length < 50) {
-        return res.status(400).json({ 
-          error: "Could not extract enough text from PDF. Please ensure the PDF contains text (not just images)." 
+        return res.status(400).json({
+          error:
+            "Could not extract enough text from PDF. Please ensure the PDF contains text (not just images).",
         });
       }
 
       // Return extracted text
-      res.json({ 
+      res.json({
         text,
         characterCount: text.length,
         wordCount: text.split(/\s+/).filter(Boolean).length,
       });
     } catch (error) {
       console.error("PDF upload error:", error);
-      res.status(500).json({ 
-        error: error instanceof Error ? error.message : "Failed to process PDF" 
+      res.status(500).json({
+        error: error instanceof Error ? error.message : "Failed to process PDF",
       });
     }
   });

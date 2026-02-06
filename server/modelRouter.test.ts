@@ -43,8 +43,12 @@ describe("Model Router", () => {
     });
 
     it("should route complex tasks to Claude 3.5 Sonnet", () => {
-      expect(getModelForTask("STAR_TO_XYZ_TRANSFORMATION")).toBe(Model.CLAUDE_35_SONNET);
-      expect(getModelForTask("COVER_LETTER_GENERATION")).toBe(Model.CLAUDE_35_SONNET);
+      expect(getModelForTask("STAR_TO_XYZ_TRANSFORMATION")).toBe(
+        Model.CLAUDE_35_SONNET
+      );
+      expect(getModelForTask("COVER_LETTER_GENERATION")).toBe(
+        Model.CLAUDE_35_SONNET
+      );
       expect(getModelForTask("RESUME_TAILORING")).toBe(Model.CLAUDE_35_SONNET);
       expect(getModelForTask("INTERVIEW_PREP")).toBe(Model.CLAUDE_35_SONNET);
     });
@@ -76,7 +80,7 @@ describe("Model Router", () => {
 
       // GPT-4o-mini should be ~90% cheaper than GPT-4o
       expect(miniCost).toBeLessThan(gpt4oCost * 0.1);
-      
+
       // GPT-4o-mini should be ~95% cheaper than Claude
       expect(miniCost).toBeLessThan(claudeCost * 0.05);
     });
@@ -84,9 +88,10 @@ describe("Model Router", () => {
 
   describe("estimateTokens", () => {
     it("should estimate tokens from text length", () => {
-      const text = "This is a test sentence with about twenty characters per word.";
+      const text =
+        "This is a test sentence with about twenty characters per word.";
       const tokens = estimateTokens(text);
-      
+
       // Rough estimate: 1 token ≈ 4 characters
       // 63 characters / 4 ≈ 16 tokens
       expect(tokens).toBeGreaterThan(10);
@@ -101,10 +106,10 @@ describe("Model Router", () => {
     it("should scale linearly with text length", () => {
       const shortText = "Hello world";
       const longText = shortText.repeat(10);
-      
+
       const shortTokens = estimateTokens(shortText);
       const longTokens = estimateTokens(longText);
-      
+
       expect(longTokens).toBeGreaterThan(shortTokens * 9);
       expect(longTokens).toBeLessThan(shortTokens * 11);
     });
@@ -115,10 +120,19 @@ describe("Model Router", () => {
       const inputTokens = 500;
       const outputTokens = 200;
 
-      const optimizedCost = estimateCost(Model.GPT_4O_MINI, inputTokens, outputTokens);
-      const unoptimizedCost = estimateCost(Model.GPT_4O, inputTokens, outputTokens);
+      const optimizedCost = estimateCost(
+        Model.GPT_4O_MINI,
+        inputTokens,
+        outputTokens
+      );
+      const unoptimizedCost = estimateCost(
+        Model.GPT_4O,
+        inputTokens,
+        outputTokens
+      );
 
-      const savings = ((unoptimizedCost - optimizedCost) / unoptimizedCost) * 100;
+      const savings =
+        ((unoptimizedCost - optimizedCost) / unoptimizedCost) * 100;
       expect(savings).toBeGreaterThan(90);
     });
 
@@ -127,8 +141,16 @@ describe("Model Router", () => {
       const avgInput = 800;
       const avgOutput = 400;
 
-      const miniCostPerRequest = estimateCost(Model.GPT_4O_MINI, avgInput, avgOutput);
-      const gpt4oCostPerRequest = estimateCost(Model.GPT_4O, avgInput, avgOutput);
+      const miniCostPerRequest = estimateCost(
+        Model.GPT_4O_MINI,
+        avgInput,
+        avgOutput
+      );
+      const gpt4oCostPerRequest = estimateCost(
+        Model.GPT_4O,
+        avgInput,
+        avgOutput
+      );
 
       const miniTotalCost = miniCostPerRequest * requests;
       const gpt4oTotalCost = gpt4oCostPerRequest * requests;

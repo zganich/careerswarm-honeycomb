@@ -1,5 +1,13 @@
 import { useState, useEffect } from "react";
-import { X, HelpCircle, LayoutDashboard, Briefcase, FileText, User, Bookmark } from "lucide-react";
+import {
+  X,
+  HelpCircle,
+  LayoutDashboard,
+  Briefcase,
+  FileText,
+  User,
+  Bookmark,
+} from "lucide-react";
 
 export function FirstTimeHelp() {
   const [showHelp, setShowHelp] = useState(false);
@@ -7,7 +15,7 @@ export function FirstTimeHelp() {
 
   useEffect(() => {
     // Check if user has seen the help overlay
-    const seen = localStorage.getItem('hasSeenNavigationHelp');
+    const seen = localStorage.getItem("hasSeenNavigationHelp");
     if (!seen) {
       // Show after 2 seconds on first visit
       setTimeout(() => setShowHelp(true), 2000);
@@ -17,7 +25,7 @@ export function FirstTimeHelp() {
 
   const dismissHelp = () => {
     setShowHelp(false);
-    localStorage.setItem('hasSeenNavigationHelp', 'true');
+    localStorage.setItem("hasSeenNavigationHelp", "true");
     setHasSeenHelp(true);
   };
 
@@ -129,10 +137,18 @@ interface NavigationHelpItemProps {
   description: string;
 }
 
-function NavigationHelpItem({ icon: Icon, iconColor, bgColor, title, description }: NavigationHelpItemProps) {
+function NavigationHelpItem({
+  icon: Icon,
+  iconColor,
+  bgColor,
+  title,
+  description,
+}: NavigationHelpItemProps) {
   return (
     <div className="flex gap-4 p-4 bg-slate-50 rounded-xl border border-slate-100 hover:border-slate-200 transition-colors">
-      <div className={`w-12 h-12 ${bgColor} rounded-lg flex items-center justify-center flex-shrink-0`}>
+      <div
+        className={`w-12 h-12 ${bgColor} rounded-lg flex items-center justify-center flex-shrink-0`}
+      >
         <Icon className={`w-6 h-6 ${iconColor}`} />
       </div>
       <div className="flex-1">

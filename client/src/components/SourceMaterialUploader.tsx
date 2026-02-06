@@ -1,5 +1,13 @@
 import { useState, useRef } from "react";
-import { Upload, FileText, CheckCircle2, XCircle, Loader2, Link as LinkIcon, AlertCircle } from "lucide-react";
+import {
+  Upload,
+  FileText,
+  CheckCircle2,
+  XCircle,
+  Loader2,
+  Link as LinkIcon,
+  AlertCircle,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -28,7 +36,11 @@ interface UploadResponse {
   results: UploadResult[];
 }
 
-export function SourceMaterialUploader({ onUploadComplete }: { onUploadComplete?: () => void }) {
+export function SourceMaterialUploader({
+  onUploadComplete,
+}: {
+  onUploadComplete?: () => void;
+}) {
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadResults, setUploadResults] = useState<UploadResult[]>([]);
@@ -70,7 +82,9 @@ export function SourceMaterialUploader({ onUploadComplete }: { onUploadComplete?
     // Validate file types
     const validFiles = files.filter(file => {
       const isPDF = file.type === "application/pdf";
-      const isDOCX = file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+      const isDOCX =
+        file.type ===
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
       return isPDF || isDOCX;
     });
 
@@ -80,7 +94,9 @@ export function SourceMaterialUploader({ onUploadComplete }: { onUploadComplete?
     }
 
     if (validFiles.length !== files.length) {
-      toast.warning(`${files.length - validFiles.length} file(s) skipped (only PDF/DOCX allowed)`);
+      toast.warning(
+        `${files.length - validFiles.length} file(s) skipped (only PDF/DOCX allowed)`
+      );
     }
 
     // Upload files
@@ -170,7 +186,7 @@ export function SourceMaterialUploader({ onUploadComplete }: { onUploadComplete?
       if (data.success) {
         toast.success(`Successfully ingested: ${data.title}`);
         setLinkUrl("");
-        
+
         // Call callback if provided
         if (onUploadComplete) {
           onUploadComplete();
@@ -233,7 +249,7 @@ export function SourceMaterialUploader({ onUploadComplete }: { onUploadComplete?
               type="button"
               variant="outline"
               disabled={isUploading}
-              onClick={(e) => {
+              onClick={e => {
                 e.stopPropagation();
                 fileInputRef.current?.click();
               }}
@@ -268,7 +284,9 @@ export function SourceMaterialUploader({ onUploadComplete }: { onUploadComplete?
                   key={index}
                   className={cn(
                     "flex items-center gap-3 p-3 rounded-lg",
-                    result.success ? "bg-green-50 dark:bg-green-950/20" : "bg-red-50 dark:bg-red-950/20"
+                    result.success
+                      ? "bg-green-50 dark:bg-green-950/20"
+                      : "bg-red-50 dark:bg-red-950/20"
                   )}
                 >
                   {result.success ? (
@@ -278,9 +296,13 @@ export function SourceMaterialUploader({ onUploadComplete }: { onUploadComplete?
                   )}
 
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{result.fileName}</p>
+                    <p className="text-sm font-medium truncate">
+                      {result.fileName}
+                    </p>
                     {result.error && (
-                      <p className="text-xs text-red-600 dark:text-red-400 mt-1">{result.error}</p>
+                      <p className="text-xs text-red-600 dark:text-red-400 mt-1">
+                        {result.error}
+                      </p>
                     )}
                     {result.success && result.id && (
                       <p className="text-xs text-muted-foreground mt-1">
@@ -302,7 +324,8 @@ export function SourceMaterialUploader({ onUploadComplete }: { onUploadComplete?
             <div>
               <h3 className="text-lg font-semibold mb-2">Import from URL</h3>
               <p className="text-sm text-muted-foreground">
-                Enter the URL of your personal website, portfolio, or online resume
+                Enter the URL of your personal website, portfolio, or online
+                resume
               </p>
             </div>
 
@@ -311,9 +334,9 @@ export function SourceMaterialUploader({ onUploadComplete }: { onUploadComplete?
                 type="url"
                 placeholder="https://example.com/my-portfolio"
                 value={linkUrl}
-                onChange={(e) => setLinkUrl(e.target.value)}
+                onChange={e => setLinkUrl(e.target.value)}
                 disabled={isIngesting}
-                onKeyDown={(e) => {
+                onKeyDown={e => {
                   if (e.key === "Enter") {
                     handleLinkIngest();
                   }
@@ -338,17 +361,20 @@ export function SourceMaterialUploader({ onUploadComplete }: { onUploadComplete?
             </div>
 
             <p className="text-xs text-muted-foreground">
-              Note: Some websites (like LinkedIn) may block automated scraping. In those cases, use "Save as PDF" and upload the file instead.
+              Note: Some websites (like LinkedIn) may block automated scraping.
+              In those cases, use "Save as PDF" and upload the file instead.
             </p>
           </div>
         </Card>
 
         {/* Link Ingest Result */}
         {linkResult && (
-          <Card className={cn(
-            "p-4",
-            linkResult.success ? "border-green-500" : "border-red-500"
-          )}>
+          <Card
+            className={cn(
+              "p-4",
+              linkResult.success ? "border-green-500" : "border-red-500"
+            )}
+          >
             <div className="flex items-start gap-3">
               {linkResult.success ? (
                 <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />

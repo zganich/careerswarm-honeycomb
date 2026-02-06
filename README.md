@@ -20,6 +20,9 @@ Reference commands (for automation / CI):
 ```bash
 pnpm install
 pnpm dev
+pnpm check
+pnpm lint
+pnpm precommit   # Before commit: secrets + check + format:check + lint
 pnpm test
 npx playwright test
 ```
@@ -66,15 +69,15 @@ npx playwright test
 
 ## 📚 Documentation
 
-| Doc | Purpose |
-|-----|---------|
-| [**CONTEXT_FOR_NEW_CHAT.md**](./CONTEXT_FOR_NEW_CHAT.md) | **Project context and handoff** |
-| [**RAILWAY_DEPLOYMENT_HANDOFF.md**](./RAILWAY_DEPLOYMENT_HANDOFF.md) | Deployment (Railway) |
-| [**SETUP_GUIDE.md**](./SETUP_GUIDE.md) | Quick start (5 min setup) |
-| [**docs/SHIP_CHECKLIST.md**](./docs/SHIP_CHECKLIST.md) | Pre-deploy checklist |
-| [**docs/MONITORING.md**](./docs/MONITORING.md) | CLI monitoring (GitHub, Railway, Cloudflare) |
-| [**docs/OPTIONAL_INFRASTRUCTURE.md**](./docs/OPTIONAL_INFRASTRUCTURE.md) | DNS, Sentry, Redis |
-| [**CHANGELOG.md**](./CHANGELOG.md) | Version history |
+| Doc                                                                      | Purpose                                      |
+| ------------------------------------------------------------------------ | -------------------------------------------- |
+| [**CONTEXT_FOR_NEW_CHAT.md**](./CONTEXT_FOR_NEW_CHAT.md)                 | **Project context and handoff**              |
+| [**RAILWAY_DEPLOYMENT_HANDOFF.md**](./RAILWAY_DEPLOYMENT_HANDOFF.md)     | Deployment (Railway)                         |
+| [**SETUP_GUIDE.md**](./SETUP_GUIDE.md)                                   | Quick start (5 min setup)                    |
+| [**docs/SHIP_CHECKLIST.md**](./docs/SHIP_CHECKLIST.md)                   | Pre-deploy checklist                         |
+| [**docs/MONITORING.md**](./docs/MONITORING.md)                           | CLI monitoring (GitHub, Railway, Cloudflare) |
+| [**docs/OPTIONAL_INFRASTRUCTURE.md**](./docs/OPTIONAL_INFRASTRUCTURE.md) | DNS, Sentry, Redis                           |
+| [**CHANGELOG.md**](./CHANGELOG.md)                                       | Version history                              |
 
 ---
 
@@ -147,6 +150,7 @@ The assistant maintains `.env` for local dev (from `.env.example`) and uses Rail
 ## 🚢 Deployment
 
 **Railway (Production):**
+
 - See [RAILWAY_DEPLOYMENT_HANDOFF.md](./RAILWAY_DEPLOYMENT_HANDOFF.md)
 - DNS: [docs/CLOUDFLARE_DNS.md](./docs/CLOUDFLARE_DNS.md)
 

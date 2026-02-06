@@ -46,6 +46,11 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 - **Debugging (production-only, platform limits):** [docs/DEBUGGING.md](./docs/DEBUGGING.md)
 - **Handoff:** [RAILWAY_DEPLOYMENT_HANDOFF.md](./RAILWAY_DEPLOYMENT_HANDOFF.md)
 
+### Reference (for new chat)
+
+- **[README.md](./README.md)** — Project overview, setup, commands, links to docs.
+- **[todo.md](./todo.md)** — Current state, completed items, high-priority next steps, quick commands.
+
 ### Production-only failures
 
 **Check [docs/DEBUGGING.md](./docs/DEBUGGING.md) first.** Rule: platform limits → env → minimal fix → instrumentation only if still stuck.
@@ -71,30 +76,31 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 
 ## Key Paths
 
-| Area | Paths |
-|------|--------|
-| Resume Roast | `server/roast.ts`, `server/routers.ts` (public.roast), `client/src/pages/ResumeRoast.tsx` |
-| Onboarding | `client/src/pages/onboarding/Welcome.tsx`, `Upload.tsx`, `Extraction.tsx`, `Review.tsx`, `Preferences.tsx`; API: `server/routers.ts` (onboarding.*) |
-| Auth | `server/_core/oauth.ts`, `client/src/pages/DevLogin.tsx` (Sign in), `client/src/_core/hooks/useAuth.ts` |
-| Server / env / LLM | `server/_core/index.ts`, `server/_core/env.ts`, `server/_core/llm.ts` |
-| Database | `drizzle/schema.ts`, `server/db.ts`, `drizzle/` migrations |
-| Tests | Unit: `pnpm test` (Vitest, 122 passing / 51 skipped). E2E: `tests/production-smoke.spec.ts` (22), `tests/production-e2e.spec.ts` (25), `tests/playbook-whats-broken.spec.ts` (8). Roast unit: `server/roaster.test.ts`. Human testing report: [docs/HUMAN_TESTING_REPORT.md](./docs/HUMAN_TESTING_REPORT.md). |
-| Monitoring | `scripts/monitor.mjs`, `scripts/test-cloudflare-api.mjs`. See [docs/MONITORING.md](./docs/MONITORING.md). |
-| CI/CD | `.github/workflows/ci.yml` |
-| Docs | `docs/` (active); `.archive/` (obsolete) |
+| Area               | Paths                                                                                                                                                                                                                                                                                                         |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Resume Roast       | `server/roast.ts`, `server/routers.ts` (public.roast), `client/src/pages/ResumeRoast.tsx`                                                                                                                                                                                                                     |
+| Onboarding         | `client/src/pages/onboarding/Welcome.tsx`, `Upload.tsx`, `Extraction.tsx`, `Review.tsx`, `Preferences.tsx`; API: `server/routers.ts` (onboarding.\*)                                                                                                                                                          |
+| Auth               | `server/_core/oauth.ts`, `client/src/pages/DevLogin.tsx` (Sign in), `client/src/_core/hooks/useAuth.ts`                                                                                                                                                                                                       |
+| Server / env / LLM | `server/_core/index.ts`, `server/_core/env.ts`, `server/_core/llm.ts`                                                                                                                                                                                                                                         |
+| Database           | `drizzle/schema.ts`, `server/db.ts`, `drizzle/` migrations                                                                                                                                                                                                                                                    |
+| Tests              | Unit: `pnpm test` (Vitest, 122 passing / 51 skipped). E2E: `tests/production-smoke.spec.ts` (22), `tests/production-e2e.spec.ts` (25), `tests/playbook-whats-broken.spec.ts` (8). Roast unit: `server/roaster.test.ts`. Human testing report: [docs/HUMAN_TESTING_REPORT.md](./docs/HUMAN_TESTING_REPORT.md). |
+| Monitoring         | `scripts/monitor.mjs`, `scripts/test-cloudflare-api.mjs`. See [docs/MONITORING.md](./docs/MONITORING.md).                                                                                                                                                                                                     |
+| CI/CD              | `.github/workflows/ci.yml`                                                                                                                                                                                                                                                                                    |
+| Docs               | `docs/` (active); `.archive/` (obsolete)                                                                                                                                                                                                                                                                      |
 
 ---
 
 ## Production Status
 
-| Item | Status |
-|------|--------|
-| Dockerfile | ✅ Node 20 |
-| OPENAI_API_KEY | Set in Railway (roast works when key + egress OK) |
-| Dev Login | ✅ Enabled (dev/preview) |
-| E2E / Smoke | Run against production |
-| DNS | ✅ careerswarm.com |
-| Sentry / Redis | ⏭️ Optional |
+| Item           | Status                                                                                       |
+| -------------- | -------------------------------------------------------------------------------------------- |
+| Dockerfile     | ✅ Node 20                                                                                   |
+| OPENAI_API_KEY | Set in Railway (roast works when key + egress OK)                                            |
+| Dev Login      | ✅ Enabled (dev/preview)                                                                     |
+| E2E / Smoke    | Run against production                                                                       |
+| DNS            | ✅ careerswarm.com                                                                           |
+| SENTRY_DSN     | ✅ Set in Railway (careerswarm-backend). See [docs/SENTRY_SETUP.md](./docs/SENTRY_SETUP.md). |
+| Redis          | ⏭️ Optional (GTM worker)                                                                     |
 
 ## Verify (CLI)
 
@@ -115,9 +121,14 @@ curl -s -X POST https://careerswarm.com/api/trpc/public.roast \
 pnpm dev
 pnpm run monitor        # GitHub CI, Railway, app health, Cloudflare (CLI)
 pnpm run monitor:watch  # Poll 60s, macOS notifications on failures
+pnpm run sentry:login   # Authenticate Sentry CLI; pnpm run sentry:info to verify
+pnpm run test:cloudflare
 pnpm build
 pnpm start
 pnpm check
+pnpm lint
+pnpm format:check       # Prettier check only
+pnpm precommit          # Before commit: secrets scan + check + format:check + lint
 pnpm test
 
 npx playwright test tests/production-smoke.spec.ts --config=playwright.production.config.ts
@@ -131,35 +142,44 @@ railway status | logs | variable list | redeploy | up | open
 
 ---
 
-## Last Session Summary (2026-02-05)
+## Last Session Summary (2026-02-06)
 
 ### Most recent (this session)
-- **CLI monitoring:** Added `pnpm run monitor` and `pnpm run monitor:watch` (GitHub CI, Railway, app health, Cloudflare). Scripts: `scripts/monitor.mjs`.
-- **Cloudflare:** Added `scripts/test-cloudflare-api.mjs` and `pnpm run test:cloudflare`. CLOUDFLARE_ZONE_ID + CLOUDFLARE_API_TOKEN in .env.example. Fixed credential-like placeholders in MONITORING.md.
-- **Onboarding E2E:** 5s human-like waits and `logStep()` in production-e2e.spec.ts; fixed "Sign in and stay on dashboard" test (unique email).
-- **Railway:** Deleted duplicate careerswarm project (old Postgres/Redis/web/worker); one project now (careerswarm-app + MySQL-E6eq).
-- **Docs:** MONITORING.md, README, CONTEXT, cursor rules, SHIP_CHECKLIST, todo updated.
+
+- **Pre-commit & lint:** `pnpm precommit` runs `git secrets --scan`, `pnpm check`, `pnpm format:check`, `pnpm lint`. Scripts added: `format:check`, `lint`, `lint:fix`. ESLint 9 + typescript-eslint + React (flat config in `eslint.config.js`); browser-extension and `client/public` ignored. Many rules set to warn so CI passes; can tighten over time. CI: Lint step and `format:check` in lint-and-typecheck job.
+- **Sentry:** Added @sentry/cli (devDep), `pnpm run sentry:login` and `pnpm run sentry:info`. Exact setup docs: [docs/SENTRY_SETUP.md](./docs/SENTRY_SETUP.md) and [docs/CRITICAL_SETUP_CHECKLIST.md](./docs/CRITICAL_SETUP_CHECKLIST.md) — use project **careerswarm-backend**, DSN set in Railway via `railway variable set`. Fallback in docs if `sentry:info` fails. Source maps section added (optional upload for readable stack traces).
+- **Monitor:** CI treated as OK when latest run is **success** or **in progress** (only fail when latest completed with failure). Error handling: consistent return shape from `githubStatus()`, notifications only for real failures.
+- **CONTEXT:** Reference section added (README.md, todo.md). Production Status: SENTRY_DSN set in Railway; Redis optional. Commands: precommit, lint, format:check.
+- **CI fix (earlier this period):** Stripe router test handles tRPC-wrapped errors (`e.cause?.message`) so CI passes when Stripe not configured.
 
 ### Changes Made (earlier):
-1. **Auth: email-only** – Removed Manus/OAuth requirement. Sign-in at `/login` (email → session). `OAUTH_SERVER_URL` no longer required for app boot. Server: `server/_core/env.ts`, `oauth.ts`, `sdk.ts`. Client: DevLogin → “Sign in”, all Sign In links → `/login`; Welcome/Home/DashboardLayout updated. Docs and `.env.example` updated.
-2. **Rules/docs** – “Do not hand off technical work” in `.cursorrules` and CONTEXT; README/todo/CONTEXT aligned; cost-avoidance and OPENAI_API_KEY steps clarified.
-3. **Roaster test** – 20s timeout for roast integration test in `server/roaster.test.ts`.
-4. **E2E** – "From Roast: Build my Master Profile → welcome" fixed (data-testid on Roast page, fallback if CTA not visible). Playwright production reporter outputFolder → `playwright-report-production` to avoid path clash.
-5. **Ship Readiness Plan** – Phase 1: SHIP_CHECKLIST updated. Phase 2: Activity in nav; Complete Your Profile links to /achievements; achievement modal and superpower save verified.
+
+1. **CLI monitoring (Feb 5):** `pnpm run monitor` / `monitor:watch`, `scripts/monitor.mjs`; `pnpm run test:cloudflare`, Cloudflare API script; MONITORING.md, README, CONTEXT updated. Duplicate Railway project removed.
+2. **Auth: email-only** – Removed Manus/OAuth requirement. Sign-in at `/login` (email → session). `OAUTH_SERVER_URL` no longer required for app boot. Server: `server/_core/env.ts`, `oauth.ts`, `sdk.ts`. Client: DevLogin → “Sign in”, all Sign In links → `/login`; Welcome/Home/DashboardLayout updated. Docs and `.env.example` updated.
+3. **Rules/docs** – “Do not hand off technical work” in `.cursorrules` and CONTEXT; README/todo/CONTEXT aligned; cost-avoidance and OPENAI_API_KEY steps clarified.
+   **Roaster test** – 20s timeout for roast integration test in `server/roaster.test.ts`.
+   **E2E** – "From Roast: Build my Master Profile → welcome" fixed (data-testid on Roast page, fallback if CTA not visible). Playwright production reporter outputFolder → `playwright-report-production` to avoid path clash.
+   **Ship Readiness Plan** – Phase 1: SHIP_CHECKLIST updated. Phase 2: Activity in nav; Complete Your Profile links to /achievements; achievement modal and superpower save verified.
 
 ### Status:
+
 - **pnpm check / pnpm test / pnpm build**: passing. **Production smoke**: 22. **Production E2E**: 25. Roast E2E may timeout but passes on flow.
 - **Roast API**: After deploy, returns 503 + friendly message when LLM unavailable (not 500). If still 500: confirm deploy; `railway logs`; OPENAI_API_KEY/egress (see [docs/DEBUGGING.md](./docs/DEBUGGING.md)).
 
 ### Next Steps (for new chat)
-- Run check + build + test and production smoke + E2E before deploy (all currently passing: 22 smoke, 25 E2E).
-- Use `pnpm run monitor` for quick status; `pnpm run test:cloudflare` to verify Cloudflare API.
-- Optional: Sentry DSN in Railway; Redis for GTM.
-- Onboarding E2E: use `tests/production-e2e.spec.ts`; `onboarding-flow.spec.ts` is documented as skipped (see SHIP_CHECKLIST, HUMAN_TESTING_REPORT).
 
-### Production checklist (unchanged)
-- OPENAI_API_KEY in Railway + redeploy; DATABASE_URL for MySQL. See [docs/CRITICAL_SETUP_CHECKLIST.md](./docs/CRITICAL_SETUP_CHECKLIST.md).
+- **Before commit:** Run `pnpm precommit` (secrets scan + typecheck + format check + lint). CI runs the same checks.
+- **Before deploy:** Run `pnpm check`, `pnpm test`, `pnpm build`; then production smoke + E2E. See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md).
+- **Quick status:** `pnpm run monitor` (GitHub CI, Railway, app health, Cloudflare); `pnpm run test:cloudflare` to verify Cloudflare API.
+- **When schema changes:** Run `pnpm db:migrate`; ensure migrations are committed and applied in Railway.
+- **Optional:** Sentry alerts (see [docs/SENTRY_SETUP.md](./docs/SENTRY_SETUP.md)); Redis for GTM worker ([docs/OPTIONAL_INFRASTRUCTURE.md](./docs/OPTIONAL_INFRASTRUCTURE.md)).
+- **Onboarding E2E:** Use `tests/production-e2e.spec.ts`; `onboarding-flow.spec.ts` is documented as skipped (see SHIP_CHECKLIST, HUMAN_TESTING_REPORT).
+- **Backlog:** See [todo.md](./todo.md) for future enhancements (email automation, LinkedIn OAuth, agents, etc.).
+
+### Production checklist
+
+- OPENAI_API_KEY and DATABASE_URL in Railway; SENTRY_DSN set (careerswarm-backend). See [docs/CRITICAL_SETUP_CHECKLIST.md](./docs/CRITICAL_SETUP_CHECKLIST.md).
 
 ---
 
-*Last updated: 2026-02-05. Start a new chat and use this file to restore context.*
+_Last updated: 2026-02-06. Start a new chat and use this file to restore context._

@@ -1,13 +1,23 @@
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
 import { trpc } from "@/lib/trpc";
-
 
 interface PreferencesEditModalProps {
   open: boolean;
@@ -23,13 +33,19 @@ interface PreferencesEditModalProps {
   } | null;
 }
 
-export function PreferencesEditModal({ open, onClose, preferences }: PreferencesEditModalProps) {
+export function PreferencesEditModal({
+  open,
+  onClose,
+  preferences,
+}: PreferencesEditModalProps) {
   const utils = trpc.useUtils();
 
   const [roleTitles, setRoleTitles] = useState<string[]>([]);
   const [industries, setIndustries] = useState<string[]>([]);
   const [companyStages, setCompanyStages] = useState<string[]>([]);
-  const [locationType, setLocationType] = useState<"remote" | "hybrid" | "onsite" | "flexible">("remote");
+  const [locationType, setLocationType] = useState<
+    "remote" | "hybrid" | "onsite" | "flexible"
+  >("remote");
   const [allowedCities, setAllowedCities] = useState<string[]>([]);
   const [minimumBaseSalary, setMinimumBaseSalary] = useState<string>("");
   const [dealBreakers, setDealBreakers] = useState<string[]>([]);
@@ -58,7 +74,7 @@ export function PreferencesEditModal({ open, onClose, preferences }: Preferences
       utils.profile.get.invalidate();
       onClose();
     },
-    onError: (error) => {
+    onError: error => {
       alert(`Failed to update preferences: ${error.message}`);
     },
   });
@@ -75,14 +91,21 @@ export function PreferencesEditModal({ open, onClose, preferences }: Preferences
     });
   };
 
-  const addItem = (value: string, setter: React.Dispatch<React.SetStateAction<string[]>>, inputSetter: React.Dispatch<React.SetStateAction<string>>) => {
+  const addItem = (
+    value: string,
+    setter: React.Dispatch<React.SetStateAction<string[]>>,
+    inputSetter: React.Dispatch<React.SetStateAction<string>>
+  ) => {
     if (value.trim()) {
       setter(prev => [...prev, value.trim()]);
       inputSetter("");
     }
   };
 
-  const removeItem = (index: number, setter: React.Dispatch<React.SetStateAction<string[]>>) => {
+  const removeItem = (
+    index: number,
+    setter: React.Dispatch<React.SetStateAction<string[]>>
+  ) => {
     setter(prev => prev.filter((_, i) => i !== index));
   };
 
@@ -101,21 +124,30 @@ export function PreferencesEditModal({ open, onClose, preferences }: Preferences
               <Input
                 placeholder="e.g., VP Partnerships"
                 value={newRoleTitle}
-                onChange={(e) => setNewRoleTitle(e.target.value)}
-                onKeyDown={(e) => {
+                onChange={e => setNewRoleTitle(e.target.value)}
+                onKeyDown={e => {
                   if (e.key === "Enter") {
                     e.preventDefault();
                     addItem(newRoleTitle, setRoleTitles, setNewRoleTitle);
                   }
                 }}
               />
-              <Button onClick={() => addItem(newRoleTitle, setRoleTitles, setNewRoleTitle)}>Add</Button>
+              <Button
+                onClick={() =>
+                  addItem(newRoleTitle, setRoleTitles, setNewRoleTitle)
+                }
+              >
+                Add
+              </Button>
             </div>
             <div className="flex flex-wrap gap-2 mt-2">
               {roleTitles.map((title, index) => (
                 <Badge key={index} variant="secondary">
                   {title}
-                  <button onClick={() => removeItem(index, setRoleTitles)} className="ml-1">
+                  <button
+                    onClick={() => removeItem(index, setRoleTitles)}
+                    className="ml-1"
+                  >
                     <X className="h-3 w-3" />
                   </button>
                 </Badge>
@@ -130,21 +162,30 @@ export function PreferencesEditModal({ open, onClose, preferences }: Preferences
               <Input
                 placeholder="e.g., SaaS, Fintech"
                 value={newIndustry}
-                onChange={(e) => setNewIndustry(e.target.value)}
-                onKeyDown={(e) => {
+                onChange={e => setNewIndustry(e.target.value)}
+                onKeyDown={e => {
                   if (e.key === "Enter") {
                     e.preventDefault();
                     addItem(newIndustry, setIndustries, setNewIndustry);
                   }
                 }}
               />
-              <Button onClick={() => addItem(newIndustry, setIndustries, setNewIndustry)}>Add</Button>
+              <Button
+                onClick={() =>
+                  addItem(newIndustry, setIndustries, setNewIndustry)
+                }
+              >
+                Add
+              </Button>
             </div>
             <div className="flex flex-wrap gap-2 mt-2">
               {industries.map((industry, index) => (
                 <Badge key={index} variant="secondary">
                   {industry}
-                  <button onClick={() => removeItem(index, setIndustries)} className="ml-1">
+                  <button
+                    onClick={() => removeItem(index, setIndustries)}
+                    className="ml-1"
+                  >
                     <X className="h-3 w-3" />
                   </button>
                 </Badge>
@@ -159,21 +200,34 @@ export function PreferencesEditModal({ open, onClose, preferences }: Preferences
               <Input
                 placeholder="e.g., Series B, Growth"
                 value={newCompanyStage}
-                onChange={(e) => setNewCompanyStage(e.target.value)}
-                onKeyDown={(e) => {
+                onChange={e => setNewCompanyStage(e.target.value)}
+                onKeyDown={e => {
                   if (e.key === "Enter") {
                     e.preventDefault();
-                    addItem(newCompanyStage, setCompanyStages, setNewCompanyStage);
+                    addItem(
+                      newCompanyStage,
+                      setCompanyStages,
+                      setNewCompanyStage
+                    );
                   }
                 }}
               />
-              <Button onClick={() => addItem(newCompanyStage, setCompanyStages, setNewCompanyStage)}>Add</Button>
+              <Button
+                onClick={() =>
+                  addItem(newCompanyStage, setCompanyStages, setNewCompanyStage)
+                }
+              >
+                Add
+              </Button>
             </div>
             <div className="flex flex-wrap gap-2 mt-2">
               {companyStages.map((stage, index) => (
                 <Badge key={index} variant="secondary">
                   {stage}
-                  <button onClick={() => removeItem(index, setCompanyStages)} className="ml-1">
+                  <button
+                    onClick={() => removeItem(index, setCompanyStages)}
+                    className="ml-1"
+                  >
                     <X className="h-3 w-3" />
                   </button>
                 </Badge>
@@ -184,7 +238,10 @@ export function PreferencesEditModal({ open, onClose, preferences }: Preferences
           {/* Location Type */}
           <div>
             <Label>Location Preference</Label>
-            <Select value={locationType} onValueChange={(value: any) => setLocationType(value)}>
+            <Select
+              value={locationType}
+              onValueChange={(value: any) => setLocationType(value)}
+            >
               <SelectTrigger className="mt-2">
                 <SelectValue />
               </SelectTrigger>
@@ -204,21 +261,28 @@ export function PreferencesEditModal({ open, onClose, preferences }: Preferences
               <Input
                 placeholder="e.g., San Francisco, New York"
                 value={newCity}
-                onChange={(e) => setNewCity(e.target.value)}
-                onKeyDown={(e) => {
+                onChange={e => setNewCity(e.target.value)}
+                onKeyDown={e => {
                   if (e.key === "Enter") {
                     e.preventDefault();
                     addItem(newCity, setAllowedCities, setNewCity);
                   }
                 }}
               />
-              <Button onClick={() => addItem(newCity, setAllowedCities, setNewCity)}>Add</Button>
+              <Button
+                onClick={() => addItem(newCity, setAllowedCities, setNewCity)}
+              >
+                Add
+              </Button>
             </div>
             <div className="flex flex-wrap gap-2 mt-2">
               {allowedCities.map((city, index) => (
                 <Badge key={index} variant="secondary">
                   {city}
-                  <button onClick={() => removeItem(index, setAllowedCities)} className="ml-1">
+                  <button
+                    onClick={() => removeItem(index, setAllowedCities)}
+                    className="ml-1"
+                  >
                     <X className="h-3 w-3" />
                   </button>
                 </Badge>
@@ -233,7 +297,7 @@ export function PreferencesEditModal({ open, onClose, preferences }: Preferences
               type="number"
               placeholder="e.g., 150000"
               value={minimumBaseSalary}
-              onChange={(e) => setMinimumBaseSalary(e.target.value)}
+              onChange={e => setMinimumBaseSalary(e.target.value)}
               className="mt-2"
             />
           </div>
@@ -245,21 +309,30 @@ export function PreferencesEditModal({ open, onClose, preferences }: Preferences
               <Input
                 placeholder="e.g., No equity, Required relocation"
                 value={newDealBreaker}
-                onChange={(e) => setNewDealBreaker(e.target.value)}
-                onKeyDown={(e) => {
+                onChange={e => setNewDealBreaker(e.target.value)}
+                onKeyDown={e => {
                   if (e.key === "Enter") {
                     e.preventDefault();
                     addItem(newDealBreaker, setDealBreakers, setNewDealBreaker);
                   }
                 }}
               />
-              <Button onClick={() => addItem(newDealBreaker, setDealBreakers, setNewDealBreaker)}>Add</Button>
+              <Button
+                onClick={() =>
+                  addItem(newDealBreaker, setDealBreakers, setNewDealBreaker)
+                }
+              >
+                Add
+              </Button>
             </div>
             <div className="flex flex-wrap gap-2 mt-2">
               {dealBreakers.map((breaker, index) => (
                 <Badge key={index} variant="destructive">
                   {breaker}
-                  <button onClick={() => removeItem(index, setDealBreakers)} className="ml-1">
+                  <button
+                    onClick={() => removeItem(index, setDealBreakers)}
+                    className="ml-1"
+                  >
                     <X className="h-3 w-3" />
                   </button>
                 </Badge>

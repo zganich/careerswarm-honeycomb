@@ -17,8 +17,12 @@ const root = path.resolve(__dirname, "..");
 config({ path: path.join(root, ".env") });
 
 if (!process.env.DATABASE_URL) {
-  console.error("DATABASE_URL is not set. Create a .env file from .env.example and set DATABASE_URL to your MySQL connection string.");
-  console.error("Example: DATABASE_URL=mysql://user:password@localhost:3306/your_database");
+  console.error(
+    "DATABASE_URL is not set. Create a .env file from .env.example and set DATABASE_URL to your MySQL connection string."
+  );
+  console.error(
+    "Example: DATABASE_URL=mysql://user:password@localhost:3306/your_database"
+  );
   process.exit(1);
 }
 
@@ -61,17 +65,23 @@ await ensureMasterProfileTables();
 
 // MySQL needs multipleStatements=true so migration files with multiple SQL statements run
 const url = process.env.DATABASE_URL;
-const migrateUrl = url.includes("?") ? `${url}&multipleStatements=true` : `${url}?multipleStatements=true`;
+const migrateUrl = url.includes("?")
+  ? `${url}&multipleStatements=true`
+  : `${url}?multipleStatements=true`;
 const env = { ...process.env, DATABASE_URL: migrateUrl };
 
-const result = spawnSync(
-  "pnpm",
-  ["exec", "drizzle-kit", "migrate"],
-  { cwd: root, stdio: "inherit", env }
-);
+const result = spawnSync("pnpm", ["exec", "drizzle-kit", "migrate"], {
+  cwd: root,
+  stdio: "inherit",
+  env,
+});
 
 if (result.status !== 0) {
-  console.error("\nIf you see ECONNREFUSED: ensure MySQL is running and DATABASE_URL in .env is correct.");
-  console.error("Example: DATABASE_URL=mysql://user:password@localhost:3306/your_database");
+  console.error(
+    "\nIf you see ECONNREFUSED: ensure MySQL is running and DATABASE_URL in .env is correct."
+  );
+  console.error(
+    "Example: DATABASE_URL=mysql://user:password@localhost:3306/your_database"
+  );
 }
 process.exit(result.status ?? 1);
