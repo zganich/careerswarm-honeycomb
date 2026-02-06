@@ -1,32 +1,58 @@
 # Sentry Error Monitoring Setup
 
-CareerSwarm uses Sentry for error tracking and alerting on both frontend and backend. **Use CLI every time there is access.** Railway: use CLI for redeploy, logs, variable list. Sentry project/DSN: one-time setup in Sentry UI (no CLI for project creation).
+CareerSwarm uses Sentry for error tracking on both frontend and backend. Use the existing project **careerswarm-backend** in the **careerswarm** organization. Do not create a new project.
 
-## Quick Setup
+## Exact setup (no choices)
 
-### 1. Create Sentry Project (Sentry UI)
+Do these steps in order.
 
-1. Go to [sentry.io](https://sentry.io) and sign in (or create an account).
-2. Create a new project → choose **Express** (Node.js).
-3. In the project: **Settings → Client Keys (DSN)** and copy the DSN.
-
-### 2. Configure Railway
-
-Railway CLI cannot set variables. Use dashboard (`railway open` → Variables) or [Railway API](https://docs.railway.app/guides/manage-variables); then redeploy via CLI:
+### 1. Authenticate Sentry CLI
 
 ```bash
-railway open    # Opens project in browser → select careerswarm-app → Variables
-# In the UI: add SENTRY_DSN = https://xxx@xxx.ingest.sentry.io/xxx
-
-railway redeploy       # Redeploy so the app picks up the new variable
-railway logs           # Confirm "Sentry initialized" appears on startup
-railway variable list  # Optional: verify SENTRY_DSN is listed
+pnpm run sentry:login
 ```
 
-### 3. Verify Integration
+When prompted: open the URL in a browser, create an auth token at that page (or at [sentry.io/settings/account/api/auth-tokens/](https://sentry.io/settings/account/api/auth-tokens/)), paste the token into the terminal. It is stored in `~/.sentryclirc`.
 
-- **CLI:** `railway logs` and look for `Sentry initialized` when the app starts.
-- **Sentry UI:** Trigger a test error and confirm the event appears in the Sentry project.
+### 2. Verify CLI
+
+```bash
+pnpm run sentry:info
+```
+
+Use this script (it runs the project's `@sentry/cli` from package.json); a globally installed `sentry-cli` may be older and not support the `info` command. You must see an authenticated state (e.g. "Method: Token"), not "Unauthorized".
+
+### 3. Get the DSN from careerswarm-backend
+
+- Go to: **Sentry** → **Settings** (gear icon) → organization **careerswarm** → **Projects** → **careerswarm-backend**.
+- In the left sidebar for that project, click **Client Keys (DSN)**.
+- Copy the **DSN** value (e.g. `https://xxxx@xxxx.ingest.sentry.io/xxxx`).
+
+Direct link (if logged in):  
+https://careerswarm.sentry.io/settings/careerswarm/projects/careerswarm-backend/keys/
+
+### 4. Set SENTRY_DSN in Railway
+
+- Run: `railway open`
+- In the browser: select the **careerswarm-app** service.
+- Open the **Variables** tab.
+- Add a new variable: name `SENTRY_DSN`, value = the DSN you copied (no quotes). Save.
+
+### 5. Redeploy and verify
+
+```bash
+railway redeploy
+railway logs | grep -i sentry
+```
+
+You must see a line containing "Sentry initialized" after the app starts.
+
+### 6. sentry-cli defaults (optional, for releases/source maps)
+
+So `sentry-cli` targets the right project without extra flags, set in `.env` (or in `~/.sentryclirc` under `[defaults]`):
+
+- `SENTRY_ORG=careerswarm`
+- `SENTRY_PROJECT=careerswarm-backend`
 
 ## Alert Configuration
 

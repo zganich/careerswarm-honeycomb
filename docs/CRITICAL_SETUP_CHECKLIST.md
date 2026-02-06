@@ -66,19 +66,46 @@ After adding secrets, push a commit to main. The CI workflow should:
 
 **Impact:** No visibility into production errors. Bugs may go unnoticed.
 
-### Steps:
-1. Go to [sentry.io](https://sentry.io) and sign in/create account
-2. Create new project:
-   - Platform: Node.js (Express)
-   - Project name: `careerswarm-production`
-3. Copy the DSN from Settings → Client Keys (DSN)
-4. **Use CLI when you can.** Set variable via dashboard or Railway API (CLI cannot set variables): `railway open` → careerswarm-app → Variables. Add: `SENTRY_DSN=https://xxx@xxx.ingest.sentry.io/xxx`
-5. Redeploy via CLI: `railway redeploy`
+Use the existing Sentry project **careerswarm-backend** (org **careerswarm**). Do not create a new project.
 
-### Verify (CLI):
-```bash
-railway logs | grep -i sentry   # Should show "Sentry initialized" on startup
-```
+### Steps (do in this order):
+
+1. **Authenticate Sentry CLI**
+   ```bash
+   pnpm run sentry:login
+   ```
+   When prompted: open the URL in a browser, create an auth token at the page it shows (or use [sentry.io/settings/account/api/auth-tokens/](https://sentry.io/settings/account/api/auth-tokens/)), paste the token into the terminal. It is stored in `~/.sentryclirc`.
+
+2. **Verify CLI**
+   ```bash
+   pnpm run sentry:info
+   ```
+   This runs the project's Sentry CLI (`@sentry/cli` in package.json); do not use a globally installed `sentry-cli`, which may be older and lack the `info` command. You must see "Method: Token" (or similar authenticated state), not "Unauthorized".
+
+3. **Get the DSN from careerswarm-backend**
+   - Open https://careerswarm.sentry.io/settings/careerswarm/projects/careerswarm-backend/keys/
+   - Or: Sentry → Settings (gear) → Organization **careerswarm** → **Projects** → click **careerswarm-backend** → **Client Keys (DSN)** in the left sidebar.
+   - Copy the **DSN** value (looks like `https://xxxx@xxxx.ingest.sentry.io/xxxx`).
+
+4. **Set SENTRY_DSN in Railway**
+   - Run: `railway open`
+   - In the browser: select the **careerswarm-app** service (not the MySQL service).
+   - Go to the **Variables** tab.
+   - Click **+ New Variable** (or **Add Variable**).
+   - Name: `SENTRY_DSN`
+   - Value: paste the DSN you copied (no quotes).
+   - Save / Apply.
+
+5. **Redeploy**
+   ```bash
+   railway redeploy
+   ```
+
+6. **Verify**
+   ```bash
+   railway logs | grep -i sentry
+   ```
+   You must see a line containing "Sentry initialized" after the app starts.
 
 ### Recommended Alerts (in Sentry Dashboard → Alerts):
 - **Error Spike:** >10 errors in 1 hour → Email

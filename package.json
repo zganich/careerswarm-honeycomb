@@ -21,7 +21,9 @@
     "verify-env": "node scripts/verify-env.mjs",
     "monitor": "node scripts/monitor.mjs",
     "monitor:watch": "node scripts/monitor.mjs --watch",
-    "test:cloudflare": "node scripts/test-cloudflare-api.mjs"
+    "test:cloudflare": "node scripts/test-cloudflare-api.mjs",
+    "sentry:login": "sentry-cli login",
+    "sentry:info": "sentry-cli info"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.693.0",
@@ -117,6 +119,7 @@
   "devDependencies": {
     "@builder.io/vite-plugin-jsx-loc": "^0.1.1",
     "@playwright/test": "1.58.0",
+    "@sentry/cli": "^3.1.0",
     "@tailwindcss/postcss": "^4.1.18",
     "@tailwindcss/typography": "^0.5.15",
     "@tailwindcss/vite": "^4.1.3",
