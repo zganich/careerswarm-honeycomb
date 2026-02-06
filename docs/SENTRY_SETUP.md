@@ -20,7 +20,7 @@ When prompted: open the URL in a browser, create an auth token at that page (or 
 pnpm run sentry:info
 ```
 
-Use this script (it runs the project's `@sentry/cli` from package.json); a globally installed `sentry-cli` may be older and not support the `info` command. You must see an authenticated state (e.g. "Method: Token"), not "Unauthorized".
+This uses the project's `@sentry/cli` (see package.json). You must see an authenticated state (e.g. "Method: Token"), not "Unauthorized". If the command fails (e.g. "unknown command"), run `pnpm install` and try again; if it still fails, a successful login in step 1 is enough—continue to step 3.
 
 ### 3. Get the DSN from careerswarm-backend
 

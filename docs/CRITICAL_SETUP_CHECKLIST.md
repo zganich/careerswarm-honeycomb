@@ -80,7 +80,7 @@ Use the existing Sentry project **careerswarm-backend** (org **careerswarm**). D
    ```bash
    pnpm run sentry:info
    ```
-   This runs the project's Sentry CLI (`@sentry/cli` in package.json); do not use a globally installed `sentry-cli`, which may be older and lack the `info` command. You must see "Method: Token" (or similar authenticated state), not "Unauthorized".
+   This runs the project's Sentry CLI (`@sentry/cli` in package.json). You must see "Method: Token" (or similar authenticated state), not "Unauthorized". If the command fails (e.g. "unknown command"), run `pnpm install` and try again; if it still fails, a successful login in step 1 is sufficient—continue to step 3.
 
 3. **Get the DSN from careerswarm-backend**
    - Open https://careerswarm.sentry.io/settings/careerswarm/projects/careerswarm-backend/keys/
