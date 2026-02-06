@@ -13,4 +13,4 @@ When an OpenClaw agent finishes work and hands off, it can append a short summar
 
 ---
 
-*(Entries below this line.)*
+_(Entries below this line.)_

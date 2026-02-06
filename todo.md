@@ -1,7 +1,7 @@
 # CareerSwarm TODO
 
-**Last Updated:** February 5, 2026  
-**Status:** Production-ready, all checks passing; E2E 25/25 + playbook (human/browser) verified 3x; redeployed.
+**Last Updated:** February 6, 2026  
+**Status:** Production-ready, all checks passing; E2E 25/25; OpenClaw configured (agents, cron, ideal workflow doc).
 
 ---
 
@@ -20,6 +20,14 @@
 The assistant runs these checks when finishing work; no need for the user to run them. Human testing report: [docs/HUMAN_TESTING_REPORT.md](./docs/HUMAN_TESTING_REPORT.md).
 
 ---
+
+## Completed (February 6, 2026)
+
+- [x] OpenClaw role agents (Ship, Server, Client, Docs, Review, Business) + identities; workspace = this repo
+- [x] OpenClaw cron: careerswarm-monitor (30m), careerswarm-ship-check (6h), careerswarm-future-shoestring (weekly)
+- [x] TASKS.md, TOOLS.md, docs/OPENCLAW_FUTURE_SHOESTRING.md, docs/IDEAL_WORKFLOW_AND_ASSIGNMENTS.md, docs/DOCS_INDEX.md
+- [x] SECURITY.md, CONTRIBUTING.md, .github/dependabot.yml, scripts/doctor.mjs (`pnpm run doctor`)
+- [x] docs/OPENCLAW_INSPIRATION.md (ideas + sketchiness); CONTEXT standing instruction: check OPENCLAW_HANDOFF before commit
 
 ## Completed (February 5, 2026)
 

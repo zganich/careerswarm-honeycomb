@@ -18,6 +18,8 @@
 
 4. **Do not hand off technical work:** Run commands, edit `.env`/config, run tests, and verify yourself. Do not ask the user to run steps or edit env; use Railway CLI where possible and keep README/CONTEXT accurate for what the assistant does.
 
+5. **Before committing:** Check [OPENCLAW_HANDOFF.md](./OPENCLAW_HANDOFF.md) for recent OpenClaw work so its fixes are included or followed up.
+
 ---
 
 ## What It Is
@@ -45,12 +47,13 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 - **Checklist (env, auth, Sentry):** [docs/CRITICAL_SETUP_CHECKLIST.md](./docs/CRITICAL_SETUP_CHECKLIST.md)
 - **Debugging (production-only, platform limits):** [docs/DEBUGGING.md](./docs/DEBUGGING.md)
 - **Handoff:** [RAILWAY_DEPLOYMENT_HANDOFF.md](./RAILWAY_DEPLOYMENT_HANDOFF.md)
-- **OpenClaw (parallel assistant):** [docs/OPENCLAW_INTEGRATION.md](./docs/OPENCLAW_INTEGRATION.md) — **installed and configured** (workspace = this repo, daemon on 18789, skill `skills/careerswarm/SKILL.md`). One-time: `openclaw configure` to add model auth. WebChat: http://127.0.0.1:18789/. Sync via this file and [todo.md](./todo.md). **Agents:** Ship (gate/monitor), Server, Client, Docs, **Review** (better code + explain why), **Business** (GTM, strategy, positioning, in-app `server/agents/gtm/`). **When the task is GTM, strategy, positioning, or improving the in-app business/GTM agents, recommend or hand off to the OpenClaw Business agent** for suggestions and reasoning; see [docs/BUSINESS_AGENT_IMPROVEMENTS.md](./docs/BUSINESS_AGENT_IMPROVEMENTS.md).
+- **OpenClaw (parallel assistant):** [docs/OPENCLAW_INTEGRATION.md](./docs/OPENCLAW_INTEGRATION.md) — **installed and configured** (workspace = this repo, daemon on 18789, skill `skills/careerswarm/SKILL.md`). One-time: `openclaw configure` to add model auth. WebChat: http://127.0.0.1:18789/. Sync via this file and [todo.md](./todo.md). **Agents:** Ship (gate/monitor), Server, Client, Docs, **Review** (better code + explain why), **Business** (GTM, strategy, positioning, in-app `server/agents/gtm/`). **Cron jobs:** monitor every 30m, ship:check every 6h, weekly future/shoestring (Business); see integration doc § Scheduled jobs. **Future/shoestring:** [docs/OPENCLAW_FUTURE_SHOESTRING.md](./docs/OPENCLAW_FUTURE_SHOESTRING.md). **When the task is GTM, strategy, positioning, or improving the in-app business/GTM agents, recommend or hand off to the OpenClaw Business agent** for suggestions and reasoning; see [docs/BUSINESS_AGENT_IMPROVEMENTS.md](./docs/BUSINESS_AGENT_IMPROVEMENTS.md).
 
 ### Reference (for new chat)
 
 - **[README.md](./README.md)** — Project overview, setup, commands, links to docs.
 - **[todo.md](./todo.md)** — Current state, completed items, high-priority next steps, quick commands.
+- **[docs/IDEAL_WORKFLOW_AND_ASSIGNMENTS.md](./docs/IDEAL_WORKFLOW_AND_ASSIGNMENTS.md)** — What Cursor needs to be effective; task and agent assignments (Ship, Server, Client, Docs, Review, Business, Cursor, you).
 
 ### Production-only failures
 
@@ -167,15 +170,28 @@ railway status | logs | variable list | redeploy | up | open
 - **pnpm check / pnpm test / pnpm build**: passing. **Production smoke**: 22. **Production E2E**: 25. Roast E2E may timeout but passes on flow.
 - **Roast API**: After deploy, returns 503 + friendly message when LLM unavailable (not 500). If still 500: confirm deploy; `railway logs`; OPENAI_API_KEY/egress (see [docs/DEBUGGING.md](./docs/DEBUGGING.md)).
 
+---
+
+## Last Session (2026-02-06)
+
+**OpenClaw and workflow:**
+
+- **OpenClaw** configured: role agents (Ship, Server, Client, Docs, Review, Business) added with identities; workspace = this repo.
+- **Cron jobs** (OpenClaw): `careerswarm-monitor` every 30m (Ship), `careerswarm-ship-check` every 6h (Ship), `careerswarm-future-shoestring` weekly (Business). All append to OPENCLAW_HANDOFF on completion/failure; none commit.
+- **Docs added:** TASKS.md (named tasks + handoff), TOOLS.md (agents + commands), docs/OPENCLAW_FUTURE_SHOESTRING.md (future/shoestring brief), docs/OPENCLAW_INSPIRATION.md (ideas + sketchiness), docs/IDEAL_WORKFLOW_AND_ASSIGNMENTS.md (what Cursor needs; task/agent assignments), docs/DOCS_INDEX.md (index of all docs), SECURITY.md (reporting vulns), CONTRIBUTING.md (doctor, precommit, PR), .github/dependabot.yml (npm + actions weekly).
+- **Script:** `pnpm run doctor` — verify-env + check + build (no secrets printed). OPENCLAW_INTEGRATION and CONTEXT updated with doctor, delegation (sessions_send), and link to ideal workflow.
+- **Standing instruction:** Before committing, check OPENCLAW_HANDOFF.md for recent OpenClaw work.
+
+**Sync:** CONTEXT and todo updated; commit and push done. Next chat: read CONTEXT, todo, and [docs/IDEAL_WORKFLOW_AND_ASSIGNMENTS.md](./docs/IDEAL_WORKFLOW_AND_ASSIGNMENTS.md) for who does what.
+
 ### Next Steps (for new chat)
 
-- **Before commit:** Run `pnpm precommit` (secrets scan + typecheck + format check + lint). CI runs the same checks.
+- **Before commit:** Run `pnpm precommit`. Check [OPENCLAW_HANDOFF.md](./OPENCLAW_HANDOFF.md) for OpenClaw work to include.
 - **Before deploy:** Run `pnpm check`, `pnpm test`, `pnpm build`; then production smoke + E2E. See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md).
-- **Quick status:** `pnpm run monitor` (GitHub CI, Railway, app health, Cloudflare); `pnpm run test:cloudflare` to verify Cloudflare API.
+- **Quick status:** `pnpm run monitor`; `pnpm run doctor` for local sanity.
+- **OpenClaw:** WebChat http://127.0.0.1:18789/; cron runs monitor (30m), ship:check (6h), future/shoestring (weekly). Task/agent map: [docs/IDEAL_WORKFLOW_AND_ASSIGNMENTS.md](./docs/IDEAL_WORKFLOW_AND_ASSIGNMENTS.md).
 - **When schema changes:** Run `pnpm db:migrate`; ensure migrations are committed and applied in Railway.
-- **Optional:** Sentry alerts (see [docs/SENTRY_SETUP.md](./docs/SENTRY_SETUP.md)); Redis for GTM worker ([docs/OPTIONAL_INFRASTRUCTURE.md](./docs/OPTIONAL_INFRASTRUCTURE.md)).
-- **Onboarding E2E:** Use `tests/production-e2e.spec.ts`; `onboarding-flow.spec.ts` is documented as skipped (see SHIP_CHECKLIST, HUMAN_TESTING_REPORT).
-- **Backlog:** See [todo.md](./todo.md) for future enhancements (email automation, LinkedIn OAuth, agents, etc.).
+- **Backlog:** See [todo.md](./todo.md).
 
 ### Production checklist
 

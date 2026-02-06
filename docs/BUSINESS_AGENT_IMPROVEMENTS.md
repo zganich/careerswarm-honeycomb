@@ -43,7 +43,7 @@ You are the Business agent. Focus on GTM, strategy, positioning, pricing, and th
 
 - **Logging** — Log step name, input hash (or key fields), and outcome (ok/fail, count) in the GTM pipeline so you can trace runs and debug. Avoid logging full PII.
 - **Error handling** — Pipeline steps should return a consistent shape (e.g. `{ ok, message?, count? }`); on LLM or DB failure, return `ok: false` and a short message so the queue or caller can retry or alert.
-- **Timeouts** — Use the same LLM timeout as roast (see server/_core/llm.ts) for all agent calls so one slow step doesn’t hang the pipeline.
+- **Timeouts** — Use the same LLM timeout as roast (see server/\_core/llm.ts) for all agent calls so one slow step doesn’t hang the pipeline.
 
 ### Schema and types
 

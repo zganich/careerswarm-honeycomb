@@ -69,15 +69,21 @@ npx playwright test
 
 ## 📚 Documentation
 
-| Doc                                                                      | Purpose                                      |
-| ------------------------------------------------------------------------ | -------------------------------------------- |
-| [**CONTEXT_FOR_NEW_CHAT.md**](./CONTEXT_FOR_NEW_CHAT.md)                 | **Project context and handoff**              |
-| [**RAILWAY_DEPLOYMENT_HANDOFF.md**](./RAILWAY_DEPLOYMENT_HANDOFF.md)     | Deployment (Railway)                         |
-| [**SETUP_GUIDE.md**](./SETUP_GUIDE.md)                                   | Quick start (5 min setup)                    |
-| [**docs/SHIP_CHECKLIST.md**](./docs/SHIP_CHECKLIST.md)                   | Pre-deploy checklist                         |
-| [**docs/MONITORING.md**](./docs/MONITORING.md)                           | CLI monitoring (GitHub, Railway, Cloudflare) |
-| [**docs/OPTIONAL_INFRASTRUCTURE.md**](./docs/OPTIONAL_INFRASTRUCTURE.md) | DNS, Sentry, Redis                           |
-| [**CHANGELOG.md**](./CHANGELOG.md)                                       | Version history                              |
+| Doc                                                                                    | Purpose                                       |
+| -------------------------------------------------------------------------------------- | --------------------------------------------- |
+| [**CONTEXT_FOR_NEW_CHAT.md**](./CONTEXT_FOR_NEW_CHAT.md)                               | **Project context and handoff**               |
+| [**docs/IDEAL_WORKFLOW_AND_ASSIGNMENTS.md**](./docs/IDEAL_WORKFLOW_AND_ASSIGNMENTS.md) | **What Cursor needs; task/agent assignments** |
+| [**TASKS.md**](./TASKS.md)                                                             | Named tasks (monitor, ship-check, etc.)       |
+| [**TOOLS.md**](./TOOLS.md)                                                             | Agents and commands (doctor, monitor)         |
+| [**CONTRIBUTING.md**](./CONTRIBUTING.md)                                               | How to contribute (doctor, precommit, PR)     |
+| [**SECURITY.md**](./SECURITY.md)                                                       | Reporting vulnerabilities                     |
+| [**docs/DOCS_INDEX.md**](./docs/DOCS_INDEX.md)                                         | **Index of all docs**                         |
+| [**RAILWAY_DEPLOYMENT_HANDOFF.md**](./RAILWAY_DEPLOYMENT_HANDOFF.md)                   | Deployment (Railway)                          |
+| [**SETUP_GUIDE.md**](./SETUP_GUIDE.md)                                                 | Quick start (5 min setup)                     |
+| [**docs/SHIP_CHECKLIST.md**](./docs/SHIP_CHECKLIST.md)                                 | Pre-deploy checklist                          |
+| [**docs/MONITORING.md**](./docs/MONITORING.md)                                         | CLI monitoring (GitHub, Railway, Cloudflare)  |
+| [**docs/OPTIONAL_INFRASTRUCTURE.md**](./docs/OPTIONAL_INFRASTRUCTURE.md)               | DNS, Sentry, Redis                            |
+| [**CHANGELOG.md**](./CHANGELOG.md)                                                     | Version history                               |
 
 ---
 

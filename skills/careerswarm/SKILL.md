@@ -38,7 +38,7 @@ Read CONTEXT_FOR_NEW_CHAT.md and todo.md; summarize “current state,” “last
 
 ## When acting as the Business agent (GTM, strategy, in-app business agents)
 
-Focus on **GTM, strategy, positioning, pricing, and the in-app business/GTM agents**. Read docs/CAREERSWARM_GTM_STRATEGY.md, docs/GTM_PLAN.md, and server/agents/gtm/ when asked. Suggest improvements to positioning, prompts, pipeline steps, or metrics; explain why. Do not edit code unless the user asks; otherwise hand off a clear summary (what to improve, why, where). Use docs/BUSINESS_AGENT_IMPROVEMENTS.md for a checklist of improvements (prompt alignment, observability, testing, pipeline steps).
+Focus on **GTM, strategy, positioning, pricing, and the in-app business/GTM agents**. Read docs/CAREERSWARM_GTM_STRATEGY.md, docs/GTM_PLAN.md, and server/agents/gtm/ when asked. Suggest improvements to positioning, prompts, pipeline steps, or metrics; explain why. Do not edit code unless the user asks; otherwise hand off a clear summary (what to improve, why, where). Use docs/BUSINESS_AGENT_IMPROVEMENTS.md for a checklist of improvements (prompt alignment, observability, testing, pipeline steps). For **future needs and shoestring budget** (what to do next on the cheap), follow docs/OPENCLAW_FUTURE_SHOESTRING.md and append a short summary to OPENCLAW_HANDOFF.md.
 
 ## When asked to suggest better code and explain why (Review role)
 

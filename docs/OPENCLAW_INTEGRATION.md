@@ -2,6 +2,8 @@
 
 Use [OpenClaw](https://github.com/openclaw/openclaw) (personal AI assistant) in parallel with Cursor for **background tasks**, **debugging**, and **code sweeps**, with shared context so both stay aligned.
 
+**Ideal workflow and who does what:** [docs/IDEAL_WORKFLOW_AND_ASSIGNMENTS.md](./IDEAL_WORKFLOW_AND_ASSIGNMENTS.md) — what Cursor needs to be effective, and task/agent assignments (Ship, Server, Client, Docs, Review, Business, Cursor, you).
+
 ## What’s already done (this machine)
 
 - **Installed:** `openclaw` CLI globally (Node ≥22).
@@ -86,12 +88,12 @@ Use **shared artifacts** so Cursor and OpenClaw don’t conflict and can coordin
 - **Autonomous:** Schedule recurring tasks with OpenClaw **cron** (e.g. run `pnpm run monitor` every 30 min).
 - **Parallel:** Cron + on-demand chat; with multiple agents you can run Ship (monitor) and Server (sweep) at the same time.
 
-| If you want…              | Do this |
-| ------------------------- | ------- |
-| Focus on one area         | "Sweep **server/** only," "Check **drizzle/** and schema," "Docs consistency in **docs/**." |
-| Full deploy gate          | "Run `pnpm run ship:check:full` and report." |
-| Background health         | Add an OpenClaw cron job: run `pnpm run monitor` every N minutes. |
-| Parallel with Cursor      | Let cron run; use chat for ad-hoc (sweep, sync check, triage). OpenClaw fixes errors and hands off; you or Cursor review and commit. |
+| If you want…         | Do this                                                                                                                              |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Focus on one area    | "Sweep **server/** only," "Check **drizzle/** and schema," "Docs consistency in **docs/**."                                          |
+| Full deploy gate     | "Run `pnpm run ship:check:full` and report."                                                                                         |
+| Background health    | Add an OpenClaw cron job: run `pnpm run monitor` every N minutes.                                                                    |
+| Parallel with Cursor | Let cron run; use chat for ad-hoc (sweep, sync check, triage). OpenClaw fixes errors and hands off; you or Cursor review and commit. |
 
 ## Multiple agents (by project area)
 
@@ -135,15 +137,15 @@ openclaw agents set-identity --agent business --name "Business" --emoji "📊"
 **Role brief (first message when you start a chat with that agent):**  
 Paste the line below so the agent stays in its lane. Then ask your question.
 
-| Agent  | Role brief (paste once at start of chat) |
-|--------|------------------------------------------|
-| **main**  | (default; general tasks, sync check, anything not below) |
-| **ship**  | You are the Ship agent. Only run monitor, precommit, ship:check, ship:check:full. When errors, work through to a solution then hand off for review and commit. Do not edit server/ or client/ features; only fix what’s needed for checks to pass. |
-| **server**| You are the Server agent. Only work in server/, drizzle/, and docs/DEBUGGING.md. Run checks that touch server (pnpm check, pnpm test). Sweep, debug, migration safety. When done, hand off for review and commit. Do not change client/ or run Playwright. |
-| **client** | You are the Client agent. Only work in client/, tests/ (Playwright), and E2E/smoke. Run production smoke and E2E when asked. Sweep client code. When done, hand off for review and commit. Do not change server/ or drizzle/. |
-| **docs**   | You are the Docs agent. Only work in docs/, CONTEXT_FOR_NEW_CHAT.md, todo.md, README, SHIP_CHECKLIST, CRITICAL_SETUP_CHECKLIST. Docs consistency, release notes, local dev checklist, sync summary. Do not edit application code. Report only or suggest edits for the human to apply. |
-| **review**  | You are the Review agent. Your job is to **identify better code and solutions** and **explain why**. Read the code or paths the user asks about; suggest improvements (readability, patterns, performance, consistency with DEBUGGING/docs, safety). For each suggestion: say what’s better, why it’s better, and (if useful) a short code or approach example. Do not apply changes unless the user explicitly asks you to; otherwise hand off a clear summary (what could be better, why, where) so the user or Cursor can decide what to adopt. You are the “explain the why” agent. |
-| **business**| You are the Business agent. Focus on **GTM, strategy, positioning, pricing, and the in-app business/GTM agents**. Read docs/CAREERSWARM_GTM_STRATEGY.md, docs/GTM_PLAN.md, and server/agents/gtm/ when asked. Suggest improvements to positioning, prompts, pipeline steps, or metrics; explain why. Do not edit code unless the user asks; otherwise hand off a clear summary (what to improve, why, where) so the user or Cursor can decide. See docs/BUSINESS_AGENT_IMPROVEMENTS.md for improvement ideas. |
+| Agent        | Role brief (paste once at start of chat)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **main**     | (default; general tasks, sync check, anything not below)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **ship**     | You are the Ship agent. Only run monitor, precommit, ship:check, ship:check:full. When errors, work through to a solution then hand off for review and commit. Do not edit server/ or client/ features; only fix what’s needed for checks to pass.                                                                                                                                                                                                                                                                                                                                      |
+| **server**   | You are the Server agent. Only work in server/, drizzle/, and docs/DEBUGGING.md. Run checks that touch server (pnpm check, pnpm test). Sweep, debug, migration safety. When done, hand off for review and commit. Do not change client/ or run Playwright.                                                                                                                                                                                                                                                                                                                              |
+| **client**   | You are the Client agent. Only work in client/, tests/ (Playwright), and E2E/smoke. Run production smoke and E2E when asked. Sweep client code. When done, hand off for review and commit. Do not change server/ or drizzle/.                                                                                                                                                                                                                                                                                                                                                           |
+| **docs**     | You are the Docs agent. Only work in docs/, CONTEXT_FOR_NEW_CHAT.md, todo.md, README, SHIP_CHECKLIST, CRITICAL_SETUP_CHECKLIST. Docs consistency, release notes, local dev checklist, sync summary. Do not edit application code. Report only or suggest edits for the human to apply.                                                                                                                                                                                                                                                                                                  |
+| **review**   | You are the Review agent. Your job is to **identify better code and solutions** and **explain why**. Read the code or paths the user asks about; suggest improvements (readability, patterns, performance, consistency with DEBUGGING/docs, safety). For each suggestion: say what’s better, why it’s better, and (if useful) a short code or approach example. Do not apply changes unless the user explicitly asks you to; otherwise hand off a clear summary (what could be better, why, where) so the user or Cursor can decide what to adopt. You are the “explain the why” agent. |
+| **business** | You are the Business agent. Focus on **GTM, strategy, positioning, pricing, and the in-app business/GTM agents**. Read docs/CAREERSWARM_GTM_STRATEGY.md, docs/GTM_PLAN.md, and server/agents/gtm/ when asked. Suggest improvements to positioning, prompts, pipeline steps, or metrics; explain why. Do not edit code unless the user asks; otherwise hand off a clear summary (what to improve, why, where) so the user or Cursor can decide. See docs/BUSINESS_AGENT_IMPROVEMENTS.md for improvement ideas.                                                                           |
 
 **In WebChat:** switch or select the agent (Ship, Server, Client, Docs, Review, Business) then send the role brief once and your request. Each agent shares the same careerswarm skill but stays in its lane when you use the brief.
 
@@ -170,31 +172,31 @@ Paste the line below so the agent stays in its lane. Then ask your question.
 
 ## Actions OpenClaw can do
 
-| Category              | Actions                                                                                                                                |
-| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| **Run commands**      | Execute shell commands in the workspace (e.g. `pnpm run monitor`, `pnpm check`, `pnpm test`, `pnpm lint`, Playwright, `railway logs`). |
+| Category              | Actions                                                                                                                                                                                                            |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Run commands**      | Execute shell commands in the workspace (e.g. `pnpm run monitor`, `pnpm check`, `pnpm test`, `pnpm lint`, Playwright, `railway logs`).                                                                             |
 | **Read / edit files** | Read and modify repo files to fix errors; follows OPENCLAW.md and the careerswarm skill. When a solution is determined, hand off for human review and commit (OpenClaw does not commit unless you explicitly ask). |
-| **Bash / scripts**    | Run one-off scripts or multi-step commands; can chain `check` → `test` → `build` or run `scripts/monitor.mjs`.                         |
-| **Cron / scheduled**  | Schedule recurring tasks (e.g. run monitor every N minutes) via OpenClaw cron.                                                         |
-| **Sessions**          | Keep context across turns; can do "run monitor, then if anything fails run railway logs and summarize."                                |
-| **Sync with Cursor**  | Read CONTEXT_FOR_NEW_CHAT.md and todo.md; produce a short summary you can paste into a new Cursor chat.                                |
-| **Debugging**         | Follow docs/DEBUGGING.md (platform limits → env → minimal fix); suggest env or code changes, no secrets in chat.                       |
-| **Code sweep**        | Read server/, drizzle/, key client paths; suggest consistency, dead code, or alignment with DEBUGGING.md.                              |
+| **Bash / scripts**    | Run one-off scripts or multi-step commands; can chain `check` → `test` → `build` or run `scripts/monitor.mjs`.                                                                                                     |
+| **Cron / scheduled**  | Schedule recurring tasks (e.g. run monitor every N minutes) via OpenClaw cron.                                                                                                                                     |
+| **Sessions**          | Keep context across turns; can do "run monitor, then if anything fails run railway logs and summarize."                                                                                                            |
+| **Sync with Cursor**  | Read CONTEXT_FOR_NEW_CHAT.md and todo.md; produce a short summary you can paste into a new Cursor chat.                                                                                                            |
+| **Debugging**         | Follow docs/DEBUGGING.md (platform limits → env → minimal fix); suggest env or code changes, no secrets in chat.                                                                                                   |
+| **Code sweep**        | Read server/, drizzle/, key client paths; suggest consistency, dead code, or alignment with DEBUGGING.md.                                                                                                          |
 
 ## Best use cases to ship
 
 Use OpenClaw for these so you and Cursor can ship faster and with fewer regressions:
 
-| Use case                      | What to ask OpenClaw                                                                                                                              | Why it helps                                                                           |
-| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| **Pre-deploy gate**           | "Run the full ship checklist: `pnpm run ship:check:full` (or `pnpm precommit` then `pnpm run ship:check:full`). If anything fails, work through to a solution then hand off for review and commit." | OpenClaw fixes what it can; when done it reports and you (or Cursor) commit.            |
-| **Background monitor**        | "Run pnpm run monitor and tell me if anything fails." Or: "Run monitor:watch and notify me on failure."                                           | CI, Railway, app health, Cloudflare in one place; you stay focused.                    |
-| **Post-deploy sanity**        | "Run production smoke tests and summarize results."                                                                                               | Quick confirmation that careerswarm.com is up and critical paths work.                 |
-| **Production debugging**      | "Read docs/DEBUGGING.md. [Paste symptom]. Suggest checks in order: platform limits, env, then minimal code fix."                                  | Keeps fixes minimal and aligned with the runbook; no instrumentation until needed.     |
-| **Code sweep before release** | "Sweep server/ and drizzle/ for consistency with docs/DEBUGGING.md and OPENCLAW.md; list suggested improvements, no edits yet."                   | Surfaces tech debt or misalignment without Cursor context burn.                        |
-| **Handoff / new chat**        | "Summarize CONTEXT_FOR_NEW_CHAT.md and todo.md so I can paste into a new Cursor chat."                                                            | One place for 'what's done, what's next'; Cursor and OpenClaw stay in parallel.        |
-| **Env / Railway check**       | "From docs/CRITICAL_SETUP_CHECKLIST.md, list what we need in Railway for a deploy; I'll verify in dashboard."                                     | Reminder of DATABASE_URL, JWT_SECRET, OPENAI_API_KEY, SENTRY_DSN without opening docs. |
-| **Pre-commit guard**          | "Run pnpm precommit and report; if it fails, work through to a solution then hand off for review and commit."                                                                   | OpenClaw fixes what it can (e.g. format, lint), then you review and commit.             |
+| Use case                      | What to ask OpenClaw                                                                                                                                                                                   | Why it helps                                                                               |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| **Pre-deploy gate**           | "Run the full ship checklist: `pnpm run ship:check:full` (or `pnpm precommit` then `pnpm run ship:check:full`). If anything fails, work through to a solution then hand off for review and commit."    | OpenClaw fixes what it can; when done it reports and you (or Cursor) commit.               |
+| **Background monitor**        | "Run pnpm run monitor and tell me if anything fails." Or: "Run monitor:watch and notify me on failure."                                                                                                | CI, Railway, app health, Cloudflare in one place; you stay focused.                        |
+| **Post-deploy sanity**        | "Run production smoke tests and summarize results."                                                                                                                                                    | Quick confirmation that careerswarm.com is up and critical paths work.                     |
+| **Production debugging**      | "Read docs/DEBUGGING.md. [Paste symptom]. Suggest checks in order: platform limits, env, then minimal code fix."                                                                                       | Keeps fixes minimal and aligned with the runbook; no instrumentation until needed.         |
+| **Code sweep before release** | "Sweep server/ and drizzle/ for consistency with docs/DEBUGGING.md and OPENCLAW.md; list suggested improvements, no edits yet."                                                                        | Surfaces tech debt or misalignment without Cursor context burn.                            |
+| **Handoff / new chat**        | "Summarize CONTEXT_FOR_NEW_CHAT.md and todo.md so I can paste into a new Cursor chat."                                                                                                                 | One place for 'what's done, what's next'; Cursor and OpenClaw stay in parallel.            |
+| **Env / Railway check**       | "From docs/CRITICAL_SETUP_CHECKLIST.md, list what we need in Railway for a deploy; I'll verify in dashboard."                                                                                          | Reminder of DATABASE_URL, JWT_SECRET, OPENAI_API_KEY, SENTRY_DSN without opening docs.     |
+| **Pre-commit guard**          | "Run pnpm precommit and report; if it fails, work through to a solution then hand off for review and commit."                                                                                          | OpenClaw fixes what it can (e.g. format, lint), then you review and commit.                |
 | **Better code + explain why** | Ask the **Review** agent: "Review [file or path]; suggest better solutions and explain why (readability, patterns, performance, consistency)." Hand off a summary; you or Cursor decide what to apply. | Surfaces improvements and the reasoning so you learn and can hand a clear brief to Cursor. |
 
 **Rule:** When OpenClaw finds errors it works through to a solution (investigate → minimal fix → re-run), then hands off to you with “ready for review and commit.” You (or Cursor) review and commit; OpenClaw does not commit unless you explicitly ask. Keep CONTEXT and todo updated so both stay aligned.
@@ -226,15 +228,32 @@ Use one channel (e.g. **WebChat** in the OpenClaw Gateway, or Slack/Telegram if 
 - **Cursor:** Reviews OpenClaw’s changes and does commits/deploys; updates CONTEXT and todo.
 - **You:** Use CONTEXT and todo to keep both in parallel and avoid duplicate work.
 
+## Scheduled jobs (cron)
+
+These run automatically so the product stays shippable and future work is scoped to a shoestring:
+
+| Job                           | Schedule  | Agent    | What it does                                                                                                                                                              |
+| ----------------------------- | --------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| careerswarm-monitor           | Every 30m | Ship     | Runs `pnpm run monitor` (CI, Railway, app health, Cloudflare). On failure: fix per DEBUGGING.md, re-run, append handoff to OPENCLAW_HANDOFF.md.                           |
+| careerswarm-ship-check        | Every 6h  | Ship     | Runs `pnpm run ship:check` (check + build + test). On failure: fix, re-run, append handoff. Does not commit.                                                              |
+| careerswarm-future-shoestring | Weekly    | Business | Reads CONTEXT, todo, [docs/OPENCLAW_FUTURE_SHOESTRING.md](./OPENCLAW_FUTURE_SHOESTRING.md). Suggests 3–5 shoestring improvements; appends summary to OPENCLAW_HANDOFF.md. |
+
+- **Manage:** `openclaw cron list`, `openclaw cron status`, `openclaw cron disable <id>`, `openclaw cron enable <id>`, `openclaw cron rm <id>`.
+- **Future/shoestring brief:** [docs/OPENCLAW_FUTURE_SHOESTRING.md](./OPENCLAW_FUTURE_SHOESTRING.md) — what to prioritize and how to do it cheap. OpenClaw and Cursor both use it.
+
 ## Quick reference (this setup)
 
-| Action                  | Command                                                                          |
-| ----------------------- | -------------------------------------------------------------------------------- |
-| Gateway status          | `openclaw gateway status`                                                        |
-| Gateway restart         | `openclaw gateway restart`                                                       |
-| Open WebChat            | [http://127.0.0.1:18789/](http://127.0.0.1:18789/) or `openclaw dashboard`       |
-| Add model auth          | `openclaw configure`                                                             |
-| Health check            | `openclaw health`                                                                |
-| Run agent one-off (CLI) | `openclaw agent --message "Run pnpm run monitor and report"` (after auth is set) |
-| List agents             | `openclaw agents list`                                                           |
+| Action                  | Command                                                                                                      |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------ |
+| CareerSwarm doctor      | `pnpm run doctor` — local sanity (verify-env, check, build; no secrets printed)                              |
+| OpenClaw doctor         | `openclaw doctor` — gateway/channel health; run after gateway config changes                                 |
+| Gateway status          | `openclaw gateway status`                                                                                    |
+| Gateway restart         | `openclaw gateway restart`                                                                                   |
+| Open WebChat            | [http://127.0.0.1:18789/](http://127.0.0.1:18789/) or `openclaw dashboard`                                   |
+| Add model auth          | `openclaw configure`                                                                                         |
+| Health check            | `openclaw health`                                                                                            |
+| Run agent one-off (CLI) | `openclaw agent --message "Run pnpm run monitor and report"` (after auth is set)                             |
+| List agents             | `openclaw agents list`                                                                                       |
 | Add role agent          | `openclaw agents add ship --workspace /Users/jamesknight/GitHub/careerswarm-honeycomb` (see Multiple agents) |
+
+**Delegation:** From main (or any session) you can send a message to another agent via OpenClaw’s session tools (e.g. `sessions_send` so Ship runs monitor without opening Ship’s WebChat). See [Session tools](https://docs.openclaw.ai/concepts/session-tool).

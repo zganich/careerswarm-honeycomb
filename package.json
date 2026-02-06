@@ -24,6 +24,7 @@
     "seed": "tsx scripts/seed.ts",
     "validate": "tsx scripts/validate-production.mjs",
     "verify-env": "node scripts/verify-env.mjs",
+    "doctor": "node scripts/doctor.mjs",
     "monitor": "node scripts/monitor.mjs",
     "monitor:watch": "node scripts/monitor.mjs --watch",
     "test:cloudflare": "node scripts/test-cloudflare-api.mjs",
