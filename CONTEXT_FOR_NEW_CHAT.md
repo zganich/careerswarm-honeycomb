@@ -176,19 +176,23 @@ railway status | logs | variable list | redeploy | up | open
 
 ## Last Session (2026-02-06)
 
-### Evening handoff (Cursor → OpenClaw)
+### This session (commit e7d96b7)
 
-- **User ask:** Cursor to state the plan, assign OpenClaw its jobs, and finish the project to completion; user signing off for the evening.
-- **Cursor did:** (1) Ran full verification: `pnpm check`, `pnpm test`, `pnpm build`, `pnpm format:check`, `pnpm lint` — all passed. (`pnpm precommit` fails locally if `git secrets` not installed; CI may run it.) (2) Wrote **OpenClaw job assignments** in [OPENCLAW_HANDOFF.md](./OPENCLAW_HANDOFF.md): Ship (monitor, ship:check, optional ship:check:full), Business (future-shoestring), Docs (optional sync-check). (3) Updated CONTEXT and todo; committed and pushed.
-- **OpenClaw:** Cron already set (monitor 30m, ship:check 6h, future-shoestring weekly). When agents run, they append to OPENCLAW_HANDOFF per TASKS.md. **When you return:** Check OPENCLAW_HANDOFF.md for any new entries from OpenClaw; review and commit if ready.
+- **CSP (live browser console):** Production smoke in headed mode showed CSP blocking Google Fonts, Cloudflare Insights, and blob workers. Updated `server/_core/index.ts` helmet CSP: added `styleSrc` + fonts.googleapis.com, `fontSrc` + fonts.gstatic.com, `scriptSrc` + static.cloudflareinsights.com, `workerSrc` 'self' blob:. Deploy to clear those console errors in production.
+- **Human-style browser test:** Added `tests/human-style-roast-signup-onboarding.spec.ts` — single flow Roast → Sign in → Onboarding with **5–10s random delay** between every step, intended for `--headed` runs. Run: `npx playwright test tests/human-style-roast-signup-onboarding.spec.ts --config=playwright.production.config.ts --headed --project=chromium-desktop`.
+- **Bug fix:** Test waited for extraction "Continue/Review" button but never clicked it; added clicks through review → preferences → complete so the flow reaches dashboard. Doc: [docs/HUMAN_TESTING_REPORT.md](./docs/HUMAN_TESTING_REPORT.md) § Human-style single flow.
+- **Autonomy (earlier):** Standing instruction added: Cursor and OpenClaw can discuss and make the right call; CONTEXT, IDEAL_WORKFLOW, OPENCLAW_HANDOFF updated. CI format fix (Prettier OPENCLAW_HANDOFF) already committed.
 
-**Earlier (2026-02-06):** OpenClaw configured (Ship, Server, Client, Docs, Review, Business); TASKS.md, IDEAL_WORKFLOW_AND_ASSIGNMENTS.md, cron jobs; standing instruction to check OPENCLAW_HANDOFF before commit.
+### Earlier (2026-02-06)
+
+- Evening handoff: OpenClaw job assignments in OPENCLAW_HANDOFF; full verification; precommit/format/lint. OpenClaw configured (Ship, Server, Client, Docs, Review, Business); TASKS.md, IDEAL_WORKFLOW_AND_ASSIGNMENTS.md; standing instruction to check OPENCLAW_HANDOFF before commit.
 
 ### Next Steps (for new chat)
 
 - **When you return:** Read [OPENCLAW_HANDOFF.md](./OPENCLAW_HANDOFF.md) for OpenClaw entries; review and commit any “ready for review” changes.
 - **Before commit:** Run `pnpm precommit` (or check + format:check + lint if git-secrets not installed). Check OPENCLAW_HANDOFF for OpenClaw work to include.
-- **Before deploy:** Run `pnpm check`, `pnpm test`, `pnpm build`; then production smoke + E2E. See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md).
+- **Before deploy:** `pnpm check`, `pnpm test`, `pnpm build`; then production smoke + E2E. See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md). After deploy, CSP changes take effect (cleaner console in live browser).
+- **Human-style test:** Headed run for Roast → Signup → Onboarding with 5–10s pacing (see HUMAN_TESTING_REPORT § Human-style single flow).
 - **Quick status:** `pnpm run monitor`; `pnpm run doctor` for local sanity.
 - **OpenClaw:** WebChat http://127.0.0.1:18789/; assignments in OPENCLAW_HANDOFF; task/agent map: [docs/IDEAL_WORKFLOW_AND_ASSIGNMENTS.md](./docs/IDEAL_WORKFLOW_AND_ASSIGNMENTS.md).
 - **When schema changes:** Run `pnpm db:migrate`; ensure migrations are committed and applied in Railway.
