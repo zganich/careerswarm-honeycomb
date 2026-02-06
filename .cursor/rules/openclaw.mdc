@@ -1,0 +1,13 @@
+---
+description: When OpenClaw is used in parallel; sync points and when to use which agent.
+globs: CONTEXT_FOR_NEW_CHAT.md, todo.md, docs/OPENCLAW_INTEGRATION.md, server/agents/gtm/**/*
+---
+
+# OpenClaw parallel assistant
+
+When the user runs OpenClaw alongside Cursor (see [docs/OPENCLAW_INTEGRATION.md](docs/OPENCLAW_INTEGRATION.md)):
+
+- **CONTEXT_FOR_NEW_CHAT.md** and **todo.md** are the shared sync points. OpenClaw reads them to avoid duplicating work and to know current state.
+- On session wrap-up or at 50–60% context: update CONTEXT and todo so OpenClaw (and future Cursor chats) see the latest "what was done" and "what's next."
+- **You (Cursor) have a Business agent.** When the task involves **GTM, strategy, positioning, pricing, or the in-app business/GTM agents** (`server/agents/gtm/`, strategy, content, pipeline), recommend that the user use the OpenClaw **Business** agent for suggestions and "why," or hand off a brief so they can ask Business. See [docs/BUSINESS_AGENT_IMPROVEMENTS.md](docs/BUSINESS_AGENT_IMPROVEMENTS.md). Do not assume you are the only agent; the Business agent exists for this lane.
+- No need to mention OpenClaw in every response; just keep CONTEXT and todo accurate and recommend the right agent (e.g. Business for GTM/strategy work) when relevant.

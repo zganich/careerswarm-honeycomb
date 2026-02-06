@@ -25,8 +25,8 @@
 **Before every deploy (copy-paste):**
 
 ```bash
-pnpm check && pnpm run build && pnpm test
-npx playwright test tests/production-smoke.spec.ts tests/production-e2e.spec.ts --config=playwright.production.config.ts
+pnpm run ship:check:full
+# Or stepwise: pnpm run ship:check && npx playwright test tests/production-smoke.spec.ts tests/production-e2e.spec.ts --config=playwright.production.config.ts
 ```
 
 **Run E2E in headed mode (live browser, human-like 5s waits after each step):**

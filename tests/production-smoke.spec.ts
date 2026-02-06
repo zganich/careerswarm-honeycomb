@@ -121,6 +121,94 @@ test.describe("Production Smoke Tests - Public Pages", () => {
 
     console.log("✅ Resume Roast page loaded successfully");
   });
+});
+
+test.describe("Resume Roast API", () => {
+  const ROAST_API_URL = `${BASE_URL}/api/trpc/public.roast`;
+  const validResumeText =
+    "Software Engineer with 5 years experience at Google. Led team of 8. Increased performance by 40%.";
+
+  test("Roast API: rejects input shorter than 50 characters", async ({
+    request,
+  }) => {
+    const res = await request.post(ROAST_API_URL, {
+      data: { json: { resumeText: "Short" } },
+      timeout: 15000,
+    });
+    const body = await res.json();
+    expect(res.status()).toBe(400);
+    expect(body.error?.json?.message || body.error?.message).toMatch(
+      /50 characters|at least 50/
+    );
+    console.log("✅ Roast API correctly rejects short input");
+  });
+
+  test("Roast API: returns result or SERVICE_UNAVAILABLE (contract)", async ({
+    request,
+  }) => {
+    const res = await request.post(ROAST_API_URL, {
+      data: { json: { resumeText: validResumeText } },
+      timeout: 95000, // LLM can be slow
+    });
+    const body = await res.json();
+
+    if (body.result?.data?.json) {
+      // Success path
+      const result = body.result.data.json;
+      expect(typeof result.score).toBe("number");
+      expect(result.score).toBeGreaterThanOrEqual(0);
+      expect(result.score).toBeLessThanOrEqual(100);
+      expect(typeof result.verdict).toBe("string");
+      expect(Array.isArray(result.mistakes)).toBe(true);
+      expect(result.mistakes.length).toBe(3);
+      result.mistakes.forEach(
+        (m: { title?: string; explanation?: string; fix?: string }) => {
+          expect(m).toHaveProperty("title");
+          expect(m).toHaveProperty("explanation");
+          expect(m).toHaveProperty("fix");
+        }
+      );
+      expect(typeof result.characterCount).toBe("number");
+      expect(typeof result.wordCount).toBe("number");
+      console.log("✅ Roast API returned valid result");
+    } else if (body.error?.json) {
+      // Error path (e.g. OPENAI_API_KEY invalid, LLM down)
+      expect(body.error.json.data?.code).toBe("SERVICE_UNAVAILABLE");
+      expect(body.error.json.message).toMatch(
+        /isn't available|try again|unavailable/i
+      );
+      expect(res.status()).toBe(503);
+      console.log("✅ Roast API returned expected SERVICE_UNAVAILABLE");
+    } else {
+      throw new Error(`Unexpected response shape: ${JSON.stringify(body)}`);
+    }
+  });
+});
+
+test.describe("Production Smoke Tests - Public Pages (continued)", () => {
+  let consoleErrors: string[] = [];
+  let networkErrors: Array<{
+    url: string;
+    status: number;
+    statusText: string;
+  }> = [];
+
+  test.beforeEach(async ({ page }) => {
+    consoleErrors = [];
+    networkErrors = [];
+    page.on("console", msg => {
+      if (msg.type() === "error") consoleErrors.push(msg.text());
+    });
+    page.on("response", response => {
+      if (response.status() >= 400) {
+        networkErrors.push({
+          url: response.url(),
+          status: response.status(),
+          statusText: response.statusText(),
+        });
+      }
+    });
+  });
 
   test("Pricing page loads", async ({ page }) => {
     await page.goto(`${BASE_URL}/pricing`);

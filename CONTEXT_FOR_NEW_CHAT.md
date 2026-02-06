@@ -45,6 +45,7 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 - **Checklist (env, auth, Sentry):** [docs/CRITICAL_SETUP_CHECKLIST.md](./docs/CRITICAL_SETUP_CHECKLIST.md)
 - **Debugging (production-only, platform limits):** [docs/DEBUGGING.md](./docs/DEBUGGING.md)
 - **Handoff:** [RAILWAY_DEPLOYMENT_HANDOFF.md](./RAILWAY_DEPLOYMENT_HANDOFF.md)
+- **OpenClaw (parallel assistant):** [docs/OPENCLAW_INTEGRATION.md](./docs/OPENCLAW_INTEGRATION.md) — **installed and configured** (workspace = this repo, daemon on 18789, skill `skills/careerswarm/SKILL.md`). One-time: `openclaw configure` to add model auth. WebChat: http://127.0.0.1:18789/. Sync via this file and [todo.md](./todo.md). **Agents:** Ship (gate/monitor), Server, Client, Docs, **Review** (better code + explain why), **Business** (GTM, strategy, positioning, in-app `server/agents/gtm/`). **When the task is GTM, strategy, positioning, or improving the in-app business/GTM agents, recommend or hand off to the OpenClaw Business agent** for suggestions and reasoning; see [docs/BUSINESS_AGENT_IMPROVEMENTS.md](./docs/BUSINESS_AGENT_IMPROVEMENTS.md).
 
 ### Reference (for new chat)
 

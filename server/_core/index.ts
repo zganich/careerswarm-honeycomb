@@ -54,6 +54,9 @@ async function startServer() {
   const app = express();
   const server = createServer(app);
 
+  // Trust proxy (Railway, etc.) so X-Forwarded-For works for rate limiting
+  app.set("trust proxy", 1);
+
   // Security middleware
   app.use(
     helmet({
