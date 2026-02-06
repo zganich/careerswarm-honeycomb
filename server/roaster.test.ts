@@ -1,7 +1,10 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import { appRouter } from "./routers";
+import * as roast from "./roast";
 
 describe("Resume Roaster", () => {
+  afterEach(() => vi.restoreAllMocks());
+
   it("should reject resumes shorter than 50 characters", async () => {
     const caller = appRouter.createCaller({
       user: null,
@@ -12,6 +15,23 @@ describe("Resume Roaster", () => {
     await expect(
       caller.public.roast({ resumeText: "Short resume" })
     ).rejects.toThrow("Resume must be at least 50 characters");
+  });
+
+  it("should return SERVICE_UNAVAILABLE when runRoast fails", async () => {
+    vi.spyOn(roast, "runRoast").mockResolvedValue({
+      ok: false,
+      message: "Resume roast isn't available right now. Please try again in a moment.",
+    });
+    const caller = appRouter.createCaller({
+      user: null,
+      req: {} as any,
+      res: {} as any,
+    });
+    const longEnough = "x".repeat(50);
+    await expect(caller.public.roast({ resumeText: longEnough })).rejects.toMatchObject({
+      code: "SERVICE_UNAVAILABLE",
+      message: "Resume roast isn't available right now. Please try again in a moment.",
+    });
   });
 
   it("should return valid roast shape (integration: requires OPENAI_API_KEY)", async () => {

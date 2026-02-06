@@ -6,8 +6,8 @@ export const PSYCH_COPY = {
     headline: "Stop Applying. Start Infiltrating.",
     subheadline:
       "The average job seeker applies to 100 black holes. The Swarm scouts the role, profiles the company, and hunts the hiring manager so you can skip the line.",
-    ctaPrimary: "Start Free Trial",
-    ctaSecondary: "Import from LinkedIn",
+    ctaPrimary: "Get Roasted",
+    ctaSecondary: "Sign in",
   },
 
   // Onboarding

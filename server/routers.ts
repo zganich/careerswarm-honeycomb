@@ -57,7 +57,8 @@ export const appRouter = router({
           });
         } catch (e) {
           if (e instanceof TRPCError) throw e;
-          // Any uncaught error (e.g. fetch failed from LLM) → friendly 503 so client never sees 500
+          // Any uncaught error (e.g. OPENAI_API_KEY missing, fetch failed) → log for debugging, then friendly 503
+          console.error("[Roast] Unavailable:", e instanceof Error ? e.message : e);
           throw new TRPCError({
             code: "SERVICE_UNAVAILABLE",
             message:
