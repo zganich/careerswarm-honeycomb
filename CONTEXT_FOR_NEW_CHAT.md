@@ -20,6 +20,8 @@
 
 5. **Before committing:** Check [OPENCLAW_HANDOFF.md](./OPENCLAW_HANDOFF.md) for recent OpenClaw work so its fixes are included or followed up.
 
+6. **Review and decisions:** When review or a judgment call is needed, Cursor and OpenClaw can discuss (via handoff, CONTEXT, shared docs) and make the right call. You have autonomy for this project; use it to ship without blocking on the human when the path is clear.
+
 ---
 
 ## What It Is

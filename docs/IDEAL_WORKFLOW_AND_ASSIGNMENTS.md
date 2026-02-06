@@ -59,6 +59,7 @@ Use this when you ask OpenClaw to do something or when Cursor needs to know who 
 - **Gates green?** → Ship (cron or on-demand).
 - **What’s ready to commit?** → OPENCLAW_HANDOFF.md.
 - **Who commits?** → You or Cursor (after review).
+- **Review / judgment calls?** → Cursor and OpenClaw can discuss (handoff, CONTEXT, docs) and make the right call; autonomy for this project.
 - **Context current?** → Cursor updates CONTEXT and todo at session end; OpenClaw reads them before big edits.
 - **Future / shoestring?** → Business (weekly cron or on-demand).
 - **Sweep server/client/docs?** → Server / Client / Docs (on-demand).

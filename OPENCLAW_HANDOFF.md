@@ -37,6 +37,8 @@ When an OpenClaw agent finishes work and hands off, it can append a short summar
 
 **When you (OpenClaw) finish a run:** Append one short block below in the format above (When, Agent, What ran, What failed, What changed, Ready for). Cursor or user will review and commit.
 
+**Autonomy:** Cursor and OpenClaw can discuss (via this file, CONTEXT, shared docs) and make the right call when review or a judgment is needed. Use it; don’t block on the human when the path is clear.
+
 ---
 
 _(Entries below this line.)_
