@@ -1,8 +1,9 @@
 /**
  * Sign in — email-only auth. No third-party OAuth required.
+ * Uses native form POST so the browser follows the server 302 and sends the
+ * session cookie on the redirect, avoiding sign-in loops.
  */
 import { useState } from "react";
-import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,7 +12,6 @@ export default function DevLogin() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [, setLocation] = useLocation();
 
   const returnTo =
     typeof window !== "undefined"
@@ -19,41 +19,10 @@ export default function DevLogin() {
         "/dashboard"
       : "/dashboard";
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = () => {
     setError(null);
     setLoading(true);
-    try {
-      const res = await fetch("/api/auth/test-login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, returnTo }),
-        credentials: "include",
-        redirect: "manual",
-      });
-      if (res.type === "opaqueredirect" || res.status === 302) {
-        window.location.href = returnTo;
-        return;
-      }
-      const data = (await res.json()) as {
-        success?: boolean;
-        redirect?: string;
-        error?: string;
-      };
-      if (!res.ok) {
-        setError(data.error || "Login failed");
-        return;
-      }
-      if (data.redirect) {
-        window.location.href = data.redirect;
-      } else {
-        setLocation("/dashboard");
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
-    } finally {
-      setLoading(false);
-    }
+    // Form submits natively; server 302 + Set-Cookie, browser follows with cookie.
   };
 
   return (
@@ -64,11 +33,18 @@ export default function DevLogin() {
           Enter your email to sign in. We’ll create your account if it’s your
           first time.
         </p>
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+        <form
+          method="POST"
+          action="/api/auth/test-login"
+          onSubmit={handleSubmit}
+          className="mt-6 space-y-4"
+        >
+          <input type="hidden" name="returnTo" value={returnTo} />
           <div>
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
+              name="email"
               type="email"
               autoComplete="email"
               placeholder="you@example.com"

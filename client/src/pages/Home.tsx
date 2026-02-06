@@ -66,10 +66,10 @@ const Home = () => {
             </button>
             <button
               type="button"
-              onClick={() => setLocation("/onboarding/welcome")}
+              onClick={() => setLocation("/roast")}
               className="bg-slate-900 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-orange-600 transition-all shadow-lg shadow-orange-500/20"
             >
-              Build My Master Profile
+              Get Roasted
             </button>
           </div>
         </div>
@@ -77,8 +77,8 @@ const Home = () => {
 
       {/* --- HERO: TRANSFORMATION (Pillar 4) --- */}
       <TransformationHero
-        onCtaPrimary={() => setLocation("/onboarding/welcome")}
-        onCtaSecondary={() => setLocation("/roast")}
+        onCtaPrimary={() => setLocation("/roast")}
+        onCtaSecondary={() => setLocation("/login")}
       />
 
       {/* --- FEATURE CARDS: LAB AESTHETIC --- */}

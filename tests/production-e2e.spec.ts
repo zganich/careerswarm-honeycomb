@@ -12,6 +12,7 @@ import {
   logout,
   isLoggedIn,
   getUniqueTestEmail,
+  DEFAULT_TEST_EMAIL,
   PRODUCTION_URL,
 } from "./utils/production-auth";
 import path from "path";
@@ -91,8 +92,8 @@ test.describe("Authentication Flow", () => {
   });
 
   test("Sign in and stay on dashboard for 5 seconds", async ({ page }) => {
-    const email = getUniqueTestEmail();
-    await loginViaAPI(page, email);
+    // Use stable e2e user so session stability is asserted without new-user redirect flakiness
+    await loginViaAPI(page, DEFAULT_TEST_EMAIL);
     const urlAfterLogin = page.url();
     expect(urlAfterLogin).toMatch(/\/(dashboard|onboarding)/);
     await page.waitForTimeout(5000);
@@ -156,65 +157,40 @@ test.describe("Build My Master Profile entry points", () => {
     await page.waitForTimeout(HUMAN_STEP_DELAY_MS);
   });
 
-  test("From Home: Build My Master Profile → welcome", async ({ page }) => {
-    logStep("Build Profile", "navigating to Home");
+  test("From Home: Get Roasted → roast", async ({ page }) => {
+    logStep("Lead magnet", "navigating to Home");
     await page.goto(BASE_URL);
     await page.waitForLoadState("networkidle");
     await page.waitForTimeout(HUMAN_STEP_DELAY_MS);
 
     const cta = page
-      .getByRole("button", { name: /build my master profile/i })
+      .getByRole("button", { name: /get roasted/i })
       .first();
     await cta.waitFor({ state: "visible", timeout: 10000 });
-    logStep("Build Profile", "clicking Build My Master Profile");
+    logStep("Lead magnet", "clicking Get Roasted");
     await cta.scrollIntoViewIfNeeded();
     await cta.click();
     await page.waitForTimeout(HUMAN_STEP_DELAY_MS);
 
-    await expect(page).toHaveURL(/\/onboarding\/welcome/, { timeout: 15000 });
-    await expect(
-      page.getByText(/welcome to careerswarm|step 1 of 5/i).first()
-    ).toBeVisible({ timeout: 5000 });
-    logStep("Build Profile", "Home → Build My Master Profile → welcome");
+    await expect(page).toHaveURL(/\/roast/, { timeout: 15000 });
+    logStep("Lead magnet", "Home → Get Roasted → /roast");
   });
 
-  test("From Roast: Build my Master Profile → welcome", async ({ page }) => {
-    logStep("Build Profile", "navigating to Roast");
-    await page.goto(`${BASE_URL}/roast`);
+  test("Onboarding offline: /onboarding redirects to home", async ({ page }) => {
+    logStep("Lead magnet", "navigating to /onboarding/welcome");
+    await page.goto(`${BASE_URL}/onboarding/welcome`);
     await page.waitForLoadState("networkidle");
     await page.waitForTimeout(HUMAN_STEP_DELAY_MS);
 
-    await page.evaluate(() => window.scrollTo(0, 0));
-    const cta = page
-      .getByTestId("roast-build-master-profile")
-      .or(page.getByRole("button", { name: /build my master profile/i }))
-      .first();
-    const visible = await cta.isVisible().catch(() => false);
-    if (visible) {
-      logStep(
-        "Build Profile",
-        "clicking Build my Master Profile on Roast page"
-      );
-      await cta.scrollIntoViewIfNeeded();
-      await cta.click();
-    } else {
-      logStep(
-        "Build Profile",
-        "CTA not visible, navigating directly to welcome"
-      );
-      await page.goto(`${BASE_URL}/onboarding/welcome`);
-    }
-    await page.waitForTimeout(HUMAN_STEP_DELAY_MS);
-
-    await expect(page).toHaveURL(/\/onboarding\/welcome/, { timeout: 20000 });
-    await expect(
-      page.getByText(/welcome to careerswarm|step 1 of 5/i).first()
-    ).toBeVisible({ timeout: 10000 });
-    logStep("Build Profile", "Roast → Build my Master Profile → welcome");
+    await expect(page).toHaveURL((url) => new URL(url).pathname === "/", {
+      timeout: 10000,
+    });
+    logStep("Lead magnet", "/onboarding/welcome redirects to home");
   });
 });
 
-test.describe("Onboarding Flow", () => {
+// Onboarding is temporarily offline (lead magnet rework). Skip until new flow is ready.
+test.describe.skip("Onboarding Flow (offline)", () => {
   test.beforeEach(async ({ page }) => {
     // Use a fresh test user for onboarding tests
     const email = getUniqueTestEmail();

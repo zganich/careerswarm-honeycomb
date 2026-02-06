@@ -63,11 +63,11 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 
 ---
 
-## Architecture: Resume Roast → Onboarding
+## Architecture: Resume Roast (lead magnet); Onboarding offline
 
-- **Resume Roast** (`/roast`): Public. One page: textarea (min 50 chars), “Get Roasted”, “Build my Master Profile” (header + after result). API: `public.roast` → `server/roast.ts` → OpenAI; single error path → `SERVICE_UNAVAILABLE`. Client shows result (`data-testid="roast-result"`) or error (`data-testid="roast-error"`). **No DB persistence** for roast.
-- **Build my Master Profile:** `setLocation("/onboarding/welcome")`.
-- **Onboarding** (`/onboarding/welcome` → upload → extraction → review → preferences): Uses `useAuth()`. If not logged in → modal → `/login?returnTo=/onboarding/welcome`. After login, redirect to `returnTo`. All onboarding API procedures are `protectedProcedure`; DB: `users.onboardingStep` / `onboardingCompleted`, `uploadedResumes`, `userProfiles`, `targetPreferences` (see `server/db.ts`).
+- **Resume Roast** (`/roast`): Public lead magnet. Textarea (min 50 chars), “Get Roasted”. Post-result: “We're building a new way to turn this into your profile. Come back soon.” (no CTA to onboarding). API: `public.roast` → `server/roast.ts` → OpenAI; single error path → `SERVICE_UNAVAILABLE`. **No DB persistence** for roast.
+- **Onboarding offline:** `/onboarding/*` (welcome, upload, extraction, review, preferences) redirects to `/`. Lead magnet was taken offline to avoid visitor sign-in loop; new lead magnet TBD. Routes in `App.tsx` render `OnboardingOffline` (redirect to home). Onboarding pages/code remain in repo for when flow is re-enabled.
+- **Home/Pricing:** Primary CTAs point to `/roast` (“Get Roasted”). Profile “Complete Onboarding” → `/dashboard`.
 - **Auth:** `server/_core/oauth.ts` (email sign-in at `/api/auth/test-login`; optional OAuth callback when configured). Session cookie; `returnTo` in login body; redirect after login.
 
 ---

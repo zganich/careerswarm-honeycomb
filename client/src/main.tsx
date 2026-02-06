@@ -98,6 +98,10 @@ const queryClient = new QueryClient({
   },
 });
 
+// Delay redirect on 401 so one retry can succeed (avoids loop when cookie is set but first batch ran before it)
+const UNAUTH_REDIRECT_DELAY_MS = 600;
+let unauthRedirectTimeoutId: ReturnType<typeof setTimeout> | null = null;
+
 const redirectToLoginIfUnauthorized = (error: unknown) => {
   if (!(error instanceof TRPCClientError)) return;
   if (typeof window === "undefined") return;
@@ -105,27 +109,48 @@ const redirectToLoginIfUnauthorized = (error: unknown) => {
   const isUnauthorized = error.message === UNAUTHED_ERR_MSG;
 
   if (!isUnauthorized) return;
+  if (unauthRedirectTimeoutId !== null) return;
 
   const returnTo = window.location.pathname + window.location.search || "/";
   const loginUrl = getLoginUrl(returnTo);
-  // Use /login when OAuth not configured (dev, preview)
-  window.location.href =
+  const target =
     loginUrl && loginUrl !== "#"
       ? loginUrl
       : `/login?returnTo=${encodeURIComponent(returnTo)}`;
+
+  unauthRedirectTimeoutId = setTimeout(() => {
+    unauthRedirectTimeoutId = null;
+    window.location.href = target;
+  }, UNAUTH_REDIRECT_DELAY_MS);
 };
 
 queryClient.getQueryCache().subscribe(event => {
-  if (event.type === "updated" && event.action.type === "error") {
-    const error = event.query.state.error;
-    redirectToLoginIfUnauthorized(error);
+  if (event.type === "updated") {
+    const q = event.query;
+    const key = q.queryKey as unknown[];
+    const first = key?.[0];
+    const isAuthMe =
+      (Array.isArray(first) &&
+        first[0] === "auth" &&
+        first[1] === "me") ||
+      (Array.isArray(key) && key[0] === "auth" && key[1] === "me");
+    if (isAuthMe && event.action.type === "success" && q.state.data) {
+      if (unauthRedirectTimeoutId !== null) {
+        clearTimeout(unauthRedirectTimeoutId);
+        unauthRedirectTimeoutId = null;
+      }
+      return;
+    }
+    if (event.action.type === "error") {
+      const error = q.state.error;
+      redirectToLoginIfUnauthorized(error);
 
-    const formatted = formatTRPCError(error);
-    console.error("[API Query Error]", { formatted, raw: error });
+      const formatted = formatTRPCError(error);
+      console.error("[API Query Error]", { formatted, raw: error });
 
-    // Show toast for user-friendly errors
-    if (formatted.isUserFriendly && formatted.code !== "UNAUTHORIZED") {
-      toast.error(formatted.message);
+      if (formatted.isUserFriendly && formatted.code !== "UNAUTHORIZED") {
+        toast.error(formatted.message);
+      }
     }
   }
 });

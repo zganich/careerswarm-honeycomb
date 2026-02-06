@@ -64,8 +64,8 @@ export default function Profile() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <p className="text-lg mb-4">No profile found</p>
-          <Button onClick={() => setLocation("/onboarding/welcome")}>
-            Complete Onboarding
+          <Button onClick={() => setLocation("/dashboard")}>
+            Go to Dashboard
           </Button>
         </div>
       </div>
@@ -233,8 +233,8 @@ export default function Profile() {
                   No superpowers defined yet. Complete onboarding to generate
                   them.
                 </p>
-                <Button onClick={() => setLocation("/onboarding/welcome")}>
-                  Complete Onboarding
+                <Button onClick={() => setLocation("/dashboard")}>
+                  Go to Dashboard
                 </Button>
               </div>
             )}
@@ -423,8 +423,8 @@ export default function Profile() {
                 <p className="text-muted-foreground mb-4">
                   No work experience added yet
                 </p>
-                <Button onClick={() => setLocation("/onboarding/welcome")}>
-                  Complete Onboarding
+                <Button onClick={() => setLocation("/dashboard")}>
+                  Go to Dashboard
                 </Button>
               </div>
             )}

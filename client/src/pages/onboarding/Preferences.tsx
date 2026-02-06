@@ -51,8 +51,8 @@ export default function Preferences() {
           : undefined,
       });
 
-      toast.success("Preferences saved! Onboarding complete!");
-      setLocation("/profile");
+      toast.success("Welcome! Your profile is saved. Here's your dashboard.");
+      setLocation("/dashboard");
     } catch (error) {
       toast.error("Failed to save preferences");
       console.error(error);

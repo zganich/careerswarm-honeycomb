@@ -92,8 +92,8 @@ export default function Pricing() {
             >
               Sign In
             </button>
-            <Button onClick={() => setLocation("/onboarding/welcome")}>
-              Get Started
+            <Button onClick={() => setLocation("/roast")}>
+              Get Roasted
             </Button>
           </div>
         </div>
@@ -158,7 +158,7 @@ export default function Pricing() {
                     if (tier.name === "Enterprise") {
                       window.location.href = "mailto:sales@careerswarm.com";
                     } else {
-                      setLocation("/onboarding/welcome");
+                      setLocation("/roast");
                     }
                   }}
                 >
@@ -239,10 +239,10 @@ export default function Pricing() {
           </p>
           <Button
             size="lg"
-            onClick={() => setLocation("/onboarding/welcome")}
+            onClick={() => setLocation("/roast")}
             className="bg-orange-500 hover:bg-orange-600 text-white"
           >
-            Start Building Your Master Profile
+            Get Roasted
           </Button>
         </div>
       </div>

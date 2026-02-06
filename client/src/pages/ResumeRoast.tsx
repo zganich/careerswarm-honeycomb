@@ -33,16 +33,6 @@ export default function ResumeRoast() {
             <ArrowLeft className="w-4 h-4" />
             Back
           </button>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => setLocation("/onboarding/welcome")}
-            className="text-slate-600"
-            data-testid="roast-build-master-profile"
-          >
-            Build my Master Profile
-          </Button>
         </header>
 
         <div className="flex items-center gap-3 mb-6">
@@ -160,17 +150,10 @@ export default function ResumeRoast() {
               <h2 className="text-xl font-bold text-white mb-2">
                 Turn these fixes into a resume that gets interviews
               </h2>
-              <p className="text-sm text-slate-300 mb-4">
-                Build one Master Profile. We'll help you fix these mistakes and
-                tailor every application.
+              <p className="text-sm text-slate-300">
+                We're building a new way to turn this into your profile. Come
+                back soon.
               </p>
-              <Button
-                type="button"
-                onClick={() => setLocation("/onboarding/welcome")}
-                className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-6 py-3 rounded-xl"
-              >
-                Build my Master Profile
-              </Button>
             </div>
           </div>
         )}

@@ -4,6 +4,8 @@ Use [OpenClaw](https://github.com/openclaw/openclaw) (personal AI assistant) in 
 
 **Ideal workflow and who does what:** [docs/IDEAL_WORKFLOW_AND_ASSIGNMENTS.md](./IDEAL_WORKFLOW_AND_ASSIGNMENTS.md) — what Cursor needs to be effective, and task/agent assignments (Ship, Server, Client, Docs, Review, Business, Cursor, you).
 
+**Orchestrate the dev team:** [docs/OPENCLAW_ORCHESTRATION.md](./OPENCLAW_ORCHESTRATION.md) — coordinate Ship, Server, Client, Docs, Review on one problem (e.g. sign-in loop). Copy-paste tasks per agent; they hand off to OPENCLAW_HANDOFF.md so you or Cursor can synthesize and commit.
+
 ## What’s already done (this machine)
 
 - **Installed:** `openclaw` CLI globally (Node ≥22).
@@ -276,5 +278,6 @@ These run automatically so the product stays shippable and future work is scoped
 | Run agent one-off (CLI) | `openclaw agent --message "Run pnpm run monitor and report"` (after auth is set)                             |
 | List agents             | `openclaw agents list`                                                                                       |
 | Add role agent          | `openclaw agents add ship --workspace /Users/jamesknight/GitHub/careerswarm-honeycomb` (see Multiple agents) |
+| Orchestrate dev team    | See [docs/OPENCLAW_ORCHESTRATION.md](./OPENCLAW_ORCHESTRATION.md) — copy-paste tasks per agent; handoffs go to OPENCLAW_HANDOFF.md |
 
 **Delegation:** From main (or any session) you can send a message to another agent via OpenClaw’s session tools (e.g. `sessions_send` so Ship runs monitor without opening Ship’s WebChat). See [Session tools](https://docs.openclaw.ai/concepts/session-tool).

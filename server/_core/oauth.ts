@@ -49,8 +49,11 @@ export function registerOAuthRoutes(app: Express) {
       ...cookieOptions,
       maxAge: ONE_YEAR_MS,
     });
-    const returnTo =
+    let returnTo =
       typeof req.body?.returnTo === "string" ? req.body.returnTo : "/dashboard";
+    // If they were starting onboarding, send them to Upload so the next step is obvious
+    if (returnTo === "/onboarding/welcome")
+      returnTo = "/onboarding/upload?welcome=1";
     // Server-side redirect so cookie is sent on the next request (more reliable than client redirect)
     res.redirect(302, returnTo);
   });
