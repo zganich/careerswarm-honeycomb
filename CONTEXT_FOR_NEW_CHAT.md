@@ -50,6 +50,7 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 - **Debugging (production-only, platform limits):** [docs/DEBUGGING.md](./docs/DEBUGGING.md)
 - **Handoff:** [RAILWAY_DEPLOYMENT_HANDOFF.md](./RAILWAY_DEPLOYMENT_HANDOFF.md)
 - **OpenClaw (parallel assistant):** [docs/OPENCLAW_INTEGRATION.md](./docs/OPENCLAW_INTEGRATION.md) — **installed and configured** (workspace = this repo, daemon on 18789, skill `skills/careerswarm/SKILL.md`). One-time: `openclaw configure` to add model auth. WebChat: http://127.0.0.1:18789/. Sync via this file and [todo.md](./todo.md). **Agents:** Ship (gate/monitor), Server, Client, Docs, **Review** (better code + explain why), **Business** (GTM, strategy, positioning, in-app `server/agents/gtm/`). **Cron jobs:** monitor every 30m, ship:check every 6h, weekly future/shoestring (Business); see integration doc § Scheduled jobs. **Future/shoestring:** [docs/OPENCLAW_FUTURE_SHOESTRING.md](./docs/OPENCLAW_FUTURE_SHOESTRING.md). **When the task is GTM, strategy, positioning, or improving the in-app business/GTM agents, recommend or hand off to the OpenClaw Business agent** for suggestions and reasoning; see [docs/BUSINESS_AGENT_IMPROVEMENTS.md](./docs/BUSINESS_AGENT_IMPROVEMENTS.md).
+- **OpenClaw handoff:** [OPENCLAW_HANDOFF.md](./OPENCLAW_HANDOFF.md) — agents append run results here; Cursor reviews and commits. **Orchestration:** [docs/OPENCLAW_ORCHESTRATION.md](./docs/OPENCLAW_ORCHESTRATION.md). **Work until fixed:** [OPENCLAW_START.md](./OPENCLAW_START.md). Job assignments (Ship: monitor, ship:check, ship:check:full; Business: future-shoestring; Docs: sync-check) and latest entries are in the handoff file.
 
 ### Reference (for new chat)
 
@@ -192,13 +193,15 @@ railway status | logs | variable list | redeploy | up | open
 
 ### Next Steps (for new chat)
 
+- **Handoff state (see [OPENCLAW_HANDOFF.md](./OPENCLAW_HANDOFF.md)):** Sign-in loop fix (auth.me-only 401 + retry:1) committed; verify Sign in → stay on dashboard after deploy. Monetization: strategy in `docs/MONETIZATION_STRATEGY.md`; implementation wired (Pro button, 5-app limit, UpgradeModal, migration `0002_application_limits.sql`). Pending: Stripe $29/mo product + `STRIPE_PRO_PRICE_ID` in prod, run migration, integrate UpgradeModal where `quickApply` is called.
 - **When you return:** Read [OPENCLAW_HANDOFF.md](./OPENCLAW_HANDOFF.md) for OpenClaw entries; review and commit any “ready for review” changes.
 - **Before commit:** Run `pnpm precommit` (or check + format:check + lint if git-secrets not installed). Check OPENCLAW_HANDOFF for OpenClaw work to include.
 - **Before deploy:** `pnpm check`, `pnpm test`, `pnpm build`; then production smoke + E2E. See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md). After deploy, CSP changes take effect (cleaner console in live browser).
+- **Monetization follow-up:** Create Stripe Pro product ($29/mo), set `STRIPE_PRO_PRICE_ID` in Railway, run `pnpm drizzle-kit push` (or `pnpm db:migrate`), wire UpgradeModal into dashboard/application flow when limit hit.
 - **Human-style test:** Headed run for Roast → Signup → Onboarding with 5–10s pacing (see HUMAN_TESTING_REPORT § Human-style single flow).
 - **Quick status:** `pnpm run monitor`; `pnpm run doctor` for local sanity.
 - **OpenClaw:** WebChat http://127.0.0.1:18789/; assignments in OPENCLAW_HANDOFF; task/agent map: [docs/IDEAL_WORKFLOW_AND_ASSIGNMENTS.md](./docs/IDEAL_WORKFLOW_AND_ASSIGNMENTS.md).
-- **When schema changes:** Run `pnpm db:migrate`; ensure migrations are committed and applied in Railway.
+- **When schema changes:** Run `pnpm db:migrate` (or `pnpm drizzle-kit push`); ensure migrations are committed and applied in Railway.
 - **Backlog:** See [todo.md](./todo.md).
 
 ### Production checklist
