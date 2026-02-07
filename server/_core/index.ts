@@ -107,8 +107,9 @@ async function startServer() {
   app.use(
     cors({
       origin: (origin, callback) => {
-        // Allow requests with no origin (mobile apps, Postman, etc.)
-        if (!origin) return callback(null, true);
+        // Allow requests with no origin (mobile apps, Postman) or origin "null"
+        // (browsers send string "null" for same-origin form POST / redirects in some cases)
+        if (!origin || origin === "null") return callback(null, true);
         if (allowedOrigins.includes(origin)) {
           return callback(null, true);
         }

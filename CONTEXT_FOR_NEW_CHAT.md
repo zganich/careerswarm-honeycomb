@@ -197,16 +197,24 @@ railway status | logs | variable list | redeploy | up | open
 - **When you return:** Read [OPENCLAW_HANDOFF.md](./OPENCLAW_HANDOFF.md) for OpenClaw entries; review and commit any “ready for review” changes.
 - **Before commit:** Run `pnpm precommit` (or check + format:check + lint if git-secrets not installed). Check OPENCLAW_HANDOFF for OpenClaw work to include.
 - **Before deploy:** `pnpm check`, `pnpm test`, `pnpm build`; then production smoke + E2E. See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md). After deploy, CSP changes take effect (cleaner console in live browser).
-- **Monetization follow-up:** Create Stripe Pro product ($29/mo), set `STRIPE_PRO_PRICE_ID` in Railway, run `pnpm drizzle-kit push` (or `pnpm db:migrate`), wire UpgradeModal into dashboard/application flow when limit hit.
+- **Monetization follow-up:** Create Stripe Pro product ($29/mo), set `STRIPE_PRO_PRICE_ID` in Railway, wire UpgradeModal into dashboard/application flow when limit hit. (Migrations run on deploy automatically.)
 - **Human-style test:** Headed run for Roast → Signup → Onboarding with 5–10s pacing (see HUMAN_TESTING_REPORT § Human-style single flow).
 - **Quick status:** `pnpm run monitor`; `pnpm run doctor` for local sanity.
 - **OpenClaw:** WebChat http://127.0.0.1:18789/; assignments in OPENCLAW_HANDOFF; task/agent map: [docs/IDEAL_WORKFLOW_AND_ASSIGNMENTS.md](./docs/IDEAL_WORKFLOW_AND_ASSIGNMENTS.md).
-- **When schema changes:** Run `pnpm db:migrate` (or `pnpm drizzle-kit push`); ensure migrations are committed and applied in Railway.
+- **When schema changes:** Migrations run automatically on Railway start (`pnpm db:migrate && pnpm start` in railway.json). `scripts/run-migrate.mjs` writes `drizzle.config.json` at runtime so drizzle-kit works in container. Locally: `pnpm db:migrate` or `pnpm drizzle-kit push`; commit migration files.
 - **Backlog:** See [todo.md](./todo.md).
 
 ### Production checklist
 
 - OPENAI_API_KEY and DATABASE_URL in Railway; SENTRY_DSN set (careerswarm-backend). See [docs/CRITICAL_SETUP_CHECKLIST.md](./docs/CRITICAL_SETUP_CHECKLIST.md).
+
+---
+
+## Recent (2026-02-06) — Deploy & auth debugging
+
+- **Railway:** `startCommand` is `pnpm db:migrate && pnpm start`. Migrations run on every deploy. `run-migrate.mjs` writes `drizzle.config.json` from `DATABASE_URL` so drizzle-kit works in container; `drizzle.config.json` is in .gitignore.
+- **Auth/CORS:** Fixed: CORS now allows `origin === "null"` (browsers send this for same-origin form POST). Auth 500 from "Unknown column 'applicationsThisMonth'" means migration 0016 not applied — redeploy runs migrate in container; see [docs/DEBUGGING.md](./docs/DEBUGGING.md).
+- **Core rule:** `.cursor/rules/core.mdc` — CLI whenever available, stay hands-off (run commands yourself).
 
 ---
 
