@@ -1,7 +1,7 @@
 # CareerSwarm TODO
 
-**Last Updated:** February 6, 2026  
-**Status:** Production-ready, all checks passing; E2E 25/25; OpenClaw configured. CSP updated (fonts/Cloudflare/workers); human-style test Roast→Signup→Onboarding (5–10s steps); CONTEXT synced for new chat.
+**Last Updated:** February 7, 2026  
+**Status:** Production-ready; onboarding re-enabled on production. Complete E2E live test (Roast → Sign in → Onboarding) with 3s steps; CONTEXT and todo synced.
 
 ---
 
@@ -20,6 +20,13 @@
 The assistant runs these checks when finishing work; no need for the user to run them. Human testing report: [docs/HUMAN_TESTING_REPORT.md](./docs/HUMAN_TESTING_REPORT.md).
 
 ---
+
+## Completed (February 7, 2026)
+
+- [x] Onboarding re-enabled on production (App.tsx: real Welcome, Upload, Extraction, Review, Preferences routes); deployed via Railway
+- [x] tests/complete-e2e-live.spec.ts: full flow Roast → Sign in → Onboarding; LIVE_BROWSER=1 for 3s steps; uses docs/resumes for testing when upload runs; BASE_URL for prod vs local
+- [x] tests/production-e2e.spec.ts: liveBrowserWait(page) during auth flow when LIVE_BROWSER=1
+- [x] CONTEXT_FOR_NEW_CHAT.md: Architecture (onboarding enabled), Key Paths (complete-e2e-live), Recent § onboarding + E2E live
 
 ## Completed (February 6, 2026)
 
