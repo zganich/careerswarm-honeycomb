@@ -64,10 +64,10 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 
 ---
 
-## Architecture: Resume Roast (lead magnet); Onboarding offline
+## Architecture: Resume Roast (lead magnet); Onboarding
 
 - **Resume Roast** (`/roast`): Public lead magnet. Textarea (min 50 chars), “Get Roasted”. Post-result: “We're building a new way to turn this into your profile. Come back soon.” (no CTA to onboarding). API: `public.roast` → `server/roast.ts` → OpenAI; single error path → `SERVICE_UNAVAILABLE`. **No DB persistence** for roast.
-- **Onboarding offline:** `/onboarding/*` (welcome, upload, extraction, review, preferences) redirects to `/`. Lead magnet was taken offline to avoid visitor sign-in loop; new lead magnet TBD. Routes in `App.tsx` render `OnboardingOffline` (redirect to home). Onboarding pages/code remain in repo for when flow is re-enabled.
+- **Onboarding:** `/onboarding/*` (welcome, upload, extraction, review, preferences) is **enabled** on production. Routes in `App.tsx` use real components: Welcome, Upload, Extraction, Review, Preferences. (Previously offline to avoid sign-in loop; re-enabled 2026-02-07 for live testing.)
 - **Home/Pricing:** Primary CTAs point to `/roast` (“Get Roasted”). Profile “Complete Onboarding” → `/dashboard`.
 - **Auth:** `server/_core/oauth.ts` (email sign-in at `/api/auth/test-login`; optional OAuth callback when configured). Session cookie; `returnTo` in login body; redirect after login.
 
@@ -90,7 +90,7 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 | Auth               | `server/_core/oauth.ts`, `client/src/pages/DevLogin.tsx` (Sign in), `client/src/_core/hooks/useAuth.ts`                                                                                                                                                                                                       |
 | Server / env / LLM | `server/_core/index.ts`, `server/_core/env.ts`, `server/_core/llm.ts`                                                                                                                                                                                                                                         |
 | Database           | `drizzle/schema.ts`, `server/db.ts`, `drizzle/` migrations                                                                                                                                                                                                                                                    |
-| Tests              | Unit: `pnpm test` (Vitest, 122 passing / 51 skipped). E2E: `tests/production-smoke.spec.ts` (22), `tests/production-e2e.spec.ts` (25), `tests/playbook-whats-broken.spec.ts` (8). Roast unit: `server/roaster.test.ts`. Human testing report: [docs/HUMAN_TESTING_REPORT.md](./docs/HUMAN_TESTING_REPORT.md). |
+| Tests              | Unit: `pnpm test` (Vitest, 122 passing / 51 skipped). E2E: `tests/production-smoke.spec.ts` (22), `tests/production-e2e.spec.ts` (25), `tests/complete-e2e-live.spec.ts` (full flow Roast → Sign in → Onboarding; LIVE_BROWSER=1 for 3s steps), `tests/playbook-whats-broken.spec.ts` (8). Roast unit: `server/roaster.test.ts`. Human testing report: [docs/HUMAN_TESTING_REPORT.md](./docs/HUMAN_TESTING_REPORT.md). |
 | Monitoring         | `scripts/monitor.mjs`, `scripts/test-cloudflare-api.mjs`. See [docs/MONITORING.md](./docs/MONITORING.md).                                                                                                                                                                                                     |
 | CI/CD              | `.github/workflows/ci.yml`                                                                                                                                                                                                                                                                                    |
 | Docs               | `docs/` (active); `.archive/` (obsolete)                                                                                                                                                                                                                                                                      |
@@ -225,6 +225,15 @@ railway status | logs | variable list | redeploy | up | open
 - **Sign-in 500 fallback:** If migration 0016 did not run at deploy, `server/db.ts` **runtime fallback** in `upsertUser`: on `ER_BAD_FIELD_ERROR` for `applicationsThisMonth`, runs the two `ALTER TABLE` statements (0016) via raw SQL then retries insert. First sign-in after a missed migrate will apply columns and succeed.
 - **Docs:** [docs/RAILWAY_FIX_SIGNIN_NOW.md](./docs/RAILWAY_FIX_SIGNIN_NOW.md) — optional manual SQL to apply 0016 in Railway MySQL if needed. [docs/DEBUGGING.md](./docs/DEBUGGING.md) — healthcheck failure, CORS, auth 500 rows updated.
 - **CLI:** `railway deployment list` to check deploy status; `railway up --detach` to deploy; `railway logs` for errors. Do not hand off steps to the user; run commands yourself.
+
+---
+
+## Recent (2026-02-07) — Onboarding re-enabled; complete E2E live
+
+- **Onboarding on production:** Re-enabled in `client/src/App.tsx`: routes `/onboarding`, `/onboarding/welcome`, `/onboarding/upload`, `/onboarding/extraction`, `/onboarding/review`, `/onboarding/preferences` now use real components (Welcome, Upload, Extraction, Review, Preferences) instead of `OnboardingOffline` redirect. Deployed via `railway up --detach`.
+- **Complete E2E live:** `tests/complete-e2e-live.spec.ts` — full flow Roast → Sign in → Onboarding (upload uses resume from `docs/resumes for testing` when step runs). Run: `LIVE_BROWSER=1 npx playwright test tests/complete-e2e-live.spec.ts --config=playwright.production.config.ts --headed --project=chromium-desktop` (3s pause between steps when LIVE_BROWSER=1). For local full flow: `BASE_URL=http://localhost:3001` (dev server may use 3001 if 3000 is busy); local sign-in can 500 if DB not set up.
+- **Auth E2E 3s waits:** `tests/production-e2e.spec.ts` — `liveBrowserWait(page)` when `LIVE_BROWSER=1` during sign-in flow (after fill email, after submit, after redirect). Run auth tests: `LIVE_BROWSER=1 npx playwright test tests/production-e2e.spec.ts -g "Authentication Flow" --config=playwright.production.config.ts --headed`.
+- **Sign-in verification:** Production auth E2E 7/7 passed (Sign in → stay on dashboard 5s, session persists, logout).
 
 ---
 
