@@ -46,6 +46,7 @@ When an OpenClaw agent finishes work and hands off, it can append a short summar
 **OpenClaw: work until fixed.** When the user wants the agent army to **work until the solution is fixed**, use the “Work until fixed” prompt in docs/OPENCLAW_ORCHESTRATION.md. OpenClaw should iterate (fix → verify with human-style or E2E → if broken, fix again) until the flow works, appending handoff each run. Do not stop after one pass; stop when Roast → Sign in → onboarding/dashboard works and handoff says “verified working.”
 
 **OpenClaw: work until fixed — current state (for next run):**
+
 - **Goal:** Real user can do Roast (or Home) → “Build my Master Profile” or Sign in → log in → land on next step with clear direction → complete onboarding → land on dashboard. No getting stuck, no loop, clear “what to do next.”
 - **Already done (Cursor):** (1) main.tsx: 401 redirect delayed 600ms and cancelled when auth.me succeeds. (2) DevLogin: native form POST. (3) Server: if returnTo is /onboarding/welcome, redirect to /onboarding/upload?welcome=1 so next step is obvious. (4) Welcome: when signed in, show “You’re signed in. Next: upload your resume” and “Continue to Upload →”. (5) Preferences: on save redirect to /dashboard with toast “Welcome! Your profile is saved. Here’s your dashboard.”
 - **OpenClaw should:** Run human-style test or production E2E; if the flow still fails or user would get stuck, fix (Server/Client lanes), re-run, append handoff. Repeat until flow works. Then append “OpenClaw: lead-magnet flow verified working.”
@@ -54,7 +55,8 @@ When an OpenClaw agent finishes work and hands off, it can append a short summar
 
 **When you start OpenClaw:** Have the agent read OPENCLAW_START.md and run the prompt in it (work until fixed + code sweep + learn over time). Cursor can say: “Start OpenClaw and paste the prompt from OPENCLAW_START.md.”
 
-**OpenClaw: learnings** _(agent appends 1–2 line findings here so we learn over time)_  
+**OpenClaw: learnings** _(agent appends 1–2 line findings here so we learn over time)_
+
 - _(none yet)_
 
 ---
@@ -103,6 +105,7 @@ _(Entries below this line.)_
 - **Ready for:** review and commit.
 
 **Orchestration summary (Docs):**
+
 - **Current focus:** Lead-magnet sign-in (Roast → Sign in → stay on dashboard) in live browser.
 - **Hypothesis:** 401 on first load after login (or first batch before cookie) triggered redirect back to /login.
 - **What was done:** Client applied delayed 401 redirect (600ms) and cancel on auth.me success. Server lane: no code change (auth/cookie already correct). Ship: ship:check green; production E2E one known flaky test (loginViaAPI).
@@ -155,12 +158,12 @@ _(Entries below this line.)_
 
 ### Key Metrics to Track
 
-| Metric | Target |
-|--------|--------|
-| Roast → Signup | >10% |
-| Signup → First App | >30% |
-| Free → Pro (at limit) | >5% |
-| Monthly churn | <5% |
+| Metric                | Target |
+| --------------------- | ------ |
+| Roast → Signup        | >10%   |
+| Signup → First App    | >30%   |
+| Free → Pro (at limit) | >5%    |
+| Monthly churn         | <5%    |
 
 Full strategy in `docs/MONETIZATION_STRATEGY.md`.
 
@@ -186,6 +189,7 @@ Full strategy in `docs/MONETIZATION_STRATEGY.md`.
   4. Deploy
 
 ### What's wired now:
+
 - ✅ Pro button on /pricing → Stripe checkout (if logged in) or sign-in → checkout
 - ✅ Free tier: 5 applications/month limit (resets monthly)
 - ✅ Limit check before generating applications (returns error with upgrade info)
@@ -193,7 +197,21 @@ Full strategy in `docs/MONETIZATION_STRATEGY.md`.
 - ✅ `UpgradeModal` component + `useUpgradeModal` hook for handling limit errors
 
 ### What you still need to do:
+
 - [ ] Create Stripe product ($29/mo) and get price ID
 - [ ] Set `STRIPE_PRO_PRICE_ID` in production env
 - [ ] Run database migration
 - [ ] Integrate `UpgradeModal` into the dashboard/application flow where `quickApply` is called
+
+---
+
+## Persistent login / sign-in loop (2026-02-06 — Loom)
+
+**Context:** User reported persistent login issue; Loom video showed "Almost worked. For some reason," on Sign in (dashboard → back to login loop).
+
+- **When:** 2026-02-06
+- **Agent:** Cursor
+- **What ran:** Reviewed Loom, OPENCLAW_ORCHESTRATION.md, main.tsx 401 logic, useAuth.
+- **What failed:** N/A.
+- **What changed:** (1) `client/src/main.tsx` — Redirect to login on 401 only when the **failing query is auth.me**, not on any query (e.g. profile.get, getCompleteness). Stops loop when dashboard procedures 401 in parallel on first load. (2) `client/src/_core/hooks/useAuth.ts` — `auth.me` now `retry: 1` (was `retry: false`) so one retry can succeed if the first request raced with the cookie.
+- **Ready for:** review and commit. After deploy, verify Sign in → stay on dashboard in live browser.

@@ -14,7 +14,7 @@ export function useAuth(options?: UseAuthOptions) {
   const utils = trpc.useUtils();
 
   const meQuery = trpc.auth.me.useQuery(undefined, {
-    retry: false,
+    retry: 1, // One retry so cookie is sent if first request raced (avoids sign-in loop)
     refetchOnWindowFocus: false,
   });
 

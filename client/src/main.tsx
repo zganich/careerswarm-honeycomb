@@ -130,9 +130,7 @@ queryClient.getQueryCache().subscribe(event => {
     const key = q.queryKey as unknown[];
     const first = key?.[0];
     const isAuthMe =
-      (Array.isArray(first) &&
-        first[0] === "auth" &&
-        first[1] === "me") ||
+      (Array.isArray(first) && first[0] === "auth" && first[1] === "me") ||
       (Array.isArray(key) && key[0] === "auth" && key[1] === "me");
     if (isAuthMe && event.action.type === "success" && q.state.data) {
       if (unauthRedirectTimeoutId !== null) {
@@ -143,7 +141,11 @@ queryClient.getQueryCache().subscribe(event => {
     }
     if (event.action.type === "error") {
       const error = q.state.error;
-      redirectToLoginIfUnauthorized(error);
+      // Only redirect to login when auth.me fails with 401; other queries (profile.get, etc.)
+      // may 401 in parallel on first load — avoid sign-in loop after POST test-login → dashboard.
+      if (isAuthMe) {
+        redirectToLoginIfUnauthorized(error);
+      }
 
       const formatted = formatTRPCError(error);
       console.error("[API Query Error]", { formatted, raw: error });
