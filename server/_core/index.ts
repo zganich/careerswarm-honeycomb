@@ -126,6 +126,11 @@ async function startServer() {
     })
   );
 
+  // Health check (before rate limit / body parsing) — Railway probes this; must respond quickly
+  app.get("/health", (_req, res) => {
+    res.status(200).send("ok");
+  });
+
   // Rate limiting - general API protection
   const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
