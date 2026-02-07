@@ -176,14 +176,17 @@ railway status | logs | variable list | redeploy | up | open
 
 ## Last Session (2026-02-06)
 
-### This session (commit e7d96b7)
+### This session (commits 09282d0, 84a60c8)
+
+- **Review/commit:** Reviewed OPENCLAW_HANDOFF, committed handoff changes (sign-in loop fix, E2E stability, monetization docs, manusTypes→oauthTypes, Prettier pass). Push + `railway redeploy --yes`.
+- **Archive cleanup:** Stripped all Manus references from `.archive/handoffs-feb-2026/NEXT_STEPS.md` — removed "For Manus" section, manus-md-to-pdf ref, MANUS_PROMPT link.
+
+### Earlier (2026-02-06)
 
 - **CSP (live browser console):** Production smoke in headed mode showed CSP blocking Google Fonts, Cloudflare Insights, and blob workers. Updated `server/_core/index.ts` helmet CSP: added `styleSrc` + fonts.googleapis.com, `fontSrc` + fonts.gstatic.com, `scriptSrc` + static.cloudflareinsights.com, `workerSrc` 'self' blob:. Deploy to clear those console errors in production.
 - **Human-style browser test:** Added `tests/human-style-roast-signup-onboarding.spec.ts` — single flow Roast → Sign in → Onboarding with **5–10s random delay** between every step, intended for `--headed` runs. Run: `npx playwright test tests/human-style-roast-signup-onboarding.spec.ts --config=playwright.production.config.ts --headed --project=chromium-desktop`.
 - **Bug fix:** Test waited for extraction "Continue/Review" button but never clicked it; added clicks through review → preferences → complete so the flow reaches dashboard. Doc: [docs/HUMAN_TESTING_REPORT.md](./docs/HUMAN_TESTING_REPORT.md) § Human-style single flow.
 - **Autonomy (earlier):** Standing instruction added: Cursor and OpenClaw can discuss and make the right call; CONTEXT, IDEAL_WORKFLOW, OPENCLAW_HANDOFF updated. CI format fix (Prettier OPENCLAW_HANDOFF) already committed.
-
-### Earlier (2026-02-06)
 
 - Evening handoff: OpenClaw job assignments in OPENCLAW_HANDOFF; full verification; precommit/format/lint. OpenClaw configured (Ship, Server, Client, Docs, Review, Business); TASKS.md, IDEAL_WORKFLOW_AND_ASSIGNMENTS.md; standing instruction to check OPENCLAW_HANDOFF before commit.
 
