@@ -29,12 +29,12 @@ export function UpgradeModal({
   const [isLoading, setIsLoading] = useState(false);
 
   const checkoutMutation = trpc.stripe.createCheckoutSession.useMutation({
-    onSuccess: (data) => {
+    onSuccess: data => {
       if (data.checkoutUrl) {
         window.location.href = data.checkoutUrl;
       }
     },
-    onError: (error) => {
+    onError: error => {
       console.error("Checkout error:", error);
       setIsLoading(false);
     },
@@ -85,7 +85,7 @@ export function UpgradeModal({
               </div>
             </div>
             <ul className="space-y-2">
-              {proFeatures.map((feature) => (
+              {proFeatures.map(feature => (
                 <li key={feature} className="flex items-center text-sm">
                   <Check className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
                   <span className="text-slate-700">{feature}</span>

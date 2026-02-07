@@ -17,7 +17,7 @@ describe.skip("Profiler Agent (requires jobs.createManual)", () => {
       name: "Test User",
       email: "test@example.com",
       role: "user",
-      loginMethod: "manus",
+      loginMethod: "dev",
       createdAt: new Date(),
       updatedAt: new Date(),
       lastSignedIn: new Date(),

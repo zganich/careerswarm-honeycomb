@@ -52,7 +52,7 @@ The assistant runs these checks when finishing work; no need for the user to run
 - [x] Implemented responseRateChange calculation (compares this week vs last week)
 - [x] Implemented analytics insights (rule-based insights with positive/negative/neutral types)
 - [x] Added manual entry fallback to MagicOnboardingWizard (form for name, email, title, company, skills)
-- [x] Migrated LLM from Manus Forge to OpenAI (GPT-4o-mini default)
+- [x] Migrated LLM to OpenAI (GPT-4o-mini default)
 - [x] Set OPENAI_API_KEY in Railway via CLI
 - [x] Set TEST_USER_EMAIL and TEST_USER_PASSWORD in GitHub Secrets
 - [x] Created scripts/setup-checklist.mjs for production config validation
@@ -82,7 +82,7 @@ The assistant runs these when finishing or before deploy; user does not run them
 - [ ] `pnpm db:migrate` when schema/migrations change
 - [ ] `pnpm build` before deploy
 
-See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md) for full deployment guide. Auth is email-only at `/login` (no OAuth/Manus).
+See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md) for full deployment guide. Auth is email-only at `/login` (no OAuth required).
 
 ---
 
@@ -102,10 +102,10 @@ See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md) for full deployment guide
 
 ### Infrastructure
 
-- [x] Set `OPENAI_API_KEY` in Railway Variables (switched from Manus Forge to OpenAI)
+- [x] Set `OPENAI_API_KEY` in Railway Variables
 - [x] GitHub Secrets configured for CI E2E tests
 - [x] DNS setup for careerswarm.com / www (optional) — see docs/CLOUDFLARE_DNS.md
-- [x] Auth: email-only sign-in at /login (removed Manus/OAuth requirement)
+- [x] Auth: email-only sign-in at /login
 - [ ] Redis for GTM worker (optional) — see docs/OPTIONAL_INFRASTRUCTURE.md
 - [ ] Sentry for error tracking (optional) — see docs/OPTIONAL_INFRASTRUCTURE.md
 
@@ -139,7 +139,7 @@ See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md) for full deployment guide
 - Frontend: React 19 + Tailwind 4 + tRPC + shadcn/ui
 - Backend: Express 4 + tRPC 11 + Drizzle ORM
 - Database: MySQL (16 migrations, 23 tables)
-- Auth: Email-only at /login (no OAuth/Manus required)
+- Auth: Email-only at /login (no OAuth required)
 - AI: OpenAI API (GPT-4o-mini default)
 
 **7-Stage Agent Pipeline:**

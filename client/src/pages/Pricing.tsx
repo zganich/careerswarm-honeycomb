@@ -21,12 +21,12 @@ export default function Pricing() {
 
   // Stripe checkout mutation
   const checkoutMutation = trpc.stripe.createCheckoutSession.useMutation({
-    onSuccess: (data) => {
+    onSuccess: data => {
       if (data.checkoutUrl) {
         window.location.href = data.checkoutUrl;
       }
     },
-    onError: (error) => {
+    onError: error => {
       console.error("Checkout error:", error);
       setIsLoading(false);
       // If not logged in, redirect to sign in
@@ -159,7 +159,7 @@ export default function Pricing() {
       {/* Pricing Cards */}
       <div className="max-w-7xl mx-auto px-6 pb-24">
         <div className="grid md:grid-cols-3 gap-8">
-          {tiers.map((tier) => (
+          {tiers.map(tier => (
             <Card
               key={tier.name}
               className={
@@ -187,7 +187,7 @@ export default function Pricing() {
               </CardHeader>
               <CardContent>
                 <ul className="space-y-3">
-                  {tier.features.map((feature) => (
+                  {tier.features.map(feature => (
                     <li key={feature} className="flex items-start">
                       <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5" />
                       <span className="text-slate-700">{feature}</span>

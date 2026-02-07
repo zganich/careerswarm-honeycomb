@@ -20,26 +20,8 @@ test.describe("Authentication", () => {
     await expect(loginButton).toBeVisible();
   });
 
-  test.skip("should redirect to Manus OAuth when clicking login", async ({
-    page,
-  }) => {
-    // Click login button
-    const loginButton = page
-      .getByRole("link", { name: /sign in|login|get started/i })
-      .first();
-    await loginButton.click();
-
-    // Should redirect to Manus OAuth portal
-    await page.waitForURL(/oauth\.manus\.im|manus\.im\/oauth/, {
-      timeout: 10000,
-    });
-
-    // Verify we're on the OAuth page
-    expect(page.url()).toContain("manus.im");
-  });
-
   test("should show user profile after successful login", async ({ page }) => {
-    // Use auth bypass to simulate successful OAuth login (requires MySQL for test user)
+    // Use auth bypass to simulate authenticated session (requires MySQL for test user)
     await bypassLogin(page);
     await page.goto("/dashboard");
     await page.waitForLoadState("networkidle");

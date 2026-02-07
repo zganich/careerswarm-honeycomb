@@ -64,7 +64,7 @@ export async function setupVite(app: Express, server: Server) {
   app.use((req, res, next) => {
     if (req.method !== "GET") return next();
     if (req.path.startsWith("/api")) return next();
-    if (req.path.startsWith("/__manus__")) return next();
+    if (req.path.startsWith("/__debug__")) return next();
     if (req.path.startsWith("/@")) return next();
     // Paths with a dot are likely assets or scripts (e.g. /src/main.tsx) — let Vite handle them
     if (req.path.includes(".")) return next();

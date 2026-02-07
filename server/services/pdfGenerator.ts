@@ -28,7 +28,7 @@ export async function generatePDF(
     const outputDir = path.dirname(outputPath);
     await fs.mkdir(outputDir, { recursive: true });
 
-    // Convert markdown to PDF using manus-md-to-pdf utility
+    // Convert markdown to PDF (manus-md-to-pdf CLI if available)
     await execAsync(`manus-md-to-pdf "${tempMdPath}" "${outputPath}"`);
 
     // Clean up temp file

@@ -20,7 +20,8 @@ describe("Resume Roaster", () => {
   it("should return SERVICE_UNAVAILABLE when runRoast fails", async () => {
     vi.spyOn(roast, "runRoast").mockResolvedValue({
       ok: false,
-      message: "Resume roast isn't available right now. Please try again in a moment.",
+      message:
+        "Resume roast isn't available right now. Please try again in a moment.",
     });
     const caller = appRouter.createCaller({
       user: null,
@@ -28,9 +29,12 @@ describe("Resume Roaster", () => {
       res: {} as any,
     });
     const longEnough = "x".repeat(50);
-    await expect(caller.public.roast({ resumeText: longEnough })).rejects.toMatchObject({
+    await expect(
+      caller.public.roast({ resumeText: longEnough })
+    ).rejects.toMatchObject({
       code: "SERVICE_UNAVAILABLE",
-      message: "Resume roast isn't available right now. Please try again in a moment.",
+      message:
+        "Resume roast isn't available right now. Please try again in a moment.",
     });
   });
 

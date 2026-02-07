@@ -7,10 +7,17 @@
 
 ## Auth (Sign-in / Login)
 
-**Email-only auth.** No OAuth or Manus required.
+**Email-only auth.** No OAuth required.
 
 - Users sign in at **`/login`**: enter email → `POST /api/auth/test-login` → session cookie set → redirect to `returnTo` (e.g. `/onboarding/welcome`, `/dashboard`). First-time emails create an account automatically.
 - Optional: if you set `OAUTH_SERVER_URL` and `VITE_OAUTH_PORTAL_URL`, OAuth can be used; when unset, the app uses email sign-in only.
+
+**Where OAuth can still show up (no action needed for email-only):**
+
+- **Database:** `users.loginMethod` may contain `"dev"` or legacy values from past logins — stored data only, not config.
+- **Railway:** Do not set `OAUTH_SERVER_URL` or `VITE_OAUTH_PORTAL_URL` so login stays email-only.
+- **CI:** Unit tests run with OAuth unset. E2E runs against production.
+- **Other:** Legacy references in `.archive/`, optional debug tooling, and browser-extension URLs; point the extension at your domain if you use it.
 
 ---
 

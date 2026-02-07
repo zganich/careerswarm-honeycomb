@@ -13,12 +13,9 @@ export const getLoginUrl = (returnTo?: string) => {
   const statePayload: OAuthState = { redirectUri, returnTo: returnPath };
   const state = btoa(JSON.stringify(statePayload));
 
-  // Gracefully handle missing or invalid VITE_OAUTH_PORTAL_URL
+  // Email-only auth: leave VITE_OAUTH_PORTAL_URL unset; then callers use /login?returnTo=...
   if (!oauthPortalUrl) {
-    console.error(
-      "VITE_OAUTH_PORTAL_URL is not defined in environment variables"
-    );
-    return "#"; // Safe fallback - prevents navigation
+    return "#"; // No OAuth → use /login (main.tsx, DashboardLayout, etc. handle this)
   }
 
   try {

@@ -1,7 +1,6 @@
 // Careerswarm Extension Popup Script
 
-const API_BASE =
-  "https://3000-i9gyfqjd276sbiyfs99wv-0795b75c.us2.manus.computer";
+const API_BASE = "https://careerswarm.com";
 
 // Check login status
 async function checkLoginStatus() {

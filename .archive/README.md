@@ -2,6 +2,8 @@
 
 Obsolete or superseded files. Kept for reference only.
 
+**Note:** Some archived docs reference legacy OAuth or vendor names. Current auth is **email-only** at `/login`; OAuth is optional. See root `docs/CRITICAL_SETUP_CHECKLIST.md` for current setup.
+
 | Folder               | Contents                                                                                                                |
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | `obsolete-scripts/`  | Root test scripts (test-e2e, test-payment, etc.) superseded by Playwright; fix-imports, eliminate-tech-debt, seed-verbs |

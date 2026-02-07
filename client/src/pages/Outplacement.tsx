@@ -211,7 +211,7 @@ export default function Outplacement() {
       <section className="py-12 border-y border-slate-100">
         <div className="max-w-4xl mx-auto px-6">
           <div className="grid grid-cols-3 gap-8">
-            {stats.map((stat) => (
+            {stats.map(stat => (
               <div key={stat.label} className="text-center">
                 <p className="text-3xl md:text-4xl font-bold text-orange-500">
                   {stat.value}
@@ -234,7 +234,7 @@ export default function Outplacement() {
             delivers better outcomes at a fraction of the cost.
           </p>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {benefits.map((benefit) => (
+            {benefits.map(benefit => (
               <div key={benefit.title} className="text-center">
                 <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center mx-auto mb-4">
                   <benefit.icon className="w-6 h-6 text-orange-600" />
@@ -281,7 +281,7 @@ export default function Outplacement() {
                 description:
                   "You get a dashboard showing engagement, applications submitted, and placements.",
               },
-            ].map((item) => (
+            ].map(item => (
               <div key={item.step} className="flex gap-6 items-start">
                 <div className="w-10 h-10 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold flex-shrink-0">
                   {item.step}
@@ -308,7 +308,7 @@ export default function Outplacement() {
             Flexible options for teams of any size. Volume discounts available.
           </p>
           <div className="grid md:grid-cols-3 gap-8">
-            {packages.map((pkg) => (
+            {packages.map(pkg => (
               <Card
                 key={pkg.name}
                 className={
@@ -334,7 +334,7 @@ export default function Outplacement() {
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-3">
-                    {pkg.features.map((feature) => (
+                    {pkg.features.map(feature => (
                       <li key={feature} className="flex items-start">
                         <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5" />
                         <span className="text-slate-700">{feature}</span>
@@ -393,7 +393,7 @@ export default function Outplacement() {
                   "Outdated job board access",
                   "No real-time tracking",
                   "3-6 month engagements",
-                ].map((item) => (
+                ].map(item => (
                   <div key={item} className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-red-400" />
                     <span className="text-slate-700">{item}</span>
@@ -413,7 +413,7 @@ export default function Outplacement() {
                   "Modern, always-updated platform",
                   "Real-time analytics dashboard",
                   "Flexible 3-12 month access",
-                ].map((item) => (
+                ].map(item => (
                   <div key={item} className="flex items-center gap-2">
                     <Check className="w-4 h-4 text-green-600" />
                     <span className="text-slate-700">{item}</span>
@@ -461,7 +461,7 @@ export default function Outplacement() {
                         id="name"
                         required
                         value={formData.name}
-                        onChange={(e) =>
+                        onChange={e =>
                           setFormData({ ...formData, name: e.target.value })
                         }
                         placeholder="Jane Smith"
@@ -474,7 +474,7 @@ export default function Outplacement() {
                         type="email"
                         required
                         value={formData.email}
-                        onChange={(e) =>
+                        onChange={e =>
                           setFormData({ ...formData, email: e.target.value })
                         }
                         placeholder="jane@company.com"
@@ -488,7 +488,7 @@ export default function Outplacement() {
                         id="company"
                         required
                         value={formData.company}
-                        onChange={(e) =>
+                        onChange={e =>
                           setFormData({ ...formData, company: e.target.value })
                         }
                         placeholder="Acme Inc"
@@ -502,7 +502,7 @@ export default function Outplacement() {
                         id="employeeCount"
                         required
                         value={formData.employeeCount}
-                        onChange={(e) =>
+                        onChange={e =>
                           setFormData({
                             ...formData,
                             employeeCount: e.target.value,
@@ -519,7 +519,7 @@ export default function Outplacement() {
                     <Textarea
                       id="message"
                       value={formData.message}
-                      onChange={(e) =>
+                      onChange={e =>
                         setFormData({ ...formData, message: e.target.value })
                       }
                       placeholder="Timeline, specific needs, questions..."

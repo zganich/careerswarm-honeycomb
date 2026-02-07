@@ -33,7 +33,7 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 - **Frontend:** React 19, Tailwind 4, tRPC, shadcn/ui, wouter (routing)
 - **Backend:** Express 4, tRPC 11, Drizzle ORM
 - **Database:** MySQL (Railway). Schema: `drizzle/schema.ts` (23 tables); access via `server/db.ts`. Migrations: `drizzle/*.sql` + `drizzle/meta/_journal.json`.
-- **Auth:** Email-only sign-in at `/login` (no OAuth/Manus). User enters email → session cookie; `returnTo` supported. Optional OAuth when `OAUTH_SERVER_URL` and `VITE_OAUTH_PORTAL_URL` are set. See `docs/CRITICAL_SETUP_CHECKLIST.md` § Auth.
+- **Auth:** Email-only sign-in at `/login`. User enters email → session cookie; `returnTo` supported. Optional OAuth when `OAUTH_SERVER_URL` and `VITE_OAUTH_PORTAL_URL` are set. See `docs/CRITICAL_SETUP_CHECKLIST.md` § Auth.
 - **AI:** OpenAI API only (`OPENAI_API_KEY`). GPT-4o-mini default. Roast: `server/roast.ts` → `server/_core/llm.ts` (`invokeLLM`).
 - **Deploy:** Railway (Dockerfile, Node 20)
 
@@ -161,7 +161,7 @@ railway status | logs | variable list | redeploy | up | open
 ### Changes Made (earlier):
 
 1. **CLI monitoring (Feb 5):** `pnpm run monitor` / `monitor:watch`, `scripts/monitor.mjs`; `pnpm run test:cloudflare`, Cloudflare API script; MONITORING.md, README, CONTEXT updated. Duplicate Railway project removed.
-2. **Auth: email-only** – Removed Manus/OAuth requirement. Sign-in at `/login` (email → session). `OAUTH_SERVER_URL` no longer required for app boot. Server: `server/_core/env.ts`, `oauth.ts`, `sdk.ts`. Client: DevLogin → “Sign in”, all Sign In links → `/login`; Welcome/Home/DashboardLayout updated. Docs and `.env.example` updated.
+2. **Auth: email-only** – Sign-in at `/login` (email → session). `OAUTH_SERVER_URL` not required for app boot. Server: `server/_core/env.ts`, `oauth.ts`, `sdk.ts`. Client: DevLogin → “Sign in”, all Sign In links → `/login`; Welcome/Home/DashboardLayout updated.
 3. **Rules/docs** – “Do not hand off technical work” in `.cursorrules` and CONTEXT; README/todo/CONTEXT aligned; cost-avoidance and OPENAI_API_KEY steps clarified.
    **Roaster test** – 20s timeout for roast integration test in `server/roaster.test.ts`.
    **E2E** – "From Roast: Build my Master Profile → welcome" fixed (data-testid on Roast page, fallback if CTA not visible). Playwright production reporter outputFolder → `playwright-report-production` to avoid path clash.

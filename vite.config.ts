@@ -6,12 +6,11 @@ import path from "node:path";
 import { defineConfig, type Plugin, type ViteDevServer } from "vite";
 
 // =============================================================================
-// Manus Debug Collector - Vite Plugin
-// Writes browser logs directly to files, trimmed when exceeding size limit
+// Debug collector - Vite plugin (writes browser logs to files, trimmed when over limit)
 // =============================================================================
 
 const PROJECT_ROOT = import.meta.dirname;
-const LOG_DIR = path.join(PROJECT_ROOT, ".manus-logs");
+const LOG_DIR = path.join(PROJECT_ROOT, ".debug-logs");
 const MAX_LOG_SIZE_BYTES = 1 * 1024 * 1024; // 1MB per log file
 const TRIM_TARGET_BYTES = Math.floor(MAX_LOG_SIZE_BYTES * 0.6); // Trim to 60% to avoid constant re-trimming
 
@@ -69,13 +68,13 @@ function writeToLogFile(source: LogSource, entries: unknown[]) {
 
 /**
  * Vite plugin to collect browser debug logs
- * - POST /__manus__/logs: Browser sends logs, written directly to files
+ * - POST /__debug__/logs: Browser sends logs, written directly to files
  * - Files: browserConsole.log, networkRequests.log, sessionReplay.log
  * - Auto-trimmed when exceeding 1MB (keeps newest entries)
  */
-function vitePluginManusDebugCollector(): Plugin {
+function vitePluginDebugCollector(): Plugin {
   return {
-    name: "manus-debug-collector",
+    name: "debug-collector",
 
     transformIndexHtml(html, ctx) {
       if (!(ctx as { server?: unknown }).server) return html;
@@ -85,7 +84,7 @@ function vitePluginManusDebugCollector(): Plugin {
           {
             tag: "script",
             attrs: {
-              src: "/__manus__/debug-collector.js",
+              src: "/__debug__/debug-collector.js",
               defer: true,
             },
             injectTo: "head",
@@ -95,8 +94,8 @@ function vitePluginManusDebugCollector(): Plugin {
     },
 
     configureServer(server: ViteDevServer) {
-      // POST /__manus__/logs: Browser sends logs (written directly to files)
-      server.middlewares.use("/__manus__/logs", (req, res, next) => {
+      // POST /__debug__/logs: Browser sends logs (written directly to files)
+      server.middlewares.use("/__debug__/logs", (req, res, next) => {
         if (req.method !== "POST") {
           return next();
         }
@@ -151,7 +150,7 @@ const plugins = [
   react(),
   tailwindcss(),
   jsxLocPlugin(),
-  vitePluginManusDebugCollector(),
+  vitePluginDebugCollector(),
 ];
 
 export default defineConfig({

@@ -14,7 +14,7 @@ When Cursor or the user says "run the prompt when you start OpenClaw," do everyt
 
 2. **Work until fixed** — Run: `npx playwright test tests/human-style-roast-signup-onboarding.spec.ts --config=playwright.production.config.ts --headed --project=chromium-desktop` (or production E2E auth+onboarding). If the flow fails or user would get stuck: optionally do a code sweep (step 3), then debug, fix, re-run. Repeat until it works. Append one handoff block to OPENCLAW_HANDOFF.md (format in that file) after each run. When it works, append "OpenClaw: lead-magnet flow verified working" and stop.
 
-3. **Code sweep (optional, only if first run failed and you need to debug)** — Sweep server/_core/oauth.ts, server/_core/cookies.ts, server/_core/sdk.ts; client DevLogin.tsx, main.tsx, onboarding Welcome/Upload/Preferences, DashboardLayout.tsx. Look for wrong redirect, 401 loop, unclear "what to do next." Append a short "Code sweep" note to OPENCLAW_HANDOFF.md. Fix anything clearly wrong; then continue work-until-fixed.
+3. **Code sweep (optional, only if first run failed and you need to debug)** — Sweep server/\_core/oauth.ts, server/\_core/cookies.ts, server/\_core/sdk.ts; client DevLogin.tsx, main.tsx, onboarding Welcome/Upload/Preferences, DashboardLayout.tsx. Look for wrong redirect, 401 loop, unclear "what to do next." Append a short "Code sweep" note to OPENCLAW_HANDOFF.md. Fix anything clearly wrong; then continue work-until-fixed.
 
 4. **Learn over time** — When you fix or discover something useful, append 1–2 lines under "OpenClaw: learnings" in OPENCLAW_HANDOFF.md. Future runs use this.
 

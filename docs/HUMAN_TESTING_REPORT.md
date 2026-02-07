@@ -99,6 +99,6 @@ Five distinct personas through full onboarding with 3–5s delays between steps.
 npx playwright test tests/human-style-5-persona.spec.ts --config=playwright.production.config.ts --headed --project=chromium-desktop
 ```
 
-~15–20 min total. Auth: email-only (no password); Dev Login accepts any email when `ENABLE_DEV_LOGIN=true`.
+~15–20 min total. Auth: email-only (no password) at /login; accepts any email when OAuth is not configured.
 
 **Note:** The Cursor MCP browser tool does not persist session cookies from the test-login API redirect, so full human-style tests must be run via Playwright (or OpenClaw with its browser tool).

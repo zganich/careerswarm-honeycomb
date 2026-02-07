@@ -1384,7 +1384,9 @@ export async function checkApplicationLimit(userId: number): Promise<{
 
   // Check if we need to reset the monthly counter
   const now = new Date();
-  const resetAt = user.applicationsResetAt ? new Date(user.applicationsResetAt) : new Date(0);
+  const resetAt = user.applicationsResetAt
+    ? new Date(user.applicationsResetAt)
+    : new Date(0);
   const monthsSinceReset =
     (now.getFullYear() - resetAt.getFullYear()) * 12 +
     (now.getMonth() - resetAt.getMonth());
@@ -1455,7 +1457,13 @@ export async function getApplicationUsage(userId: number): Promise<{
   unlimited: boolean;
 }> {
   const db = await getDb();
-  if (!db) return { used: 0, limit: FREE_TIER_APP_LIMIT, tier: "free", unlimited: false };
+  if (!db)
+    return {
+      used: 0,
+      limit: FREE_TIER_APP_LIMIT,
+      tier: "free",
+      unlimited: false,
+    };
 
   const [user] = await db
     .select()
@@ -1463,7 +1471,13 @@ export async function getApplicationUsage(userId: number): Promise<{
     .where(eq(users.id, userId))
     .limit(1);
 
-  if (!user) return { used: 0, limit: FREE_TIER_APP_LIMIT, tier: "free", unlimited: false };
+  if (!user)
+    return {
+      used: 0,
+      limit: FREE_TIER_APP_LIMIT,
+      tier: "free",
+      unlimited: false,
+    };
 
   if (user.subscriptionTier === "pro") {
     return { used: 0, limit: 0, tier: "pro", unlimited: true };

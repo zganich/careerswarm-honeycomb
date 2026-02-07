@@ -11,7 +11,12 @@ function getQueryParam(req: Request, key: string): string | undefined {
 
 /** Auth: email-only sign-in at /login. Optional OAuth when OAUTH_SERVER_URL is set. */
 
-/** Email login: always enabled when OAuth is not configured; otherwise enabled in dev or when ENABLE_DEV_LOGIN=true */
+/**
+ * Email sign-in at /login is enabled when:
+ * - OAuth is not configured (OAUTH_SERVER_URL unset) → always on (primary auth), or
+ * - OAuth is configured → on in non-production, or when ENABLE_DEV_LOGIN=true (allow email alongside OAuth in production).
+ * Best practice: leave OAUTH_SERVER_URL unset for email-only; then ENABLE_DEV_LOGIN is ignored.
+ */
 function isEmailLoginEnabled(): boolean {
   const hasOAuth = !!process.env.OAUTH_SERVER_URL?.trim();
   if (!hasOAuth) return true;

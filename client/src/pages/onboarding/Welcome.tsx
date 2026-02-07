@@ -230,15 +230,24 @@ export default function Welcome() {
           {user ? (
             <>
               <p className="text-sm text-muted-foreground mb-3">
-                You're signed in. Next: upload your resume to build your profile.
+                You're signed in. Next: upload your resume to build your
+                profile.
               </p>
-              <Button size="lg" className="text-lg px-12" onClick={handleContinue}>
+              <Button
+                size="lg"
+                className="text-lg px-12"
+                onClick={handleContinue}
+              >
                 Continue to Upload →
               </Button>
             </>
           ) : (
             <>
-              <Button size="lg" className="text-lg px-12" onClick={handleContinue}>
+              <Button
+                size="lg"
+                className="text-lg px-12"
+                onClick={handleContinue}
+              >
                 Let's Build Your Profile →
               </Button>
               <p className="text-sm text-muted-foreground mt-4">

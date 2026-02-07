@@ -138,7 +138,9 @@ test.describe("Resume Roast API", () => {
     const body = await res.json();
     const status = res.status();
     if (status === 429) {
-      console.log("✅ Roast API rate-limited (429); validation contract skipped");
+      console.log(
+        "✅ Roast API rate-limited (429); validation contract skipped"
+      );
       return;
     }
     expect(status).toBe(400);

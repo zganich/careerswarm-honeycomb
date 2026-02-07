@@ -30,13 +30,12 @@ setup("authenticate", async ({ page }) => {
     .first()
     .click();
 
-  // Wait for OAuth redirect to Manus login page
+  // Wait for OAuth redirect to provider login page
   await page.waitForURL("**/oauth/**", { timeout: 10000 });
 
   console.log("📝 Filling in OAuth login form...");
 
-  // Fill in the OAuth login form
-  // Note: These selectors may need adjustment based on actual Manus OAuth UI
+  // Fill in the OAuth login form (selectors may vary by provider)
   await page.fill('input[type="email"], input[name="email"]', testEmail);
   await page.fill(
     'input[type="password"], input[name="password"]',

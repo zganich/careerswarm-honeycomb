@@ -3,7 +3,7 @@ import { type Page, expect } from "@playwright/test";
 /**
  * Production Auth Utility for E2E Tests
  *
- * Uses the Dev Login feature (ENABLE_DEV_LOGIN=true on Railway)
+ * Uses email sign-in at /login (always enabled when OAuth is not configured)
  * to authenticate without requiring OAuth.
  */
 

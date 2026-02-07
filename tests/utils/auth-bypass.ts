@@ -4,14 +4,8 @@ import { SignJWT } from "jose";
 /**
  * Auth Bypass Utility for E2E Tests
  *
- * This utility creates a mock session cookie that mimics the Manus OAuth flow,
- * allowing tests to bypass the real OAuth redirect and focus on application logic.
- *
- * The session cookie is a JWT token signed with HS256 algorithm containing:
- * - openId: Test user's unique identifier
- * - appId: Manus application ID
- * - name: Test user's display name
- * - exp: Token expiration timestamp
+ * Creates a mock session cookie (JWT) so tests can run without the real login flow.
+ * The cookie is signed with HS256 and contains openId, appId, name, exp.
  */
 
 const COOKIE_NAME = "app_session_id";

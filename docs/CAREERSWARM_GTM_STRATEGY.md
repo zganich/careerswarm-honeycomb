@@ -77,7 +77,7 @@ flowchart LR
 | **Resume Roast**          | Paste text (min 50 chars) → "Get Roasted" → 0–100 score, verdict, "brutal truth," 3 "Million-Dollar Mistakes" (title, explanation, fix).                                                   | No signup; fast response; clear copy.                                        |
 | **Aha moment**            | User internalizes: "My resume has specific, fixable mistakes—and this tool knows how to fix them at scale." Defined as: **seeing score + 3 mistakes + concrete fixes in under 2 minutes.** | Design and copy should make the three mistakes and fixes impossible to miss. |
 | **Conversion block**      | "Turn these fixes into a resume that gets interviews" → "Build my Master Profile" → `/onboarding/welcome`.                                                                                 | Single CTA; no competing links.                                              |
-| **Master Profile signup** | Onboarding: welcome → upload/extract → review → preferences. One-click OAuth (Manus).                                                                                                      | Short flow; optional pre-fill from roast later.                              |
+| **Master Profile signup** | Onboarding: welcome → upload/extract → review → preferences. Email sign-in or optional OAuth.                                                                                              | Short flow; optional pre-fill from roast later.                              |
 
 ### Tactics: Lower Friction
 

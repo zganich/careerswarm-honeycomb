@@ -66,7 +66,7 @@ CareerSwarm helps job seekers **stop rewriting their resume for every job**. Use
 ## Current State (For Internal / Partner Use)
 
 - **Product:** Resume Roast lead magnet live (LLM analysis, robust parsing, conversion block to onboarding). Master Profile onboarding (upload → extract → review → preferences). Application package generation (Tailor + Scribe + Assembler, PDF/DOCX/ZIP, S3, notifications). Package generation success/failure logged for monitoring.
-- **Tech:** React 19, Tailwind 4, tRPC, Express, Drizzle ORM, MySQL/TiDB, Manus OAuth & Forge API. Vitest + Playwright tests; 90+ unit tests passing, E2E suite in place (OAuth/credentials configurable).
+- **Tech:** React 19, Tailwind 4, tRPC, Express, Drizzle ORM, MySQL/TiDB, email sign-in (optional OAuth), OpenAI for LLM. Vitest + Playwright tests; 90+ unit tests passing, E2E suite in place.
 - **Readiness:** ~95% production-ready; no blocking issues. E2E credentials and optional metrics dashboard can be added when needed.
 
 ---
@@ -86,7 +86,7 @@ CareerSwarm helps job seekers **stop rewriting their resume for every job**. Use
 ## Repo & Docs (Technical Stakeholders)
 
 - **Repo:** `careerswarm-honeycomb` — https://github.com/zganich/careerswarm-honeycomb
-- **Handoff / testing:** `CLAUDE_MANUS_HANDOFF.md`, `MANUS_UPDATE.md`
+- **Handoff / testing:** See `.archive/handoffs-feb-2026/` and docs for testing notes.
 - **Product detail:** `README.md`, `CONTEXT_FOR_NEW_CHAT.md`
 
 ---

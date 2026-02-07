@@ -10,12 +10,12 @@ Use [OpenClaw](https://github.com/openclaw/openclaw) (personal AI assistant) in 
 
 Pick a goal; use the prompt or doc in the table. Handoff format is defined once in [OPENCLAW_HANDOFF.md](../OPENCLAW_HANDOFF.md) — append one block there when done; do not commit.
 
-| Goal | What OpenClaw does | Prompt / doc |
-|------|--------------------|--------------|
-| **Production gate (deploy-ready today)** | Run `ship:check:full`; if fail, fix and re-run; append handoff. No sweep, no work-until-fixed. | Paste "Production today" prompt below (Ship or main). |
+| Goal                                          | What OpenClaw does                                                                                                                                                                                   | Prompt / doc                                                                                                                                |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Production gate (deploy-ready today)**      | Run `ship:check:full`; if fail, fix and re-run; append handoff. No sweep, no work-until-fixed.                                                                                                       | Paste "Production today" prompt below (Ship or main).                                                                                       |
 | **Fix lead-magnet flow (sign-in/onboarding)** | Work until fixed: run E2E/human-style test → if fail, fix and re-run; optional code sweep only if first run failed. Append handoff each run; when green, append "lead-magnet flow verified working." | Paste "Work until fixed" prompt from [OPENCLAW_ORCHESTRATION.md](./OPENCLAW_ORCHESTRATION.md) or [OPENCLAW_START.md](../OPENCLAW_START.md). |
-| **Multi-agent debug (e.g. sign-in loop)** | Run Server, Client, Ship, Review, Docs in parallel per ORCHESTRATION; each appends handoff. | Use orchestration table in [OPENCLAW_ORCHESTRATION.md](./OPENCLAW_ORCHESTRATION.md). |
-| **Routine (cron)** | Monitor 30m, ship:check 6h, future-shoestring weekly. | Already configured; agents run per HANDOFF job table. |
+| **Multi-agent debug (e.g. sign-in loop)**     | Run Server, Client, Ship, Review, Docs in parallel per ORCHESTRATION; each appends handoff.                                                                                                          | Use orchestration table in [OPENCLAW_ORCHESTRATION.md](./OPENCLAW_ORCHESTRATION.md).                                                        |
+| **Routine (cron)**                            | Monitor 30m, ship:check 6h, future-shoestring weekly.                                                                                                                                                | Already configured; agents run per HANDOFF job table.                                                                                       |
 
 ## What’s already done (this machine)
 
@@ -277,21 +277,21 @@ These run automatically so the product stays shippable and future work is scoped
 
 ## Quick reference (this setup)
 
-| Action                  | Command                                                                                                      |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------ |
-| CareerSwarm doctor      | `pnpm run doctor` — local sanity (verify-env, check, build; no secrets printed)                              |
-| OpenClaw doctor         | `openclaw doctor` — gateway/channel health; run after gateway config changes                                 |
-| Gateway status          | `openclaw gateway status`                                                                                    |
-| Gateway restart         | `openclaw gateway restart`                                                                                   |
-| Open WebChat            | [http://127.0.0.1:18789/](http://127.0.0.1:18789/) or `openclaw dashboard`                                   |
-| Add model auth          | `openclaw configure`                                                                                         |
-| Install Anthropic CLI   | `brew install --cask claude-code` (or see install script at claude.ai)                                       |
-| Add Anthropic (CLI flow) | `claude setup-token` then `openclaw models auth setup-token` then copy auth to role agents (see § above)   |
-| Health check            | `openclaw health`                                                                                            |
-| Run agent one-off (CLI) | `openclaw agent --message "Run pnpm run monitor and report"` (after auth is set)                             |
-| List agents             | `openclaw agents list`                                                                                       |
-| Add role agent          | `openclaw agents add ship --workspace /Users/jamesknight/GitHub/careerswarm-honeycomb` (see Multiple agents) |
-| Orchestrate dev team    | See [docs/OPENCLAW_ORCHESTRATION.md](./OPENCLAW_ORCHESTRATION.md) — copy-paste tasks per agent; handoffs go to OPENCLAW_HANDOFF.md |
+| Action                   | Command                                                                                                                            |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| CareerSwarm doctor       | `pnpm run doctor` — local sanity (verify-env, check, build; no secrets printed)                                                    |
+| OpenClaw doctor          | `openclaw doctor` — gateway/channel health; run after gateway config changes                                                       |
+| Gateway status           | `openclaw gateway status`                                                                                                          |
+| Gateway restart          | `openclaw gateway restart`                                                                                                         |
+| Open WebChat             | [http://127.0.0.1:18789/](http://127.0.0.1:18789/) or `openclaw dashboard`                                                         |
+| Add model auth           | `openclaw configure`                                                                                                               |
+| Install Anthropic CLI    | `brew install --cask claude-code` (or see install script at claude.ai)                                                             |
+| Add Anthropic (CLI flow) | `claude setup-token` then `openclaw models auth setup-token` then copy auth to role agents (see § above)                           |
+| Health check             | `openclaw health`                                                                                                                  |
+| Run agent one-off (CLI)  | `openclaw agent --message "Run pnpm run monitor and report"` (after auth is set)                                                   |
+| List agents              | `openclaw agents list`                                                                                                             |
+| Add role agent           | `openclaw agents add ship --workspace /Users/jamesknight/GitHub/careerswarm-honeycomb` (see Multiple agents)                       |
+| Orchestrate dev team     | See [docs/OPENCLAW_ORCHESTRATION.md](./OPENCLAW_ORCHESTRATION.md) — copy-paste tasks per agent; handoffs go to OPENCLAW_HANDOFF.md |
 
 ## Production today (one-shot)
 

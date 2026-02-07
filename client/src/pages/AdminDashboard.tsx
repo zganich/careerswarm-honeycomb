@@ -140,7 +140,7 @@ export default function AdminDashboard() {
               { id: "overview", label: "Overview", icon: BarChart3 },
               { id: "users", label: "Job Seekers", icon: Users },
               { id: "import", label: "Import Users", icon: Upload },
-            ].map((tab) => (
+            ].map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
@@ -270,7 +270,7 @@ export default function AdminDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {mockWeeklyData.map((week) => (
+                  {mockWeeklyData.map(week => (
                     <div key={week.week} className="flex items-center gap-4">
                       <div className="w-20 text-sm font-medium text-slate-600">
                         {week.week}
@@ -401,7 +401,7 @@ export default function AdminDashboard() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {mockUsers.map((user) => (
+                  {mockUsers.map(user => (
                     <TableRow key={user.id}>
                       <TableCell className="font-medium">{user.name}</TableCell>
                       <TableCell className="text-slate-600">
@@ -475,8 +475,12 @@ export default function AdminDashboard() {
                   What happens after import?
                 </h4>
                 <ul className="text-sm text-blue-800 space-y-1">
-                  <li>• Users receive an email invitation to set up their account</li>
-                  <li>• They can immediately start building their Master Profile</li>
+                  <li>
+                    • Users receive an email invitation to set up their account
+                  </li>
+                  <li>
+                    • They can immediately start building their Master Profile
+                  </li>
                   <li>• You'll see them appear in the Job Seekers tab</li>
                 </ul>
               </div>

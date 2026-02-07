@@ -60,7 +60,7 @@ npx playwright test
 **Frontend:** React 19 + Tailwind 4 + tRPC + shadcn/ui  
 **Backend:** Express 4 + tRPC 11 + Drizzle ORM  
 **Database:** MySQL (23 tables, see `drizzle/schema.ts`)  
-**Auth:** Email-only sign-in at `/login` (no OAuth/Manus required)  
+**Auth:** Email-only sign-in at `/login` (no OAuth required)  
 **AI:** OpenAI API (GPT-4o-mini default); requires `OPENAI_API_KEY` in production  
 **Storage:** S3 optional for file uploads  
 **Testing:** Vitest (122 passing / 51 skipped) + Playwright (smoke + E2E vs production)

@@ -163,9 +163,7 @@ test.describe("Build My Master Profile entry points", () => {
     await page.waitForLoadState("networkidle");
     await page.waitForTimeout(HUMAN_STEP_DELAY_MS);
 
-    const cta = page
-      .getByRole("button", { name: /get roasted/i })
-      .first();
+    const cta = page.getByRole("button", { name: /get roasted/i }).first();
     await cta.waitFor({ state: "visible", timeout: 10000 });
     logStep("Lead magnet", "clicking Get Roasted");
     await cta.scrollIntoViewIfNeeded();
@@ -176,13 +174,15 @@ test.describe("Build My Master Profile entry points", () => {
     logStep("Lead magnet", "Home → Get Roasted → /roast");
   });
 
-  test("Onboarding offline: /onboarding redirects to home", async ({ page }) => {
+  test("Onboarding offline: /onboarding redirects to home", async ({
+    page,
+  }) => {
     logStep("Lead magnet", "navigating to /onboarding/welcome");
     await page.goto(`${BASE_URL}/onboarding/welcome`);
     await page.waitForLoadState("networkidle");
     await page.waitForTimeout(HUMAN_STEP_DELAY_MS);
 
-    await expect(page).toHaveURL((url) => new URL(url).pathname === "/", {
+    await expect(page).toHaveURL(url => new URL(url).pathname === "/", {
       timeout: 10000,
     });
     logStep("Lead magnet", "/onboarding/welcome redirects to home");

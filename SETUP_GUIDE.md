@@ -25,7 +25,6 @@ cp .env.example .env
 
 - `DATABASE_URL` - MySQL/TiDB connection string
 - `JWT_SECRET` - Secret for session tokens (min 32 chars)
-- `OAUTH_SERVER_URL` - Manus OAuth server URL
 - `OPENAI_API_KEY` - OpenAI API key for LLM (primary)
 - `STRIPE_SECRET_KEY` - Stripe test mode key
 - `STRIPE_WEBHOOK_SECRET` - Stripe webhook secret
@@ -77,14 +76,11 @@ mysql://username:password@host:port/database
 DATABASE_URL="mysql://root:password@localhost:3306/careerswarm_dev"
 ```
 
-### Authentication (Manus OAuth)
+### Authentication (email-only by default)
 
-Get these from your Manus deployment dashboard:
+Sign-in at `/login` with any email; no OAuth required. Optional: set `OAUTH_SERVER_URL` and `VITE_OAUTH_PORTAL_URL` only if you use an OAuth provider (see `.env.example`).
 
-- `OAUTH_SERVER_URL` - Your Manus OAuth endpoint
-- `OWNER_OPEN_ID` - Your user's OpenID
-
-### AI Integration (Manus Forge)
+### AI Integration (OpenAI)
 
 Get your API key from [platform.openai.com](https://platform.openai.com/api-keys):
 

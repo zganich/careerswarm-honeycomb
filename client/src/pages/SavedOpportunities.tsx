@@ -32,7 +32,7 @@ export default function SavedOpportunities() {
   const [companyStageFilter, setCompanyStageFilter] = useState<string>("all");
   const [locationFilter, setLocationFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("date_saved");
-  
+
   // Upgrade modal for application limits
   const { handleApplicationError, UpgradeModalComponent } = useUpgradeModal();
 

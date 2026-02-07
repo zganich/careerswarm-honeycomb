@@ -4,8 +4,7 @@
 (function () {
   "use strict";
 
-  const API_BASE =
-    "https://3000-i9gyfqjd276sbiyfs99wv-0795b75c.us2.manus.computer/api/trpc";
+  const API_BASE = "https://careerswarm.com/api/trpc";
 
   // Extract job description from current page
   function extractJobDescription() {
@@ -117,17 +116,14 @@
     });
 
     widget.querySelector(".cs-login")?.addEventListener("click", () => {
-      window.open(
-        "https://3000-i9gyfqjd276sbiyfs99wv-0795b75c.us2.manus.computer",
-        "_blank"
-      );
+      window.open("https://careerswarm.com", "_blank");
     });
 
     widget.querySelector(".cs-btn-primary")?.addEventListener("click", () => {
       chrome.storage.local.get(["jobData"], result => {
         if (result.jobData) {
           window.open(
-            `https://3000-i9gyfqjd276sbiyfs99wv-0795b75c.us2.manus.computer/resumes?job=${encodeURIComponent(result.jobData.title)}`,
+            `https://careerswarm.com/resumes?job=${encodeURIComponent(result.jobData.title)}`,
             "_blank"
           );
         }
@@ -135,10 +131,7 @@
     });
 
     widget.querySelector(".cs-btn-secondary")?.addEventListener("click", () => {
-      window.open(
-        "https://3000-i9gyfqjd276sbiyfs99wv-0795b75c.us2.manus.computer/dashboard",
-        "_blank"
-      );
+      window.open("https://careerswarm.com/dashboard", "_blank");
     });
 
     return widget;

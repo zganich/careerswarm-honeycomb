@@ -15,12 +15,14 @@ _Curated context. Updated as I learn._
 **Goal:** First revenue (shoestring budget)
 
 **Priorities:**
+
 1. Fix sign-in flow (in progress)
 2. Wire Stripe for Pro tier ($29/mo)
 3. Land first workforce pilot ($10-25K)
 4. Corporate outplacement deals
 
 **GTM angles:**
+
 - B2C Pro subscriptions
 - B2B outplacement partnerships
 - Utah workforce boards / community colleges

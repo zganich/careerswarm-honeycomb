@@ -14,12 +14,14 @@ _Learn about the person you're helping. Update this as you go._
 James is building **CareerSwarm** — an AI-powered career infrastructure platform that helps job seekers apply to jobs faster with tailored resumes and cover letters.
 
 **Current focus (Feb 2026):**
+
 - Getting to first revenue (B2C Pro tier + B2B outplacement)
 - Pursuing workforce development grants and pilots
 - Targeting Utah workforce boards, community colleges, and corporate outplacement
 - Shoestring budget — minimal spend, no new infra
 
 **Priorities:**
+
 1. Fix sign-in flow (in progress)
 2. Wire Stripe for Pro ($29/mo)
 3. Land first workforce pilot ($10-25K)

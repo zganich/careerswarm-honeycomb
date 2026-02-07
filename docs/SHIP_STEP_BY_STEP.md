@@ -1,6 +1,6 @@
 # CareerSwarm — Step-by-Step: Get It Running and Shipped
 
-**Start here.** If other docs are confusing, follow this file only. Everything you can run is copy-paste below. The one thing only you must do is **MySQL + DATABASE_URL**; OAuth/Manus is optional and only needed if you enable it.
+**Start here.** If other docs are confusing, follow this file only. Everything you can run is copy-paste below. The one thing only you must do is **MySQL + DATABASE_URL**; OAuth is optional and only needed if you enable it.
 
 ---
 
@@ -15,7 +15,7 @@ The app stores users, profiles, and jobs in a database. It uses **MySQL**. You n
 
 If you don't have MySQL yet, **Step 2** below gives you a one-line Docker command or how to use a URL someone gave you. **Step 3** runs the migration so the app's tables exist.
 
-**Sign-in:** The app uses **email-only sign-in** at `/login` by default. You do **not** need Manus or OAuth. If you later set `OAUTH_SERVER_URL` and `VITE_OAUTH_PORTAL_URL`, you can use OAuth; then you’d whitelist your callback URL in Manus (see Step 5, optional).
+**Sign-in:** The app uses **email-only sign-in** at `/login` by default. You do **not** need OAuth. If you later set `OAUTH_SERVER_URL` and `VITE_OAUTH_PORTAL_URL`, you can use OAuth; then whitelist your callback URL in your OAuth provider (see Step 5, optional).
 
 ---
 
@@ -104,25 +104,25 @@ Open `.env` and set these **required** variables:
 | `JWT_SECRET`     | A long random string (at least 32 characters). Used to sign session cookies. | `JWT_SECRET="my-super-secret-key-at-least-32-chars-long"` |
 | `OPENAI_API_KEY` | OpenAI API key (for Resume Roast, Tailor, Scribe).                           | `OPENAI_API_KEY="sk-..."`                                 |
 
-**Optional — only if you want OAuth (Manus) sign-in:** If you skip these, the app still runs and users sign in with **email at `/login`** (or Dev Login in non-production).
+**Optional — only if you want OAuth sign-in:** If you skip these, the app still runs and users sign in with **email at `/login`**.
 
-| Variable                | What to put                  | Example                                          |
-| ----------------------- | ---------------------------- | ------------------------------------------------ |
-| `OAUTH_SERVER_URL`      | Manus OAuth server URL.      | `OAUTH_SERVER_URL="https://oauth.manus.im"`      |
-| `VITE_OAUTH_PORTAL_URL` | Manus OAuth portal base URL. | `VITE_OAUTH_PORTAL_URL="https://oauth.manus.im"` |
-| `VITE_APP_ID`           | Your app id in Manus.        | `VITE_APP_ID="careerswarm"`                      |
+| Variable                | What to put            | Example                                                  |
+| ----------------------- | ---------------------- | -------------------------------------------------------- |
+| `OAUTH_SERVER_URL`      | OAuth server URL.      | `OAUTH_SERVER_URL="https://your-oauth.example.com"`      |
+| `VITE_OAUTH_PORTAL_URL` | OAuth portal base URL. | `VITE_OAUTH_PORTAL_URL="https://your-oauth.example.com"` |
+| `VITE_APP_ID`           | Your app id.           | `VITE_APP_ID="careerswarm"`                              |
 
 Without OAuth vars, go to `/login` and sign in with any email (or use Dev Login when enabled).
 
 ---
 
-## Step 5: (Optional) Whitelist the OAuth redirect URI in Manus
+## Step 5: (Optional) Whitelist the OAuth redirect URI
 
 **Only if you set OAuth in Step 4.** If you're using email-only sign-in, skip this step.
 
-When OAuth is configured, Manus only sends users back to URLs you've allowed. Add your app's callback URL in the Manus dashboard:
+When OAuth is configured, your provider only sends users back to URLs you've allowed. Add your app's callback URL in your OAuth provider's dashboard:
 
-1. Log in to **Manus** (where you manage your app / OAuth).
+1. Log in to your **OAuth provider** (where you manage your app).
 2. Open the **app** or **project** that is CareerSwarm.
 3. Find **OAuth** / **Redirect URIs** / **Allowed callbacks**.
 4. Add: `https://YOUR_DOMAIN/api/oauth/callback` (production), or `http://localhost:3000/api/oauth/callback` (local), with your real domain/port.
@@ -181,13 +181,13 @@ Use the same URL and port your server is configured for (e.g. `PORT=3000` in `.e
 
 ## Quick reference
 
-| I want to…                               | Do this                                                              |
-| ---------------------------------------- | -------------------------------------------------------------------- |
-| Run the app locally                      | Step 1 → 2 → 3 → 4 → 6 → 8. (Step 5 only if you use OAuth.)          |
-| Fix "ECONNREFUSED" on migrate            | Step 2: start MySQL or fix `DATABASE_URL`.                           |
-| Sign in (no OAuth)                       | Go to **/login**, enter your email (or use Dev Login when enabled).  |
-| Fix OAuth redirect loop (if using OAuth) | Step 5: whitelist `https://YOUR_DOMAIN/api/oauth/callback` in Manus. |
-| See what env vars are required           | Run `pnpm run verify-env` or read Step 4.                            |
+| I want to…                               | Do this                                                                            |
+| ---------------------------------------- | ---------------------------------------------------------------------------------- |
+| Run the app locally                      | Step 1 → 2 → 3 → 4 → 6 → 8. (Step 5 only if you use OAuth.)                        |
+| Fix "ECONNREFUSED" on migrate            | Step 2: start MySQL or fix `DATABASE_URL`.                                         |
+| Sign in (no OAuth)                       | Go to **/login**, enter your email (or use Dev Login when enabled).                |
+| Fix OAuth redirect loop (if using OAuth) | Step 5: whitelist `https://YOUR_DOMAIN/api/oauth/callback` in your OAuth provider. |
+| See what env vars are required           | Run `pnpm run verify-env` or read Step 4.                                          |
 
 ---
 

@@ -10,7 +10,7 @@
 
 - [ ] **MySQL available** — App and migrations need a running MySQL instance and `DATABASE_URL` in `.env`.
 - [ ] **Run migrations** — From repo root: `pnpm db:migrate`.
-- [ ] **Auth** — Email-only sign-in at `/login`. No OAuth or Manus required. Optional: set `OAUTH_SERVER_URL` and `VITE_OAUTH_PORTAL_URL` for OAuth.
+- [ ] **Auth** — Email-only sign-in at `/login`. No OAuth required. Optional: set `OAUTH_SERVER_URL` and `VITE_OAUTH_PORTAL_URL` for OAuth.
 - [ ] **Env vars** — Copy from `.env.example`. Required: `DATABASE_URL`, `JWT_SECRET`. For AI features (Roast, Tailor, Scribe): `OPENAI_API_KEY` (real key in Railway, no placeholder). Optional: `pnpm run verify-env`.
 
 ---
@@ -52,6 +52,6 @@ npx playwright test tests/production-e2e.spec.ts --config=playwright.production.
 | DB migration when MySQL is up | `pnpm db:migrate`                                                                                            |
 | Auth (email-only)             | `/login`; no OAuth required                                                                                  |
 | OPENAI_API_KEY                | Set in Railway Variables; redeploy required                                                                  |
-| Dev login (preview / local)   | `/login` (Dev Login enabled when `ENABLE_DEV_LOGIN=true` or non-production)                                  |
+| Email sign-in                 | `/login` always enabled when OAuth not configured; with OAuth, set `ENABLE_DEV_LOGIN=true` for production.   |
 | Full onboarding E2E           | Use `tests/production-e2e.spec.ts`; `tests/onboarding-flow.spec.ts` is skipped (auth-bypass user not in DB). |
 | CLI monitoring                | `pnpm run monitor` — GitHub, Railway, app health, Cloudflare. [MONITORING.md](./MONITORING.md)               |

@@ -117,4 +117,7 @@ playwright/.cache
 .manus-logs/
 screenshots/
 .manus/
+
+# Debug artifacts
+**/__debug__/
 # CareerSwarm (already set up)

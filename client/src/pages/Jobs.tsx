@@ -41,7 +41,7 @@ export default function Jobs() {
   );
   const [filterStage, setFilterStage] = useState<string>("all");
   const [filterLocation, setFilterLocation] = useState<string>("all");
-  
+
   // Upgrade modal for application limits
   const { handleApplicationError, UpgradeModalComponent } = useUpgradeModal();
 

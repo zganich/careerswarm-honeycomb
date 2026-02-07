@@ -100,10 +100,9 @@ External: mysql://root:GRXepLWiqebMoTgMiCEemFWmkCDITWCz@trolley.proxy.rlwy.net:5
 - JWT_SECRET: ✅
 - VITE_APP_ID: ✅
 - NODE_ENV: production
-- ENABLE_DEV_LOGIN: true (allows test login without Manus OAuth)
 - PORT: 3000
-- OAUTH_SERVER_URL: https://oauth.manus.im
-- OPENAI_API_KEY: placeholder (set real key for AI features)
+- OPENAI_API_KEY: set real key for AI features
+- (OAuth optional: set OAUTH_SERVER_URL + VITE_OAUTH_PORTAL_URL only if using OAuth; when unset, email sign-in at /login is always on. ENABLE_DEV_LOGIN only applies when OAuth is set.)
 
 ### Service IDs
 
