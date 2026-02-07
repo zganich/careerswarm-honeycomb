@@ -27,40 +27,47 @@ function isEmailLoginEnabled(): boolean {
 export function registerOAuthRoutes(app: Express) {
   // Email sign-in: create/lookup user by email, set session cookie (primary auth when no OAuth)
   app.post("/api/auth/test-login", async (req: Request, res: Response) => {
-    if (!isEmailLoginEnabled()) {
-      res.status(403).json({ error: "Email login is not enabled" });
-      return;
+    try {
+      if (!isEmailLoginEnabled()) {
+        res.status(403).json({ error: "Email login is not enabled" });
+        return;
+      }
+      const email =
+        typeof req.body?.email === "string" ? req.body.email.trim() : "";
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        res.status(400).json({ error: "Valid email is required" });
+        return;
+      }
+      const openId = `dev-${email}`;
+      await db.upsertUser({
+        openId,
+        name: email.split("@")[0],
+        email,
+        loginMethod: "dev",
+        lastSignedIn: new Date(),
+      });
+      const sessionToken = await sdk.createSessionToken(openId, {
+        name: email.split("@")[0],
+        expiresInMs: ONE_YEAR_MS,
+      });
+      const cookieOptions = getSessionCookieOptions(req, true);
+      res.cookie(COOKIE_NAME, sessionToken, {
+        ...cookieOptions,
+        maxAge: ONE_YEAR_MS,
+      });
+      let returnTo =
+        typeof req.body?.returnTo === "string"
+          ? req.body.returnTo
+          : "/dashboard";
+      // If they were starting onboarding, send them to Upload so the next step is obvious
+      if (returnTo === "/onboarding/welcome")
+        returnTo = "/onboarding/upload?welcome=1";
+      // Server-side redirect so cookie is sent on the next request (more reliable than client redirect)
+      res.redirect(302, returnTo);
+    } catch (err) {
+      console.error("[Auth] test-login error:", err);
+      res.status(500).json({ error: "Sign-in failed. Please try again." });
     }
-    const email =
-      typeof req.body?.email === "string" ? req.body.email.trim() : "";
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      res.status(400).json({ error: "Valid email is required" });
-      return;
-    }
-    const openId = `dev-${email}`;
-    await db.upsertUser({
-      openId,
-      name: email.split("@")[0],
-      email,
-      loginMethod: "dev",
-      lastSignedIn: new Date(),
-    });
-    const sessionToken = await sdk.createSessionToken(openId, {
-      name: email.split("@")[0],
-      expiresInMs: ONE_YEAR_MS,
-    });
-    const cookieOptions = getSessionCookieOptions(req, true);
-    res.cookie(COOKIE_NAME, sessionToken, {
-      ...cookieOptions,
-      maxAge: ONE_YEAR_MS,
-    });
-    let returnTo =
-      typeof req.body?.returnTo === "string" ? req.body.returnTo : "/dashboard";
-    // If they were starting onboarding, send them to Upload so the next step is obvious
-    if (returnTo === "/onboarding/welcome")
-      returnTo = "/onboarding/upload?welcome=1";
-    // Server-side redirect so cookie is sent on the next request (more reliable than client redirect)
-    res.redirect(302, returnTo);
   });
 
   app.get("/api/oauth/callback", async (req: Request, res: Response) => {

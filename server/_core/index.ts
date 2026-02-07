@@ -112,6 +112,12 @@ async function startServer() {
         if (allowedOrigins.includes(origin)) {
           return callback(null, true);
         }
+        console.warn(
+          "[CORS] Rejected origin:",
+          origin,
+          "| allowed:",
+          allowedOrigins.join(", ")
+        );
         callback(new Error("Not allowed by CORS"));
       },
       credentials: true,
