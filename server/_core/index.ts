@@ -219,8 +219,9 @@ async function startServer() {
     console.log(`Port ${preferredPort} is busy, using port ${port} instead`);
   }
 
-  server.listen(port, async () => {
-    console.log(`Server running on http://localhost:${port}/`);
+  const host = process.env.HOST ?? "0.0.0.0";
+  server.listen(port, host, async () => {
+    console.log(`Server running on http://${host}:${port}/`);
     if (process.env.NODE_ENV === "development") {
       console.log(`Resume Roast: http://localhost:${port}/roast`);
     }
