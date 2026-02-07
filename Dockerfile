@@ -27,8 +27,10 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 
 WORKDIR /app
 
-# Copy built artifacts and dependencies
+# Copy built artifacts, migration scripts, and dependencies
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/scripts ./scripts
+COPY --from=builder /app/drizzle ./drizzle
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./
 
@@ -43,5 +45,5 @@ USER careerswarm
 
 EXPOSE 3000
 
-# Start the server (same as pnpm start)
-CMD ["node", "--experimental-global-webcrypto", "dist/index.js"]
+# Run migrations in background then start server (so healthcheck passes)
+CMD ["sh", "-c", "node scripts/run-migrate.mjs & exec node --experimental-global-webcrypto dist/index.js"]
