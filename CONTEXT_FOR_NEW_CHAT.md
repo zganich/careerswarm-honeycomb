@@ -201,7 +201,7 @@ railway status | logs | variable list | redeploy | up | open
 - **Human-style test:** Headed run for Roast → Signup → Onboarding with 5–10s pacing (see HUMAN_TESTING_REPORT § Human-style single flow).
 - **Quick status:** `pnpm run monitor`; `pnpm run doctor` for local sanity.
 - **OpenClaw:** WebChat http://127.0.0.1:18789/; assignments in OPENCLAW_HANDOFF; task/agent map: [docs/IDEAL_WORKFLOW_AND_ASSIGNMENTS.md](./docs/IDEAL_WORKFLOW_AND_ASSIGNMENTS.md).
-- **When schema changes:** Migrations run automatically on Railway start (`pnpm db:migrate && pnpm start` in railway.json). `scripts/run-migrate.mjs` writes `drizzle.config.json` at runtime so drizzle-kit works in container. Locally: `pnpm db:migrate` or `pnpm drizzle-kit push`; commit migration files.
+- **When schema changes:** Dockerfile CMD runs `node scripts/run-migrate.mjs & exec node dist/index.js` so migrations run in background at deploy. `scripts/run-migrate.mjs` writes config to `/tmp` (not `/app`) so it works as non-root. Locally: `pnpm db:migrate` or `pnpm drizzle-kit push`; commit migration files.
 - **Backlog:** See [todo.md](./todo.md).
 
 ### Production checklist
@@ -218,4 +218,14 @@ railway status | logs | variable list | redeploy | up | open
 
 ---
 
-_Last updated: 2026-02-06. Start a new chat and use this file to restore context._
+## Recent (2026-02-07) — Deploy and sign-in fixes
+
+- **Build:** Railway uses **Dockerfile** (no Nixpacks override). `railway.json` has no `build.builder` and no `startCommand`; image CMD is used. Dockerfile copies `scripts/`, `drizzle/`, runs migrate in background then starts server; server binds to `0.0.0.0`; `GET /health` returns 200 for healthcheck.
+- **Migrate script:** `scripts/run-migrate.mjs` writes config to **`/tmp/drizzle.config.json`** (not `/app`) to avoid EACCES when container runs as non-root. Uses `drizzle-kit migrate --config /tmp/drizzle.config.json`.
+- **Sign-in 500 fallback:** If migration 0016 did not run at deploy, `server/db.ts` **runtime fallback** in `upsertUser`: on `ER_BAD_FIELD_ERROR` for `applicationsThisMonth`, runs the two `ALTER TABLE` statements (0016) via raw SQL then retries insert. First sign-in after a missed migrate will apply columns and succeed.
+- **Docs:** [docs/RAILWAY_FIX_SIGNIN_NOW.md](./docs/RAILWAY_FIX_SIGNIN_NOW.md) — optional manual SQL to apply 0016 in Railway MySQL if needed. [docs/DEBUGGING.md](./docs/DEBUGGING.md) — healthcheck failure, CORS, auth 500 rows updated.
+- **CLI:** `railway deployment list` to check deploy status; `railway up --detach` to deploy; `railway logs` for errors. Do not hand off steps to the user; run commands yourself.
+
+---
+
+_Last updated: 2026-02-07. Start a new chat and use this file to restore context._
