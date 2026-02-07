@@ -7,6 +7,9 @@ dist/
 build/
 *.dist
 
+# Generated at runtime by scripts/run-migrate.mjs (may contain DB URL)
+drizzle.config.json
+
 # Environment variables
 .env
 .env.local

@@ -2,11 +2,14 @@
 /**
  * Load .env and run drizzle-kit migrate (no generate, no interactive prompt).
  * Ensures userProfiles and certifications exist (required by 0015, not in journal).
+ * Writes drizzle.config.json so drizzle-kit finds config in environments (e.g. Railway)
+ * where only DATABASE_URL is set and .ts config is not runnable.
  * Usage: node scripts/run-migrate.mjs
- * Requires: .env with DATABASE_URL set to your MySQL connection string.
+ * Requires: DATABASE_URL (env or .env).
  */
 import { config } from "dotenv";
 import { spawnSync } from "child_process";
+import { writeFileSync } from "fs";
 import { fileURLToPath } from "url";
 import path from "path";
 import mysql from "mysql2/promise";
@@ -25,6 +28,19 @@ if (!process.env.DATABASE_URL) {
   );
   process.exit(1);
 }
+
+// Write drizzle.config.json so drizzle-kit migrate works in container (no .ts config)
+const drizzleConfig = {
+  schema: "./drizzle/schema.ts",
+  out: "./drizzle",
+  dialect: "mysql",
+  dbCredentials: { url: process.env.DATABASE_URL },
+};
+writeFileSync(
+  path.join(root, "drizzle.config.json"),
+  JSON.stringify(drizzleConfig, null, 2),
+  "utf8"
+);
 
 // Create userProfiles and certifications if missing (0015 expects them; they are not in drizzle journal)
 const ensureMasterProfileTables = async () => {
