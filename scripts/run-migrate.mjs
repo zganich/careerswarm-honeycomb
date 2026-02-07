@@ -29,18 +29,15 @@ if (!process.env.DATABASE_URL) {
   process.exit(1);
 }
 
-// Write drizzle.config.json so drizzle-kit migrate works in container (no .ts config)
+// Write to /tmp so we don't need write permission to /app (Railway runs as non-root)
+const configPath = path.join("/tmp", "drizzle.config.json");
 const drizzleConfig = {
-  schema: "./drizzle/schema.ts",
-  out: "./drizzle",
+  schema: path.join(root, "drizzle", "schema.ts"),
+  out: path.join(root, "drizzle"),
   dialect: "mysql",
   dbCredentials: { url: process.env.DATABASE_URL },
 };
-writeFileSync(
-  path.join(root, "drizzle.config.json"),
-  JSON.stringify(drizzleConfig, null, 2),
-  "utf8"
-);
+writeFileSync(configPath, JSON.stringify(drizzleConfig, null, 2), "utf8");
 
 // Create userProfiles and certifications if missing (0015 expects them; they are not in drizzle journal)
 const ensureMasterProfileTables = async () => {
@@ -86,11 +83,15 @@ const migrateUrl = url.includes("?")
   : `${url}?multipleStatements=true`;
 const env = { ...process.env, DATABASE_URL: migrateUrl };
 
-const result = spawnSync("pnpm", ["exec", "drizzle-kit", "migrate"], {
-  cwd: root,
-  stdio: "inherit",
-  env,
-});
+const result = spawnSync(
+  "pnpm",
+  ["exec", "drizzle-kit", "migrate", "--config", configPath],
+  {
+    cwd: root,
+    stdio: "inherit",
+    env,
+  }
+);
 
 if (result.status !== 0) {
   console.error(
