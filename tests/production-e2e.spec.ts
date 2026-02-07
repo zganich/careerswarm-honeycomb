@@ -26,6 +26,11 @@ const BASE_URL = PRODUCTION_URL;
 /** Mimic human interaction: wait 5 seconds after each step when running live/headed tests */
 const HUMAN_STEP_DELAY_MS = 5000;
 
+/** When LIVE_BROWSER=1, wait 3s so you can watch the sign-in flow in a headed run */
+async function liveBrowserWait(page: { waitForTimeout: (ms: number) => Promise<void> }) {
+  if (process.env.LIVE_BROWSER) await page.waitForTimeout(3000);
+}
+
 function logStep(step: string, detail?: string): void {
   const ts = new Date().toISOString().slice(11, 23);
   console.log(`[${ts}] [Onboarding] ${step}${detail ? ` — ${detail}` : ""}`);
@@ -42,8 +47,11 @@ test.describe("Authentication Flow", () => {
     ).toBeVisible({ timeout: 10000 });
     const email = getUniqueTestEmail();
     await page.locator('input[type="email"]').fill(email);
+    await liveBrowserWait(page);
     await page.locator('button[type="submit"]').click();
+    await liveBrowserWait(page);
     await page.waitForURL(/\/(dashboard|onboarding)/, { timeout: 30000 });
+    await liveBrowserWait(page);
     expect(page.url()).toMatch(/\/(dashboard|onboarding)/);
     console.log("✅ Sign In: redirected to", page.url());
   });
@@ -55,8 +63,11 @@ test.describe("Authentication Flow", () => {
     await page.waitForLoadState("networkidle");
     const email = getUniqueTestEmail();
     await page.locator('input[type="email"]').fill(email);
+    await liveBrowserWait(page);
     await page.locator('button[type="submit"]').click();
+    await liveBrowserWait(page);
     await page.waitForURL(/\/(dashboard|onboarding)/, { timeout: 30000 });
+    await liveBrowserWait(page);
     expect(page.url()).toMatch(/\/(dashboard|onboarding)/);
     console.log(
       "✅ Sign up (new user): account created, redirected to",
@@ -85,8 +96,11 @@ test.describe("Authentication Flow", () => {
     await page.waitForLoadState("networkidle");
     const email = getUniqueTestEmail();
     await page.locator('input[type="email"]').fill(email);
+    await liveBrowserWait(page);
     await page.locator('button[type="submit"]').click();
+    await liveBrowserWait(page);
     await page.waitForURL(/\/(dashboard|onboarding)/, { timeout: 30000 });
+    await liveBrowserWait(page);
     expect(page.url()).toMatch(/\/(dashboard|onboarding)/);
     console.log("✅ Logged in successfully, redirected to:", page.url());
   });
@@ -94,6 +108,7 @@ test.describe("Authentication Flow", () => {
   test("Sign in and stay on dashboard for 5 seconds", async ({ page }) => {
     // Use stable e2e user so session stability is asserted without new-user redirect flakiness
     await loginViaAPI(page, DEFAULT_TEST_EMAIL);
+    await liveBrowserWait(page);
     const urlAfterLogin = page.url();
     expect(urlAfterLogin).toMatch(/\/(dashboard|onboarding)/);
     await page.waitForTimeout(5000);

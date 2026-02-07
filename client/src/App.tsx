@@ -1,8 +1,7 @@
-import { useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
-import { Route, Switch, useLocation } from "wouter";
+import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 
@@ -18,14 +17,12 @@ import DevLogin from "./pages/DevLogin";
 import Outplacement from "./pages/Outplacement";
 import AdminDashboard from "./pages/AdminDashboard";
 
-// Onboarding is temporarily offline (lead magnet being reworked). Redirect to home.
-function OnboardingOffline() {
-  const [, setLocation] = useLocation();
-  useEffect(() => {
-    setLocation("/");
-  }, [setLocation]);
-  return null;
-}
+// Onboarding (re-enabled for production live testing)
+import OnboardingWelcome from "./pages/onboarding/Welcome";
+import OnboardingUpload from "./pages/onboarding/Upload";
+import OnboardingExtraction from "./pages/onboarding/Extraction";
+import OnboardingReview from "./pages/onboarding/Review";
+import OnboardingPreferences from "./pages/onboarding/Preferences";
 
 // Master Profile Dashboard
 import Dashboard from "./pages/Dashboard";
@@ -72,13 +69,13 @@ function Router() {
       {/* Achievements */}
       <Route path="/achievements" component={Achievements} />
 
-      {/* Onboarding offline — redirect to home until new lead magnet is ready */}
-      <Route path="/onboarding/welcome" component={OnboardingOffline} />
-      <Route path="/onboarding/upload" component={OnboardingOffline} />
-      <Route path="/onboarding/extraction" component={OnboardingOffline} />
-      <Route path="/onboarding/review" component={OnboardingOffline} />
-      <Route path="/onboarding/preferences" component={OnboardingOffline} />
-      <Route path="/onboarding" component={OnboardingOffline} />
+      {/* Onboarding */}
+      <Route path="/onboarding/welcome" component={OnboardingWelcome} />
+      <Route path="/onboarding/upload" component={OnboardingUpload} />
+      <Route path="/onboarding/extraction" component={OnboardingExtraction} />
+      <Route path="/onboarding/review" component={OnboardingReview} />
+      <Route path="/onboarding/preferences" component={OnboardingPreferences} />
+      <Route path="/onboarding" component={OnboardingWelcome} />
 
       {/* Dashboard */}
       <Route path="/dashboard" component={Dashboard} />
