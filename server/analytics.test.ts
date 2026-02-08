@@ -3,9 +3,11 @@ import * as db from "./db";
 
 // These tests require a real database connection - skip in CI or if no DATABASE_URL
 // CI uses a fake DATABASE_URL that can't actually connect
+// Also skip if pointing to localhost (dev database may not be running)
 const hasRealDatabase =
   process.env.DATABASE_URL &&
-  !process.env.DATABASE_URL.includes("localhost:3306/test") &&
+  !process.env.DATABASE_URL.includes("localhost") &&
+  !process.env.DATABASE_URL.includes("127.0.0.1") &&
   !process.env.CI;
 
 describe.skipIf(!hasRealDatabase)("Analytics Endpoints", () => {

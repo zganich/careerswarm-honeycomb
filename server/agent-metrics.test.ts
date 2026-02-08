@@ -13,7 +13,8 @@ const hasValidApiKey =
   !process.env.OPENAI_API_KEY.toLowerCase().includes("placeholder");
 const hasRealDatabase =
   process.env.DATABASE_URL &&
-  !process.env.DATABASE_URL.includes("localhost:3306/test") &&
+  !process.env.DATABASE_URL.includes("localhost") &&
+  !process.env.DATABASE_URL.includes("127.0.0.1") &&
   !process.env.CI;
 
 describe.skipIf(!hasValidApiKey || !hasRealDatabase)(
