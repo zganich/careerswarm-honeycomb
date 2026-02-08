@@ -12,7 +12,7 @@
 | TypeScript (`pnpm check`)      | 0 errors                  |
 | Build (`pnpm build`)           | Passing                   |
 | Unit Tests (`pnpm test`)       | 122 passed, 51 skipped    |
-| E2E Tests (Production)         | 25/25 passed              |
+| E2E Tests (Production)         | 47 passed, 5 skipped      |
 | Smoke Tests (Production)       | 22/22 passed              |
 | Playbook (local)               | 8/8 passed                |
 | Migrations (`pnpm db:migrate`) | All 16 migrations applied |
@@ -23,6 +23,8 @@ The assistant runs these checks when finishing work; no need for the user to run
 
 ## Completed (February 7, 2026)
 
+- [x] E2E test fixes: "Onboarding enabled" and "Pro CTA navigates correctly" (production-e2e.spec.ts); ship:check:full passing (47 passed, 5 skipped)
+- [x] Precommit: Prettier on Upload.tsx, ONBOARDING_DEEP_DIVE.md; OPENCLAW_HANDOFF handoff entry
 - [x] Onboarding re-enabled on production (App.tsx: real Welcome, Upload, Extraction, Review, Preferences routes); deployed via Railway
 - [x] tests/complete-e2e-live.spec.ts: full flow Roast → Sign in → Onboarding; LIVE_BROWSER=1 for 3s steps; uses docs/resumes for testing when upload runs; BASE_URL for prod vs local
 - [x] tests/production-e2e.spec.ts: liveBrowserWait(page) during auth flow when LIVE_BROWSER=1

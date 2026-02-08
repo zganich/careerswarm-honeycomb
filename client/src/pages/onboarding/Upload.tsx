@@ -61,9 +61,7 @@ export default function Upload() {
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
           file.type === "text/plain"
       );
-      const toAdd = selectedFiles.filter(
-        f => f.size <= MAX_RESUME_SIZE_BYTES
-      );
+      const toAdd = selectedFiles.filter(f => f.size <= MAX_RESUME_SIZE_BYTES);
       if (toAdd.length < selectedFiles.length) {
         toast.error("File exceeds 10MB. Please choose a smaller file.");
       }

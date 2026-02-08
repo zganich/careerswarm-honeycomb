@@ -195,6 +195,12 @@ railway status | logs | variable list | redeploy | up | open
 
 - Scout results persist; UpgradeModal shown on limit; onboarding copy/redirect fixed. Stripe product + `STRIPE_PRO_PRICE_ID` still pending for production.
 
+### This session (2026-02-07 — plan: Next Steps and Pending Config)
+
+- **ship:check:full:** Fixed 2 outdated E2E tests; now passing (47 passed, 5 skipped). (1) "Onboarding offline: /onboarding redirects to home" → "Onboarding enabled: /onboarding/welcome shows onboarding content". (2) "Pro CTA button navigates to onboarding" → "Pro CTA button navigates correctly" (accepts /login, /pricing, Stripe when not logged in).
+- **precommit:** Ran check + format:check + lint; Prettier fixed on Upload.tsx, ONBOARDING_DEEP_DIVE.md.
+- **OPENCLAW_HANDOFF:** Reviewed; appended handoff entry for this session.
+
 ---
 
 ## Last Session (2026-02-06)

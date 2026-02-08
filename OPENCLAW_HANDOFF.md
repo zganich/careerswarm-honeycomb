@@ -218,3 +218,10 @@ Full strategy in `docs/MONETIZATION_STRATEGY.md`.
 - **What failed:** N/A.
 - **What changed:** (1) `client/src/main.tsx` — Redirect to login on 401 only when the **failing query is auth.me**, not on any query (e.g. profile.get, getCompleteness). Stops loop when dashboard procedures 401 in parallel on first load. (2) `client/src/_core/hooks/useAuth.ts` — `auth.me` now `retry: 1` (was `retry: false`) so one retry can succeed if the first request raced with the cookie.
 - **Ready for:** review and commit. After deploy, verify Sign in → stay on dashboard in live browser.
+
+- **When:** 2026-02-07
+- **Agent:** Cursor (plan: Next Steps and Pending Config)
+- **What ran:** ship:check:full, OPENCLAW_HANDOFF review, precommit, docs sync
+- **What failed:** 2 E2E tests (outdated expectations)
+- **What changed:** `tests/production-e2e.spec.ts` — (1) "Onboarding offline: /onboarding redirects to home" → "Onboarding enabled: /onboarding/welcome shows onboarding content" (onboarding re-enabled). (2) "Pro CTA button navigates to onboarding" → "Pro CTA button navigates correctly" (accepts /login, /pricing, Stripe when not logged in)
+- **Ready for:** review and commit. ship:check:full passes (47 passed, 5 skipped).

@@ -6,13 +6,13 @@
 
 ## Flow Overview
 
-| Step | Route | Purpose |
-|------|--------|---------|
-| 1 | `/onboarding` or `/onboarding/welcome` | Welcome + sign-in gate |
-| 2 | `/onboarding/upload` | Upload resume(s) (PDF, DOCX, TXT) |
-| 3 | `/onboarding/extraction` | Server processes & parses resumes, builds profile |
-| 4 | `/onboarding/review` | Review extracted profile (superpowers, work history, achievements, etc.) |
-| 5 | `/onboarding/preferences` | Set target roles, industries, salary, location → complete onboarding |
+| Step | Route                                  | Purpose                                                                  |
+| ---- | -------------------------------------- | ------------------------------------------------------------------------ |
+| 1    | `/onboarding` or `/onboarding/welcome` | Welcome + sign-in gate                                                   |
+| 2    | `/onboarding/upload`                   | Upload resume(s) (PDF, DOCX, TXT)                                        |
+| 3    | `/onboarding/extraction`               | Server processes & parses resumes, builds profile                        |
+| 4    | `/onboarding/review`                   | Review extracted profile (superpowers, work history, achievements, etc.) |
+| 5    | `/onboarding/preferences`              | Set target roles, industries, salary, location → complete onboarding     |
 
 After step 5, user is redirected to `/dashboard`. Onboarding completion is stored in DB (`users.onboardingStep = 5`, `onboardingCompletedAt`).
 
@@ -66,16 +66,16 @@ After step 5, user is redirected to `/dashboard`. Onboarding completion is store
 
 ## Summary: Human-Friendly?
 
-| Aspect | Status |
-|--------|--------|
-| Clear 5-step progress (Step X of 5, progress bar) | ✅ |
-| Sign-in required before building profile | ✅ |
-| Upload → process → review → preferences → dashboard | ✅ |
-| Copy matches behavior (except "edit" on Review) | ⚠️ Review says "edit as needed" but no edit UI |
-| 10MB per file stated but not enforced | ⚠️ Add server (and optionally client) check |
-| Extraction without upload gives clear error | ✅ (could redirect to Upload for smoother UX) |
-| Preferences required fields (roles, industries) | ✅ |
-| Completion redirect and toast | ✅ |
+| Aspect                                              | Status                                         |
+| --------------------------------------------------- | ---------------------------------------------- |
+| Clear 5-step progress (Step X of 5, progress bar)   | ✅                                             |
+| Sign-in required before building profile            | ✅                                             |
+| Upload → process → review → preferences → dashboard | ✅                                             |
+| Copy matches behavior (except "edit" on Review)     | ⚠️ Review says "edit as needed" but no edit UI |
+| 10MB per file stated but not enforced               | ⚠️ Add server (and optionally client) check    |
+| Extraction without upload gives clear error         | ✅ (could redirect to Upload for smoother UX)  |
+| Preferences required fields (roles, industries)     | ✅                                             |
+| Completion redirect and toast                       | ✅                                             |
 
 ---
 
