@@ -119,7 +119,7 @@ export default function Profile() {
                 Your comprehensive career evidence library
               </p>
             </div>
-            <Button>
+            <Button onClick={() => setLocation("/profile/edit")}>
               <Edit className="h-4 w-4 mr-2" />
               Edit Profile
             </Button>
@@ -249,7 +249,11 @@ export default function Profile() {
                 <Briefcase className="h-5 w-5 text-primary" />
                 Work Experience
               </CardTitle>
-              <Button variant="ghost" size="sm">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setLocation("/profile/edit")}
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Role
               </Button>
@@ -439,7 +443,11 @@ export default function Profile() {
                 <TrendingUp className="h-5 w-5 text-primary" />
                 All Achievements ({profile.achievements?.length || 0})
               </CardTitle>
-              <Button variant="ghost" size="sm">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setLocation("/profile/edit")}
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Achievement
               </Button>
@@ -482,7 +490,11 @@ export default function Profile() {
                     </div>
                   ))}
                 {profile.achievements.length > 10 && (
-                  <Button variant="outline" className="w-full">
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => setLocation("/achievements")}
+                  >
                     View All {profile.achievements.length} Achievements
                   </Button>
                 )}

@@ -190,6 +190,13 @@ export const appRouter = router({
 
         // Upload to S3
         const fileBuffer = Buffer.from(input.fileData, "base64");
+        const MAX_RESUME_SIZE_BYTES = 10 * 1024 * 1024;
+        if (fileBuffer.length > MAX_RESUME_SIZE_BYTES) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "File is too large. Maximum size is 10MB per file.",
+          });
+        }
         const fileKey = `resumes/${user.id}/${Date.now()}-${input.filename}`;
         const { url } = await storagePut(fileKey, fileBuffer, input.mimeType);
 

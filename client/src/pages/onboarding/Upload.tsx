@@ -6,6 +6,8 @@ import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 
+const MAX_RESUME_SIZE_BYTES = 10 * 1024 * 1024;
+
 export default function Upload() {
   const [, setLocation] = useLocation();
   const [files, setFiles] = useState<File[]>([]);
@@ -27,20 +29,27 @@ export default function Upload() {
     e.preventDefault();
     setIsDragging(false);
 
-    const droppedFiles = Array.from(e.dataTransfer.files).filter(
-      file =>
-        file.type === "application/pdf" ||
-        file.type ===
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
-        file.type === "text/plain"
-    );
+    const byType = (list: File[]) =>
+      list.filter(
+        file =>
+          file.type === "application/pdf" ||
+          file.type ===
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+          file.type === "text/plain"
+      );
+    const withinSize = (list: File[]) =>
+      list.filter(f => f.size <= MAX_RESUME_SIZE_BYTES);
 
+    const droppedFiles = byType(Array.from(e.dataTransfer.files));
     if (droppedFiles.length === 0) {
       toast.error("Please upload PDF, DOCX, or TXT files only");
       return;
     }
-
-    setFiles(prev => [...prev, ...droppedFiles]);
+    const toAdd = withinSize(droppedFiles);
+    if (toAdd.length < droppedFiles.length) {
+      toast.error("File exceeds 10MB. Please choose a smaller file.");
+    }
+    setFiles(prev => [...prev, ...toAdd]);
   };
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,7 +61,13 @@ export default function Upload() {
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
           file.type === "text/plain"
       );
-      setFiles(prev => [...prev, ...selectedFiles]);
+      const toAdd = selectedFiles.filter(
+        f => f.size <= MAX_RESUME_SIZE_BYTES
+      );
+      if (toAdd.length < selectedFiles.length) {
+        toast.error("File exceeds 10MB. Please choose a smaller file.");
+      }
+      setFiles(prev => [...prev, ...toAdd]);
     }
   };
 
