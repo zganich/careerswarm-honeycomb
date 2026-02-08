@@ -225,3 +225,10 @@ Full strategy in `docs/MONETIZATION_STRATEGY.md`.
 - **What failed:** 2 E2E tests (outdated expectations)
 - **What changed:** `tests/production-e2e.spec.ts` — (1) "Onboarding offline: /onboarding redirects to home" → "Onboarding enabled: /onboarding/welcome shows onboarding content" (onboarding re-enabled). (2) "Pro CTA button navigates to onboarding" → "Pro CTA button navigates correctly" (accepts /login, /pricing, Stripe when not logged in)
 - **Ready for:** review and commit. ship:check:full passes (47 passed, 5 skipped).
+
+- **When:** 2026-02-08
+- **Agent:** Cursor
+- **What ran:** CI investigation, format:check fix, commit, push, docs sync
+- **What failed:** GitHub CI (Format check — Prettier issues in todo.md, Upload.tsx, ONBOARDING_DEEP_DIVE.md)
+- **What changed:** `pnpm exec prettier --write` on failing files; committed 91b99eb, pushed to main
+- **Ready for:** CI run on main to confirm green.

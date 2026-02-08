@@ -1,7 +1,7 @@
 # CareerSwarm TODO
 
-**Last Updated:** February 7, 2026  
-**Status:** Production-ready; onboarding re-enabled on production. Complete E2E live test (Roast → Sign in → Onboarding) with 3s steps; CONTEXT and todo synced.
+**Last Updated:** February 8, 2026  
+**Status:** Production-ready; onboarding re-enabled. CI passing (Prettier fix committed and pushed); CONTEXT and todo synced.
 
 ---
 
@@ -20,6 +20,10 @@
 The assistant runs these checks when finishing work; no need for the user to run them. Human testing report: [docs/HUMAN_TESTING_REPORT.md](./docs/HUMAN_TESTING_REPORT.md).
 
 ---
+
+## Completed (February 8, 2026)
+
+- [x] CI fix: Prettier formatting (todo.md, Upload.tsx, ONBOARDING_DEEP_DIVE.md); committed 91b99eb, pushed
 
 ## Completed (February 7, 2026)
 
