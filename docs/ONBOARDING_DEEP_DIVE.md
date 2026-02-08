@@ -28,26 +28,24 @@ After step 5, user is redirected to `/dashboard`. Onboarding completion is store
 
 ### 2. Upload (`Upload.tsx`)
 
-- **API:** `onboarding.uploadResume` (per file: filename, base64 fileData, mimeType). Server stores in S3 and creates `uploadedResumes` row with `processingStatus: "pending"`.
+- **API:** `onboarding.uploadResume` (per file: filename, base64 fileData, mimeType). Server stores via S3-compatible storage and creates `uploadedResumes` row with `processingStatus: "pending"`.
 - **UI:** Drag-and-drop or browse; PDF, DOCX, TXT; multiple files; remove before continue. Copy: "Max 10MB per file".
-- **Gaps:**
-  - **10MB not enforced:** The UI says "Max 10MB per file" but the tRPC `uploadResume` procedure does **not** validate file size. Large files can be uploaded and may fail later (storage/parsing) or slow the system. **Recommendation:** Add server-side check (e.g. reject if `fileBuffer.length > 10 * 1024 * 1024`) and optional client-side check before upload.
-  - **No cap on number of files:** Users can add many files. No explicit "15 uploads" or similar limit in code; only practical limits are time/UX. Acceptable for now.
+- **10MB enforced:** Server-side check in `server/routers.ts` rejects uploads over 10MB per file (`MAX_RESUME_SIZE_BYTES = 10 * 1024 * 1024`).
+- **No cap on number of files:** Users can add many files. No explicit limit in code; only practical limits are time/UX. Acceptable for now.
 - **Back:** "← Back" goes to `/onboarding` (Welcome). **Makes sense.**
 
 ### 3. Extraction (`Extraction.tsx`)
 
 - **Behavior:** On mount, opens EventSource for `/api/resume-progress`, then runs `onboarding.processResumes` then `onboarding.parseResumes`. Progress messages and a labor-illusion animation run while waiting.
-- **processResumes:** Finds `uploadedResumes` with `processingStatus === "pending"`, downloads from S3, extracts text (PDF/DOCX/TXT), updates status to `completed` and stores `extractedText`. If **no pending** resumes, returns `{ message: "No resumes to process" }` (no throw).
+- **processResumes:** Finds `uploadedResumes` with `processingStatus === "pending"`, downloads from S3-compatible storage, extracts text (PDF/DOCX/TXT), updates status to `completed` and stores `extractedText`. If **no pending** resumes, returns `{ message: "No resumes to process" }` (no throw).
 - **parseResumes:** Finds resumes with `processingStatus === "completed"` and `extractedText`. If **none**, throws: "No processed resumes found. Upload and process resumes first, then try again."
-- **Edge case:** If a user lands on Extraction without uploading (e.g. direct URL or back/forward), processResumes succeeds with "No resumes to process", then parseResumes **throws**. The UI shows "Failed to extract profile. Please try again." and a Retry button. **Makes sense** but could be friendlier (e.g. "No resumes to process. Please upload resumes first." and a link to Upload). **Optional improvement:** Detect "No processed resumes found" and redirect to `/onboarding/upload` with a toast.
+- **Edge case:** If a user lands on Extraction without uploading, the app detects "No processed resumes found" and **redirects to `/onboarding/upload` with a toast** ("No resumes to process. Please upload your resume first."). Implemented in `Extraction.tsx`.
 - **Success:** "Extraction Complete!" and "Review Your Profile →" to `/onboarding/review`. **Works as intended.**
 
 ### 4. Review (`Review.tsx`)
 
 - **Data:** Uses `profile.get` to show superpowers, work history, achievements, education, certifications, awards, languages, volunteer, projects, publications, clearances, portfolio.
-- **Copy:** "We've extracted your career data. Review and edit as needed."
-- **Gap:** There is **no edit UI** on this page. Users can only "Looks Good, Continue →". So "edit as needed" is misleading unless we consider editing to happen later on the dashboard/profile. **Recommendation:** Either add inline edit or change copy to e.g. "Review your profile below. You can edit any section later from your dashboard."
+- **Copy:** "We've extracted your career data. Review below — you can edit any section later from your dashboard." No inline edit on this page; editing is done from the dashboard/profile.
 
 ### 5. Preferences (`Preferences.tsx`)
 
@@ -66,16 +64,16 @@ After step 5, user is redirected to `/dashboard`. Onboarding completion is store
 
 ## Summary: Human-Friendly?
 
-| Aspect                                              | Status                                         |
-| --------------------------------------------------- | ---------------------------------------------- |
-| Clear 5-step progress (Step X of 5, progress bar)   | ✅                                             |
-| Sign-in required before building profile            | ✅                                             |
-| Upload → process → review → preferences → dashboard | ✅                                             |
-| Copy matches behavior (except "edit" on Review)     | ⚠️ Review says "edit as needed" but no edit UI |
-| 10MB per file stated but not enforced               | ⚠️ Add server (and optionally client) check    |
-| Extraction without upload gives clear error         | ✅ (could redirect to Upload for smoother UX)  |
-| Preferences required fields (roles, industries)     | ✅                                             |
-| Completion redirect and toast                       | ✅                                             |
+| Aspect                                              | Status                                    |
+| --------------------------------------------------- | ----------------------------------------- |
+| Clear 5-step progress (Step X of 5, progress bar)   | ✅                                        |
+| Sign-in required before building profile            | ✅                                        |
+| Upload → process → review → preferences → dashboard | ✅                                        |
+| Copy matches behavior                               | ✅ Review copy: edit later from dashboard |
+| 10MB per file enforced server-side                  | ✅ See server/routers.ts                  |
+| Extraction without upload: redirect to Upload       | ✅ Redirect + toast in Extraction.tsx     |
+| Preferences required fields (roles, industries)     | ✅                                        |
+| Completion redirect and toast                       | ✅                                        |
 
 ---
 

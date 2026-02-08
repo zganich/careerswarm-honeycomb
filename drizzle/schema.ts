@@ -40,6 +40,11 @@ export const users = mysqlTable("users", {
   onboardingCompleted: boolean("onboardingCompleted").default(false),
   onboardingStep: int("onboardingStep").default(0), // 0-5
 
+  // Referral (migration 0014) and B2B
+  referredByUserId: int("referredByUserId"),
+  referralBonusGrantedAt: timestamp("referralBonusGrantedAt"), // when referrer received 30-day Pro for this user (idempotency)
+  companyId: int("companyId"),
+
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),

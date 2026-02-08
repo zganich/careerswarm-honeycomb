@@ -134,18 +134,23 @@ See `docs/SENTRY_SETUP.md` for full alert configuration.
 
 ---
 
-## 4. Storage (Required for Onboarding Upload)
+## 4. Storage — S3-compatible (Required for Onboarding Upload)
 
 **Impact:** Onboarding upload (Step 2) and Assembler package generation fail without storage. Users see server errors when uploading resumes.
 
-The app uses a storage proxy. Set these in Railway Variables:
+The app uses **S3-compatible** object storage (AWS S3, Cloudflare R2, or Backblaze B2). Set these in Railway Variables:
 
-| Variable                 | Description                   |
-| ------------------------ | ----------------------------- |
-| `BUILT_IN_FORGE_API_URL` | Base URL of the storage proxy |
-| `BUILT_IN_FORGE_API_KEY` | API key for the storage proxy |
+| Variable               | Description                                                                                                      |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `S3_BUCKET`            | Bucket name                                                                                                      |
+| `S3_ACCESS_KEY_ID`     | Access key (R2: API token ID; AWS: access key ID)                                                                |
+| `S3_SECRET_ACCESS_KEY` | Secret key (R2: API token secret; AWS: secret access key)                                                        |
+| `S3_REGION`            | Optional. Default `us-east-1`. R2 uses `auto` or any value.                                                      |
+| `S3_ENDPOINT`          | Optional. For R2: `https://<account_id>.r2.cloudflarestorage.com`. For B2: your B2 S3 endpoint. Omit for AWS S3. |
 
-If missing, `storagePut` throws: "Storage proxy credentials missing: set BUILT_IN_FORGE_API_URL and BUILT_IN_FORGE_API_KEY". See [ONBOARDING_DEEP_DIVE.md](./ONBOARDING_DEEP_DIVE.md) § E2E Verification.
+**Cost-avoidance:** Prefer **Cloudflare R2** (zero egress fees, S3-compatible). Create an R2 bucket, create API tokens under R2 → Manage R2 API Tokens, then set the three required vars (and `S3_ENDPOINT` for R2).
+
+If missing, `storagePut` throws: "Storage not configured: set S3_BUCKET, S3_ACCESS_KEY_ID, and S3_SECRET_ACCESS_KEY". See [ONBOARDING_DEEP_DIVE.md](./ONBOARDING_DEEP_DIVE.md) § E2E Verification.
 
 ---
 
@@ -182,16 +187,17 @@ If missing, `storagePut` throws: "Storage proxy credentials missing: set BUILT_I
 
 ## Quick Reference
 
-| Item                   | Where to Configure | Required For                   |
-| ---------------------- | ------------------ | ------------------------------ |
-| OPENAI_API_KEY         | Railway Variables  | AI (Roast, extraction, Tailor) |
-| BUILT_IN_FORGE_API_URL | Railway Variables  | Onboarding upload, Assembler   |
-| BUILT_IN_FORGE_API_KEY | Railway Variables  | Onboarding upload, Assembler   |
-| STRIPE_SECRET_KEY      | Railway Variables  | Pro checkout                   |
-| STRIPE_PRO_PRICE_ID    | Railway Variables  | Pro checkout                   |
-| TEST_USER_EMAIL        | GitHub Secrets     | CI E2E tests                   |
-| TEST_USER_PASSWORD     | GitHub Secrets     | CI E2E tests                   |
-| SENTRY_DSN             | Railway Variables  | Error monitoring               |
+| Item                 | Where to Configure | Required For                   |
+| -------------------- | ------------------ | ------------------------------ |
+| OPENAI_API_KEY       | Railway Variables  | AI (Roast, extraction, Tailor) |
+| S3_BUCKET            | Railway Variables  | Onboarding upload, Assembler   |
+| S3_ACCESS_KEY_ID     | Railway Variables  | Onboarding upload, Assembler   |
+| S3_SECRET_ACCESS_KEY | Railway Variables  | Onboarding upload, Assembler   |
+| STRIPE_SECRET_KEY    | Railway Variables  | Pro checkout                   |
+| STRIPE_PRO_PRICE_ID  | Railway Variables  | Pro checkout                   |
+| TEST_USER_EMAIL      | GitHub Secrets     | CI E2E tests                   |
+| TEST_USER_PASSWORD   | GitHub Secrets     | CI E2E tests                   |
+| SENTRY_DSN           | Railway Variables  | Error monitoring               |
 
 ---
 

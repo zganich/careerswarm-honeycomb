@@ -55,7 +55,15 @@ export const ENV = {
   isProduction: process.env.NODE_ENV === "production",
   // LLM (Resume Roast, Tailor, Scribe) uses only openaiApiKey + api.openai.com
   openaiApiKey: process.env.OPENAI_API_KEY ?? "",
-  // Forge key/URL only for legacy services (storage, voice, maps, etc.) — not used for LLM
+  // S3-compatible storage (onboarding upload, Assembler). Use R2/B2/S3.
+  s3Config: {
+    bucket: process.env.S3_BUCKET ?? "",
+    accessKeyId: process.env.S3_ACCESS_KEY_ID ?? "",
+    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY ?? "",
+    region: process.env.S3_REGION ?? "us-east-1",
+    endpoint: process.env.S3_ENDPOINT ?? undefined,
+  },
+  // Forge key/URL only for optional services (voice, maps, notifications, image) — not used for LLM or storage
   forgeApiUrl: process.env.BUILT_IN_FORGE_API_URL ?? "",
   forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY ?? "",
   // Monitoring

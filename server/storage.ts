@@ -1,70 +1,44 @@
-// Preconfigured storage helpers
-// Uses the Biz-provided storage proxy (Authorization: Bearer <token>)
+// S3-compatible storage (AWS S3, Cloudflare R2, Backblaze B2)
+// Uses S3_BUCKET, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY; optional S3_REGION, S3_ENDPOINT
 
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+} from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { ENV } from "./_core/env";
 
-type StorageConfig = { baseUrl: string; apiKey: string };
+const SIGNED_URL_EXPIRY_SECONDS = 3600; // 1 hour
 
-function getStorageConfig(): StorageConfig {
-  const baseUrl = ENV.forgeApiUrl;
-  const apiKey = ENV.forgeApiKey;
+let s3Client: S3Client | null = null;
 
-  if (!baseUrl || !apiKey) {
+function getS3Client(): S3Client {
+  const { bucket, accessKeyId, secretAccessKey, region, endpoint } =
+    ENV.s3Config;
+  if (!bucket || !accessKeyId || !secretAccessKey) {
     throw new Error(
-      "Storage proxy credentials missing: set BUILT_IN_FORGE_API_URL and BUILT_IN_FORGE_API_KEY"
+      "Storage not configured: set S3_BUCKET, S3_ACCESS_KEY_ID, and S3_SECRET_ACCESS_KEY (optional: S3_REGION, S3_ENDPOINT for R2/B2)"
     );
   }
-
-  return { baseUrl: baseUrl.replace(/\/+$/, ""), apiKey };
-}
-
-function buildUploadUrl(baseUrl: string, relKey: string): URL {
-  const url = new URL("v1/storage/upload", ensureTrailingSlash(baseUrl));
-  url.searchParams.set("path", normalizeKey(relKey));
-  return url;
-}
-
-async function buildDownloadUrl(
-  baseUrl: string,
-  relKey: string,
-  apiKey: string
-): Promise<string> {
-  const downloadApiUrl = new URL(
-    "v1/storage/downloadUrl",
-    ensureTrailingSlash(baseUrl)
-  );
-  downloadApiUrl.searchParams.set("path", normalizeKey(relKey));
-  const response = await fetch(downloadApiUrl, {
-    method: "GET",
-    headers: buildAuthHeaders(apiKey),
-  });
-  return (await response.json()).url;
-}
-
-function ensureTrailingSlash(value: string): string {
-  return value.endsWith("/") ? value : `${value}/`;
+  if (!s3Client) {
+    s3Client = new S3Client({
+      region: region || "us-east-1",
+      ...(endpoint && { endpoint }),
+      credentials: {
+        accessKeyId,
+        secretAccessKey,
+      },
+      ...(endpoint && {
+        forcePathStyle: true,
+      }),
+    });
+  }
+  return s3Client;
 }
 
 function normalizeKey(relKey: string): string {
   return relKey.replace(/^\/+/, "");
-}
-
-function toFormData(
-  data: Buffer | Uint8Array | string,
-  contentType: string,
-  fileName: string
-): FormData {
-  const blob =
-    typeof data === "string"
-      ? new Blob([data], { type: contentType })
-      : new Blob([data as any], { type: contentType });
-  const form = new FormData();
-  form.append("file", blob, fileName || "file");
-  return form;
-}
-
-function buildAuthHeaders(apiKey: string): HeadersInit {
-  return { Authorization: `Bearer ${apiKey}` };
 }
 
 export async function storagePut(
@@ -72,33 +46,46 @@ export async function storagePut(
   data: Buffer | Uint8Array | string,
   contentType = "application/octet-stream"
 ): Promise<{ key: string; url: string }> {
-  const { baseUrl, apiKey } = getStorageConfig();
-  const key = normalizeKey(relKey);
-  const uploadUrl = buildUploadUrl(baseUrl, key);
-  const formData = toFormData(data, contentType, key.split("/").pop() ?? key);
-  const response = await fetch(uploadUrl, {
-    method: "POST",
-    headers: buildAuthHeaders(apiKey),
-    body: formData,
-  });
-
-  if (!response.ok) {
-    const message = await response.text().catch(() => response.statusText);
+  const config = ENV.s3Config;
+  if (!config.bucket || !config.accessKeyId || !config.secretAccessKey) {
     throw new Error(
-      `Storage upload failed (${response.status} ${response.statusText}): ${message}`
+      "Storage not configured: set S3_BUCKET, S3_ACCESS_KEY_ID, and S3_SECRET_ACCESS_KEY"
     );
   }
-  const url = (await response.json()).url;
-  return { key, url };
+  const key = normalizeKey(relKey);
+  const client = getS3Client();
+  const body = typeof data === "string" ? Buffer.from(data, "utf8") : data;
+  await client.send(
+    new PutObjectCommand({
+      Bucket: config.bucket,
+      Key: key,
+      Body: body,
+      ContentType: contentType,
+    })
+  );
+  const signedUrl = await getSignedUrl(
+    client,
+    new GetObjectCommand({ Bucket: config.bucket, Key: key }),
+    { expiresIn: SIGNED_URL_EXPIRY_SECONDS }
+  );
+  return { key, url: signedUrl };
 }
 
 export async function storageGet(
   relKey: string
 ): Promise<{ key: string; url: string }> {
-  const { baseUrl, apiKey } = getStorageConfig();
+  const config = ENV.s3Config;
+  if (!config.bucket || !config.accessKeyId || !config.secretAccessKey) {
+    throw new Error(
+      "Storage not configured: set S3_BUCKET, S3_ACCESS_KEY_ID, and S3_SECRET_ACCESS_KEY"
+    );
+  }
   const key = normalizeKey(relKey);
-  return {
-    key,
-    url: await buildDownloadUrl(baseUrl, key, apiKey),
-  };
+  const client = getS3Client();
+  const signedUrl = await getSignedUrl(
+    client,
+    new GetObjectCommand({ Bucket: config.bucket, Key: key }),
+    { expiresIn: SIGNED_URL_EXPIRY_SECONDS }
+  );
+  return { key, url: signedUrl };
 }

@@ -120,6 +120,13 @@
       "when": 1769302000000,
       "tag": "0016_application_limits",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "5",
+      "when": 1769303000000,
+      "tag": "0017_referral_bonus_idempotency",
+      "breakpoints": true
     }
   ]
 }

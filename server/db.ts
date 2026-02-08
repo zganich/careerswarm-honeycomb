@@ -1,4 +1,4 @@
-import { eq, and, desc, sql } from "drizzle-orm";
+import { eq, and, desc, sql, isNull } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import {
   InsertUser,
@@ -1231,26 +1231,48 @@ export async function setUserReferredBy(
   const db = await getDb();
   if (!db) return;
 
-  // Add referredBy column if user doesn't already have a referrer
-  // Note: This requires a 'referredBy' column in users table, or we store in user profile
+  // Only set referrer if user does not already have one (idempotent)
   await db
     .update(users)
-    .set({
-      // Store referrer info - using a JSON field or adding a column
-      // For now, store in profile metadata
-    } as any)
-    .where(eq(users.id, userId));
+    .set({ referredByUserId: referrerUserId })
+    .where(and(eq(users.id, userId), isNull(users.referredByUserId)));
 }
 
 export async function grantReferrer30DaysProIfReferred(userId: number) {
   const db = await getDb();
   if (!db) return;
 
-  // This function would:
-  // 1. Check if user has a referrer
-  // 2. If so, extend referrer's Pro subscription by 30 days
-  // For now, this is a stub - actual implementation depends on how referrals are tracked
-  console.log(`[Flywheel] Checking referral bonus for user ${userId}`);
+  const [user] = await db
+    .select({ referredByUserId: users.referredByUserId })
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
+  if (!user?.referredByUserId) return;
+
+  const referrerId = user.referredByUserId;
+  const [referrer] = await db
+    .select({
+      subscriptionEndDate: users.subscriptionEndDate,
+    })
+    .from(users)
+    .where(eq(users.id, referrerId))
+    .limit(1);
+  if (!referrer) return;
+
+  const now = new Date();
+  const endDate =
+    referrer.subscriptionEndDate && referrer.subscriptionEndDate > now
+      ? new Date(referrer.subscriptionEndDate)
+      : new Date(now);
+  endDate.setDate(endDate.getDate() + 30);
+
+  await db
+    .update(users)
+    .set({
+      subscriptionTier: "pro",
+      subscriptionEndDate: endDate,
+    })
+    .where(eq(users.id, referrerId));
 }
 
 // ================================================================

@@ -77,7 +77,7 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 
 - **Schema source of truth:** `drizzle/schema.ts` (23 tables). All app access via `server/db.ts`; tables include `users`, `userProfiles`, `workExperiences`, `achievements`, `skills`, `uploadedResumes`, `superpowers`, `targetPreferences`, `opportunities`, `applications`, `savedOpportunities`, `applicationNotes`, `notifications`, `agentExecutionLogs`, `agentMetrics`, profile sections (`languages`, `volunteerExperiences`, `projects`, `publications`, `securityClearances`), `certifications`, `education`, `awards`.
 - **Access:** All via `server/db.ts` (e.g. `getUserByOpenId`, `updateUserOnboardingStep`, `getUserProfile`, `upsertUserProfile`, resume upload/process, preferences save). Routers call `db.*` only; no raw SQL in routers.
-- **Note:** `setUserReferredBy` in `db.ts` is a stub (no `referredBy` column on `users`); referral flywheel not persisted yet. Rest of schema and usage are aligned.
+- **Referral:** `setUserReferredBy` persists `referredByUserId` (schema + migration 0014). `grantReferrer30DaysProIfReferred` runs on onboarding completion and grants the referrer 30 days Pro. Rest of schema and usage are aligned.
 
 ---
 
@@ -99,15 +99,16 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 
 ## Production Status
 
-| Item           | Status                                                                                       |
-| -------------- | -------------------------------------------------------------------------------------------- |
-| Dockerfile     | ✅ Node 20                                                                                   |
-| OPENAI_API_KEY | Set in Railway (roast works when key + egress OK)                                            |
-| Dev Login      | ✅ Enabled (dev/preview)                                                                     |
-| E2E / Smoke    | Run against production                                                                       |
-| DNS            | ✅ careerswarm.com                                                                           |
-| SENTRY_DSN     | ✅ Set in Railway (careerswarm-backend). See [docs/SENTRY_SETUP.md](./docs/SENTRY_SETUP.md). |
-| Redis          | ⏭️ Optional (GTM worker)                                                                     |
+| Item                            | Status                                                                                                                            |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| Dockerfile                      | ✅ Node 20                                                                                                                        |
+| OPENAI_API_KEY                  | Set in Railway (roast works when key + egress OK)                                                                                 |
+| Dev Login                       | ✅ Enabled (dev/preview)                                                                                                          |
+| E2E / Smoke                     | Run against production                                                                                                            |
+| DNS                             | ✅ careerswarm.com                                                                                                                |
+| SENTRY_DSN                      | ✅ Set in Railway (careerswarm-backend). See [docs/SENTRY_SETUP.md](./docs/SENTRY_SETUP.md).                                      |
+| Redis                           | ⏭️ Optional (GTM worker)                                                                                                          |
+| Storage (onboarding, Assembler) | S3-compatible: set S3_BUCKET, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY in Railway (optional S3_ENDPOINT for R2). See checklist § 4. |
 
 ## Verify (CLI)
 
@@ -182,7 +183,7 @@ railway status | logs | variable list | redeploy | up | open
 - **Priority fixes implemented:**
   - **Scout persistence:** Scout agent results are saved to `opportunities` table; deduplicated by `jobUrl` via `db.getOpportunityByJobUrl()`. New opportunities created via `db.createOpportunity()` in `agents.runScout`.
   - **Application limit UX:** `useUpgradeModal` integrated in `OpportunityDetailModal.tsx` — when free-tier hits 5-app limit, UpgradeModal opens instead of a generic alert. `handleApplicationError` handles `APPLICATION_LIMIT` error type.
-  - **Stripe setup docs:** [docs/CRITICAL_SETUP_CHECKLIST.md](./docs/CRITICAL_SETUP_CHECKLIST.md) § 4. Stripe Pro (create product, copy Price ID, set `STRIPE_PRO_PRICE_ID`, redeploy). [OPENCLAW_HANDOFF.md](./OPENCLAW_HANDOFF.md) updated.
+  - **Stripe setup docs:** [docs/CRITICAL_SETUP_CHECKLIST.md](./docs/CRITICAL_SETUP_CHECKLIST.md) § 5 Stripe Pro (create product, copy Price ID, set `STRIPE_PRO_PRICE_ID`, redeploy). [OPENCLAW_HANDOFF.md](./OPENCLAW_HANDOFF.md) updated.
 - **Bug fix:** Removed incorrect `companyIndustry: job.source` in Scout persistence — `source` is job board (e.g. "LinkedIn"), not industry. `companyIndustry` left unset for Scout opportunities.
 - **Onboarding audit:** [docs/ONBOARDING_DEEP_DIVE.md](./docs/ONBOARDING_DEEP_DIVE.md) — full audit of 5-step flow, gaps, recommendations.
 - **Onboarding UX improvements:**
@@ -198,8 +199,9 @@ railway status | logs | variable list | redeploy | up | open
 ### This session (2026-02-08)
 
 - **Next Steps plan executed:** (1) Handoff review and commit — Ship agent test fixes (analytics, profile-sections, agent-metrics: skip when DATABASE_URL localhost/127.0.0.1) + OPENCLAW_HANDOFF entries; committed d242ab5, pushed. (2) ship:check:full 47 passed, 5 skipped; railway redeploy; health 200. (3) Stripe Pro config remains manual — [docs/CRITICAL_SETUP_CHECKLIST.md](./docs/CRITICAL_SETUP_CHECKLIST.md) § 5. (4) monitor (CI in progress, app OK), doctor passed. **Ongoing:** Before commit check OPENCLAW_HANDOFF; run pnpm precommit (or check + format:check + lint).
-- **Orchestration Run 2: Feature Completeness:** Executed per [docs/OPENCLAW_ORCHESTRATION.md](./docs/OPENCLAW_ORCHESTRATION.md). (1) **Client:** Auth redirect on Upload, Extraction, Review, Preferences — useAuth() + useEffect redirect to `/login?returnTo=...` when unauthenticated; loading spinners. (2) **Docs:** CRITICAL_SETUP_CHECKLIST — added § 4 Storage (BUILT_IN_FORGE_API_URL/KEY), expanded § 5 Stripe (STRIPE_SECRET_KEY + STRIPE_PRO_PRICE_ID), updated Quick Reference. (3) **Ship:** ship:check:full — 47 passed, 5 skipped. (4) Handoff appended to OPENCLAW_HANDOFF.md. Committed (b9c9c05) and pushed.
+- **Orchestration Run 2: Feature Completeness:** Executed per [docs/OPENCLAW_ORCHESTRATION.md](./docs/OPENCLAW_ORCHESTRATION.md). (1) **Client:** Auth redirect on Upload, Extraction, Review, Preferences — useAuth() + useEffect redirect to `/login?returnTo=...` when unauthenticated; loading spinners. (2) **Docs:** CRITICAL_SETUP_CHECKLIST — § 4 Storage is S3-compatible (S3_BUCKET, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY); expanded § 5 Stripe (STRIPE_SECRET_KEY + STRIPE_PRO_PRICE_ID), updated Quick Reference. (3) **Ship:** ship:check:full — 47 passed, 5 skipped. (4) Handoff appended to OPENCLAW_HANDOFF.md. Committed (b9c9c05) and pushed.
 - **Earlier this day:** CI fix (Prettier) — committed 91b99eb.
+- **Ship-ready build (gaps plan):** (1) **Storage:** Replaced Forge with S3-compatible backend in server/storage.ts (S3_BUCKET, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY; optional S3_ENDPOINT for R2/B2). ENV.s3Config in server/\_core/env.ts. CRITICAL_SETUP_CHECKLIST § 4 and .env.example updated. (2) **Referral:** Schema: users.referredByUserId + companyId in drizzle/schema.ts. setUserReferredBy and grantReferrer30DaysProIfReferred implemented in server/db.ts (persist referrer; grant referrer 30 days Pro on onboarding complete). (3) **Docs:** ONBOARDING_DEEP_DIVE (10MB enforced, Extraction redirect, Review copy); CONTEXT Database Alignment already notes referral. Check + build pass; pnpm test fails only on roaster integration test when OPENAI_API_KEY invalid (401).
 
 ### This session (2026-02-07 — plan: Next Steps and Pending Config)
 
@@ -227,7 +229,7 @@ railway status | logs | variable list | redeploy | up | open
 
 ### Next Steps (for new chat)
 
-- **Handoff state (see [OPENCLAW_HANDOFF.md](./OPENCLAW_HANDOFF.md)):** Sign-in loop fix committed. Monetization: strategy in `docs/MONETIZATION_STRATEGY.md`; implementation wired (Pro button, 5-app limit, migration `0002_application_limits.sql`). **UpgradeModal integrated** in `OpportunityDetailModal` (1-Click Apply). Pending: Stripe $29/mo product + `STRIPE_PRO_PRICE_ID` in prod — see [docs/CRITICAL_SETUP_CHECKLIST.md](./docs/CRITICAL_SETUP_CHECKLIST.md) § 4. Stripe Pro.
+- **Handoff state (see [OPENCLAW_HANDOFF.md](./OPENCLAW_HANDOFF.md)):** Sign-in loop fix committed. Monetization: strategy in `docs/MONETIZATION_STRATEGY.md`; implementation wired (Pro button, 5-app limit, migration `0002_application_limits.sql`). **UpgradeModal integrated** in `OpportunityDetailModal` (1-Click Apply). Pending: Stripe $29/mo product + `STRIPE_PRO_PRICE_ID` in prod — see [docs/CRITICAL_SETUP_CHECKLIST.md](./docs/CRITICAL_SETUP_CHECKLIST.md) § 5 Stripe Pro.
 - **When you return:** Read [OPENCLAW_HANDOFF.md](./OPENCLAW_HANDOFF.md) for OpenClaw entries; review and commit any “ready for review” changes.
 - **Before commit:** Run `pnpm precommit` (or check + format:check + lint if git-secrets not installed). Check OPENCLAW_HANDOFF for OpenClaw work to include.
 - **Before deploy:** `pnpm check`, `pnpm test`, `pnpm build`; then production smoke + E2E. See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md). After deploy, CSP changes take effect (cleaner console in live browser).
@@ -240,7 +242,7 @@ railway status | logs | variable list | redeploy | up | open
 
 ### Production checklist
 
-- OPENAI_API_KEY and DATABASE_URL in Railway; SENTRY_DSN set (careerswarm-backend). See [docs/CRITICAL_SETUP_CHECKLIST.md](./docs/CRITICAL_SETUP_CHECKLIST.md).
+- OPENAI_API_KEY and DATABASE_URL in Railway; SENTRY_DSN set (careerswarm-backend). **Storage (onboarding + Assembler):** S3_BUCKET, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY (optional S3_ENDPOINT for R2). **Pro checkout:** STRIPE_SECRET_KEY, STRIPE_PRO_PRICE_ID. See [docs/CRITICAL_SETUP_CHECKLIST.md](./docs/CRITICAL_SETUP_CHECKLIST.md).
 
 ---
 
@@ -271,4 +273,4 @@ railway status | logs | variable list | redeploy | up | open
 
 ---
 
-_Last updated: 2026-02-08. Start a new chat and use this file to restore context._
+_Last updated: 2026-02-08. Storage is S3-compatible; referral flywheel implemented. Start a new chat and use this file to restore context._
