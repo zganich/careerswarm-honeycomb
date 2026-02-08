@@ -3,7 +3,21 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
+import DashboardLayout from "./components/DashboardLayout";
 import { ThemeProvider } from "./contexts/ThemeContext";
+
+/** Wraps a page component with DashboardLayout so all dashboard routes share sidebar + logout. */
+function withDashboardLayout<P extends object>(
+  Component: React.ComponentType<P>
+) {
+  return function Wrapped(props: P) {
+    return (
+      <DashboardLayout>
+        <Component {...props} />
+      </DashboardLayout>
+    );
+  };
+}
 
 // Landing & Public Pages
 import Home from "./pages/Home";
@@ -64,10 +78,13 @@ function Router() {
       <Route path="/workforce-admin" component={AdminDashboard} />
 
       {/* Activity Feed */}
-      <Route path="/activity" component={Activity} />
+      <Route path="/activity" component={withDashboardLayout(Activity)} />
 
       {/* Achievements */}
-      <Route path="/achievements" component={Achievements} />
+      <Route
+        path="/achievements"
+        component={withDashboardLayout(Achievements)}
+      />
 
       {/* Onboarding */}
       <Route path="/onboarding/welcome" component={OnboardingWelcome} />
@@ -78,22 +95,40 @@ function Router() {
       <Route path="/onboarding" component={OnboardingWelcome} />
 
       {/* Dashboard */}
-      <Route path="/dashboard" component={Dashboard} />
+      <Route path="/dashboard" component={withDashboardLayout(Dashboard)} />
 
       {/* Master Profile */}
-      <Route path="/profile" component={Profile} />
-      <Route path="/profile/edit" component={ProfileEdit} />
-      <Route path="/profile/sections" component={ProfileSections} />
+      <Route path="/profile" component={withDashboardLayout(Profile)} />
+      <Route
+        path="/profile/edit"
+        component={withDashboardLayout(ProfileEdit)}
+      />
+      <Route
+        path="/profile/sections"
+        component={withDashboardLayout(ProfileSections)}
+      />
       {/* Jobs & Opportunities */}
-      <Route path="/jobs" component={Jobs} />
-      <Route path="/saved" component={SavedOpportunities} />
-      <Route path="/opportunities/:id" component={OpportunityDetail} />
-      <Route path="/applications" component={Applications} />
-      <Route path="/applications/:id" component={ApplicationDetail} />
+      <Route path="/jobs" component={withDashboardLayout(Jobs)} />
+      <Route
+        path="/saved"
+        component={withDashboardLayout(SavedOpportunities)}
+      />
+      <Route
+        path="/opportunities/:id"
+        component={withDashboardLayout(OpportunityDetail)}
+      />
+      <Route
+        path="/applications"
+        component={withDashboardLayout(Applications)}
+      />
+      <Route
+        path="/applications/:id"
+        component={withDashboardLayout(ApplicationDetail)}
+      />
 
       {/* Analytics */}
-      <Route path="/analytics" component={Analytics} />
-      <Route path="/metrics" component={Metrics} />
+      <Route path="/analytics" component={withDashboardLayout(Analytics)} />
+      <Route path="/metrics" component={withDashboardLayout(Metrics)} />
 
       {/* 404 */}
       <Route path="/404" component={NotFound} />

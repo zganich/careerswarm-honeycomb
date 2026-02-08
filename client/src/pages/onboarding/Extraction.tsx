@@ -113,7 +113,10 @@ export default function Extraction() {
       progressEventSourceRef.current?.close();
       if (stepIntervalRef.current) clearInterval(stepIntervalRef.current);
     };
-  }, [user, loading]);
+    // Use user?.id (stable primitive) not user (object ref). Auth cache updates can
+    // change the user reference without changing identity; that would otherwise
+    // re-run this effect and interrupt extraction mid-operation.
+  }, [user?.id, loading]);
 
   const handleContinue = () => {
     setLocation("/onboarding/review");
