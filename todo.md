@@ -15,7 +15,7 @@
 | E2E Tests (Production)         | 47 passed, 5 skipped      |
 | Smoke Tests (Production)       | 22/22 passed              |
 | Playbook (local)               | 8/8 passed                |
-| Migrations (`pnpm db:migrate`) | All 16 migrations applied |
+| Migrations (`pnpm db:migrate`) | All 17 migrations applied |
 
 The assistant runs these checks when finishing work; no need for the user to run them. Human testing report: [docs/HUMAN_TESTING_REPORT.md](./docs/HUMAN_TESTING_REPORT.md).
 
@@ -23,6 +23,7 @@ The assistant runs these checks when finishing work; no need for the user to run
 
 ## Completed (February 8, 2026)
 
+- [x] Commit b184fa6: Storage S3, referral idempotency (migration 0017), docs Prettier; pushed to main
 - [x] CI fix: Prettier formatting (todo.md, Upload.tsx, ONBOARDING_DEEP_DIVE.md); committed 91b99eb, pushed
 
 ## Completed (February 7, 2026)
