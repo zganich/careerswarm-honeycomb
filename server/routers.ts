@@ -1399,7 +1399,32 @@ Each superpower should:
           numResults: input.limit,
         };
 
-        const opportunities = await scout.execute(searchParams);
+        const scoutResults = await scout.execute(searchParams);
+
+        // Persist new opportunities to DB (dedupe by jobUrl)
+        let savedCount = 0;
+        for (const job of scoutResults) {
+          const existing = await db.getOpportunityByJobUrl(job.jobUrl);
+          if (existing) continue;
+          const locationCity =
+            job.location && job.location !== "Remote" ? job.location : null;
+          await db.createOpportunity({
+            companyName: job.companyName,
+            roleTitle: job.roleTitle,
+            jobUrl: job.jobUrl,
+            sourceUrl: job.jobUrl,
+            jobDescription: job.jobDescription ?? undefined,
+            locationType: job.locationType ?? undefined,
+            locationCity: locationCity ?? undefined,
+            baseSalaryMin: job.compensationRange?.min ?? undefined,
+            baseSalaryMax: job.compensationRange?.max ?? undefined,
+            companyIndustry: job.source ?? undefined,
+            discoveredAt: job.discoveredAt,
+            discoveredBy: "Scout",
+            isActive: true,
+          });
+          savedCount += 1;
+        }
 
         // Log agent execution
         await db.logAgentExecution({
@@ -1410,12 +1435,19 @@ Each superpower should:
             searchQuery: input.searchQuery,
             limit: input.limit,
           }),
-          outputData: JSON.stringify({ foundCount: opportunities.length }),
+          outputData: JSON.stringify({
+            foundCount: scoutResults.length,
+            savedCount,
+          }),
           executionTimeMs: Date.now() - startTime,
           status: "success",
         });
 
-        return { opportunities, count: opportunities.length };
+        return {
+          opportunities: scoutResults,
+          count: scoutResults.length,
+          savedCount,
+        };
       }),
 
     // Get agent execution logs

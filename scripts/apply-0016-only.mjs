@@ -26,7 +26,8 @@ async function main() {
     `);
     console.log("Added applicationsThisMonth");
   } catch (e) {
-    if (e.code === "ER_DUP_FIELDNAME") console.log("applicationsThisMonth already exists");
+    if (e.code === "ER_DUP_FIELDNAME")
+      console.log("applicationsThisMonth already exists");
     else throw e;
   }
   try {
@@ -35,14 +36,15 @@ async function main() {
     `);
     console.log("Added applicationsResetAt");
   } catch (e) {
-    if (e.code === "ER_DUP_FIELDNAME") console.log("applicationsResetAt already exists");
+    if (e.code === "ER_DUP_FIELDNAME")
+      console.log("applicationsResetAt already exists");
     else throw e;
   }
   await conn.end();
   console.log("Done. Sign-in should work.");
 }
 
-main().catch((err) => {
+main().catch(err => {
   console.error(err.message || err);
   process.exit(1);
 });

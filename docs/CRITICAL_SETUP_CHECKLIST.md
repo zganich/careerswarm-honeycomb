@@ -134,14 +134,42 @@ See `docs/SENTRY_SETUP.md` for full alert configuration.
 
 ---
 
+## 4. Stripe Pro (Optional — for paid upgrades)
+
+**Impact:** Pro checkout and UpgradeModal are wired in code. Without a real Stripe product and env var, "Upgrade to Pro" will fail or not redirect correctly.
+
+### Manual steps (no code changes):
+
+1. **Create a Pro product in Stripe**
+   - Stripe Dashboard → Products → Add product
+   - Name (e.g. "CareerSwarm Pro"), price **$29/month** recurring
+   - Save and copy the **Price ID** (e.g. `price_xxx`)
+
+2. **Set `STRIPE_PRO_PRICE_ID` in Railway**
+   - `railway open` → Variables → Add variable: `STRIPE_PRO_PRICE_ID` = your Price ID
+
+3. **Migrations**
+   - Migration `0002_application_limits` (5-app limit for free tier) runs automatically on deploy (Dockerfile runs migrate in container). No manual step unless you skipped deploy.
+
+4. **Redeploy**
+   - `railway redeploy` (or push to trigger deploy) so the new variable is picked up.
+
+### Verify
+
+- Hit the 5-application limit on the Jobs/Dashboard flow → UpgradeModal should open instead of a generic error.
+- Click "Upgrade to Pro" in UpgradeModal or on `/pricing` → redirects to Stripe Checkout (when logged in).
+
+---
+
 ## Quick Reference
 
-| Item               | Where to Configure | Current Status |
-| ------------------ | ------------------ | -------------- |
-| OPENAI_API_KEY     | Railway Variables  | ❌ Placeholder |
-| TEST_USER_EMAIL    | GitHub Secrets     | ❌ Missing     |
-| TEST_USER_PASSWORD | GitHub Secrets     | ❌ Missing     |
-| SENTRY_DSN         | Railway Variables  | ❌ Missing     |
+| Item                | Where to Configure | Current Status |
+| ------------------- | ------------------ | -------------- |
+| OPENAI_API_KEY      | Railway Variables  | ❌ Placeholder |
+| TEST_USER_EMAIL     | GitHub Secrets     | ❌ Missing     |
+| TEST_USER_PASSWORD  | GitHub Secrets     | ❌ Missing     |
+| SENTRY_DSN          | Railway Variables  | ❌ Missing     |
+| STRIPE_PRO_PRICE_ID | Railway Variables  | Optional       |
 
 ---
 

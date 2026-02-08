@@ -27,7 +27,9 @@ const BASE_URL = PRODUCTION_URL;
 const HUMAN_STEP_DELAY_MS = 5000;
 
 /** When LIVE_BROWSER=1, wait 3s so you can watch the sign-in flow in a headed run */
-async function liveBrowserWait(page: { waitForTimeout: (ms: number) => Promise<void> }) {
+async function liveBrowserWait(page: {
+  waitForTimeout: (ms: number) => Promise<void>;
+}) {
   if (process.env.LIVE_BROWSER) await page.waitForTimeout(3000);
 }
 

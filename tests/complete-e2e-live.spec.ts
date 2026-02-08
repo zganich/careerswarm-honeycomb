@@ -21,7 +21,9 @@ const STEP_DELAY_MS = 3000;
 async function liveWait(page: Page, stepName: string) {
   if (process.env.LIVE_BROWSER) {
     const ts = new Date().toISOString().slice(11, 23);
-    console.log(`[${ts}] [Live] ${stepName} — waiting ${STEP_DELAY_MS / 1000}s`);
+    console.log(
+      `[${ts}] [Live] ${stepName} — waiting ${STEP_DELAY_MS / 1000}s`
+    );
     await page.waitForTimeout(STEP_DELAY_MS);
   }
 }
@@ -78,7 +80,9 @@ test.describe("Complete E2E (live browser)", () => {
 
     const result = page.getByTestId("roast-result");
     const error = page.getByTestId("roast-error");
-    await expect(result.or(error)).toBeVisible({ timeout: 95000 }).catch(() => {});
+    await expect(result.or(error))
+      .toBeVisible({ timeout: 95000 })
+      .catch(() => {});
     await liveWait(page, "Saw roast result or error");
 
     // —— SIGN IN ——
@@ -125,7 +129,9 @@ test.describe("Complete E2E (live browser)", () => {
         await liveWait(page, "Clicked start/continue");
       }
       await page
-        .waitForURL(/\/onboarding\/(upload|welcome|extraction)/, { timeout: 15000 })
+        .waitForURL(/\/onboarding\/(upload|welcome|extraction)/, {
+          timeout: 15000,
+        })
         .catch(() => {});
 
       const fileInput = page.locator('input[type="file"]');
@@ -138,15 +144,25 @@ test.describe("Complete E2E (live browser)", () => {
           await liveWait(page, "Clicked continue after upload");
         }
       }
-      await page.waitForURL(/\/onboarding\/extraction/, { timeout: 15000 }).catch(() => {});
-      const reviewBtn = page.getByRole("button", { name: /continue|review|next/i });
-      await reviewBtn.waitFor({ state: "visible", timeout: 90000 }).catch(() => {});
+      await page
+        .waitForURL(/\/onboarding\/extraction/, { timeout: 15000 })
+        .catch(() => {});
+      const reviewBtn = page.getByRole("button", {
+        name: /continue|review|next/i,
+      });
+      await reviewBtn
+        .waitFor({ state: "visible", timeout: 90000 })
+        .catch(() => {});
       if (await reviewBtn.isVisible()) {
         await reviewBtn.click();
         await liveWait(page, "Clicked continue to review");
       }
-      await page.waitForURL(/\/onboarding\/review/, { timeout: 15000 }).catch(() => {});
-      const nextBtn = page.getByRole("button", { name: /continue|next/i }).first();
+      await page
+        .waitForURL(/\/onboarding\/review/, { timeout: 15000 })
+        .catch(() => {});
+      const nextBtn = page
+        .getByRole("button", { name: /continue|next/i })
+        .first();
       if (await nextBtn.isVisible()) {
         await nextBtn.click();
         await liveWait(page, "Clicked continue to preferences");
@@ -163,7 +179,9 @@ test.describe("Complete E2E (live browser)", () => {
       }
     }
 
-    await page.waitForURL(/\/(dashboard|onboarding|\/)/, { timeout: 15000 }).catch(() => {});
+    await page
+      .waitForURL(/\/(dashboard|onboarding|\/)/, { timeout: 15000 })
+      .catch(() => {});
     const finalUrl = page.url();
     expect(finalUrl).toMatch(/\/(dashboard|onboarding)|careerswarm\.com\/?$/);
     console.log("\n[Live] === DONE ===", finalUrl);

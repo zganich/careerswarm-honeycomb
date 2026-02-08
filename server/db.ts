@@ -77,16 +77,22 @@ export async function getDb() {
 let _applicationLimitColumnsApplied = false;
 
 /** Apply migration 0016 columns if missing (runtime fallback when deploy-time migrate did not run). */
-async function ensureApplicationLimitColumns(db: NonNullable<Awaited<ReturnType<typeof getDb>>>): Promise<void> {
+async function ensureApplicationLimitColumns(
+  db: NonNullable<Awaited<ReturnType<typeof getDb>>>
+): Promise<void> {
   if (_applicationLimitColumnsApplied) return;
   try {
-    await db.execute(sql`ALTER TABLE users ADD applicationsThisMonth int DEFAULT 0 NOT NULL`);
+    await db.execute(
+      sql`ALTER TABLE users ADD applicationsThisMonth int DEFAULT 0 NOT NULL`
+    );
   } catch (e: unknown) {
     const err = e as { code?: string };
     if (err?.code !== "ER_DUP_FIELDNAME") throw e;
   }
   try {
-    await db.execute(sql`ALTER TABLE users ADD applicationsResetAt timestamp DEFAULT CURRENT_TIMESTAMP`);
+    await db.execute(
+      sql`ALTER TABLE users ADD applicationsResetAt timestamp DEFAULT CURRENT_TIMESTAMP`
+    );
   } catch (e: unknown) {
     const err = e as { code?: string };
     if (err?.code !== "ER_DUP_FIELDNAME") throw e;
@@ -116,10 +122,16 @@ export async function upsertUser(user: InsertUser): Promise<void> {
       .values(values)
       .onDuplicateKeyUpdate({ set: updateSet });
   } catch (e: unknown) {
-    const err = e as { cause?: { code?: string; message?: string }; code?: string };
+    const err = e as {
+      cause?: { code?: string; message?: string };
+      code?: string;
+    };
     const code = err?.cause?.code ?? err?.code;
     const msg = String(err?.cause?.message ?? (e as Error).message ?? "");
-    if (code === "ER_BAD_FIELD_ERROR" && msg.includes("applicationsThisMonth")) {
+    if (
+      code === "ER_BAD_FIELD_ERROR" &&
+      msg.includes("applicationsThisMonth")
+    ) {
       await ensureApplicationLimitColumns(db);
       await db
         .insert(users)
@@ -456,6 +468,18 @@ export async function getOpportunityById(id: number) {
     .select()
     .from(opportunities)
     .where(eq(opportunities.id, id))
+    .limit(1);
+  return result[0] || null;
+}
+
+export async function getOpportunityByJobUrl(jobUrl: string) {
+  if (!jobUrl?.trim()) return null;
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db
+    .select()
+    .from(opportunities)
+    .where(eq(opportunities.jobUrl, jobUrl.trim()))
     .limit(1);
   return result[0] || null;
 }
