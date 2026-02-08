@@ -1418,7 +1418,6 @@ Each superpower should:
             locationCity: locationCity ?? undefined,
             baseSalaryMin: job.compensationRange?.min ?? undefined,
             baseSalaryMax: job.compensationRange?.max ?? undefined,
-            companyIndustry: job.source ?? undefined,
             discoveredAt: job.discoveredAt,
             discoveredBy: "Scout",
             isActive: true,

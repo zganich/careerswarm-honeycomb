@@ -200,8 +200,11 @@ Full strategy in `docs/MONETIZATION_STRATEGY.md`.
 
 - [ ] Create Stripe product ($29/mo) and get price ID
 - [ ] Set `STRIPE_PRO_PRICE_ID` in production env
-- [ ] Run database migration
-- [ ] Integrate `UpgradeModal` into the dashboard/application flow where `quickApply` is called
+- [ ] Run database migration (runs automatically on deploy; see Dockerfile)
+
+**Stripe setup:** See [docs/CRITICAL_SETUP_CHECKLIST.md](docs/CRITICAL_SETUP_CHECKLIST.md) § 4. Stripe Pro for the full manual steps (create product, copy Price ID, set env var, redeploy).
+
+**Done:** UpgradeModal is integrated in OpportunityDetailModal; when users hit the 5-app limit and click 1-Click Apply, the upgrade modal opens instead of a generic alert.
 
 ---
 

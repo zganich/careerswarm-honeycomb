@@ -149,7 +149,7 @@ See `docs/SENTRY_SETUP.md` for full alert configuration.
    - `railway open` → Variables → Add variable: `STRIPE_PRO_PRICE_ID` = your Price ID
 
 3. **Migrations**
-   - Migration `0002_application_limits` (5-app limit for free tier) runs automatically on deploy (Dockerfile runs migrate in container). No manual step unless you skipped deploy.
+   - The application limits migration (5-app limit for free tier) runs automatically on deploy (Dockerfile runs migrate in container). No manual step unless you skipped deploy.
 
 4. **Redeploy**
    - `railway redeploy` (or push to trigger deploy) so the new variable is picked up.
