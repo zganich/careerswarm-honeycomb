@@ -197,6 +197,7 @@ railway status | logs | variable list | redeploy | up | open
 
 ### This session (2026-02-08)
 
+- **Next Steps plan executed:** (1) Handoff review and commit — Ship agent test fixes (analytics, profile-sections, agent-metrics: skip when DATABASE_URL localhost/127.0.0.1) + OPENCLAW_HANDOFF entries; committed d242ab5, pushed. (2) ship:check:full 47 passed, 5 skipped; railway redeploy; health 200. (3) Stripe Pro config remains manual — [docs/CRITICAL_SETUP_CHECKLIST.md](./docs/CRITICAL_SETUP_CHECKLIST.md) § 5. (4) monitor (CI in progress, app OK), doctor passed. **Ongoing:** Before commit check OPENCLAW_HANDOFF; run pnpm precommit (or check + format:check + lint).
 - **Orchestration Run 2: Feature Completeness:** Executed per [docs/OPENCLAW_ORCHESTRATION.md](./docs/OPENCLAW_ORCHESTRATION.md). (1) **Client:** Auth redirect on Upload, Extraction, Review, Preferences — useAuth() + useEffect redirect to `/login?returnTo=...` when unauthenticated; loading spinners. (2) **Docs:** CRITICAL_SETUP_CHECKLIST — added § 4 Storage (BUILT_IN_FORGE_API_URL/KEY), expanded § 5 Stripe (STRIPE_SECRET_KEY + STRIPE_PRO_PRICE_ID), updated Quick Reference. (3) **Ship:** ship:check:full — 47 passed, 5 skipped. (4) Handoff appended to OPENCLAW_HANDOFF.md. Committed (b9c9c05) and pushed.
 - **Earlier this day:** CI fix (Prettier) — committed 91b99eb.
 
