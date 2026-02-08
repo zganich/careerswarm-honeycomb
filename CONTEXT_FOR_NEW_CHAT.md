@@ -175,6 +175,28 @@ railway status | logs | variable list | redeploy | up | open
 
 ---
 
+## Last Session Summary (2026-02-07)
+
+### Most recent (this session)
+
+- **Priority fixes implemented:**
+  - **Scout persistence:** Scout agent results are saved to `opportunities` table; deduplicated by `jobUrl` via `db.getOpportunityByJobUrl()`. New opportunities created via `db.createOpportunity()` in `agents.runScout`.
+  - **Application limit UX:** `useUpgradeModal` integrated in `OpportunityDetailModal.tsx` — when free-tier hits 5-app limit, UpgradeModal opens instead of a generic alert. `handleApplicationError` handles `APPLICATION_LIMIT` error type.
+  - **Stripe setup docs:** [docs/CRITICAL_SETUP_CHECKLIST.md](./docs/CRITICAL_SETUP_CHECKLIST.md) § 4. Stripe Pro (create product, copy Price ID, set `STRIPE_PRO_PRICE_ID`, redeploy). [OPENCLAW_HANDOFF.md](./OPENCLAW_HANDOFF.md) updated.
+- **Bug fix:** Removed incorrect `companyIndustry: job.source` in Scout persistence — `source` is job board (e.g. "LinkedIn"), not industry. `companyIndustry` left unset for Scout opportunities.
+- **Onboarding audit:** [docs/ONBOARDING_DEEP_DIVE.md](./docs/ONBOARDING_DEEP_DIVE.md) — full audit of 5-step flow, gaps, recommendations.
+- **Onboarding UX improvements:**
+  - **Review.tsx:** Copy updated from "Review and edit as needed" → "Review below — you can edit any section later from your dashboard" (no inline editing on Review).
+  - **Extraction.tsx:** When "No processed resumes found" error, redirects to `/onboarding/upload` with toast "No resumes to process. Please upload your resume first."
+- **Clarifications:** 5 app limit = 5 **applications** per month for free tier (enforced in `applications.quickApply`); no "15 uploads" limit.
+- **Deferred:** 10MB server-side file size enforcement (client shows 10MB; server `uploadResume` does not enforce — documented in ONBOARDING_DEEP_DIVE).
+
+### Status
+
+- Scout results persist; UpgradeModal shown on limit; onboarding copy/redirect fixed. Stripe product + `STRIPE_PRO_PRICE_ID` still pending for production.
+
+---
+
 ## Last Session (2026-02-06)
 
 ### This session (commits 09282d0, 84a60c8)
@@ -193,11 +215,11 @@ railway status | logs | variable list | redeploy | up | open
 
 ### Next Steps (for new chat)
 
-- **Handoff state (see [OPENCLAW_HANDOFF.md](./OPENCLAW_HANDOFF.md)):** Sign-in loop fix (auth.me-only 401 + retry:1) committed; verify Sign in → stay on dashboard after deploy. Monetization: strategy in `docs/MONETIZATION_STRATEGY.md`; implementation wired (Pro button, 5-app limit, UpgradeModal, migration `0002_application_limits.sql`). Pending: Stripe $29/mo product + `STRIPE_PRO_PRICE_ID` in prod, run migration, integrate UpgradeModal where `quickApply` is called.
+- **Handoff state (see [OPENCLAW_HANDOFF.md](./OPENCLAW_HANDOFF.md)):** Sign-in loop fix committed. Monetization: strategy in `docs/MONETIZATION_STRATEGY.md`; implementation wired (Pro button, 5-app limit, migration `0002_application_limits.sql`). **UpgradeModal integrated** in `OpportunityDetailModal` (1-Click Apply). Pending: Stripe $29/mo product + `STRIPE_PRO_PRICE_ID` in prod — see [docs/CRITICAL_SETUP_CHECKLIST.md](./docs/CRITICAL_SETUP_CHECKLIST.md) § 4. Stripe Pro.
 - **When you return:** Read [OPENCLAW_HANDOFF.md](./OPENCLAW_HANDOFF.md) for OpenClaw entries; review and commit any “ready for review” changes.
 - **Before commit:** Run `pnpm precommit` (or check + format:check + lint if git-secrets not installed). Check OPENCLAW_HANDOFF for OpenClaw work to include.
 - **Before deploy:** `pnpm check`, `pnpm test`, `pnpm build`; then production smoke + E2E. See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md). After deploy, CSP changes take effect (cleaner console in live browser).
-- **Monetization follow-up:** Create Stripe Pro product ($29/mo), set `STRIPE_PRO_PRICE_ID` in Railway, wire UpgradeModal into dashboard/application flow when limit hit. (Migrations run on deploy automatically.)
+- **Monetization follow-up:** Create Stripe Pro product ($29/mo), set `STRIPE_PRO_PRICE_ID` in Railway. UpgradeModal already wired in OpportunityDetailModal. (Migrations run on deploy automatically.)
 - **Human-style test:** Headed run for Roast → Signup → Onboarding with 5–10s pacing (see HUMAN_TESTING_REPORT § Human-style single flow).
 - **Quick status:** `pnpm run monitor`; `pnpm run doctor` for local sanity.
 - **OpenClaw:** WebChat http://127.0.0.1:18789/; assignments in OPENCLAW_HANDOFF; task/agent map: [docs/IDEAL_WORKFLOW_AND_ASSIGNMENTS.md](./docs/IDEAL_WORKFLOW_AND_ASSIGNMENTS.md).
