@@ -77,9 +77,17 @@ export default function Extraction() {
           clearInterval(stepIntervalRef.current);
           stepIntervalRef.current = null;
         }
-        setError(
-          err?.message || "Failed to extract profile. Please try again."
-        );
+        const message = err?.message || "";
+        const noResumes =
+          /no processed resumes found|upload and process resumes first/i.test(
+            message
+          );
+        if (noResumes) {
+          toast.info("No resumes to process. Please upload your resume first.");
+          setLocation("/onboarding/upload");
+          return;
+        }
+        setError(message || "Failed to extract profile. Please try again.");
         toast.error("Failed to extract profile. Please try again.");
         console.error(err);
       }

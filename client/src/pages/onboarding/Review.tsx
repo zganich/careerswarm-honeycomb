@@ -69,7 +69,8 @@ export default function Review() {
             Review Your Master Profile
           </h1>
           <p className="text-lg text-muted-foreground">
-            We've extracted your career data. Review and edit as needed.
+            We've extracted your career data. Review below — you can edit any
+            section later from your dashboard.
           </p>
         </div>
 
