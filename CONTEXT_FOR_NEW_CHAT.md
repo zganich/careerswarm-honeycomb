@@ -274,4 +274,17 @@ railway status | logs | variable list | redeploy | up | open
 
 ---
 
-_Last updated: 2026-02-08. Storage is S3-compatible; referral flywheel implemented. Start a new chat and use this file to restore context._
+## ATS Compatibility (Option B) — 2026-02-08
+
+- **DOCX:** Arial font set in [server/services/docxGenerator.ts](server/services/docxGenerator.ts) for all text (ATS-safe).
+- **PDF:** Replaced `manus-md-to-pdf` CLI with `md-to-pdf` (Node/Puppeteer) in [server/services/pdfGenerator.ts](server/services/pdfGenerator.ts); ATS-safe CSS (Arial, 11pt).
+- **Keyword scorer:** [server/atsKeywordScorer.ts](server/atsKeywordScorer.ts) — `scoreResumeAgainstJD()`, `getKeywordHintsForPrompt()`; uses `atsKeywords` from seed-data.
+- **Tailor:** Injects JD keywords into prompt for ATS optimization.
+- **ATS score:** Computed post-Tailor in quickApply and generatePackage; stored in `applications.analytics.atsScore`.
+- **UI:** ApplicationDetail shows "ATS: X%" badge when score available.
+- **FAQ:** ATS answer updated (Arial/Calibri, keyword match score).
+- **Note:** PDF generation uses Puppeteer; Railway may need Chromium for package generation. See docs if PDF fails.
+
+---
+
+_Last updated: 2026-02-08. Storage is S3-compatible; referral flywheel implemented; ATS Compatibility (Option B) added. Start a new chat and use this file to restore context._

@@ -1702,6 +1702,7 @@ Each superpower should:
         const { QualifierAgent, HunterAgent, ScribeAgent, AssemblerAgent } =
           await import("./agents/remaining");
         const { tailorResume } = await import("./agents/tailor");
+        const { scoreResumeAgainstJD } = await import("./atsKeywordScorer");
 
         // AGENT 2: Profiler - Analyze company
         const profiler = new ProfilerAgent(user.id, userProfile);
@@ -1756,6 +1757,12 @@ Each superpower should:
         });
         const resume = resumeResult.resumeMarkdown;
 
+        // Compute ATS keyword score for storage
+        const { score: atsScore } = scoreResumeAgainstJD(
+          resume,
+          opportunity.jobDescription || ""
+        );
+
         // AGENT 6: Scribe - Write outreach
         const scribe = new ScribeAgent(user.id, userProfile);
         const outreach = await scribe.execute(opportunity, analysis, contacts);
@@ -1772,7 +1779,7 @@ Each superpower should:
         });
 
         // Create application record
-        const application = await db.createApplication({
+        const applicationId = await db.createApplication({
           userId: user.id,
           opportunityId: opportunity.id,
           status: "draft",
@@ -1781,6 +1788,7 @@ Each superpower should:
           linkedinMessage: outreach.linkedinMessage,
           emailTemplate: outreach.emailOutreach,
           matchScore: qualification.matchScore,
+          analytics: { atsScore },
         });
 
         // Increment application count for free tier users
@@ -1792,13 +1800,13 @@ Each superpower should:
           agentName: "QuickApply",
           executionType: "full_pipeline",
           inputData: JSON.stringify({ opportunityId: input.opportunityId }),
-          outputData: JSON.stringify({ applicationId: application.id }),
+          outputData: JSON.stringify({ applicationId: applicationId }),
           executionTimeMs: Date.now() - startTime,
           status: "success",
         });
 
         return {
-          applicationId: application.id,
+          applicationId: applicationId ?? 0,
           matchScore: qualification.matchScore,
           checklist: applicationPackage.checklist,
           nextSteps: applicationPackage.nextSteps,
@@ -2036,7 +2044,14 @@ Each superpower should:
               }
             );
 
-            // Update application with package URLs
+            // Compute ATS score and update application with package URLs
+            const { score: atsScore } = (
+              await import("./atsKeywordScorer")
+            ).scoreResumeAgainstJD(
+              resumeResult.resumeMarkdown,
+              opportunity.jobDescription || ""
+            );
+
             await db.updateApplication(application.id, user.id, {
               packageZipUrl: packageResult.packageUrl,
               resumePdfUrl: packageResult.files.resumePDF,
@@ -2044,6 +2059,13 @@ Each superpower should:
               tailoredResumeText: resumeResult.resumeMarkdown,
               coverLetterText: outreachResult.coverLetter,
               linkedinMessage: outreachResult.linkedInMessage,
+              analytics: {
+                ...(application.analytics &&
+                typeof application.analytics === "object"
+                  ? application.analytics
+                  : {}),
+                atsScore,
+              },
             });
 
             // Send notification
@@ -2109,9 +2131,16 @@ Each superpower should:
           });
         }
 
+        const analytics =
+          application.analytics && typeof application.analytics === "object"
+            ? application.analytics
+            : {};
+
         return {
           ready: !!application.packageZipUrl,
           packageUrl: application.packageZipUrl || null,
+          atsScore:
+            typeof analytics.atsScore === "number" ? analytics.atsScore : null,
           files: {
             resumePDF: application.resumePdfUrl || null,
             resumeDOCX: application.resumeDocxUrl || null,

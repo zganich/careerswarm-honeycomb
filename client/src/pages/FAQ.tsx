@@ -100,7 +100,7 @@ const faqs: FAQItem[] = [
   {
     question: "Is this ATS-friendly?",
     answer:
-      "Yes! We use ATS-safe formatting (no tables, no images, standard fonts, semantic keywords). Our XYZ format is optimized for both ATS parsing and human readability. We've tested with major ATS systems like Taleo, Workday, and Greenhouse.",
+      "Yes! We use ATS-safe formatting (no tables, no images, Arial/Calibri fonts, semantic keywords). Our XYZ format is optimized for both ATS parsing and human readability. Resumes are designed for compatibility with major ATS systems like Taleo, Workday, and Greenhouse. Each application package shows an ATS keyword match score so you can see how well your resume aligns with the job description.",
   },
   {
     question: "Can I export my resumes?",

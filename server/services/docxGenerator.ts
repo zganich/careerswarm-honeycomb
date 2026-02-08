@@ -28,21 +28,40 @@ function markdownToDocxParagraphs(markdown: string): Paragraph[] {
 
       paragraphs.push(
         new Paragraph({
-          text: token.text,
+          children: [
+            new TextRun({
+              text: token.text,
+              font: "Arial",
+              size: 24,
+              bold: true,
+            }),
+          ],
           heading: level,
         })
       );
     } else if (token.type === "paragraph") {
       paragraphs.push(
         new Paragraph({
-          children: [new TextRun(token.text)],
+          children: [
+            new TextRun({
+              text: token.text,
+              font: "Arial",
+              size: 22, // 11pt in half-points
+            }),
+          ],
         })
       );
     } else if (token.type === "list") {
       for (const item of token.items) {
         paragraphs.push(
           new Paragraph({
-            text: `• ${item.text}`,
+            children: [
+              new TextRun({
+                text: `• ${item.text}`,
+                font: "Arial",
+                size: 22,
+              }),
+            ],
             bullet: {
               level: 0,
             },

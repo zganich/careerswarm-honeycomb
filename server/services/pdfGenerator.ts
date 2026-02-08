@@ -1,51 +1,44 @@
 import { promises as fs } from "fs";
 import path from "path";
-import os from "os";
-import { exec } from "child_process";
-import { promisify } from "util";
-
-const execAsync = promisify(exec);
+import { mdToPdf } from "md-to-pdf";
 
 export interface PDFGeneratorOptions {
   markdown: string;
   outputPath: string;
 }
 
+/** ATS-safe CSS: Arial font, single-column, no tables */
+const ATS_SAFE_CSS = `
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 11pt; }
+  h1, h2, h3, h4 { font-family: Arial, Helvetica, sans-serif; }
+  * { max-width: 100%; }
+`;
+
 export async function generatePDF(
   options: PDFGeneratorOptions
 ): Promise<string> {
   const { markdown, outputPath } = options;
 
-  // Create a temporary markdown file
-  const tempDir = os.tmpdir();
-  const tempMdPath = path.join(tempDir, `temp-${Date.now()}.md`);
+  // Ensure output directory exists
+  const outputDir = path.dirname(outputPath);
+  await fs.mkdir(outputDir, { recursive: true });
 
-  try {
-    // Write markdown to temp file
-    await fs.writeFile(tempMdPath, markdown, "utf-8");
-
-    // Ensure output directory exists
-    const outputDir = path.dirname(outputPath);
-    await fs.mkdir(outputDir, { recursive: true });
-
-    // Convert markdown to PDF (manus-md-to-pdf CLI if available)
-    await execAsync(`manus-md-to-pdf "${tempMdPath}" "${outputPath}"`);
-
-    // Clean up temp file
-    try {
-      await fs.unlink(tempMdPath);
-    } catch (cleanupErr) {
-      console.warn("[PDF Generator] Failed to cleanup temp file:", cleanupErr);
+  await mdToPdf(
+    { content: markdown },
+    {
+      dest: outputPath,
+      css: ATS_SAFE_CSS,
+      pdf_options: {
+        format: "Letter",
+        margin: {
+          top: "0.5in",
+          right: "0.5in",
+          bottom: "0.5in",
+          left: "0.5in",
+        },
+        printBackground: true,
+      },
     }
-
-    return outputPath;
-  } catch (error) {
-    // Clean up on error
-    try {
-      await fs.unlink(tempMdPath);
-    } catch {
-      // Ignore cleanup errors
-    }
-    throw error;
-  }
+  );
+  return outputPath;
 }

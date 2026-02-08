@@ -422,6 +422,13 @@ export const applications = mysqlTable("applications", {
   // Pivot analysis (JSON from Pivot Analyzer agent)
   pivotAnalysis: json("pivotAnalysis"),
 
+  // Analytics: successPrediction, skillGap, atsScore (migration 0011)
+  analytics: json("analytics").$type<{
+    successPrediction?: unknown;
+    skillGap?: unknown;
+    atsScore?: number;
+  }>(),
+
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

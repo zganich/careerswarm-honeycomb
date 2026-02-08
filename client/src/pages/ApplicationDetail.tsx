@@ -136,6 +136,15 @@ export default function ApplicationDetail() {
                   .replace("_", " ")
                   .toUpperCase()}
               </Badge>
+              {typeof packageStatus?.atsScore === "number" && (
+                <Badge
+                  variant="outline"
+                  className="font-mono"
+                  title="ATS keyword match: resume vs job description"
+                >
+                  ATS: {packageStatus.atsScore}%
+                </Badge>
+              )}
               {application.appliedAt && (
                 <span className="text-sm text-muted-foreground">
                   Applied {new Date(application.appliedAt).toLocaleDateString()}

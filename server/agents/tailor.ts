@@ -1,5 +1,6 @@
 import { invokeLLM } from "../_core/llm";
 import { insertAgentMetric } from "../db";
+import { getKeywordHintsForPrompt } from "../atsKeywordScorer";
 
 interface TailorInput {
   userProfile: {
@@ -173,12 +174,22 @@ This application is a career pivot. Use Format B: place a robust Skills/Summary 
 `
       : "";
 
+    const keywordHints = getKeywordHintsForPrompt(input.jobDescription);
+    const keywordBlock =
+      keywordHints.length > 0
+        ? `
+
+**KEYWORDS TO WEAVE IN (ATS optimization - use naturally in achievements):**
+${keywordHints.slice(0, 30).join(", ")}
+`
+        : "";
+
     const userPrompt = `**JOB DESCRIPTION:**
 ${input.jobDescription}
 
 **COMPANY:** ${input.companyName}
 **ROLE:** ${input.roleTitle}
-${pivotBlock}
+${pivotBlock}${keywordBlock}
 **USER PROFILE:**
 Name: ${input.userProfile.fullName}
 Email: ${input.userProfile.email}
