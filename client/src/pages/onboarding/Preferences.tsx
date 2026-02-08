@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,10 +7,22 @@ import { Award, CheckCircle } from "lucide-react";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
+import { useAuth } from "@/_core/hooks/useAuth";
 
 export default function Preferences() {
   const [, setLocation] = useLocation();
+  const { user, loading } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    if (loading) return;
+    if (user) return;
+    if (typeof window === "undefined") return;
+    const returnTo =
+      window.location.pathname + window.location.search ||
+      "/onboarding/preferences";
+    window.location.href = `/login?returnTo=${encodeURIComponent(returnTo)}`;
+  }, [user, loading]);
 
   const [preferences, setPreferences] = useState({
     targetRoles: "",
@@ -60,6 +72,17 @@ export default function Preferences() {
       setIsSaving(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">

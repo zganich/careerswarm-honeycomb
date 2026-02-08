@@ -79,6 +79,30 @@ After step 5, user is redirected to `/dashboard`. Onboarding completion is store
 
 ---
 
+## E2E Verification
+
+**Spec:** `tests/onboarding-verify.spec.ts` — full onboarding flow with 3s delays between steps when `LIVE_BROWSER=1`.
+
+**Run (production):**
+
+```bash
+LIVE_BROWSER=1 BASE_URL=https://careerswarm.com npx playwright test tests/onboarding-verify.spec.ts --config=playwright.production.config.ts --headed --project=chromium-desktop
+```
+
+**Run (local, requires CareerSwarm on port 3000):**
+
+```bash
+LIVE_BROWSER=1 BASE_URL=http://localhost:3000 npx playwright test tests/onboarding-verify.spec.ts --config=playwright.config.ts --headed --project=chromium-desktop
+```
+
+**Requirements:**
+
+- Sign-in (email-only) must work.
+- Upload step requires S3 configured (`storagePut`); otherwise upload fails and app may redirect to login.
+- Extraction requires LLM/parsing; takes ~30–60s.
+
+---
+
 ## 5-App Limit vs 15 Uploads (Clarification)
 
 - **5-app limit:** This refers to **applications** (job applications), not resume uploads.

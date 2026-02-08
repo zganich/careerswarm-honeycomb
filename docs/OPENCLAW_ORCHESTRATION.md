@@ -73,10 +73,50 @@ Do not commit. User or Cursor will commit after review.
 
 ---
 
+## Orchestration Run 2: Feature Completeness
+
+**Goal:** Ensure all features work as users expect without errors or unexpected redirects. See plan: `.cursor/plans/feature_completeness_gaps_*.plan.md` or CONTEXT_FOR_NEW_CHAT.md § Feature Completeness Gaps.
+
+**Scope:**
+
+- **Config (human only):** Storage (BUILT_IN_FORGE_API_URL, BUILT_IN_FORGE_API_KEY), Stripe (STRIPE_SECRET_KEY, STRIPE_PRO_PRICE_ID). Agents cannot set these; Docs agent documents them.
+- **Code:** Auth redirect on onboarding routes — unauthenticated users hitting Upload/Extraction/Review/Preferences should redirect to `/login?returnTo=...` before interacting, not hit 401 mid-flow.
+
+---
+
+### Tasks (copy-paste per agent)
+
+Use **after** pasting the agent's role brief from OPENCLAW_INTEGRATION.md.
+
+| Agent      | Task                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Client** | **Auth redirect on onboarding:** Add auth check to Upload.tsx, Extraction.tsx, Review.tsx, Preferences.tsx. Use `useAuth()`. When `!user` and `!loading`, redirect to `/login?returnTo=${encodeURIComponent(window.location.pathname + window.location.search)}`. Do not block Welcome (it already has its own sign-in flow). Append handoff. Do not commit.                                                                                                                                                      |
+| **Docs**   | **Feature Completeness Checklist:** Add or update a short section in CRITICAL_SETUP_CHECKLIST.md or create docs/FEATURE_COMPLETENESS_CHECKLIST.md. Document: (1) Storage: BUILT_IN_FORGE_API_URL + BUILT_IN_FORGE_API_KEY — required for onboarding upload. (2) Stripe: STRIPE_SECRET_KEY + STRIPE_PRO_PRICE_ID — required for Pro checkout. (3) Human steps: create $29/mo product in Stripe, set vars in Railway, redeploy. Reference ONBOARDING_DEEP_DIVE § E2E. Append handoff. Do not edit application code. |
+| **Ship**   | Run `pnpm run ship:check:full`. If passes, optionally run `LIVE_BROWSER=1 npx playwright test tests/onboarding-verify.spec.ts --config=playwright.production.config.ts --headed` (requires storage + LLM; may skip if env not configured). Append handoff. Do not commit.                                                                                                                                                                                                                                         |
+| **Server** | **Error clarity:** Read server/storage.ts and server/stripe-router.ts. Verify errors when config is missing are user-friendly (e.g. "Storage not configured" vs raw throw). If messages are opaque, suggest or add a clearer message. Append handoff. Do not commit.                                                                                                                                                                                                                                              |
+| **Review** | Review the auth-redirect approach: Is redirecting unauthenticated users on Upload/Extraction/Review/Preferences correct? Any edge cases (returnTo loop, flash of content)? Append handoff. Do not apply; Client implements.                                                                                                                                                                                                                                                                                       |
+
+---
+
+### One-shot prompt (Feature Completeness)
+
+```
+Current focus: Feature completeness. Goal: (1) Auth redirect on onboarding routes so unauthenticated users go to /login?returnTo=... before interacting. (2) Document config required (Storage, Stripe) for human. Read docs/OPENCLAW_ORCHESTRATION.md § Orchestration Run 2. Run your lane: Client (auth redirect on Upload/Extraction/Review/Preferences), Docs (Feature Completeness Checklist), Ship (ship:check:full), Server (error clarity for storage/Stripe), Review (review auth-redirect approach). Apply minimal fixes; do not commit. Append your result to OPENCLAW_HANDOFF.md.
+```
+
+---
+
+### After Run 2
+
+- **You or Cursor:** Read OPENCLAW_HANDOFF.md from the bottom. Merge Client + Docs + Server + Review; run `pnpm run ship:check:full`; commit.
+- **Human:** Complete config per checklist (Storage, Stripe) in Railway. See CRITICAL_SETUP_CHECKLIST.md § 4.
+
+---
+
 ## After the orchestration
 
 - **You or Cursor:** Read OPENCLAW_HANDOFF.md from the bottom. Merge Server + Client + Review; run `pnpm run ship:check:full`; commit.
-- **Update this doc:** Set “Current focus” to the next priority or “None” when done.
+- **Update this doc:** Set "Current focus" to the next priority or "None" when done.
 
 ---
 

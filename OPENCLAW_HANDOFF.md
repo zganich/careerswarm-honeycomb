@@ -232,3 +232,18 @@ Full strategy in `docs/MONETIZATION_STRATEGY.md`.
 - **What failed:** GitHub CI (Format check — Prettier issues in todo.md, Upload.tsx, ONBOARDING_DEEP_DIVE.md)
 - **What changed:** `pnpm exec prettier --write` on failing files; committed 91b99eb, pushed to main
 - **Ready for:** CI run on main to confirm green.
+
+---
+
+## Orchestration Run 2: Feature Completeness (2026-02-08)
+
+- **When:** 2026-02-08
+- **Agent:** Cursor (executed orchestration Run 2)
+- **What ran:** Feature Completeness orchestration per docs/OPENCLAW_ORCHESTRATION.md § Orchestration Run 2
+- **What failed:** None
+- **What changed:**
+  - **Client:** Auth redirect on Upload, Extraction, Review, Preferences — useAuth() + useEffect redirect to `/login?returnTo=...` when unauthenticated; loading spinners to avoid flash.
+  - **Docs:** CRITICAL_SETUP_CHECKLIST — added § 4 Storage (BUILT_IN_FORGE_API_URL/KEY), expanded § 5 Stripe (STRIPE_SECRET_KEY + STRIPE_PRO_PRICE_ID), updated Quick Reference table.
+  - **Server:** Verified storage.ts and stripe-router.ts errors are user-friendly; no changes needed.
+  - **Ship:** ship:check:full — 47 passed, 5 skipped.
+- **Ready for:** review and commit. Human: complete Storage + Stripe config per checklist.

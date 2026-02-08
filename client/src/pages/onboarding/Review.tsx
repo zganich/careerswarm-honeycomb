@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -18,9 +18,20 @@ import {
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
+import { useAuth } from "@/_core/hooks/useAuth";
 
 export default function Review() {
   const [, setLocation] = useLocation();
+  const { user, loading } = useAuth();
+
+  useEffect(() => {
+    if (loading) return;
+    if (user) return;
+    if (typeof window === "undefined") return;
+    const returnTo =
+      window.location.pathname + window.location.search || "/onboarding/review";
+    window.location.href = `/login?returnTo=${encodeURIComponent(returnTo)}`;
+  }, [user, loading]);
 
   const { data: profile, isLoading } = trpc.profile.get.useQuery();
 
@@ -29,10 +40,15 @@ export default function Review() {
     setLocation("/onboarding/preferences");
   };
 
-  if (isLoading) {
+  if (loading || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p>Loading your profile...</p>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
+          <p className="text-muted-foreground">
+            {loading ? "Loading..." : "Loading your profile..."}
+          </p>
+        </div>
       </div>
     );
   }

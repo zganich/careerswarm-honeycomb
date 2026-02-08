@@ -134,24 +134,43 @@ See `docs/SENTRY_SETUP.md` for full alert configuration.
 
 ---
 
-## 4. Stripe Pro (Optional — for paid upgrades)
+## 4. Storage (Required for Onboarding Upload)
 
-**Impact:** Pro checkout and UpgradeModal are wired in code. Without a real Stripe product and env var, "Upgrade to Pro" will fail or not redirect correctly.
+**Impact:** Onboarding upload (Step 2) and Assembler package generation fail without storage. Users see server errors when uploading resumes.
+
+The app uses a storage proxy. Set these in Railway Variables:
+
+| Variable                 | Description                   |
+| ------------------------ | ----------------------------- |
+| `BUILT_IN_FORGE_API_URL` | Base URL of the storage proxy |
+| `BUILT_IN_FORGE_API_KEY` | API key for the storage proxy |
+
+If missing, `storagePut` throws: "Storage proxy credentials missing: set BUILT_IN_FORGE_API_URL and BUILT_IN_FORGE_API_KEY". See [ONBOARDING_DEEP_DIVE.md](./ONBOARDING_DEEP_DIVE.md) § E2E Verification.
+
+---
+
+## 5. Stripe Pro (Optional — for paid upgrades)
+
+**Impact:** Pro checkout and UpgradeModal are wired in code. Without `STRIPE_SECRET_KEY` and `STRIPE_PRO_PRICE_ID`, "Upgrade to Pro" fails or does not redirect to Stripe Checkout correctly.
 
 ### Manual steps (no code changes):
 
-1. **Create a Pro product in Stripe**
+1. **Set `STRIPE_SECRET_KEY` in Railway** (required for Stripe API)
+   - Stripe Dashboard → Developers → API keys → Secret key
+   - `railway open` → Variables → Add: `STRIPE_SECRET_KEY` = sk\_...
+
+2. **Create a Pro product in Stripe**
    - Stripe Dashboard → Products → Add product
    - Name (e.g. "CareerSwarm Pro"), price **$29/month** recurring
    - Save and copy the **Price ID** (e.g. `price_xxx`)
 
-2. **Set `STRIPE_PRO_PRICE_ID` in Railway**
+3. **Set `STRIPE_PRO_PRICE_ID` in Railway**
    - `railway open` → Variables → Add variable: `STRIPE_PRO_PRICE_ID` = your Price ID
 
-3. **Migrations**
+4. **Migrations**
    - The application limits migration (5-app limit for free tier) runs automatically on deploy (Dockerfile runs migrate in container). No manual step unless you skipped deploy.
 
-4. **Redeploy**
+5. **Redeploy**
    - `railway redeploy` (or push to trigger deploy) so the new variable is picked up.
 
 ### Verify
@@ -163,13 +182,16 @@ See `docs/SENTRY_SETUP.md` for full alert configuration.
 
 ## Quick Reference
 
-| Item                | Where to Configure | Current Status |
-| ------------------- | ------------------ | -------------- |
-| OPENAI_API_KEY      | Railway Variables  | ❌ Placeholder |
-| TEST_USER_EMAIL     | GitHub Secrets     | ❌ Missing     |
-| TEST_USER_PASSWORD  | GitHub Secrets     | ❌ Missing     |
-| SENTRY_DSN          | Railway Variables  | ❌ Missing     |
-| STRIPE_PRO_PRICE_ID | Railway Variables  | Optional       |
+| Item                   | Where to Configure | Required For                   |
+| ---------------------- | ------------------ | ------------------------------ |
+| OPENAI_API_KEY         | Railway Variables  | AI (Roast, extraction, Tailor) |
+| BUILT_IN_FORGE_API_URL | Railway Variables  | Onboarding upload, Assembler   |
+| BUILT_IN_FORGE_API_KEY | Railway Variables  | Onboarding upload, Assembler   |
+| STRIPE_SECRET_KEY      | Railway Variables  | Pro checkout                   |
+| STRIPE_PRO_PRICE_ID    | Railway Variables  | Pro checkout                   |
+| TEST_USER_EMAIL        | GitHub Secrets     | CI E2E tests                   |
+| TEST_USER_PASSWORD     | GitHub Secrets     | CI E2E tests                   |
+| SENTRY_DSN             | Railway Variables  | Error monitoring               |
 
 ---
 

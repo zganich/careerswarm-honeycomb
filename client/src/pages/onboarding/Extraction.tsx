@@ -6,10 +6,23 @@ import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { LaborIllusion } from "@/components/ui/psych/LaborIllusion";
+import { useAuth } from "@/_core/hooks/useAuth";
 
 export default function Extraction() {
   const [, setLocation] = useLocation();
+  const { user, loading } = useAuth();
   const [currentStep, setCurrentStep] = useState(0);
+
+  useEffect(() => {
+    if (loading) return;
+    if (user) return;
+    if (typeof window === "undefined") return;
+    const returnTo =
+      window.location.pathname + window.location.search ||
+      "/onboarding/extraction";
+    window.location.href = `/login?returnTo=${encodeURIComponent(returnTo)}`;
+  }, [user, loading]);
+
   const [progressMessage, setProgressMessage] = useState<string | null>(null);
   const [isComplete, setIsComplete] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -28,6 +41,7 @@ export default function Extraction() {
   ];
 
   useEffect(() => {
+    if (!user || loading) return;
     let cancelled = false;
 
     const runExtraction = async () => {
@@ -99,11 +113,22 @@ export default function Extraction() {
       progressEventSourceRef.current?.close();
       if (stepIntervalRef.current) clearInterval(stepIntervalRef.current);
     };
-  }, []);
+  }, [user, loading]);
 
   const handleContinue = () => {
     setLocation("/onboarding/review");
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">

@@ -1,16 +1,28 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Award, Upload as UploadIcon, X, FileText } from "lucide-react";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
+import { useAuth } from "@/_core/hooks/useAuth";
 
 const MAX_RESUME_SIZE_BYTES = 10 * 1024 * 1024;
 
 export default function Upload() {
   const [, setLocation] = useLocation();
+  const { user, loading } = useAuth();
   const [files, setFiles] = useState<File[]>([]);
+
+  useEffect(() => {
+    if (loading) return;
+    if (user) return;
+    if (typeof window === "undefined") return;
+    const returnTo =
+      window.location.pathname + window.location.search || "/onboarding/upload";
+    window.location.href = `/login?returnTo=${encodeURIComponent(returnTo)}`;
+  }, [user, loading]);
+
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -72,6 +84,17 @@ export default function Upload() {
   const removeFile = (index: number) => {
     setFiles(prev => prev.filter((_, i) => i !== index));
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleContinue = async () => {
     if (files.length === 0) {
