@@ -16,8 +16,11 @@ export default function Pricing() {
   const [, setLocation] = useLocation();
   const [isLoading, setIsLoading] = useState(false);
 
-  // Check if user is logged in
-  const { data: user } = trpc.auth.me.useQuery();
+  // Check if user is logged in (don't treat loading as signed-out)
+  const { data: user, isLoading: authLoading } = trpc.auth.me.useQuery(
+    undefined,
+    { retry: 1, refetchOnMount: "always" }
+  );
 
   // Stripe checkout mutation
   const checkoutMutation = trpc.stripe.createCheckoutSession.useMutation({
@@ -29,20 +32,19 @@ export default function Pricing() {
     onError: error => {
       console.error("Checkout error:", error);
       setIsLoading(false);
-      // If not logged in, redirect to sign in
-      if (error.message.includes("UNAUTHORIZED")) {
+      const code = (error as { data?: { code?: string } })?.data?.code;
+      if (code === "UNAUTHORIZED" || error.message?.includes("UNAUTHORIZED")) {
         setLocation("/login?returnTo=/pricing?upgrade=pro");
       }
     },
   });
 
   const handleProClick = () => {
+    if (authLoading) return; // wait for auth to resolve
     if (!user) {
-      // Not logged in - redirect to email sign in first
       setLocation("/login?returnTo=/pricing?upgrade=pro");
       return;
     }
-
     setIsLoading(true);
     checkoutMutation.mutate({});
   };
@@ -80,10 +82,14 @@ export default function Pricing() {
         "Application tracking",
         "Interview prep materials",
       ],
-      cta: isLoading ? "Loading..." : "Start Pro Trial",
+      cta: authLoading
+        ? "Checking sign-in…"
+        : isLoading
+          ? "Loading..."
+          : "Start Pro Trial",
       highlighted: true,
       action: handleProClick,
-      isLoading,
+      isLoading: isLoading || authLoading,
     },
     {
       name: "Enterprise",
@@ -124,7 +130,9 @@ export default function Pricing() {
             </span>
           </button>
           <div className="flex items-center space-x-4">
-            {user ? (
+            {authLoading ? (
+              <span className="text-sm text-slate-500">Checking sign-in…</span>
+            ) : user ? (
               <button
                 onClick={() => setLocation("/dashboard")}
                 className="text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors"
