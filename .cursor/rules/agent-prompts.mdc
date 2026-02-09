@@ -8,7 +8,7 @@ alwaysApply: false
 
 ## Tailor
 
-- Job persona (Federal, Tech, Creative, Healthcare, Skilled Trades, Corporate) and format (A/B/C) are **inferred from the JD only**; Tailor does not receive a pre-set industry or format.
+- Job persona (Federal, Tech, Creative, Healthcare, Skilled Trades, Corporate, Academic, Legal, Education/Nonprofit) and format (A/B/C) are **inferred from the JD only**; Tailor does not receive a pre-set industry or format. Page length is inferred from work history (career level) and industry rules.
 - Use CAR framework (Context → Action → Result); for Tech & Engineering the prompt also specifies Google XYZ formula.
 - Quantify ALL results (%, $, numbers)
 - FORBIDDEN: orchestrated, spearheaded, visionary, synergy, leverage, utilize, facilitate, champion, holistic, paradigm, robust

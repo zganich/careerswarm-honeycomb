@@ -42,7 +42,14 @@ export const RESUME_TEMPLATES: Record<ResumeTemplate, TemplateConfig> = {
       "Formal section headers",
       "Maximum ATS compatibility",
     ],
-    bestFor: ["Finance", "Legal", "Healthcare", "Government"],
+    bestFor: [
+      "Finance",
+      "Legal",
+      "Healthcare",
+      "Government",
+      "Academic",
+      "Education & Nonprofit",
+    ],
   },
   tech: {
     id: "tech",

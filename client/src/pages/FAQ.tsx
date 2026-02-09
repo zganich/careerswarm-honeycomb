@@ -15,7 +15,7 @@ const faqs: FAQItem[] = [
   {
     question: "How is this different from other resume builders?",
     answer:
-      "Most resume builders are just formatting tools. Careerswarm focuses on the quality of your content first. We use the Google XYZ format and STAR methodology to help you capture achievements with metrics and impact. For tech and engineering roles we emphasize the Google XYZ formula; for other roles we use a similar quantified CAR (Context–Action–Result) structure. Our Impact Meter gives you real-time feedback on achievement quality, and our AI matches your best evidence to each job description automatically.",
+      "Most resume builders are just formatting tools. Careerswarm focuses on the quality of your content first. We use the Google XYZ format and STAR methodology to help you capture achievements with metrics and impact. We tailor by industry: tech (XYZ), federal, creative, healthcare, skilled trades, corporate, academic, legal, and education/nonprofit—each with the right format and section order (e.g. education-first for legal, CV-style for academic). Our Impact Meter gives you real-time feedback on achievement quality, and our AI matches your best evidence to each job description automatically.",
   },
   {
     question: "What is the STAR methodology?",
@@ -25,7 +25,7 @@ const faqs: FAQItem[] = [
   {
     question: "What is the Google XYZ format?",
     answer:
-      "The XYZ format is Google's recommended achievement structure: 'Accomplished [X] as measured by [Y] by doing [Z]'. For tech and engineering roles, our AI transforms your STAR stories into this format. For other industries we use a similar quantified CAR (Context–Action–Result) structure. Both are proven to pass ATS systems and catch recruiter attention.",
+      "The XYZ format is Google's recommended achievement structure: 'Accomplished [X] as measured by [Y] by doing [Z]'. For tech and engineering roles, our AI transforms your STAR stories into this format. For other industries we use a similar quantified CAR (Context–Action–Result) structure. We also use industry-specific formats (e.g. CV-style for academic, education-first for legal). Both are proven to pass ATS systems and catch recruiter attention.",
   },
   {
     question: "How does the Impact Meter work?",
@@ -100,7 +100,17 @@ const faqs: FAQItem[] = [
   {
     question: "Is this ATS-friendly?",
     answer:
-      "Yes! We use ATS-safe formatting (no tables, no images, Arial/Calibri fonts, semantic keywords). We optimize achievement phrasing by role: Google XYZ for tech and engineering, and CAR (Context–Action–Result) for other roles—both tuned for ATS parsing and human readability. Resumes are designed for compatibility with major ATS systems like Taleo, Workday, and Greenhouse. Each application package shows an ATS keyword match score so you can see how well your resume aligns with the job description.",
+      "Yes! We use ATS-safe formatting (no tables, no images, Arial/Calibri fonts, semantic keywords). We optimize by role type: Google XYZ for tech and engineering, federal (USA format), academic (CV-style), legal (education-first), and CAR (Context–Action–Result) for other roles—all tuned for ATS parsing and human readability. Resumes are designed for compatibility with major ATS systems like Taleo, Workday, and Greenhouse. Each application package shows an ATS keyword match score so you can see how well your resume aligns with the job description.",
+  },
+  {
+    question: "What industries do you support?",
+    answer:
+      "We support tech & engineering, federal, creative, healthcare, skilled trades, corporate, academic/research, legal, and education & nonprofit. We automatically detect the job type from the description and apply the right format (e.g. CV-style for academic, education-first for legal, federal 2-page rules).",
+  },
+  {
+    question: "How long should my resume be?",
+    answer:
+      "We set length by your career level and the job type. Entry-level (0–5 years): 1 page. Mid-career: 1–2 pages. Senior/executive: 2–3 pages. Federal jobs: 2-page maximum. Academic CVs: 2–4+ pages as needed. Legal and education/nonprofit roles often prefer 1–2 pages. Our AI applies these rules when tailoring your resume.",
   },
   {
     question: "Can I export my resumes?",

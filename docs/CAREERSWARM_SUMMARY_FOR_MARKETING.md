@@ -18,6 +18,8 @@ CareerSwarm helps job seekers **stop rewriting their resume for every job**. Use
 - **Career pivots** who need to reframe their experience (e.g., sales → strategy) with “bridge skills” and clear narrative.
 - **Professionals** who want evidence-based career management (STAR achievements, impact metrics) instead of generic bullet points.
 
+We tailor by industry and role type: tech (Google XYZ), federal, creative, healthcare, skilled trades, corporate, **academic/research** (CV-style), **legal** (education-first), and **education/nonprofit**—each with the right format, section order, and page length for that sector.
+
 ---
 
 ## Key Features (How to Talk About Them)
