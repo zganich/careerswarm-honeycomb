@@ -150,10 +150,15 @@ export default function ResumeRoast() {
               <h2 className="text-xl font-bold text-white mb-2">
                 Turn these fixes into a resume that gets interviews
               </h2>
-              <p className="text-sm text-slate-300">
-                We're building a new way to turn this into your profile. Come
-                back soon.
-              </p>
+              <Button
+                asChild
+                data-testid="roast-cta-onboarding"
+                className="mt-4 bg-orange-500 hover:bg-orange-600 text-white"
+              >
+                <a href="/login?returnTo=/onboarding/welcome">
+                  Build my Master Profile
+                </a>
+              </Button>
             </div>
           </div>
         )}

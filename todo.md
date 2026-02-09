@@ -100,6 +100,16 @@ See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md) for full deployment guide
 
 ---
 
+## Feature Completeness & Gaps
+
+**Engine:** Scout, Qualifier, Profiler, Tailor, Scribe, Assembler ✅. Success Predictor, Skill Gap Analyzer ❌ (schema ready; no procedure/UI).
+
+**User:** Roast, onboarding, Master Profile, Jobs, Saved, Applications, packages, pricing ✅. Roast→onboarding CTA ❌. Success Predictor UI, Skill Gap UI ❌. Pivot/bridge skills ⚠️ partial (Tailor supports; no UI trigger).
+
+**Full matrix:** See [CONTEXT_FOR_NEW_CHAT.md](./CONTEXT_FOR_NEW_CHAT.md) § Feature Completeness.
+
+---
+
 ## High Priority Next Steps
 
 ### Testing & CI/CD
@@ -136,6 +146,14 @@ See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md) for full deployment guide
 - [x] Activity feed page (implemented; added to sidebar nav in DashboardLayout)
 - [x] onboarding-flow.spec.ts: documented as skipped; use production-e2e.spec.ts for full onboarding E2E (see file comment, SHIP_CHECKLIST, HUMAN_TESTING_REPORT.md)
 - [x] Live browser onboarding-flow tests: run production-e2e Onboarding Flow in headed mode with 5s human-like waits after each step; watch logs for errors
+
+### Feature Gaps (from completeness audit)
+
+- [x] Success Predictor: add `applications.predictSuccess` + "Predict Success" button on ApplicationDetail (built 2026-02-08)
+- [ ] Skill Gap Analyzer: add `applications.analyzeSkillGap` + "Analyze Skill Gap" button on ApplicationDetail
+- [ ] Roast CTA: replace "Come back soon" with "Build my Master Profile" → `/login?returnTo=/onboarding/welcome`
+- [ ] Pivot / Bridge Skills: wire pivot analyzer to Tailor and surface in UI for career-changers
+- [ ] estimateQualification: implement LLM or remove/stub
 
 ### Low Priority
 

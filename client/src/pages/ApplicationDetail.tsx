@@ -22,6 +22,11 @@ import {
   Download,
   Loader2,
   FileDown,
+  Target,
+  ChevronDown,
+  ChevronUp,
+  BookOpen,
+  GitBranch,
 } from "lucide-react";
 import StatusPipeline from "@/components/StatusPipeline";
 import NotesSection from "@/components/NotesSection";
@@ -58,6 +63,34 @@ export default function ApplicationDetail() {
     },
     onError: e => toast.error(e.message),
   });
+
+  const predictSuccess = trpc.applications.predictSuccess.useMutation({
+    onSuccess: () => {
+      toast.success("Success prediction generated.");
+      refetch();
+    },
+    onError: e => toast.error(e.message),
+  });
+
+  const analyzeSkillGap = trpc.applications.analyzeSkillGap.useMutation({
+    onSuccess: () => {
+      toast.success("Skill gap analysis generated.");
+      refetch();
+    },
+    onError: e => toast.error(e.message),
+  });
+
+  const analyzePivot = trpc.applications.analyzePivot.useMutation({
+    onSuccess: () => {
+      toast.success("Pivot analysis generated.");
+      refetch();
+    },
+    onError: e => toast.error(e.message),
+  });
+
+  const [predictionExpanded, setPredictionExpanded] = useState(false);
+  const [skillGapExpanded, setSkillGapExpanded] = useState(false);
+  const [pivotExpanded, setPivotExpanded] = useState(false);
 
   const { data: opportunity } = trpc.opportunities.getById.useQuery(
     { id: application?.opportunityId! },
@@ -145,6 +178,20 @@ export default function ApplicationDetail() {
                   ATS: {packageStatus.atsScore}%
                 </Badge>
               )}
+              {(() => {
+                const pred = application.analytics?.successPrediction as
+                  | { probability?: number }
+                  | undefined;
+                return pred && typeof pred.probability === "number" ? (
+                  <Badge
+                    variant="outline"
+                    className="font-mono"
+                    title="AI estimate: likelihood of advancing to interview/offer"
+                  >
+                    Success: {pred.probability}%
+                  </Badge>
+                ) : null;
+              })()}
               {application.appliedAt && (
                 <span className="text-sm text-muted-foreground">
                   Applied {new Date(application.appliedAt).toLocaleDateString()}
@@ -227,6 +274,106 @@ export default function ApplicationDetail() {
                 )}
               </Button>
             )}
+            {application.tailoredResumeText && (
+              <Button
+                variant="outline"
+                onClick={() =>
+                  predictSuccess.mutate({ applicationId: application!.id! })
+                }
+                disabled={predictSuccess.isPending}
+                title="Estimate likelihood of advancing to interview or offer"
+              >
+                {predictSuccess.isPending ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Predicting…
+                  </>
+                ) : (() => {
+                    const p = application.analytics?.successPrediction as
+                      | { probability?: number }
+                      | undefined;
+                    return p && typeof p.probability === "number";
+                  })() ? (
+                  <>
+                    <Target className="w-4 h-4 mr-2" />
+                    Re-predict success
+                  </>
+                ) : (
+                  <>
+                    <Target className="w-4 h-4 mr-2" />
+                    Predict success
+                  </>
+                )}
+              </Button>
+            )}
+            <Button
+              variant="outline"
+              onClick={() =>
+                analyzePivot.mutate({ applicationId: application!.id! })
+              }
+              disabled={analyzePivot.isPending}
+              title="Identify bridge skills for career pivot"
+            >
+              {analyzePivot.isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Analyzing…
+                </>
+              ) : (() => {
+                  const pv = application.pivotAnalysis as
+                    | { bridgeSkills?: unknown[] }
+                    | undefined;
+                  return (
+                    pv &&
+                    Array.isArray(pv.bridgeSkills) &&
+                    pv.bridgeSkills.length > 0
+                  );
+                })() ? (
+                <>
+                  <GitBranch className="w-4 h-4 mr-2" />
+                  Re-analyze pivot
+                </>
+              ) : (
+                <>
+                  <GitBranch className="w-4 h-4 mr-2" />
+                  Analyze pivot
+                </>
+              )}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() =>
+                analyzeSkillGap.mutate({ applicationId: application!.id! })
+              }
+              disabled={analyzeSkillGap.isPending}
+              title="Identify missing skills and get upskilling steps"
+            >
+              {analyzeSkillGap.isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Analyzing…
+                </>
+              ) : (() => {
+                  const sg = application.analytics?.skillGap as
+                    | { missingSkills?: unknown[] }
+                    | undefined;
+                  return (
+                    sg &&
+                    Array.isArray(sg.missingSkills) &&
+                    sg.missingSkills.length > 0
+                  );
+                })() ? (
+                <>
+                  <BookOpen className="w-4 h-4 mr-2" />
+                  Re-analyze skill gap
+                </>
+              ) : (
+                <>
+                  <BookOpen className="w-4 h-4 mr-2" />
+                  Analyze skill gap
+                </>
+              )}
+            </Button>
             {opportunity?.jobUrl && (
               <Button variant="outline" asChild>
                 <a
@@ -274,6 +421,217 @@ export default function ApplicationDetail() {
 
         {/* Timeline Tab */}
         <TabsContent value="timeline">
+          {/* Success Prediction */}
+          {(() => {
+            const pred = application.analytics?.successPrediction as
+              | {
+                  probability?: number;
+                  reasoning?: string;
+                  greenFlags?: string[];
+                  redFlags?: string[];
+                }
+              | undefined;
+            if (!pred || typeof pred.probability !== "number") return null;
+            return (
+              <Card className="p-6 mb-4">
+                <button
+                  type="button"
+                  onClick={() => setPredictionExpanded(!predictionExpanded)}
+                  className="flex items-center justify-between w-full text-left"
+                >
+                  <h3 className="text-lg font-semibold flex items-center">
+                    <Target className="w-5 h-5 mr-2" />
+                    Success prediction: {pred.probability}%
+                  </h3>
+                  {predictionExpanded ? (
+                    <ChevronUp className="w-5 h-5" />
+                  ) : (
+                    <ChevronDown className="w-5 h-5" />
+                  )}
+                </button>
+                {predictionExpanded && (
+                  <div className="mt-4 space-y-4 pt-4 border-t">
+                    {pred.reasoning && (
+                      <p className="text-sm text-muted-foreground">
+                        {pred.reasoning}
+                      </p>
+                    )}
+                    {(pred.greenFlags?.length ?? 0) > 0 && (
+                      <div>
+                        <div className="text-xs font-medium text-green-700 dark:text-green-400 uppercase tracking-wide mb-2">
+                          Strengths
+                        </div>
+                        <ul className="list-disc list-inside text-sm space-y-1">
+                          {pred.greenFlags!.map((flag, i) => (
+                            <li key={i}>{flag}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {(pred.redFlags?.length ?? 0) > 0 && (
+                      <div>
+                        <div className="text-xs font-medium text-amber-700 dark:text-amber-400 uppercase tracking-wide mb-2">
+                          Areas to address
+                        </div>
+                        <ul className="list-disc list-inside text-sm space-y-1">
+                          {pred.redFlags!.map((flag, i) => (
+                            <li key={i}>{flag}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </Card>
+            );
+          })()}
+
+          {/* Skill Gap */}
+          {(() => {
+            const sg = application.analytics?.skillGap as
+              | {
+                  missingSkills?: string[];
+                  upskillingPlan?: string[];
+                }
+              | undefined;
+            if (
+              !sg ||
+              !Array.isArray(sg.missingSkills) ||
+              sg.missingSkills.length === 0
+            )
+              return null;
+            return (
+              <Card className="p-6 mb-4">
+                <button
+                  type="button"
+                  onClick={() => setSkillGapExpanded(!skillGapExpanded)}
+                  className="flex items-center justify-between w-full text-left"
+                >
+                  <h3 className="text-lg font-semibold flex items-center">
+                    <BookOpen className="w-5 h-5 mr-2" />
+                    Skill gap: {sg.missingSkills.length} missing areas
+                  </h3>
+                  {skillGapExpanded ? (
+                    <ChevronUp className="w-5 h-5" />
+                  ) : (
+                    <ChevronDown className="w-5 h-5" />
+                  )}
+                </button>
+                {skillGapExpanded && (
+                  <div className="mt-4 space-y-4 pt-4 border-t">
+                    <div>
+                      <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
+                        Missing skills
+                      </div>
+                      <ul className="list-disc list-inside text-sm space-y-1">
+                        {sg.missingSkills!.map((skill, i) => (
+                          <li key={i}>{skill}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    {(sg.upskillingPlan?.length ?? 0) > 0 && (
+                      <div>
+                        <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
+                          Upskilling plan
+                        </div>
+                        <ul className="list-disc list-inside text-sm space-y-1">
+                          {sg.upskillingPlan!.map((step, i) => (
+                            <li key={i}>{step}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </Card>
+            );
+          })()}
+
+          {/* Pivot / Bridge Skills */}
+          {(() => {
+            const pv = application.pivotAnalysis as
+              | {
+                  bridgeSkills?: Array<{
+                    skill: string;
+                    fromContext: string;
+                    toContext: string;
+                    strategicFrame: string;
+                  }>;
+                  pivotStrategy?: string;
+                  transferableStrengths?: string[];
+                }
+              | undefined;
+            if (
+              !pv ||
+              !Array.isArray(pv.bridgeSkills) ||
+              pv.bridgeSkills.length === 0
+            )
+              return null;
+            return (
+              <Card className="p-6 mb-4">
+                <button
+                  type="button"
+                  onClick={() => setPivotExpanded(!pivotExpanded)}
+                  className="flex items-center justify-between w-full text-left"
+                >
+                  <h3 className="text-lg font-semibold flex items-center">
+                    <GitBranch className="w-5 h-5 mr-2" />
+                    Career pivot: {pv.bridgeSkills.length} bridge skills
+                  </h3>
+                  {pivotExpanded ? (
+                    <ChevronUp className="w-5 h-5" />
+                  ) : (
+                    <ChevronDown className="w-5 h-5" />
+                  )}
+                </button>
+                {pivotExpanded && (
+                  <div className="mt-4 space-y-4 pt-4 border-t">
+                    {pv.pivotStrategy && (
+                      <p className="text-sm text-muted-foreground">
+                        {pv.pivotStrategy}
+                      </p>
+                    )}
+                    <div>
+                      <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
+                        Bridge skills
+                      </div>
+                      <ul className="space-y-3">
+                        {pv.bridgeSkills!.map((b, i) => (
+                          <li key={i} className="text-sm">
+                            <span className="font-medium">{b.skill}</span>
+                            <span className="text-muted-foreground">
+                              {" "}
+                              — {b.fromContext} → {b.toContext}
+                            </span>
+                            {b.strategicFrame && (
+                              <p className="mt-1 text-muted-foreground italic">
+                                {b.strategicFrame}
+                              </p>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    {(pv.transferableStrengths?.length ?? 0) > 0 && (
+                      <div>
+                        <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
+                          Transferable strengths
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {pv.transferableStrengths!.map((s, i) => (
+                            <Badge key={i} variant="secondary">
+                              {s}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </Card>
+            );
+          })()}
+
           {/* Status Pipeline */}
           <StatusPipeline currentStatus={application.status || "draft"} />
 

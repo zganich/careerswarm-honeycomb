@@ -17,6 +17,9 @@ import { profileRouter } from "./routers/profile";
 import { stripeRouter } from "./stripe-router";
 import { setResumeProgress } from "./resumeProgress";
 import { runRoast } from "./roast";
+import { runSuccessPrediction } from "./successPredictor";
+import { runSkillGapAnalysis } from "./skillGapAnalyzer";
+import { runPivotAnalysis } from "./pivotAnalyzer";
 
 // ================================================================
 // CAREERSWARM - MASTER PROFILE & 7-AGENT SYSTEM
@@ -70,6 +73,7 @@ export const appRouter = router({
         }
       }),
 
+    // Test-only / public stub: returns valid shape for tests; no UI uses it. See CONTEXT § estimateQualification.
     estimateQualification: publicProcedure
       .input(
         z.object({
@@ -82,7 +86,7 @@ export const appRouter = router({
         })
       )
       .mutation(async ({ input }) => {
-        // Stub: returns valid shape for tests; can be replaced with LLM later
+        // Stub: deterministic-enough for tests; replace with LLM (Option A) if product needs this feature
         const score = Math.min(
           100,
           Math.max(0, 50 + Math.floor(Math.random() * 40))
@@ -2141,6 +2145,11 @@ Each superpower should:
           packageUrl: application.packageZipUrl || null,
           atsScore:
             typeof analytics.atsScore === "number" ? analytics.atsScore : null,
+          successPrediction:
+            analytics.successPrediction &&
+            typeof analytics.successPrediction === "object"
+              ? analytics.successPrediction
+              : null,
           files: {
             resumePDF: application.resumePdfUrl || null,
             resumeDOCX: application.resumeDocxUrl || null,
@@ -2149,6 +2158,222 @@ Each superpower should:
             linkedInMessageTXT: application.linkedinMessageTxtUrl || null,
           },
         };
+      }),
+
+    // Predict success probability (Stage 7)
+    predictSuccess: protectedProcedure
+      .input(z.object({ applicationId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const user = await db.getUserByOpenId(ctx.user.openId);
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
+        const application = await db.getApplicationById(
+          input.applicationId,
+          user.id
+        );
+        if (!application) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Application not found",
+          });
+        }
+
+        const opportunity = application.opportunityId
+          ? await db.getOpportunityById(application.opportunityId)
+          : null;
+        if (!opportunity) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Job opportunity not found",
+          });
+        }
+
+        const tailoredResume = application.tailoredResumeText || "";
+        if (!tailoredResume.trim()) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Generate a tailored resume first, then predict success.",
+          });
+        }
+
+        const profile = await db.getUserProfile(user.id);
+        const achievements = await db.getAchievements(user.id);
+        const candidateSummary = profile?.professionalSummary || null;
+        const achievementsText =
+          achievements.length > 0
+            ? achievements
+                .slice(0, 8)
+                .map(a => a.description)
+                .join("; ")
+            : undefined;
+
+        const outcome = await runSuccessPrediction({
+          roleTitle: opportunity.roleTitle || "Role",
+          companyName: opportunity.companyName || "Company",
+          jobDescription: opportunity.jobDescription || "",
+          tailoredResume,
+          coverLetter: application.coverLetterText || undefined,
+          candidateSummary: candidateSummary || achievementsText,
+        });
+
+        if (!outcome.ok) {
+          throw new TRPCError({
+            code: "SERVICE_UNAVAILABLE",
+            message: outcome.message,
+          });
+        }
+
+        const existingAnalytics =
+          application.analytics && typeof application.analytics === "object"
+            ? (application.analytics as Record<string, unknown>)
+            : {};
+        const updatedAnalytics = {
+          ...existingAnalytics,
+          successPrediction: outcome.data,
+        };
+
+        await db.updateApplication(input.applicationId, user.id, {
+          analytics: updatedAnalytics,
+        });
+
+        return outcome.data;
+      }),
+
+    // Skill gap analysis: missing skills + upskilling plan
+    analyzeSkillGap: protectedProcedure
+      .input(z.object({ applicationId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const user = await db.getUserByOpenId(ctx.user.openId);
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
+        const application = await db.getApplicationById(
+          input.applicationId,
+          user.id
+        );
+        if (!application) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Application not found",
+          });
+        }
+
+        const opportunity = application.opportunityId
+          ? await db.getOpportunityById(application.opportunityId)
+          : null;
+        if (!opportunity) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Job opportunity not found",
+          });
+        }
+
+        const [profile, achievements, userSkills] = await Promise.all([
+          db.getUserProfile(user.id),
+          db.getAchievements(user.id),
+          db.getSkills(user.id),
+        ]);
+        const skillsList = userSkills.map(s => s.skillName);
+        const achievementsSummary =
+          achievements.length > 0
+            ? achievements
+                .slice(0, 8)
+                .map(a => a.description)
+                .join("; ")
+            : profile?.professionalSummary || undefined;
+
+        const outcome = await runSkillGapAnalysis({
+          roleTitle: opportunity.roleTitle || "Role",
+          companyName: opportunity.companyName || "Company",
+          jobDescription: opportunity.jobDescription || "",
+          userSkills: skillsList,
+          achievementsSummary,
+        });
+
+        if (!outcome.ok) {
+          throw new TRPCError({
+            code: "SERVICE_UNAVAILABLE",
+            message: outcome.message,
+          });
+        }
+
+        const existingAnalytics =
+          application.analytics && typeof application.analytics === "object"
+            ? (application.analytics as Record<string, unknown>)
+            : {};
+        const updatedAnalytics = {
+          ...existingAnalytics,
+          skillGap: outcome.data,
+        };
+
+        await db.updateApplication(input.applicationId, user.id, {
+          analytics: updatedAnalytics,
+        });
+
+        return outcome.data;
+      }),
+
+    // Pivot / bridge skills analysis for career changers
+    analyzePivot: protectedProcedure
+      .input(z.object({ applicationId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const user = await db.getUserByOpenId(ctx.user.openId);
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+
+        const application = await db.getApplicationById(
+          input.applicationId,
+          user.id
+        );
+        if (!application) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Application not found",
+          });
+        }
+
+        const opportunity = application.opportunityId
+          ? await db.getOpportunityById(application.opportunityId)
+          : null;
+        if (!opportunity) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Job opportunity not found",
+          });
+        }
+
+        const [profile, achievements] = await Promise.all([
+          db.getUserProfile(user.id),
+          db.getAchievements(user.id),
+        ]);
+        const achievementsSummary =
+          achievements.length > 0
+            ? achievements
+                .slice(0, 10)
+                .map(a => a.description)
+                .join("; ")
+            : profile?.professionalSummary || "No summary yet.";
+
+        const outcome = await runPivotAnalysis({
+          roleTitle: opportunity.roleTitle || "Role",
+          companyName: opportunity.companyName || "Company",
+          jobDescription: opportunity.jobDescription || "",
+          achievementsSummary,
+        });
+
+        if (!outcome.ok) {
+          throw new TRPCError({
+            code: "SERVICE_UNAVAILABLE",
+            message: outcome.message,
+          });
+        }
+
+        await db.updateApplication(input.applicationId, user.id, {
+          pivotAnalysis: outcome.data,
+        });
+
+        return outcome.data;
       }),
   }),
 

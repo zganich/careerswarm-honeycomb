@@ -111,6 +111,87 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 | Redis                           | ⏭️ Optional (GTM worker)                                                                                                          |
 | Storage (onboarding, Assembler) | S3-compatible: set S3_BUCKET, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY in Railway (optional S3_ENDPOINT for R2). See checklist § 4. |
 
+---
+
+## Status Summary
+
+**Production:** Live at careerswarm.com; CI passing; E2E 47 passed (5 skipped); smoke 22. Stripe Pro config pending (manual: create product, set STRIPE_PRO_PRICE_ID). Storage S3-compatible; referral flywheel implemented.
+
+**Last session:** Auth redirect on onboarding routes; storage S3; referral idempotency; Tailor 9 personas + page length by career level and industry. ship:check:full 47 passed.
+
+**Verification commands:**
+
+```bash
+pnpm check           # TypeScript
+pnpm test            # Unit (122 passed, 51 skipped)
+pnpm build           # Production build
+pnpm precommit       # Before commit
+npx playwright test tests/production-smoke.spec.ts --config=playwright.production.config.ts
+npx playwright test tests/production-e2e.spec.ts --config=playwright.production.config.ts
+```
+
+---
+
+## Feature Completeness
+
+### Engine (7-Stage Agent Pipeline)
+
+| Stage | Agent                  | Status         | Notes                                                                                                                              |
+| ----- | ---------------------- | -------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| 1     | **Scout**              | ✅ Implemented | Persists to `opportunities`; Jobs page "Run Scout"; dedupe by jobUrl                                                               |
+| 2     | **Qualifier**          | ✅ Implemented | Rule-based: location, compensation, matchScore ≥60; in quickApply                                                                  |
+| 3     | **Profiler**           | ✅ Implemented | LLM company analysis; in quickApply                                                                                                |
+| 4     | **Tailor**             | ✅ Implemented | 9 personas, page length by level/industry, ATS keyword injection; in quickApply                                                    |
+| 5     | **Scribe**             | ✅ Implemented | Outreach (LinkedIn, cold email); in quickApply                                                                                     |
+| 6     | **Assembler**          | ✅ Implemented | Package (resume, cover letter, outreach) → PDF/DOCX/ZIP, S3                                                                        |
+| 7     | **Success Predictor**  | ✅ Implemented | `applications.predictSuccess` procedure; "Predict Success" button on ApplicationDetail; stores in `analytics.successPrediction`    |
+| —     | **Skill Gap Analyzer** | ✅ Implemented | `applications.analyzeSkillGap` procedure; "Analyze Skill Gap" button and card on ApplicationDetail; stores in `analytics.skillGap` |
+
+**Quick Apply:** Orchestrates Scout→Profiler→Qualifier→Hunter→Tailor→Scribe→Assembler. 1-Click Apply from Jobs, Saved, OpportunityDetailModal. Application limit (5/mo free) enforced; UpgradeModal shown on limit.
+
+**Other engine features:** ATS keyword scorer (Tailor, quickApply); referral flywheel (30 days Pro for referrer); GTM pipeline worker (Redis optional).
+
+### User-Facing Features
+
+| Feature                    | Status  | Notes                                                                                                                      |
+| -------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------- |
+| **Resume Roast**           | ✅      | Public, no auth; score, verdict, 3 mistakes, brutalTruth                                                                   |
+| **Roast → Onboarding CTA** | ✅      | "Build my Master Profile" button → `/login?returnTo=/onboarding/welcome` on roast result                                   |
+| **Onboarding**             | ✅      | 5-step: Welcome, Upload, Extraction, Review, Preferences; auth redirect on Upload/Extraction/Review/Preferences            |
+| **Master Profile**         | ✅      | Profile, ProfileEdit, ProfileSections, Achievements, WorkHistory, superpowers                                              |
+| **Jobs / Scout**           | ✅      | Run Scout, view opportunities, filters, 1-Click Apply                                                                      |
+| **Saved Opportunities**    | ✅      | Save/unsave, 1-Click Apply                                                                                                 |
+| **Applications**           | ✅      | List, detail, status pipeline, generate package, notes                                                                     |
+| **Application packages**   | ✅      | PDF, DOCX, ZIP; ATS score badge when available                                                                             |
+| **Pricing / Pro**          | ✅      | UpgradeModal on limit; Stripe checkout when STRIPE_PRO_PRICE_ID set                                                        |
+| **Activity**               | ✅      | Activity feed page                                                                                                         |
+| **Analytics**              | ✅      | Overview, response rate, insights                                                                                          |
+| **Metrics**                | ✅      | /metrics (agent metrics, package success rate)                                                                             |
+| **Success Predictor UI**   | ✅      | "Predict Success" button on ApplicationDetail; Badge + expandable card (reasoning, green/red flags)                        |
+| **Skill Gap UI**           | ✅      | "Analyze Skill Gap" button on ApplicationDetail; missing skills + upskilling plan card                                     |
+| **Pivot / Bridge Skills**  | ✅      | `applications.analyzePivot` + "Analyze Pivot" button; bridge skills, strategy, transferable strengths on ApplicationDetail |
+| **estimateQualification**  | ⚠️ Stub | Public procedure: test-only stub (returns valid score/gaps/reasoning); no LLM; no UI. Documented; keep for tests.          |
+
+### Config Dependencies (Human)
+
+| Config                                            | Required For                                | Status                         |
+| ------------------------------------------------- | ------------------------------------------- | ------------------------------ |
+| DATABASE_URL, JWT_SECRET                          | Boot                                        | ✅                             |
+| OPENAI_API_KEY                                    | Roast, Tailor, Scribe, Profiler, extraction | ✅                             |
+| S3_BUCKET, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY | Onboarding upload, package storage          | Optional; doc in checklist § 4 |
+| STRIPE_SECRET_KEY, STRIPE_PRO_PRICE_ID            | Pro checkout                                | Pending; checklist § 5         |
+| Redis                                             | GTM pipeline worker                         | Optional                       |
+
+### Feature Gaps (Prioritized)
+
+1. ~~**Success Predictor**~~ — Done. `applications.predictSuccess` procedure + "Predict Success" button on ApplicationDetail; stores in `analytics.successPrediction`. See `server/successPredictor.ts`.
+2. ~~**Skill Gap Analyzer**~~ — Done. `applications.analyzeSkillGap` + "Analyze Skill Gap" button and card on ApplicationDetail; stores in `analytics.skillGap`. See `server/skillGapAnalyzer.ts`.
+3. ~~**Roast → Onboarding CTA**~~ — Done. "Build my Master Profile" button on roast result → `/login?returnTo=/onboarding/welcome`.
+4. ~~**Pivot / Bridge Skills**~~ — Done. `applications.analyzePivot` + "Analyze Pivot" button and pivot section on ApplicationDetail; Tailor already consumes `pivotAnalysis`. See `server/pivotAnalyzer.ts`.
+5. **estimateQualification** — Documented as test-only stub (Option B). Public procedure returns valid shape for tests; no LLM, no UI. To add product feature later: implement LLM in `public.estimateQualification` (Option A).
+
+---
+
 ## Verify (CLI)
 
 ```bash
@@ -298,4 +379,13 @@ railway status | logs | variable list | redeploy | up | open
 
 ---
 
-_Last updated: 2026-02-08. Tailor: 9 personas (incl. Academic, Legal, Education/Nonprofit), page length by career level and industry. Storage S3; referral flywheel; ATS Option B. Use this file to restore context._
+_Last updated: 2026-02-08. Success Predictor (Track A) implemented. Tailor: 9 personas; Storage S3; referral flywheel; ATS Option B. Use this file to restore context._
+
+---
+
+## Last Session (2026-02-08) — Track A: Success Predictor
+
+- **Built:** Success Predictor (Stage 7) — first prioritized feature gap.
+- **Server:** `server/successPredictor.ts` — `runSuccessPrediction()` uses LLM to estimate 0-100 probability, reasoning, greenFlags, redFlags. `applications.predictSuccess` procedure; merges result into `analytics.successPrediction`.
+- **Client:** ApplicationDetail — "Predict Success" button (when tailored resume exists); Badge in header; expandable card in Timeline tab with reasoning, Strengths, Areas to address.
+- **Requires:** Tailored resume before prediction. OPENAI_API_KEY for LLM.
