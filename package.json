@@ -18,7 +18,7 @@
     "test": "vitest run",
     "db:push": "drizzle-kit generate && drizzle-kit migrate",
     "db:migrate": "node scripts/run-migrate.mjs",
-    "precommit": "git secrets --scan && pnpm check && pnpm format:check && pnpm lint",
+    "precommit": "node scripts/precommit.mjs",
     "ship:check": "pnpm check && pnpm run build && pnpm test",
     "ship:check:full": "pnpm run ship:check && npx playwright test tests/production-smoke.spec.ts tests/production-e2e.spec.ts --config=playwright.production.config.ts",
     "seed": "tsx scripts/seed.ts",

@@ -236,7 +236,7 @@ railway status | logs | variable list | redeploy | up | open
 
 ### Most recent (this session)
 
-- **Pre-commit & lint:** `pnpm precommit` runs `git secrets --scan`, `pnpm check`, `pnpm format:check`, `pnpm lint`. Scripts added: `format:check`, `lint`, `lint:fix`. ESLint 9 + typescript-eslint + React (flat config in `eslint.config.js`); browser-extension and `client/public` ignored. Many rules set to warn so CI passes; can tighten over time. CI: Lint step and `format:check` in lint-and-typecheck job.
+- **Pre-commit & lint:** `pnpm precommit` runs [scripts/precommit.mjs](scripts/precommit.mjs): optional `git secrets --scan` (when git-secrets is installed), then check, format:check, lint. Passes without git-secrets. Scripts added: `format:check`, `lint`, `lint:fix`. ESLint 9 + typescript-eslint + React (flat config in `eslint.config.js`); browser-extension and `client/public` ignored. Many rules set to warn so CI passes; can tighten over time. CI: Lint step and `format:check` in lint-and-typecheck job.
 - **Sentry:** Added @sentry/cli (devDep), `pnpm run sentry:login` and `pnpm run sentry:info`. Exact setup docs: [docs/SENTRY_SETUP.md](./docs/SENTRY_SETUP.md) and [docs/CRITICAL_SETUP_CHECKLIST.md](./docs/CRITICAL_SETUP_CHECKLIST.md) — use project **careerswarm-backend**, DSN set in Railway via `railway variable set`. Fallback in docs if `sentry:info` fails. Source maps section added (optional upload for readable stack traces).
 - **Monitor:** CI treated as OK when latest run is **success** or **in progress** (only fail when latest completed with failure). Error handling: consistent return shape from `githubStatus()`, notifications only for real failures.
 - **CONTEXT:** Reference section added (README.md, todo.md). Production Status: SENTRY_DSN set in Railway; Redis optional. Commands: precommit, lint, format:check.
@@ -314,7 +314,7 @@ railway status | logs | variable list | redeploy | up | open
 
 - **Handoff state (see [OPENCLAW_HANDOFF.md](./OPENCLAW_HANDOFF.md)):** Sign-in loop fix committed. Monetization: strategy in `docs/MONETIZATION_STRATEGY.md`; implementation wired (Pro button, 5-app limit, migration `0002_application_limits.sql`). **UpgradeModal integrated** in `OpportunityDetailModal` (1-Click Apply). Pending: Stripe $29/mo product + `STRIPE_PRO_PRICE_ID` in prod — see [docs/CRITICAL_SETUP_CHECKLIST.md](./docs/CRITICAL_SETUP_CHECKLIST.md) § 5 Stripe Pro.
 - **When you return:** Read [OPENCLAW_HANDOFF.md](./OPENCLAW_HANDOFF.md) for OpenClaw entries; review and commit any “ready for review” changes.
-- **Before commit:** Run `pnpm precommit` (or check + format:check + lint if git-secrets not installed). Check OPENCLAW_HANDOFF for OpenClaw work to include.
+- **Before commit:** Run `pnpm precommit`. Check OPENCLAW_HANDOFF for OpenClaw work to include.
 - **Before deploy:** `pnpm check`, `pnpm test`, `pnpm build`; then production smoke + E2E. See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md). After deploy, CSP changes take effect (cleaner console in live browser).
 - **Monetization follow-up:** Create Stripe Pro product ($29/mo), set `STRIPE_PRO_PRICE_ID` in Railway. UpgradeModal already wired in OpportunityDetailModal. (Migrations run on deploy automatically.)
 - **Human-style test:** Headed run for Roast → Signup → Onboarding with 5–10s pacing (see HUMAN_TESTING_REPORT § Human-style single flow).
@@ -379,7 +379,17 @@ railway status | logs | variable list | redeploy | up | open
 
 ---
 
-_Last updated: 2026-02-08. Success Predictor (Track A) implemented. Tailor: 9 personas; Storage S3; referral flywheel; ATS Option B. Use this file to restore context._
+_Last updated: 2026-02-08. Phase 2 done (precommit passes without git-secrets). Feature gaps 2–5 done; Success Predictor, Tailor 9 personas; Storage S3; referral flywheel; ATS Option B. Use this file to restore context._
+
+---
+
+## Last Session (2026-02-08) — Feature gaps 2–5
+
+- **Gap 3 Roast CTA:** [client/src/pages/ResumeRoast.tsx](client/src/pages/ResumeRoast.tsx) — Replaced "Come back soon" with "Build my Master Profile" button → `/login?returnTo=/onboarding/welcome`; `data-testid="roast-cta-onboarding"`.
+- **Gap 2 Skill Gap:** [server/skillGapAnalyzer.ts](server/skillGapAnalyzer.ts) — `runSkillGapAnalysis()` (missingSkills, upskillingPlan). `applications.analyzeSkillGap`; stores in `analytics.skillGap`. ApplicationDetail: "Analyze skill gap" button + expandable card.
+- **Gap 4 Pivot:** [server/pivotAnalyzer.ts](server/pivotAnalyzer.ts) — `runPivotAnalysis()` (bridgeSkills, pivotStrategy, transferableStrengths). `applications.analyzePivot`; stores in `pivotAnalysis` (Tailor already consumes as pivotContext). ApplicationDetail: "Analyze pivot" button + pivot section. Filter enforces non-empty `strategicFrame` on bridge skills.
+- **Gap 5 estimateQualification:** Kept stub (Option B). Documented in CONTEXT as test-only; no LLM, no UI.
+- **CONTEXT/todo:** Feature Completeness and Feature Gaps lists updated. Commit 8c05e39 pushed to main.
 
 ---
 
@@ -389,3 +399,17 @@ _Last updated: 2026-02-08. Success Predictor (Track A) implemented. Tailor: 9 pe
 - **Server:** `server/successPredictor.ts` — `runSuccessPrediction()` uses LLM to estimate 0-100 probability, reasoning, greenFlags, redFlags. `applications.predictSuccess` procedure; merges result into `analytics.successPrediction`.
 - **Client:** ApplicationDetail — "Predict Success" button (when tailored resume exists); Badge in header; expandable card in Timeline tab with reasoning, Strengths, Areas to address.
 - **Requires:** Tailored resume before prediction. OPENAI_API_KEY for LLM.
+
+---
+
+## Last Session Summary (2026-02-08) — Features-complete plan Phase 1
+
+- **Phase 1 done:** Documentation and hygiene. todo.md synced with CONTEXT: Feature Completeness & Gaps and Feature Gaps (from completeness audit) now mark Success Predictor, Skill Gap Analyzer, Roast CTA, and Pivot / Bridge Skills as done. estimateQualification documented as stub (Option B) complete; Option A (LLM + UI) is a future product decision. "Last Updated" in todo includes "synced with CONTEXT: features-complete Phase 1".
+- **Next:** Phase 2 — make `pnpm precommit` pass when git-secrets is not installed (optional scan when available). See [docs/CONTEXT_SUMMARIES_AFTER_PHASES.md](docs/CONTEXT_SUMMARIES_AFTER_PHASES.md) and the features-complete plan. **Start a new chat before Phase 2.**
+
+---
+
+## Last Session Summary (2026-02-08) — Features-complete plan Phase 2
+
+- **Phase 2 done:** Precommit now passes when `git secrets` is not installed. [scripts/precommit.mjs](scripts/precommit.mjs) runs the secret scan only when available (detects "is not a git command" / not found), then runs check + format:check + lint. `pnpm precommit` no longer fails on machines without git-secrets. CONTRIBUTING.md updated (optional secrets scan, link to git-secrets).
+- **Next:** Phase 3 (optional) — estimateQualification Option A only if product wants LLM + UI; otherwise skip. Phase 4 — human config (Stripe Pro, S3, Sentry, Redis) in any order. See [docs/CONTEXT_SUMMARIES_AFTER_PHASES.md](docs/CONTEXT_SUMMARIES_AFTER_PHASES.md). **Start a new chat before Phase 3 or Phase 4.**

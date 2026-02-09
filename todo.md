@@ -1,7 +1,7 @@
 # CareerSwarm TODO
 
-**Last Updated:** February 8, 2026  
-**Status:** Production-ready; onboarding re-enabled. CI passing (Prettier fix committed and pushed); CONTEXT and todo synced.
+**Last Updated:** February 8, 2026 (Phase 2 done: precommit passes without git-secrets)  
+**Status:** Production-ready; onboarding re-enabled. CI passing; CONTEXT and todo synced.
 
 ---
 
@@ -23,6 +23,7 @@ The assistant runs these checks when finishing work; no need for the user to run
 
 ## Completed (February 8, 2026)
 
+- [x] **Phase 2:** Precommit passes without git-secrets. scripts/precommit.mjs runs optional secrets scan when available, then check + format:check + lint. CONTRIBUTING.md and CONTEXT updated.
 - [x] Commit b184fa6: Storage S3, referral idempotency (migration 0017), docs Prettier; pushed to main
 - [x] CI fix: Prettier formatting (todo.md, Upload.tsx, ONBOARDING_DEEP_DIVE.md); committed 91b99eb, pushed
 
@@ -102,9 +103,11 @@ See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md) for full deployment guide
 
 ## Feature Completeness & Gaps
 
-**Engine:** Scout, Qualifier, Profiler, Tailor, Scribe, Assembler ✅. Success Predictor, Skill Gap Analyzer ❌ (schema ready; no procedure/UI).
+**Engine:** Scout, Qualifier, Profiler, Tailor, Scribe, Assembler, Success Predictor, Skill Gap Analyzer ✅. All implemented (procedures + UI where applicable).
 
-**User:** Roast, onboarding, Master Profile, Jobs, Saved, Applications, packages, pricing ✅. Roast→onboarding CTA ❌. Success Predictor UI, Skill Gap UI ❌. Pivot/bridge skills ⚠️ partial (Tailor supports; no UI trigger).
+**User:** Roast, onboarding, Master Profile, Jobs, Saved, Applications, packages, pricing ✅. Roast→onboarding CTA ✅. Success Predictor UI, Skill Gap UI ✅. Pivot/bridge skills ✅ (analyzer + Tailor + UI on ApplicationDetail).
+
+**estimateQualification:** Stub (Option B) ✅ — public procedure returns valid shape for tests; no LLM, no UI. Option A (LLM + UI) is a future product decision. See CONTEXT § Feature Gaps.
 
 **Full matrix:** See [CONTEXT_FOR_NEW_CHAT.md](./CONTEXT_FOR_NEW_CHAT.md) § Feature Completeness.
 
@@ -150,10 +153,10 @@ See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md) for full deployment guide
 ### Feature Gaps (from completeness audit)
 
 - [x] Success Predictor: add `applications.predictSuccess` + "Predict Success" button on ApplicationDetail (built 2026-02-08)
-- [ ] Skill Gap Analyzer: add `applications.analyzeSkillGap` + "Analyze Skill Gap" button on ApplicationDetail
-- [ ] Roast CTA: replace "Come back soon" with "Build my Master Profile" → `/login?returnTo=/onboarding/welcome`
-- [ ] Pivot / Bridge Skills: wire pivot analyzer to Tailor and surface in UI for career-changers
-- [ ] estimateQualification: implement LLM or remove/stub
+- [x] Skill Gap Analyzer: add `applications.analyzeSkillGap` + "Analyze Skill Gap" button on ApplicationDetail
+- [x] Roast CTA: replace "Come back soon" with "Build my Master Profile" → `/login?returnTo=/onboarding/welcome`
+- [x] Pivot / Bridge Skills: wire pivot analyzer to Tailor and surface in UI for career-changers
+- [x] estimateQualification: stub (Option B) — test-only procedure; no LLM, no UI. Option A (LLM + UI) deferred to product decision.
 
 ### Low Priority
 
@@ -186,13 +189,23 @@ See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md) for full deployment guide
 
 ---
 
+## Features-complete plan (phases)
+
+- **Phase 1** ✅ Documentation and hygiene (CONTEXT/todo synced).
+- **Phase 2** ✅ Precommit passes without git-secrets ([scripts/precommit.mjs](scripts/precommit.mjs)).
+- **Phase 3** (optional): estimateQualification Option A (LLM + UI) only if product wants it; otherwise skip.
+- **Phase 4:** Human config (Stripe Pro, S3, Sentry, Redis) per [docs/CRITICAL_SETUP_CHECKLIST.md](./docs/CRITICAL_SETUP_CHECKLIST.md). See [docs/CONTEXT_SUMMARIES_AFTER_PHASES.md](./docs/CONTEXT_SUMMARIES_AFTER_PHASES.md).
+
+---
+
 ## Quick Commands
 
 ```bash
 pnpm dev          # Start dev server
+pnpm precommit    # Before commit (optional secrets scan + check + format + lint)
 pnpm check        # TypeScript check
-pnpm build        # Production build
-pnpm test         # Run tests
-pnpm db:migrate   # Apply migrations
-pnpm run monitor  # GitHub CI, Railway, app health (see docs/MONITORING.md)
+pnpm build       # Production build
+pnpm test        # Run tests
+pnpm db:migrate  # Apply migrations
+pnpm run monitor # GitHub CI, Railway, app health (see docs/MONITORING.md)
 ```

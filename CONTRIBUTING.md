@@ -19,7 +19,7 @@ pnpm dev               # start dev server
 ## Before opening a PR
 
 1. Run **`pnpm run doctor`** — ensures env shape, TypeScript, and build pass.
-2. Run **`pnpm precommit`** — secrets scan, check, format, lint.
+2. Run **`pnpm precommit`** — optional secrets scan (when [git-secrets](https://github.com/git-secrets/git-secrets) is installed), then check, format:check, lint. Precommit passes without git-secrets; the scan runs when available.
 3. Run **`pnpm test`** — unit tests.
 4. If you changed schema or migrations: **`pnpm db:migrate`** (see [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md)).
 
