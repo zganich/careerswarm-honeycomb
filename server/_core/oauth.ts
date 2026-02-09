@@ -57,13 +57,22 @@ export function registerOAuthRoutes(app: Express) {
       });
       let returnTo =
         typeof req.body?.returnTo === "string"
-          ? req.body.returnTo
+          ? req.body.returnTo.trim()
           : "/dashboard";
-      // If they were starting onboarding, send them to Upload so the next step is obvious
       if (returnTo === "/onboarding/welcome")
         returnTo = "/onboarding/upload?welcome=1";
-      // Server-side redirect so cookie is sent on the next request (more reliable than client redirect)
-      res.redirect(302, returnTo);
+      // Restrict to same-origin path (no protocol, host, or script)
+      if (!returnTo.startsWith("/") || /[\s"<>]|javascript:/i.test(returnTo))
+        returnTo = "/dashboard";
+      // Use 200 + HTML redirect instead of 302 so the cookie is set before navigation.
+      // Some browsers/proxies do not send the cookie on the request that follows a 302 when Set-Cookie is on the same response (e.g. careerswarm.com/pricing not seeing session after login).
+      const safePath = returnTo.replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+      res
+        .status(200)
+        .contentType("text/html")
+        .send(
+          `<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=${safePath}"></head><body>Redirecting to <a href="${safePath}">${safePath}</a>…</body></html>`
+        );
     } catch (err) {
       console.error("[Auth] test-login error:", err);
       res.status(500).json({ error: "Sign-in failed. Please try again." });
