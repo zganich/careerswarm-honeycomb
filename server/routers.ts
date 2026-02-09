@@ -20,6 +20,7 @@ import { runRoast } from "./roast";
 import { runSuccessPrediction } from "./successPredictor";
 import { runSkillGapAnalysis } from "./skillGapAnalyzer";
 import { runPivotAnalysis } from "./pivotAnalyzer";
+import { runEstimateQualification } from "./qualificationEstimator";
 
 // ================================================================
 // CAREERSWARM - MASTER PROFILE & 7-AGENT SYSTEM
@@ -73,7 +74,7 @@ export const appRouter = router({
         }
       }),
 
-    // Test-only / public stub: returns valid shape for tests; no UI uses it. See CONTEXT § estimateQualification.
+    // Option A: LLM-based qualification estimate (currentRole → targetRole). Same shape: score, gaps, reasoning.
     estimateQualification: publicProcedure
       .input(
         z.object({
@@ -86,30 +87,15 @@ export const appRouter = router({
         })
       )
       .mutation(async ({ input }) => {
-        // Stub: deterministic-enough for tests; replace with LLM (Option A) if product needs this feature
-        const score = Math.min(
-          100,
-          Math.max(0, 50 + Math.floor(Math.random() * 40))
-        );
-        const gaps = [
-          {
-            skill: "Domain experience",
-            importance: "critical" as const,
-            suggestion: "Gain experience in target domain.",
-          },
-          {
-            skill: "Leadership",
-            importance: "important" as const,
-            suggestion: "Take on project ownership.",
-          },
-          {
-            skill: "Communication",
-            importance: "helpful" as const,
-            suggestion: "Present to stakeholders.",
-          },
-        ];
-        const reasoning = `Comparison of ${input.currentRole} to ${input.targetRole}: gap analysis based on typical requirements.`;
-        return { score, gaps, reasoning };
+        const outcome = await runEstimateQualification({
+          currentRole: input.currentRole,
+          targetRole: input.targetRole,
+        });
+        if (outcome.ok) return outcome.data;
+        throw new TRPCError({
+          code: "SERVICE_UNAVAILABLE",
+          message: outcome.message,
+        });
       }),
   }),
 

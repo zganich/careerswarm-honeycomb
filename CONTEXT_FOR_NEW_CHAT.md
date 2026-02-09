@@ -83,18 +83,19 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 
 ## Key Paths
 
-| Area               | Paths                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Resume Roast       | `server/roast.ts`, `server/routers.ts` (public.roast), `client/src/pages/ResumeRoast.tsx`                                                                                                                                                                                                                                                                                                                              |
-| Tailor / industry  | `server/agents/tailor.ts` (9 personas, page length by level/industry); [docs/TAILOR_AND_INDUSTRY.md](docs/TAILOR_AND_INDUSTRY.md)                                                                                                                                                                                                                                                                                      |
-| Onboarding         | `client/src/pages/onboarding/Welcome.tsx`, `Upload.tsx`, `Extraction.tsx`, `Review.tsx`, `Preferences.tsx`; API: `server/routers.ts` (onboarding.\*)                                                                                                                                                                                                                                                                   |
-| Auth               | `server/_core/oauth.ts`, `client/src/pages/DevLogin.tsx` (Sign in), `client/src/_core/hooks/useAuth.ts`                                                                                                                                                                                                                                                                                                                |
-| Server / env / LLM | `server/_core/index.ts`, `server/_core/env.ts`, `server/_core/llm.ts`                                                                                                                                                                                                                                                                                                                                                  |
-| Database           | `drizzle/schema.ts`, `server/db.ts`, `drizzle/` migrations                                                                                                                                                                                                                                                                                                                                                             |
-| Tests              | Unit: `pnpm test` (Vitest, 122 passing / 51 skipped). E2E: `tests/production-smoke.spec.ts` (22), `tests/production-e2e.spec.ts` (25), `tests/complete-e2e-live.spec.ts` (full flow Roast → Sign in → Onboarding; LIVE_BROWSER=1 for 3s steps), `tests/playbook-whats-broken.spec.ts` (8). Roast unit: `server/roaster.test.ts`. Human testing report: [docs/HUMAN_TESTING_REPORT.md](./docs/HUMAN_TESTING_REPORT.md). |
-| Monitoring         | `scripts/monitor.mjs`, `scripts/test-cloudflare-api.mjs`. See [docs/MONITORING.md](./docs/MONITORING.md).                                                                                                                                                                                                                                                                                                              |
-| CI/CD              | `.github/workflows/ci.yml`                                                                                                                                                                                                                                                                                                                                                                                             |
-| Docs               | `docs/` (active); `.archive/` (obsolete)                                                                                                                                                                                                                                                                                                                                                                               |
+| Area                   | Paths                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Resume Roast           | `server/roast.ts`, `server/routers.ts` (public.roast), `client/src/pages/ResumeRoast.tsx`                                                                                                                                                                                                                                                                                                                              |
+| Qualification Estimate | `server/qualificationEstimator.ts`, `server/routers.ts` (public.estimateQualification), `client/src/pages/QualificationEstimate.tsx`                                                                                                                                                                                                                                                                                   |
+| Tailor / industry      | `server/agents/tailor.ts` (9 personas, page length by level/industry); [docs/TAILOR_AND_INDUSTRY.md](docs/TAILOR_AND_INDUSTRY.md)                                                                                                                                                                                                                                                                                      |
+| Onboarding             | `client/src/pages/onboarding/Welcome.tsx`, `Upload.tsx`, `Extraction.tsx`, `Review.tsx`, `Preferences.tsx`; API: `server/routers.ts` (onboarding.\*)                                                                                                                                                                                                                                                                   |
+| Auth                   | `server/_core/oauth.ts`, `client/src/pages/DevLogin.tsx` (Sign in), `client/src/_core/hooks/useAuth.ts`                                                                                                                                                                                                                                                                                                                |
+| Server / env / LLM     | `server/_core/index.ts`, `server/_core/env.ts`, `server/_core/llm.ts`                                                                                                                                                                                                                                                                                                                                                  |
+| Database               | `drizzle/schema.ts`, `server/db.ts`, `drizzle/` migrations                                                                                                                                                                                                                                                                                                                                                             |
+| Tests                  | Unit: `pnpm test` (Vitest, 122 passing / 51 skipped). E2E: `tests/production-smoke.spec.ts` (22), `tests/production-e2e.spec.ts` (25), `tests/complete-e2e-live.spec.ts` (full flow Roast → Sign in → Onboarding; LIVE_BROWSER=1 for 3s steps), `tests/playbook-whats-broken.spec.ts` (8). Roast unit: `server/roaster.test.ts`. Human testing report: [docs/HUMAN_TESTING_REPORT.md](./docs/HUMAN_TESTING_REPORT.md). |
+| Monitoring             | `scripts/monitor.mjs`, `scripts/test-cloudflare-api.mjs`. See [docs/MONITORING.md](./docs/MONITORING.md).                                                                                                                                                                                                                                                                                                              |
+| CI/CD                  | `.github/workflows/ci.yml`                                                                                                                                                                                                                                                                                                                                                                                             |
+| Docs                   | `docs/` (active); `.archive/` (obsolete)                                                                                                                                                                                                                                                                                                                                                                               |
 
 ---
 
@@ -153,24 +154,24 @@ npx playwright test tests/production-e2e.spec.ts --config=playwright.production.
 
 ### User-Facing Features
 
-| Feature                    | Status  | Notes                                                                                                                      |
-| -------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------- |
-| **Resume Roast**           | ✅      | Public, no auth; score, verdict, 3 mistakes, brutalTruth                                                                   |
-| **Roast → Onboarding CTA** | ✅      | "Build my Master Profile" button → `/login?returnTo=/onboarding/welcome` on roast result                                   |
-| **Onboarding**             | ✅      | 5-step: Welcome, Upload, Extraction, Review, Preferences; auth redirect on Upload/Extraction/Review/Preferences            |
-| **Master Profile**         | ✅      | Profile, ProfileEdit, ProfileSections, Achievements, WorkHistory, superpowers                                              |
-| **Jobs / Scout**           | ✅      | Run Scout, view opportunities, filters, 1-Click Apply                                                                      |
-| **Saved Opportunities**    | ✅      | Save/unsave, 1-Click Apply                                                                                                 |
-| **Applications**           | ✅      | List, detail, status pipeline, generate package, notes                                                                     |
-| **Application packages**   | ✅      | PDF, DOCX, ZIP; ATS score badge when available                                                                             |
-| **Pricing / Pro**          | ✅      | UpgradeModal on limit; Stripe checkout when STRIPE_PRO_PRICE_ID set                                                        |
-| **Activity**               | ✅      | Activity feed page                                                                                                         |
-| **Analytics**              | ✅      | Overview, response rate, insights                                                                                          |
-| **Metrics**                | ✅      | /metrics (agent metrics, package success rate)                                                                             |
-| **Success Predictor UI**   | ✅      | "Predict Success" button on ApplicationDetail; Badge + expandable card (reasoning, green/red flags)                        |
-| **Skill Gap UI**           | ✅      | "Analyze Skill Gap" button on ApplicationDetail; missing skills + upskilling plan card                                     |
-| **Pivot / Bridge Skills**  | ✅      | `applications.analyzePivot` + "Analyze Pivot" button; bridge skills, strategy, transferable strengths on ApplicationDetail |
-| **estimateQualification**  | ⚠️ Stub | Public procedure: test-only stub (returns valid score/gaps/reasoning); no LLM; no UI. Documented; keep for tests.          |
+| Feature                    | Status      | Notes                                                                                                                      |
+| -------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------- |
+| **Resume Roast**           | ✅          | Public, no auth; score, verdict, 3 mistakes, brutalTruth                                                                   |
+| **Roast → Onboarding CTA** | ✅          | "Build my Master Profile" button → `/login?returnTo=/onboarding/welcome` on roast result                                   |
+| **Onboarding**             | ✅          | 5-step: Welcome, Upload, Extraction, Review, Preferences; auth redirect on Upload/Extraction/Review/Preferences            |
+| **Master Profile**         | ✅          | Profile, ProfileEdit, ProfileSections, Achievements, WorkHistory, superpowers                                              |
+| **Jobs / Scout**           | ✅          | Run Scout, view opportunities, filters, 1-Click Apply                                                                      |
+| **Saved Opportunities**    | ✅          | Save/unsave, 1-Click Apply                                                                                                 |
+| **Applications**           | ✅          | List, detail, status pipeline, generate package, notes                                                                     |
+| **Application packages**   | ✅          | PDF, DOCX, ZIP; ATS score badge when available                                                                             |
+| **Pricing / Pro**          | ✅          | UpgradeModal on limit; Stripe checkout when STRIPE_PRO_PRICE_ID set                                                        |
+| **Activity**               | ✅          | Activity feed page                                                                                                         |
+| **Analytics**              | ✅          | Overview, response rate, insights                                                                                          |
+| **Metrics**                | ✅          | /metrics (agent metrics, package success rate)                                                                             |
+| **Success Predictor UI**   | ✅          | "Predict Success" button on ApplicationDetail; Badge + expandable card (reasoning, green/red flags)                        |
+| **Skill Gap UI**           | ✅          | "Analyze Skill Gap" button on ApplicationDetail; missing skills + upskilling plan card                                     |
+| **Pivot / Bridge Skills**  | ✅          | `applications.analyzePivot` + "Analyze Pivot" button; bridge skills, strategy, transferable strengths on ApplicationDetail |
+| **estimateQualification**  | ✅ Option A | Public procedure: LLM-based (score, gaps, reasoning). UI: `/estimate` (role fit estimate). Requires OPENAI_API_KEY.        |
 
 ### Config Dependencies (Human)
 
@@ -188,7 +189,7 @@ npx playwright test tests/production-e2e.spec.ts --config=playwright.production.
 2. ~~**Skill Gap Analyzer**~~ — Done. `applications.analyzeSkillGap` + "Analyze Skill Gap" button and card on ApplicationDetail; stores in `analytics.skillGap`. See `server/skillGapAnalyzer.ts`.
 3. ~~**Roast → Onboarding CTA**~~ — Done. "Build my Master Profile" button on roast result → `/login?returnTo=/onboarding/welcome`.
 4. ~~**Pivot / Bridge Skills**~~ — Done. `applications.analyzePivot` + "Analyze Pivot" button and pivot section on ApplicationDetail; Tailor already consumes `pivotAnalysis`. See `server/pivotAnalyzer.ts`.
-5. **estimateQualification** — Documented as test-only stub (Option B). Public procedure returns valid shape for tests; no LLM, no UI. To add product feature later: implement LLM in `public.estimateQualification` (Option A).
+5. ~~**estimateQualification**~~ — Done (Option A). LLM-based `public.estimateQualification` in `server/qualificationEstimator.ts`; public page `/estimate` for role-fit estimate (current role → target role). Tests skip when LLM unavailable (no key/rate limit).
 
 ---
 
@@ -379,7 +380,7 @@ railway status | logs | variable list | redeploy | up | open
 
 ---
 
-_Last updated: 2026-02-08. Phase 2 done (precommit passes without git-secrets). Feature gaps 2–5 done; Success Predictor, Tailor 9 personas; Storage S3; referral flywheel; ATS Option B. Use this file to restore context._
+_Last updated: 2026-02-08. Phase 3 done (estimateQualification Option A + /estimate). Phase 2: precommit without git-secrets. Feature gaps 2–5 done; Success Predictor, Tailor 9 personas; Storage S3; referral flywheel; ATS Option B. Use this file to restore context._
 
 ---
 
@@ -413,6 +414,13 @@ _Last updated: 2026-02-08. Phase 2 done (precommit passes without git-secrets). 
 
 - **Phase 2 done:** Precommit now passes when `git secrets` is not installed. [scripts/precommit.mjs](scripts/precommit.mjs) runs the secret scan only when available (detects "is not a git command" / not found), then runs check + format:check + lint. `pnpm precommit` no longer fails on machines without git-secrets. CONTRIBUTING.md updated (optional secrets scan, link to git-secrets).
 - **Next:** Phase 3 (optional) — estimateQualification Option A only if product wants LLM + UI; otherwise skip. Phase 4 — human config (Stripe Pro, S3, Sentry, Redis) in any order. See [docs/CONTEXT_SUMMARIES_AFTER_PHASES.md](docs/CONTEXT_SUMMARIES_AFTER_PHASES.md). **Start a new chat before Phase 3 or Phase 4.**
+
+---
+
+## Last Session Summary (2026-02-08) — Features-complete plan Phase 3
+
+- **Phase 3 done:** estimateQualification Option A implemented. Replaced stub in `server/routers.ts` with LLM-based implementation via `server/qualificationEstimator.ts` (same public shape: score, gaps, reasoning). Tests in `server/public.estimateQualification.test.ts` validate contract; integration tests skip when LLM unavailable (SERVICE_UNAVAILABLE). Public UI: `/estimate` page (current role → target role, score + gaps + reasoning; CTA to onboarding).
+- **Next:** Phase 4 — human config (Stripe Pro, S3, Sentry, Redis) per docs/CRITICAL_SETUP_CHECKLIST.md.
 
 ### This session (2026-02-08)
 

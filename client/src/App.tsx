@@ -22,6 +22,7 @@ function withDashboardLayout<P extends object>(
 // Landing & Public Pages
 import Home from "./pages/Home";
 import ResumeRoast from "./pages/ResumeRoast";
+import QualificationEstimate from "./pages/QualificationEstimate";
 import Recruiters from "./pages/Recruiters";
 import Pricing from "./pages/Pricing";
 import FAQ from "./pages/FAQ";
@@ -68,6 +69,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/login" component={DevLogin} />
       <Route path="/roast" component={ResumeRoast} />
+      <Route path="/estimate" component={QualificationEstimate} />
       <Route path="/recruiters" component={Recruiters} />
       <Route path="/pricing" component={Pricing} />
       <Route path="/faq" component={FAQ} />

@@ -1,6 +1,6 @@
 # CareerSwarm TODO
 
-**Last Updated:** February 8, 2026 (Phase 2 done: precommit passes without git-secrets)  
+**Last Updated:** February 8, 2026 (Phase 3 done: estimateQualification Option A + /estimate)  
 **Status:** Production-ready; onboarding re-enabled. CI passing; CONTEXT and todo synced.
 
 ---
@@ -23,6 +23,7 @@ The assistant runs these checks when finishing work; no need for the user to run
 
 ## Completed (February 8, 2026)
 
+- [x] **Phase 3:** estimateQualification Option A — server/qualificationEstimator.ts (LLM), public.estimateQualification in routers, /estimate page, tests skip when LLM unavailable.
 - [x] **Phase 2:** Precommit passes without git-secrets. scripts/precommit.mjs runs optional secrets scan when available, then check + format:check + lint. CONTRIBUTING.md and CONTEXT updated.
 - [x] Commit b184fa6: Storage S3, referral idempotency (migration 0017), docs Prettier; pushed to main
 - [x] CI fix: Prettier formatting (todo.md, Upload.tsx, ONBOARDING_DEEP_DIVE.md); committed 91b99eb, pushed
@@ -107,7 +108,7 @@ See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md) for full deployment guide
 
 **User:** Roast, onboarding, Master Profile, Jobs, Saved, Applications, packages, pricing ✅. Roast→onboarding CTA ✅. Success Predictor UI, Skill Gap UI ✅. Pivot/bridge skills ✅ (analyzer + Tailor + UI on ApplicationDetail).
 
-**estimateQualification:** Stub (Option B) ✅ — public procedure returns valid shape for tests; no LLM, no UI. Option A (LLM + UI) is a future product decision. See CONTEXT § Feature Gaps.
+**estimateQualification:** Option A ✅ — LLM-based `public.estimateQualification` (server/qualificationEstimator.ts); public page `/estimate` (role fit: current → target). See CONTEXT § Feature Completeness.
 
 **Full matrix:** See [CONTEXT_FOR_NEW_CHAT.md](./CONTEXT_FOR_NEW_CHAT.md) § Feature Completeness.
 
@@ -156,7 +157,7 @@ See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md) for full deployment guide
 - [x] Skill Gap Analyzer: add `applications.analyzeSkillGap` + "Analyze Skill Gap" button on ApplicationDetail
 - [x] Roast CTA: replace "Come back soon" with "Build my Master Profile" → `/login?returnTo=/onboarding/welcome`
 - [x] Pivot / Bridge Skills: wire pivot analyzer to Tailor and surface in UI for career-changers
-- [x] estimateQualification: stub (Option B) — test-only procedure; no LLM, no UI. Option A (LLM + UI) deferred to product decision.
+- [x] estimateQualification: Option A — LLM-based procedure + `/estimate` page (Phase 3).
 
 ### Low Priority
 
@@ -193,7 +194,7 @@ See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md) for full deployment guide
 
 - **Phase 1** ✅ Documentation and hygiene (CONTEXT/todo synced).
 - **Phase 2** ✅ Precommit passes without git-secrets ([scripts/precommit.mjs](scripts/precommit.mjs)).
-- **Phase 3** (optional): estimateQualification Option A (LLM + UI) only if product wants it; otherwise skip.
+- **Phase 3** ✅ estimateQualification Option A (LLM + UI) — implemented; `/estimate` page + server/qualificationEstimator.ts.
 - **Phase 4:** Human config (Stripe Pro, S3, Sentry, Redis) per [docs/CRITICAL_SETUP_CHECKLIST.md](./docs/CRITICAL_SETUP_CHECKLIST.md). See [docs/CONTEXT_SUMMARIES_AFTER_PHASES.md](./docs/CONTEXT_SUMMARIES_AFTER_PHASES.md).
 
 ---
