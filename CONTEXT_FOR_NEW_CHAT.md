@@ -380,7 +380,7 @@ railway status | logs | variable list | redeploy | up | open
 
 ---
 
-_Last updated: 2026-02-08. Phase 3 done (estimateQualification Option A + /estimate). Phase 2: precommit without git-secrets. Feature gaps 2–5 done; Success Predictor, Tailor 9 personas; Storage S3; referral flywheel; ATS Option B. Use this file to restore context._
+_Last updated: 2026-02-08. README: Cursor/OpenClaw do all technical work; user only creates accounts, copies keys when asked, pastes where instructed (no technical expertise). OpenClaw Phase 4 task in OPENCLAW_HANDOFF (run steps 1–4 if credentials provided). Phase 4 tooling: checklist §6 Redis, § Phase 4 complete when, config:check, PHASE_4_CONFIG_WALKTHROUGH, phase4:railway-vars. Phase 4 finished = vars set in Railway + railway redeploy; verification: pnpm run config:check (local .env) or railway variable list. Use this file to restore context._
 
 ---
 
@@ -425,3 +425,22 @@ _Last updated: 2026-02-08. Phase 3 done (estimateQualification Option A + /estim
 ### This session (2026-02-08)
 
 - Built Phase 2: added `scripts/precommit.mjs` (optional git-secrets scan), wired `pnpm precommit` to it, updated CONTRIBUTING, CONTEXT, todo. Committed (24d3c30) and pushed. CONTEXT and todo synced; no uncommitted code changes. Untracked: `.cursor/plans/`, `docs/CONTEXT_SUMMARIES_AFTER_PHASES.md` (plan template; can add to repo if desired).
+
+---
+
+## Last Session Summary (2026-02-08) — Features-complete plan Phase 4
+
+- **Phase 4 done:** Tooling and docs for human config. (1) **Checklist:** [docs/CRITICAL_SETUP_CHECKLIST.md](docs/CRITICAL_SETUP_CHECKLIST.md) — added § 6 Redis (optional; GTM worker only), Quick Reference table includes REDIS_URL/REDIS_HOST. (2) **Config verification:** [scripts/setup-checklist.mjs](scripts/setup-checklist.mjs) aligned with checklist: OPENAI_API_KEY (CRITICAL), SENTRY_DSN, GitHub secrets, S3 (required for onboarding/Assembler), Stripe Pro (optional), Redis (optional). Script loads `.env`; run `pnpm run config:check` locally to see what’s set; for production set vars in Railway and redeploy. (3) **Commands:** `pnpm run config:check` added to package.json; checklist “After Completing All Steps” includes optional config:check. Removed Manus reference from setup-checklist.
+- **Features-complete plan:** All four phases done. Human completes config per checklist (Stripe Pro product + STRIPE_PRO_PRICE_ID, S3, Sentry DSN, Redis if needed); redeploy after variable changes. Remaining work is product/backlog. See todo.md and CONTEXT § Feature Completeness.
+
+### This session (Phase 4 plan execution)
+
+- **Walkthrough:** [docs/PHASE_4_CONFIG_WALKTHROUGH.md](docs/PHASE_4_CONFIG_WALKTHROUGH.md) — sequential CLI-first steps (Stripe → S3 → Sentry → Redis) and a **Tokens for automation** table (Railway API token, Sentry auth token, Stripe key, R2/S3, GitHub PAT). CRITICAL_SETUP_CHECKLIST links to it.
+- **Railway vars via API:** [scripts/phase4-railway-vars.mjs](scripts/phase4-railway-vars.mjs) — with `RAILWAY_API_TOKEN`, `RAILWAY_PROJECT_ID`, `RAILWAY_ENVIRONMENT_ID`, `RAILWAY_SERVICE_ID` and Phase 4 vars in env (or .env), run `pnpm run phase4:railway-vars` to push variables without the dashboard. Uses Railway `variableCollectionUpsert` (replace: false).
+- **Verification:** `railway status` → project careerswarm, environment production, service careerswarm-app. `pnpm run config:check` reports local .env state (OPENAI_API_KEY set; SENTRY_DSN, S3, Stripe, Redis optional/missing as expected until user completes steps). To finish Phase 4: follow docs/PHASE_4_CONFIG_WALKTHROUGH.md Step 1–4, set vars (dashboard or phase4:railway-vars), then `railway redeploy`.
+
+### This session (README + OpenClaw Phase 4 + user role)
+
+- **README — who does what:** [README.md](README.md) now states that **Cursor and OpenClaw do all technical work**; the user never runs terminal commands, edits code, or configures servers. New section **“What you need to do (no technical skill required)”**: (1) Have accounts (OpenAI, Stripe, Cloudflare, Sentry, Railway, GitHub). (2) When the assistant asks for a key/ID, open the link given, copy the value named, paste where instructed (chat or file). (3) If a browser opens for a one-time token (e.g. Stripe/Sentry), sign in, copy the token, paste back when prompted. (4) GitHub secrets only if asked: repo Settings → Secrets → New secret, add the name/value the assistant gives. Env vars, deployment, testing, and contributing sections updated to say the assistant runs them; user only provides keys when asked.
+- **OpenClaw Phase 4:** [OPENCLAW_HANDOFF.md](OPENCLAW_HANDOFF.md) has a **“Phase 4 config — Assigned to OpenClaw”** block. OpenClaw can run Steps 1–4 in order **if** the user has provided credentials (Stripe login or keys, S3/R2 token, Sentry DSN, Railway API token + project/env/service IDs in .env or env). Prerequisites and paste-in prompt for OpenClaw are in the handoff; OpenClaw appends one handoff block with what ran and what still needs the user.
+- **Takeaway:** Human does only non-automatable steps: create accounts, copy keys from dashboards when asked, paste where the assistant says. No technical expertise required.

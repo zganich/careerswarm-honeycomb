@@ -313,3 +313,27 @@ Append your analysis to OPENCLAW_HANDOFF.md in the handoff format (When, Agent, 
 - **What failed:** None.
 - **What changed:** `server/roaster.test.ts` — integration test skips when API returns SERVICE_UNAVAILABLE (invalid key or rate limit) so CI and local `pnpm test` pass without OPENAI_API_KEY. Committed c4b8704. ship:check:full: 47 passed, 5 skipped.
 - **Ready for:** N/A (done).
+
+---
+
+## Phase 4 config — Assigned to OpenClaw (Steps 1–4 in order)
+
+**Can OpenClaw do it?** Yes, **if** credentials are available. OpenClaw can run the CLI commands and the Railway vars script. It **cannot** create Stripe/Cloudflare/Sentry accounts or obtain secrets; the user must do one-time auth and provide values (see Prerequisites below).
+
+**Prerequisites (user must do once before or provide):**
+
+1. **Stripe:** Either (a) run `stripe login` in the workspace so OpenClaw can run `stripe products create` / `stripe prices create`, and get **Secret key** from Stripe Dashboard → API keys; or (b) create the $29/mo product and price in the dashboard and have STRIPE_SECRET_KEY + STRIPE_PRO_PRICE_ID ready.
+2. **S3/R2:** Create bucket and API token (Cloudflare R2 or AWS); have S3_BUCKET, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY (and S3_ENDPOINT for R2) ready.
+3. **Sentry:** Get DSN from https://careerswarm.sentry.io → careerswarm-backend → Client Keys (DSN); have SENTRY_DSN ready.
+4. **Railway API:** Create token at https://railway.com/account/tokens; get project ID, environment ID, service ID (e.g. `railway status` or dashboard Cmd+K). Set RAILWAY*API_TOKEN, RAILWAY_PROJECT_ID, RAILWAY_ENVIRONMENT_ID, RAILWAY_SERVICE_ID and the Phase 4 vars (STRIPE*_, SENTRY*DSN, S3*_, optionally REDIS_URL) in `.env` or environment so `pnpm run phase4:railway-vars` can push them.
+
+**OpenClaw task (paste into OpenClaw main or Ship):**
+
+Execute Phase 4 config Steps 1–4 in order per [docs/PHASE_4_CONFIG_WALKTHROUGH.md](docs/PHASE_4_CONFIG_WALKTHROUGH.md).
+
+1. **Step 1 — Stripe Pro:** If Stripe CLI is logged in (`stripe login` already run): run `stripe products create --name="CareerSwarm Pro"`, then `stripe prices create --product=prod_XXX --currency=usd --recurring-interval=month --unit-amount=2900` (use the product id from output). If not logged in, skip CLI and note "User must create product/price in Stripe Dashboard or run stripe login." User must set STRIPE*SECRET_KEY and STRIPE_PRO_PRICE_ID (in .env or Railway dashboard). Then push vars: run `pnpm run phase4:railway-vars` (requires RAILWAY*\* and Phase 4 vars in env). Redeploy: `railway redeploy`. Verify: open https://careerswarm.com/pricing and confirm "Upgrade to Pro" goes to Stripe Checkout.
+2. **Step 2 — S3:** User must have created bucket and credentials. Push S3\_\* via `pnpm run phase4:railway-vars` (if in env) or note "User must set S3_BUCKET, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY in Railway." Redeploy. Verify: sign in, onboarding upload a resume — no "Storage not configured" error.
+3. **Step 3 — Sentry:** Push SENTRY_DSN via `pnpm run phase4:railway-vars` or note "User must set SENTRY_DSN in Railway." Redeploy. Run `railway logs | grep -i sentry` — expect "Sentry initialized."
+4. **Step 4 — Redis (optional):** Only if user wants GTM worker. Run `railway add` and choose Redis; or note "User can add Redis in dashboard and set REDIS_URL." Redeploy if vars changed.
+
+After each step (or at end): run `pnpm run config:check` and `railway variable list` to report what is set. Append to this file (OPENCLAW_HANDOFF.md) one block: When, Agent, What ran, What failed, What changed, Ready for. If any step could not be completed due to missing credentials, list exactly what the user must provide so they or Cursor can finish. Do not commit.

@@ -25,6 +25,8 @@
     "validate": "tsx scripts/validate-production.mjs",
     "verify-env": "node scripts/verify-env.mjs",
     "doctor": "node scripts/doctor.mjs",
+    "config:check": "node scripts/setup-checklist.mjs",
+    "phase4:railway-vars": "node scripts/phase4-railway-vars.mjs",
     "monitor": "node scripts/monitor.mjs",
     "monitor:watch": "node scripts/monitor.mjs --watch",
     "test:cloudflare": "node scripts/test-cloudflare-api.mjs",

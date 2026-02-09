@@ -185,19 +185,51 @@ If missing, `storagePut` throws: "Storage not configured: set S3_BUCKET, S3_ACCE
 
 ---
 
+## 6. Redis (Optional — GTM pipeline worker)
+
+**Impact:** Only needed if you run the GTM pipeline worker (e.g. background job processing). The main app (Roast, onboarding, Jobs, Applications) does not require Redis.
+
+### Steps (if you need Redis):
+
+1. Create a Redis instance (e.g. Railway Redis, Upstash, Redis Cloud).
+2. **Set in Railway Variables:**
+   - `REDIS_URL` = full URL (e.g. `redis://default:xxx@xxx.railway.app:port`)  
+     **or**
+   - `REDIS_HOST` (+ optional `REDIS_PORT`, default 6379).
+
+3. Redeploy: `railway redeploy`
+
+The app uses Redis only for queue/cache when `REDIS_URL` or `REDIS_HOST` is set (`server/cache.ts`, `server/queue.ts`). If unset, GTM worker features are skipped; no action required otherwise.
+
+---
+
 ## Quick Reference
 
-| Item                 | Where to Configure | Required For                   |
-| -------------------- | ------------------ | ------------------------------ |
-| OPENAI_API_KEY       | Railway Variables  | AI (Roast, extraction, Tailor) |
-| S3_BUCKET            | Railway Variables  | Onboarding upload, Assembler   |
-| S3_ACCESS_KEY_ID     | Railway Variables  | Onboarding upload, Assembler   |
-| S3_SECRET_ACCESS_KEY | Railway Variables  | Onboarding upload, Assembler   |
-| STRIPE_SECRET_KEY    | Railway Variables  | Pro checkout                   |
-| STRIPE_PRO_PRICE_ID  | Railway Variables  | Pro checkout                   |
-| TEST_USER_EMAIL      | GitHub Secrets     | CI E2E tests                   |
-| TEST_USER_PASSWORD   | GitHub Secrets     | CI E2E tests                   |
-| SENTRY_DSN           | Railway Variables  | Error monitoring               |
+| Item                    | Where to Configure | Required For                   |
+| ----------------------- | ------------------ | ------------------------------ |
+| OPENAI_API_KEY          | Railway Variables  | AI (Roast, extraction, Tailor) |
+| S3_BUCKET               | Railway Variables  | Onboarding upload, Assembler   |
+| S3_ACCESS_KEY_ID        | Railway Variables  | Onboarding upload, Assembler   |
+| S3_SECRET_ACCESS_KEY    | Railway Variables  | Onboarding upload, Assembler   |
+| STRIPE_SECRET_KEY       | Railway Variables  | Pro checkout                   |
+| STRIPE_PRO_PRICE_ID     | Railway Variables  | Pro checkout                   |
+| TEST_USER_EMAIL         | GitHub Secrets     | CI E2E tests                   |
+| TEST_USER_PASSWORD      | GitHub Secrets     | CI E2E tests                   |
+| SENTRY_DSN              | Railway Variables  | Error monitoring               |
+| REDIS_URL or REDIS_HOST | Railway Variables  | GTM pipeline worker (optional) |
+
+---
+
+## Phase 4 complete when
+
+You have **finished Phase 4** when:
+
+1. **Stripe Pro (optional):** `STRIPE_SECRET_KEY` and `STRIPE_PRO_PRICE_ID` are set in Railway → "Upgrade to Pro" on `/pricing` redirects to Stripe Checkout.
+2. **S3:** `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY` are set → onboarding upload and Assembler packages work (no "Storage not configured").
+3. **Sentry:** `SENTRY_DSN` is set → `railway logs | grep -i sentry` shows "Sentry initialized."
+4. **Redis (optional):** Only if you use the GTM worker — `REDIS_URL` or `REDIS_HOST` set.
+
+Use [PHASE_4_CONFIG_WALKTHROUGH.md](./PHASE_4_CONFIG_WALKTHROUGH.md) for CLI-first steps. After changing variables, run `railway redeploy`.
 
 ---
 
@@ -206,6 +238,9 @@ If missing, `storagePut` throws: "Storage not configured: set S3_BUCKET, S3_ACCE
 Run a full verification:
 
 ```bash
+# 0. (Optional) Check which config items are set (uses local .env; for production, set vars in Railway)
+pnpm run config:check
+
 # 1. Check production health
 curl https://careerswarm.com/api/health
 
@@ -217,3 +252,5 @@ npx playwright test tests/production-smoke.spec.ts --config=playwright.productio
 ```
 
 **Estimated time:** 15-20 minutes total
+
+**Step-by-step (CLI-first):** See [docs/PHASE_4_CONFIG_WALKTHROUGH.md](./PHASE_4_CONFIG_WALKTHROUGH.md) for a sequential walkthrough (Stripe → S3 → Sentry → Redis) and token-based automation (Railway API, Sentry auth token).

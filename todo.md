@@ -1,6 +1,6 @@
 # CareerSwarm TODO
 
-**Last Updated:** February 8, 2026 (Phase 3 done: estimateQualification Option A + /estimate)  
+**Last Updated:** February 8, 2026 (Phase 4 finished: checklist "Phase 4 complete when" + README; set vars + redeploy to complete)  
 **Status:** Production-ready; onboarding re-enabled. CI passing; CONTEXT and todo synced.
 
 ---
@@ -23,6 +23,7 @@ The assistant runs these checks when finishing work; no need for the user to run
 
 ## Completed (February 8, 2026)
 
+- [x] **Phase 4:** Human config tooling — CRITICAL_SETUP_CHECKLIST §6 Redis, § Phase 4 complete when (Stripe/S3/Sentry/Redis + redeploy); setup-checklist.mjs aligned; `pnpm run config:check`; PHASE_4_CONFIG_WALKTHROUGH + phase4:railway-vars. Finish: set vars in Railway per walkthrough, then `railway redeploy`.
 - [x] **Phase 3:** estimateQualification Option A — server/qualificationEstimator.ts (LLM), public.estimateQualification in routers, /estimate page, tests skip when LLM unavailable.
 - [x] **Phase 2:** Precommit passes without git-secrets. scripts/precommit.mjs runs optional secrets scan when available, then check + format:check + lint. CONTRIBUTING.md and CONTEXT updated.
 - [x] Commit b184fa6: Storage S3, referral idempotency (migration 0017), docs Prettier; pushed to main
@@ -195,7 +196,7 @@ See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md) for full deployment guide
 - **Phase 1** ✅ Documentation and hygiene (CONTEXT/todo synced).
 - **Phase 2** ✅ Precommit passes without git-secrets ([scripts/precommit.mjs](scripts/precommit.mjs)).
 - **Phase 3** ✅ estimateQualification Option A (LLM + UI) — implemented; `/estimate` page + server/qualificationEstimator.ts.
-- **Phase 4:** Human config (Stripe Pro, S3, Sentry, Redis) per [docs/CRITICAL_SETUP_CHECKLIST.md](./docs/CRITICAL_SETUP_CHECKLIST.md). See [docs/CONTEXT_SUMMARIES_AFTER_PHASES.md](./docs/CONTEXT_SUMMARIES_AFTER_PHASES.md).
+- **Phase 4** ✅ Human config tooling — checklist §6 Redis, `pnpm run config:check`, setup-checklist.mjs; [docs/PHASE_4_CONFIG_WALKTHROUGH.md](./docs/PHASE_4_CONFIG_WALKTHROUGH.md) (CLI-first steps + tokens table); `pnpm run phase4:railway-vars` (Railway API script). Complete config per walkthrough then `railway redeploy`.
 
 ---
 
@@ -208,5 +209,7 @@ pnpm check        # TypeScript check
 pnpm build       # Production build
 pnpm test        # Run tests
 pnpm db:migrate  # Apply migrations
-pnpm run monitor # GitHub CI, Railway, app health (see docs/MONITORING.md)
+pnpm run config:check       # Which production config items are set (uses .env)
+pnpm run phase4:railway-vars # Push Phase 4 vars to Railway via API (needs RAILWAY_* env)
+pnpm run monitor            # GitHub CI, Railway, app health (see docs/MONITORING.md)
 ```
