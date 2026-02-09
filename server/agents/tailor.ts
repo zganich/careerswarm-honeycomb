@@ -1,3 +1,8 @@
+/**
+ * Tailor agent: rewrites the user's resume to align with a target job description.
+ * Job persona (Federal, Tech, Creative, Healthcare, Skilled Trades, Corporate) and
+ * format (A/B/C) are inferred from the JD only; no pre-set industry or format is passed in.
+ */
 import { invokeLLM } from "../_core/llm";
 import { insertAgentMetric } from "../db";
 import { getKeywordHintsForPrompt } from "../atsKeywordScorer";

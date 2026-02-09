@@ -54,9 +54,10 @@ One-place index for all project docs. Use this to find the right doc quickly (hu
 
 ## Product and GTM
 
-| Doc                                                                            | Purpose                                  |
-| ------------------------------------------------------------------------------ | ---------------------------------------- |
-| [CAREERSWARM_GTM_STRATEGY.md](./CAREERSWARM_GTM_STRATEGY.md)                   | GTM strategy and positioning.            |
-| [GTM_PLAN.md](./GTM_PLAN.md)                                                   | GTM plan.                                |
-| [CAREERSWARM_SUMMARY_FOR_MARKETING.md](./CAREERSWARM_SUMMARY_FOR_MARKETING.md) | Summary for marketing.                   |
-| [HUMAN_TESTING_REPORT.md](./HUMAN_TESTING_REPORT.md)                           | Human testing report (production flows). |
+| Doc                                                                            | Purpose                                                             |
+| ------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
+| [TAILOR_AND_INDUSTRY.md](./TAILOR_AND_INDUSTRY.md)                             | Tailor agent: persona/format inferred from JD only; sectoral rules. |
+| [CAREERSWARM_GTM_STRATEGY.md](./CAREERSWARM_GTM_STRATEGY.md)                   | GTM strategy and positioning.                                       |
+| [GTM_PLAN.md](./GTM_PLAN.md)                                                   | GTM plan.                                                           |
+| [CAREERSWARM_SUMMARY_FOR_MARKETING.md](./CAREERSWARM_SUMMARY_FOR_MARKETING.md) | Summary for marketing.                                              |
+| [HUMAN_TESTING_REPORT.md](./HUMAN_TESTING_REPORT.md)                           | Human testing report (production flows).                            |

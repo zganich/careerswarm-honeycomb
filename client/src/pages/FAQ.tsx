@@ -15,7 +15,7 @@ const faqs: FAQItem[] = [
   {
     question: "How is this different from other resume builders?",
     answer:
-      "Most resume builders are just formatting tools. Careerswarm focuses on the quality of your content first. We use the Google XYZ format and STAR methodology to help you capture achievements with metrics and impact. Our Impact Meter gives you real-time feedback on achievement quality, and our AI matches your best evidence to each job description automatically.",
+      "Most resume builders are just formatting tools. Careerswarm focuses on the quality of your content first. We use the Google XYZ format and STAR methodology to help you capture achievements with metrics and impact. For tech and engineering roles we emphasize the Google XYZ formula; for other roles we use a similar quantified CAR (Context–Action–Result) structure. Our Impact Meter gives you real-time feedback on achievement quality, and our AI matches your best evidence to each job description automatically.",
   },
   {
     question: "What is the STAR methodology?",
@@ -25,7 +25,7 @@ const faqs: FAQItem[] = [
   {
     question: "What is the Google XYZ format?",
     answer:
-      "The XYZ format is Google's recommended achievement structure: 'Accomplished [X] as measured by [Y] by doing [Z]'. Our AI automatically transforms your STAR stories into this format, which is proven to pass ATS systems and catch recruiter attention.",
+      "The XYZ format is Google's recommended achievement structure: 'Accomplished [X] as measured by [Y] by doing [Z]'. For tech and engineering roles, our AI transforms your STAR stories into this format. For other industries we use a similar quantified CAR (Context–Action–Result) structure. Both are proven to pass ATS systems and catch recruiter attention.",
   },
   {
     question: "How does the Impact Meter work?",
@@ -100,7 +100,7 @@ const faqs: FAQItem[] = [
   {
     question: "Is this ATS-friendly?",
     answer:
-      "Yes! We use ATS-safe formatting (no tables, no images, Arial/Calibri fonts, semantic keywords). Our XYZ format is optimized for both ATS parsing and human readability. Resumes are designed for compatibility with major ATS systems like Taleo, Workday, and Greenhouse. Each application package shows an ATS keyword match score so you can see how well your resume aligns with the job description.",
+      "Yes! We use ATS-safe formatting (no tables, no images, Arial/Calibri fonts, semantic keywords). We optimize achievement phrasing by role: Google XYZ for tech and engineering, and CAR (Context–Action–Result) for other roles—both tuned for ATS parsing and human readability. Resumes are designed for compatibility with major ATS systems like Taleo, Workday, and Greenhouse. Each application package shows an ATS keyword match score so you can see how well your resume aligns with the job description.",
   },
   {
     question: "Can I export my resumes?",

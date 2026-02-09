@@ -14,8 +14,11 @@
  */
 export const CompressedPrompts = {
   /**
-   * STAR to XYZ transformation
-   * Original: ~500 tokens → Compressed: ~150 tokens (70% reduction)
+   * STAR to XYZ transformation (generic template).
+   * Original: ~500 tokens → Compressed: ~150 tokens (70% reduction).
+   * Not currently used by any router; XYZ is applied in Tailor only for Tech & Engineering.
+   * If you add a standalone "transform to XYZ" feature (e.g. achievements.transform),
+   * make it industry-aware or reuse the sectoral rules from server/agents/tailor.ts.
    */
   STAR_TO_XYZ: `Transform STAR → Google XYZ format.
 Input: {situation}, {task}, {action}, {result}
