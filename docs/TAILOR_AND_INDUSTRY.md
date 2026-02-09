@@ -33,21 +33,21 @@ Tailor infers career level from the user's work history (total years and number 
 
 **By career level (private sector default):**
 
-| Level | Experience | Target length | Cap |
-|-------|------------|---------------|-----|
-| Entry | 0–5 years | 1 page | Do not exceed 1 page |
-| Mid-career | 5–10+ years | 1–2 pages | Do not exceed 2 pages |
-| Senior / Executive | 10–20+ years | 2–3 pages | Do not exceed 3 pages |
+| Level              | Experience   | Target length | Cap                   |
+| ------------------ | ------------ | ------------- | --------------------- |
+| Entry              | 0–5 years    | 1 page        | Do not exceed 1 page  |
+| Mid-career         | 5–10+ years  | 1–2 pages     | Do not exceed 2 pages |
+| Senior / Executive | 10–20+ years | 2–3 pages     | Do not exceed 3 pages |
 
 **By industry (overrides or tightens the above):**
 
-| Persona | Page rule | Notes |
-|---------|-----------|-------|
-| Federal (USA) | 2-page **max** (hard) | Policy; longer = ineligible |
-| Academic / Research | 2–4+ pages acceptable | CV-style; senior faculty can be longer |
-| Legal | 1–2 pages | 1 page preferred for many firms |
-| Education / Nonprofit | 1 page preferred; 2 OK with 10+ years | |
-| Tech, Creative, Healthcare, Skilled Trades, Corporate | Use career-level table above | 1 page entry, 1–2 mid, 2–3 senior/exec |
+| Persona                                               | Page rule                             | Notes                                  |
+| ----------------------------------------------------- | ------------------------------------- | -------------------------------------- |
+| Federal (USA)                                         | 2-page **max** (hard)                 | Policy; longer = ineligible            |
+| Academic / Research                                   | 2–4+ pages acceptable                 | CV-style; senior faculty can be longer |
+| Legal                                                 | 1–2 pages                             | 1 page preferred for many firms        |
+| Education / Nonprofit                                 | 1 page preferred; 2 OK with 10+ years |                                        |
+| Tech, Creative, Healthcare, Skilled Trades, Corporate | Use career-level table above          | 1 page entry, 1–2 mid, 2–3 senior/exec |
 
 ## Standalone STAR → XYZ template
 

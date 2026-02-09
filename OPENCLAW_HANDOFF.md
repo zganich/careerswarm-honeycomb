@@ -299,3 +299,10 @@ Append your analysis to OPENCLAW_HANDOFF.md in the handoff format (When, Agent, 
 - **What failed:** None.
 - **What changed:** Committed Ship agent test fixes (analytics, profile-sections, agent-metrics: skip when DATABASE_URL localhost/127.0.0.1) + OPENCLAW_HANDOFF ($5/day prompt, Ship run entry). Pushed to main; railway redeploy triggered.
 - **Ready for:** N/A (done). **Stripe Pro:** Config remains manual — see [docs/CRITICAL_SETUP_CHECKLIST.md](docs/CRITICAL_SETUP_CHECKLIST.md) § 5 (create $29/mo product, set STRIPE_SECRET_KEY + STRIPE_PRO_PRICE_ID in Railway, redeploy).
+
+- **When:** 2026-02-08
+- **Agent:** Cursor
+- **What ran:** OPENCLAW_HANDOFF review, precommit (check + format:check + lint; git-secrets not installed locally).
+- **What failed:** format:check (3 files)
+- **What changed:** Prettier --write on `.cursor/plans/add_industry_resume_formats.plan.md`, `CONTEXT_FOR_NEW_CHAT.md`, `docs/TAILOR_AND_INDUSTRY.md`. No pending handoff commits; $5/day Business analysis still pending.
+- **Ready for:** review and commit.
