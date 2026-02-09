@@ -306,3 +306,10 @@ Append your analysis to OPENCLAW_HANDOFF.md in the handoff format (When, Agent, 
 - **What failed:** format:check (3 files)
 - **What changed:** Prettier --write on `.cursor/plans/add_industry_resume_formats.plan.md`, `CONTEXT_FOR_NEW_CHAT.md`, `docs/TAILOR_AND_INDUSTRY.md`. No pending handoff commits; $5/day Business analysis still pending.
 - **Ready for:** review and commit.
+
+- **When:** 2026-02-08
+- **Agent:** Cursor
+- **What ran:** Roaster test commit (plan), precommit (check + format:check + lint), ship:check:full.
+- **What failed:** None.
+- **What changed:** `server/roaster.test.ts` — integration test skips when API returns SERVICE_UNAVAILABLE (invalid key or rate limit) so CI and local `pnpm test` pass without OPENAI_API_KEY. Committed c4b8704. ship:check:full: 47 passed, 5 skipped.
+- **Ready for:** N/A (done).
