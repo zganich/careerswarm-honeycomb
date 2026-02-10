@@ -86,11 +86,13 @@ OpenClaw is a local-first AI assistant you run (Gateway + agent). It can:
      {
        "agents": {
          "defaults": {
-           "workspace": "/Users/jamesknight/GitHub/careerswarm-honeycomb"
+           "workspace": "/Users/jamesknight/GitHub/careerswarm-honeycomb",
+           "model": "claude-sonnet-4-5"
          }
        }
      }
      ```
+     **Model:** This project requires **Claude Sonnet 4.5 only**. Set `agents.defaults.model` (or `agents.defaults.model.primary`) to `claude-sonnet-4-5`. Do not use Opus, Haiku, or other models for CareerSwarm unless you explicitly want to override.
    - Or use a **named workspace** and open this repo when you want OpenClaw to work on CareerSwarm.
 
 3. **Context file:** When the workspace is this repo, OpenClaw will see **OPENCLAW.md** in the repo root (project summary, key paths, and sync points). Use it as the main briefing for “work in careerswarm-honeycomb.”

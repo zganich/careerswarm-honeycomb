@@ -109,7 +109,7 @@ Current focus: Feature completeness. Goal: (1) Auth redirect on onboarding route
 ### After Run 2
 
 - **You or Cursor:** Read OPENCLAW_HANDOFF.md from the bottom. Merge Client + Docs + Server + Review; run `pnpm run ship:check:full`; commit.
-- **Human:** Complete config per checklist (Storage, Stripe) in Railway. See CRITICAL_SETUP_CHECKLIST.md § 4.
+- **Human:** Complete config per checklist (Storage § 4, Stripe § 5) in Railway. See CRITICAL_SETUP_CHECKLIST.md.
 
 ---
 

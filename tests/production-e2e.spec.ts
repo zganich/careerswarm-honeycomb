@@ -746,6 +746,7 @@ test.describe("Payment Flow", () => {
     );
   });
 
+  // In production, when Stripe is configured we expect Stripe URL after clicking Pro; when not configured, we may land on /pricing with error toast.
   test("Pro CTA button navigates correctly", async ({ page }) => {
     await page.goto(`${BASE_URL}/pricing`);
     await page.waitForLoadState("networkidle");

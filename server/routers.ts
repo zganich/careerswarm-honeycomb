@@ -1650,158 +1650,180 @@ Each superpower should:
 
         const startTime = Date.now();
 
-        // Get opportunity
-        const opportunity = await db.getOpportunityById(input.opportunityId);
-        if (!opportunity) {
+        try {
+          // Get opportunity
+          const opportunity = await db.getOpportunityById(input.opportunityId);
+          if (!opportunity) {
+            throw new TRPCError({
+              code: "NOT_FOUND",
+              message: "Opportunity not found",
+            });
+          }
+
+          // Get user profile and preferences
+          const [
+            profile,
+            workExperiences,
+            achievements,
+            skills,
+            superpowers,
+            preferences,
+            educationList,
+          ] = await Promise.all([
+            db.getUserProfile(user.id),
+            db.getWorkExperiences(user.id),
+            db.getAchievements(user.id),
+            db.getSkills(user.id),
+            db.getSuperpowers(user.id),
+            db.getTargetPreferences(user.id),
+            db.getEducation(user.id),
+          ]);
+
+          const userProfile = {
+            user,
+            profile,
+            workExperiences,
+            achievements,
+            skills,
+            superpowers,
+          };
+
+          // Import all agents
+          const { ProfilerAgent } = await import("./agents/profiler");
+          const { QualifierAgent, HunterAgent, ScribeAgent, AssemblerAgent } =
+            await import("./agents/remaining");
+          const { tailorResume } = await import("./agents/tailor");
+          const { scoreResumeAgainstJD } = await import("./atsKeywordScorer");
+
+          // AGENT 2: Profiler - Analyze company
+          const profiler = new ProfilerAgent(user.id, userProfile);
+          const analysis = await profiler.execute(opportunity);
+
+          // AGENT 3: Qualifier - Verify fit
+          const qualifier = new QualifierAgent(user.id, preferences);
+          const qualification = await qualifier.execute(opportunity);
+
+          if (!qualification.qualified) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: `Opportunity not qualified: ${qualification.reasons.join(", ")}`,
+            });
+          }
+
+          // AGENT 4: Hunter - Find contacts
+          const hunter = new HunterAgent(user.id);
+          const contacts = await hunter.execute(opportunity);
+
+          // AGENT 5: Tailor - Generate resume (unified tailorResume with addendum rules)
+          const tailorUserProfile = {
+            fullName: user.name || "User",
+            email: user.email || "",
+            phone: (profile as any)?.phone || "",
+            location: (profile as any)?.locationCity || "",
+            linkedIn: (profile as any)?.linkedinUrl || "",
+            workExperience: workExperiences.map((exp: any) => ({
+              company: exp.companyName,
+              title: exp.jobTitle,
+              startDate: exp.startDate?.toISOString?.()?.split("T")[0] ?? "",
+              endDate: exp.endDate
+                ? (exp.endDate.toISOString?.()?.split("T")[0] ?? "")
+                : "Present",
+              achievements: achievements
+                .filter((ach: any) => ach.workExperienceId === exp.id)
+                .map((ach: any) => ach.description),
+            })),
+            skills: skills.map((s: any) => s.skillName),
+            education: educationList.map((e: any) => ({
+              institution: e.institution,
+              degree: e.degreeType || "",
+              field: e.fieldOfStudy || "",
+              graduationYear: String(e.graduationYear ?? ""),
+            })),
+          };
+          const resumeResult = await tailorResume({
+            userProfile: tailorUserProfile,
+            jobDescription: opportunity.jobDescription || "",
+            companyName: opportunity.companyName,
+            roleTitle: opportunity.roleTitle,
+          });
+          const resume = resumeResult.resumeMarkdown;
+
+          // Compute ATS keyword score for storage
+          const { score: atsScore } = scoreResumeAgainstJD(
+            resume,
+            opportunity.jobDescription || ""
+          );
+
+          // AGENT 6: Scribe - Write outreach
+          const scribe = new ScribeAgent(user.id, userProfile);
+          const outreach = await scribe.execute(
+            opportunity,
+            analysis,
+            contacts
+          );
+
+          // AGENT 7: Assembler - Package everything
+          const assembler = new AssemblerAgent(user.id);
+          const applicationPackage = await assembler.execute({
+            opportunity,
+            analysis,
+            qualification,
+            contacts,
+            resume,
+            outreach,
+          });
+
+          // Create application record
+          const applicationId = await db.createApplication({
+            userId: user.id,
+            opportunityId: opportunity.id,
+            status: "draft",
+            tailoredResumeText: resume,
+            coverLetterText: outreach.coverLetter,
+            linkedinMessage: outreach.linkedinMessage,
+            emailTemplate: outreach.emailOutreach,
+            matchScore: qualification.matchScore,
+            analytics: { atsScore },
+          });
+
+          if (applicationId == null) {
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message:
+                "Could not save application. Please try again or generate from Application detail.",
+            });
+          }
+
+          // Increment application count for free tier users
+          await db.incrementApplicationCount(user.id);
+
+          // Log agent execution
+          await db.logAgentExecution({
+            userId: user.id,
+            agentName: "QuickApply",
+            executionType: "full_pipeline",
+            inputData: JSON.stringify({ opportunityId: input.opportunityId }),
+            outputData: JSON.stringify({ applicationId: applicationId }),
+            executionTimeMs: Date.now() - startTime,
+            status: "success",
+          });
+
+          return {
+            applicationId: applicationId ?? 0,
+            matchScore: qualification.matchScore,
+            checklist: applicationPackage.checklist,
+            nextSteps: applicationPackage.nextSteps,
+            estimatedTime: applicationPackage.estimatedTimeToApply,
+          };
+        } catch (e) {
+          if (e instanceof TRPCError) throw e;
+          console.error("[Quick Apply] Failed:", e);
           throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "Opportunity not found",
+            code: "INTERNAL_SERVER_ERROR",
+            message:
+              "Package generation failed. Please try again or generate from Application detail.",
           });
         }
-
-        // Get user profile and preferences
-        const [
-          profile,
-          workExperiences,
-          achievements,
-          skills,
-          superpowers,
-          preferences,
-          educationList,
-        ] = await Promise.all([
-          db.getUserProfile(user.id),
-          db.getWorkExperiences(user.id),
-          db.getAchievements(user.id),
-          db.getSkills(user.id),
-          db.getSuperpowers(user.id),
-          db.getTargetPreferences(user.id),
-          db.getEducation(user.id),
-        ]);
-
-        const userProfile = {
-          user,
-          profile,
-          workExperiences,
-          achievements,
-          skills,
-          superpowers,
-        };
-
-        // Import all agents
-        const { ProfilerAgent } = await import("./agents/profiler");
-        const { QualifierAgent, HunterAgent, ScribeAgent, AssemblerAgent } =
-          await import("./agents/remaining");
-        const { tailorResume } = await import("./agents/tailor");
-        const { scoreResumeAgainstJD } = await import("./atsKeywordScorer");
-
-        // AGENT 2: Profiler - Analyze company
-        const profiler = new ProfilerAgent(user.id, userProfile);
-        const analysis = await profiler.execute(opportunity);
-
-        // AGENT 3: Qualifier - Verify fit
-        const qualifier = new QualifierAgent(user.id, preferences);
-        const qualification = await qualifier.execute(opportunity);
-
-        if (!qualification.qualified) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: `Opportunity not qualified: ${qualification.reasons.join(", ")}`,
-          });
-        }
-
-        // AGENT 4: Hunter - Find contacts
-        const hunter = new HunterAgent(user.id);
-        const contacts = await hunter.execute(opportunity);
-
-        // AGENT 5: Tailor - Generate resume (unified tailorResume with addendum rules)
-        const tailorUserProfile = {
-          fullName: user.name || "User",
-          email: user.email || "",
-          phone: (profile as any)?.phone || "",
-          location: (profile as any)?.locationCity || "",
-          linkedIn: (profile as any)?.linkedinUrl || "",
-          workExperience: workExperiences.map((exp: any) => ({
-            company: exp.companyName,
-            title: exp.jobTitle,
-            startDate: exp.startDate?.toISOString?.()?.split("T")[0] ?? "",
-            endDate: exp.endDate
-              ? (exp.endDate.toISOString?.()?.split("T")[0] ?? "")
-              : "Present",
-            achievements: achievements
-              .filter((ach: any) => ach.workExperienceId === exp.id)
-              .map((ach: any) => ach.description),
-          })),
-          skills: skills.map((s: any) => s.skillName),
-          education: educationList.map((e: any) => ({
-            institution: e.institution,
-            degree: e.degreeType || "",
-            field: e.fieldOfStudy || "",
-            graduationYear: String(e.graduationYear ?? ""),
-          })),
-        };
-        const resumeResult = await tailorResume({
-          userProfile: tailorUserProfile,
-          jobDescription: opportunity.jobDescription || "",
-          companyName: opportunity.companyName,
-          roleTitle: opportunity.roleTitle,
-        });
-        const resume = resumeResult.resumeMarkdown;
-
-        // Compute ATS keyword score for storage
-        const { score: atsScore } = scoreResumeAgainstJD(
-          resume,
-          opportunity.jobDescription || ""
-        );
-
-        // AGENT 6: Scribe - Write outreach
-        const scribe = new ScribeAgent(user.id, userProfile);
-        const outreach = await scribe.execute(opportunity, analysis, contacts);
-
-        // AGENT 7: Assembler - Package everything
-        const assembler = new AssemblerAgent(user.id);
-        const applicationPackage = await assembler.execute({
-          opportunity,
-          analysis,
-          qualification,
-          contacts,
-          resume,
-          outreach,
-        });
-
-        // Create application record
-        const applicationId = await db.createApplication({
-          userId: user.id,
-          opportunityId: opportunity.id,
-          status: "draft",
-          tailoredResumeText: resume,
-          coverLetterText: outreach.coverLetter,
-          linkedinMessage: outreach.linkedinMessage,
-          emailTemplate: outreach.emailOutreach,
-          matchScore: qualification.matchScore,
-          analytics: { atsScore },
-        });
-
-        // Increment application count for free tier users
-        await db.incrementApplicationCount(user.id);
-
-        // Log agent execution
-        await db.logAgentExecution({
-          userId: user.id,
-          agentName: "QuickApply",
-          executionType: "full_pipeline",
-          inputData: JSON.stringify({ opportunityId: input.opportunityId }),
-          outputData: JSON.stringify({ applicationId: applicationId }),
-          executionTimeMs: Date.now() - startTime,
-          status: "success",
-        });
-
-        return {
-          applicationId: applicationId ?? 0,
-          matchScore: qualification.matchScore,
-          checklist: applicationPackage.checklist,
-          nextSteps: applicationPackage.nextSteps,
-          estimatedTime: applicationPackage.estimatedTimeToApply,
-        };
       }),
 
     // Get application notes

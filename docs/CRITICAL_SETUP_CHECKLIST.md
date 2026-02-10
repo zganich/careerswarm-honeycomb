@@ -152,6 +152,8 @@ The app uses **S3-compatible** object storage (AWS S3, Cloudflare R2, or Backbla
 
 If missing, `storagePut` throws: "Storage not configured: set S3_BUCKET, S3_ACCESS_KEY_ID, and S3_SECRET_ACCESS_KEY". See [ONBOARDING_DEEP_DIVE.md](./ONBOARDING_DEEP_DIVE.md) § E2E Verification.
 
+**Package PDFs:** Assembler generates PDFs via Chromium. If package generation fails in production (PDF missing in ZIP), see [DEBUGGING.md](./DEBUGGING.md) — Railway may need Chromium in the container.
+
 ---
 
 ## 5. Stripe Pro (Optional — for paid upgrades)
@@ -181,7 +183,7 @@ If missing, `storagePut` throws: "Storage not configured: set S3_BUCKET, S3_ACCE
 ### Verify
 
 - Hit the 5-application limit on the Jobs/Dashboard flow → UpgradeModal should open instead of a generic error.
-- Click "Upgrade to Pro" in UpgradeModal or on `/pricing` → redirects to Stripe Checkout (when logged in).
+- Signed in: open `/pricing` → click "Upgrade to Pro" or "Start Pro Trial" → confirm redirect to Stripe Checkout URL. If misconfigured, a clear error toast appears instead.
 
 ---
 

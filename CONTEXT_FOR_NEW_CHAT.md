@@ -119,7 +119,7 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 
 **Production:** Live at careerswarm.com; CI passing; E2E 47 passed (5 skipped); smoke 22. Stripe Pro config pending (manual: create product, set STRIPE_PRO_PRICE_ID). Storage S3-compatible; referral flywheel implemented.
 
-**Last session:** Login and Stripe checkout fix (Pricing + UpgradeModal: null checkoutUrl handling, error toasts, returnTo encoding; stripe-router validates session.url; E2E waits for same-tab navigation instead of popup).
+**Last session:** Stripe price fix (require STRIPE_PRO_PRICE_ID, clear error); UpgradeModal returnTo = current page; formatTRPCError passes through single-line config errors; plan + screenshot committed.
 
 **Verification commands:**
 
@@ -274,7 +274,7 @@ railway status | logs | variable list | redeploy | up | open
   - **Review.tsx:** Copy updated from "Review and edit as needed" → "Review below — you can edit any section later from your dashboard" (no inline editing on Review).
   - **Extraction.tsx:** When "No processed resumes found" error, redirects to `/onboarding/upload` with toast "No resumes to process. Please upload your resume first."
 - **Clarifications:** 5 app limit = 5 **applications** per month for free tier (enforced in `applications.quickApply`); no "15 uploads" limit.
-- **Deferred:** 10MB server-side file size enforcement (client shows 10MB; server `uploadResume` does not enforce — documented in ONBOARDING_DEEP_DIVE).
+- **10MB:** Server-side enforcement in `server/routers.ts` (`uploadResume`, MAX_RESUME_SIZE_BYTES); ONBOARDING_DEEP_DIVE documents it.
 
 ### Status
 
@@ -390,7 +390,7 @@ railway status | logs | variable list | redeploy | up | open
 
 ---
 
-_Last updated: 2026-02-09. Login and Stripe checkout fix: Pricing + UpgradeModal handle null checkoutUrl, toast errors, encode returnTo; stripe-router validates session.url; E2E Pro CTA test waits for same-tab navigation. Use this file to restore context._
+_Last updated: 2026-02-09. Stripe price required (no fallback); UpgradeModal returnTo = current page; formatTRPCError passes single-line config errors; plan + screenshot in repo. Use this file to restore context._
 
 ---
 
@@ -464,3 +464,13 @@ _Last updated: 2026-02-09. Login and Stripe checkout fix: Pricing + UpgradeModal
 - **Stripe router** ([server/stripe-router.ts](server/stripe-router.ts)): After `checkout.sessions.create()`, if `session.url` is null, throw TRPCError with "Stripe checkout URL not returned—verify price ID and Stripe config".
 - **E2E** ([tests/production-e2e.spec.ts](tests/production-e2e.spec.ts)): Pro/Upgrade CTA test now uses `page.waitForURL()` for same-tab checkout redirect instead of `waitForEvent("popup")` (checkout does not open a popup).
 - **Note:** E2E still lands on "pricing" in production; Stripe config (STRIPE_PRO_PRICE_ID, key mode) may need verification. New error handling surfaces failures instead of silent no-op.
+
+---
+
+## Last Session Summary (2026-02-09) — Stripe price fix, returnTo, config errors, commit
+
+- **Stripe price (server):** [server/stripe-router.ts](server/stripe-router.ts) — No fallback to `"price_pro_monthly"`. Require `STRIPE_PRO_PRICE_ID` (and reject placeholder); throw TRPCError with "Pro checkout is not configured. Set STRIPE_PRO_PRICE_ID in Railway...". [server/products.ts](server/products.ts) uses `STRIPE_PRO_PRICE_ID`; [server/stripe-products.ts](server/stripe-products.ts) Pro `priceId` is null when unset. [server/stripe-router.test.ts](server/stripe-router.test.ts) sets env in beforeEach/afterEach.
+- **Checkout config:** Stripe CLI used to create Pro product + $29/mo price (test mode). Railway already had STRIPE_SECRET_KEY and STRIPE_PRO_PRICE_ID; redeploy run; health 200.
+- **UpgradeModal returnTo:** [client/src/components/UpgradeModal.tsx](client/src/components/UpgradeModal.tsx) — On UNAUTHORIZED, redirect to login with `returnTo` = current path (pathname + search), not hardcoded `/pricing?upgrade=pro`, so users return to Jobs/Saved/opportunity where they hit the limit.
+- **Config errors in UI:** [client/src/lib/error-formatting.ts](client/src/lib/error-formatting.ts) — For INTERNAL_SERVER_ERROR, pass through single-line server messages (≤400 chars, no stack) so messages like "Pro checkout is not configured. Set STRIPE_PRO_PRICE_ID..." show in toasts instead of generic "Something went wrong".
+- **Commit/push:** c12c22e (Stripe checkout changes), b596246 (.cursor/plans/add_industry_resume_formats.plan.md, pricing-after-login.png). Precommit + unit tests + production smoke passed.

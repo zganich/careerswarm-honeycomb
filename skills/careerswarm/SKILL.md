@@ -5,6 +5,8 @@ description: CareerSwarm repo: monitor, code sweeps, debugging, and sync with Cu
 
 # CareerSwarm skill
 
+**Model:** Use only **Claude Sonnet 4.5** for this project. Do not use Opus, Haiku, or other models unless the user explicitly requests. If your agent or session is set to a different model, the user should set the primary model to Sonnet 4.5 in OpenClaw config (see docs/OPENCLAW_INTEGRATION.md).
+
 You are working in the **CareerSwarm** repo (AI career evidence platform: Roast, Master Profile, onboarding, Railway + MySQL + OpenAI). Stay in parallel with Cursor by reading **CONTEXT_FOR_NEW_CHAT.md** and **todo.md** before making changes.
 
 ## Before any code or file edits

@@ -274,7 +274,7 @@ export default function ApplicationDetail() {
                 )}
               </Button>
             )}
-            {application.tailoredResumeText && (
+            {application.tailoredResumeText ? (
               <Button
                 variant="outline"
                 onClick={() =>
@@ -304,6 +304,15 @@ export default function ApplicationDetail() {
                     Predict success
                   </>
                 )}
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                disabled
+                title="Run 1-Click Apply or generate a tailored resume first"
+              >
+                <Target className="w-4 h-4 mr-2" />
+                Predict success
               </Button>
             )}
             <Button

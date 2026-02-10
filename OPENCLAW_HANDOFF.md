@@ -1,5 +1,7 @@
 # OpenClaw handoff
 
+**Model:** OpenClaw must use only **Claude Sonnet 4.5** for this project. Set the primary model to Sonnet 4.5 in OpenClaw config (e.g. `openclaw configure` or dashboard Agent defaults). See docs/OPENCLAW_INTEGRATION.md.
+
 When an OpenClaw agent finishes work and hands off, it can append a short summary here so you or Cursor can review and commit without re-reading the chat.
 
 **To orchestrate the agent army (e.g. debug sign-in):** Open [docs/OPENCLAW_ORCHESTRATION.md](docs/OPENCLAW_ORCHESTRATION.md), run each agent with its task (or paste the one-shot prompt into main); they append below. You or Cursor merge and commit.
@@ -202,7 +204,7 @@ Full strategy in `docs/MONETIZATION_STRATEGY.md`.
 - [ ] Set `STRIPE_PRO_PRICE_ID` in production env
 - [ ] Run database migration (runs automatically on deploy; see Dockerfile)
 
-**Stripe setup:** See [docs/CRITICAL_SETUP_CHECKLIST.md](docs/CRITICAL_SETUP_CHECKLIST.md) § 4. Stripe Pro for the full manual steps (create product, copy Price ID, set env var, redeploy).
+**Stripe setup:** See [docs/CRITICAL_SETUP_CHECKLIST.md](docs/CRITICAL_SETUP_CHECKLIST.md) § 5 Stripe Pro for the full manual steps (create product, copy Price ID, set env var, redeploy).
 
 **Done:** UpgradeModal is integrated in OpportunityDetailModal; when users hit the 5-app limit and click 1-Click Apply, the upgrade modal opens instead of a generic alert.
 
