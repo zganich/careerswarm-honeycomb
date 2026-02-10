@@ -34,7 +34,7 @@
 
 ## Smoke Coverage (Production)
 
-- Public pages: Home, Login, Roast, Pricing, FAQ, Privacy, Terms, For Recruiters.
+- Public pages: Home, Login, Roast, Pricing, Role fit estimate (`/estimate`), FAQ, Privacy, Terms, For Recruiters.
 - No critical console/network errors on homepage.
 - Mobile: Home and Login responsive.
 

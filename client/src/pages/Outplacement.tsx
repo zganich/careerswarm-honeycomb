@@ -39,8 +39,9 @@ export default function Outplacement() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Send to backend/email
-    console.log("Outplacement inquiry:", formData);
+    // Placeholder: Form shows success state locally; backend/email integration not yet implemented.
+    // See CONTEXT/todo for future work on outplacement inquiry handling.
+    console.log("Outplacement inquiry (placeholder):", formData);
     setSubmitted(true);
   };
 

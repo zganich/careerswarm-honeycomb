@@ -57,6 +57,7 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 - **[README.md](./README.md)** — Project overview, setup, commands, links to docs.
 - **[todo.md](./todo.md)** — Current state, completed items, high-priority next steps, quick commands.
 - **[docs/IDEAL_WORKFLOW_AND_ASSIGNMENTS.md](./docs/IDEAL_WORKFLOW_AND_ASSIGNMENTS.md)** — What Cursor needs to be effective; task and agent assignments (Ship, Server, Client, Docs, Review, Business, Cursor, you).
+- **Feature Gaps 1–5 plan** — `~/.cursor/plans/feature_gaps_1-5_plan_ce537def.plan.md` (original roadmap; all five gaps complete per CONTEXT § Feature Gaps).
 
 ### Production-only failures
 
@@ -66,10 +67,10 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 
 ## Architecture: Resume Roast (lead magnet); Onboarding
 
-- **Resume Roast** (`/roast`): Public lead magnet. Textarea (min 50 chars), “Get Roasted”. Post-result: “We're building a new way to turn this into your profile. Come back soon.” (no CTA to onboarding). API: `public.roast` → `server/roast.ts` → OpenAI; single error path → `SERVICE_UNAVAILABLE`. **No DB persistence** for roast.
+- **Resume Roast** (`/roast`): Public lead magnet. Textarea (min 50 chars), “Get Roasted”. Post-result: "Build my Master Profile" CTA → `/login?returnTo=/onboarding/welcome`. API: `public.roast` → `server/roast.ts` → OpenAI; single error path → `SERVICE_UNAVAILABLE`. **No DB persistence** for roast.
 - **Onboarding:** `/onboarding/*` (welcome, upload, extraction, review, preferences) is **enabled** on production. Routes in `App.tsx` use real components: Welcome, Upload, Extraction, Review, Preferences. (Previously offline to avoid sign-in loop; re-enabled 2026-02-07 for live testing.)
 - **Home/Pricing:** Primary CTAs point to `/roast` (“Get Roasted”). Profile “Complete Onboarding” → `/dashboard`.
-- **Auth:** `server/_core/oauth.ts` (email sign-in at `/api/auth/test-login`; optional OAuth callback when configured). Session cookie; `returnTo` in login body; redirect after login.
+- **Auth:** `server/_core/oauth.ts` (email sign-in at `/api/auth/test-login`; optional OAuth callback when configured). Session cookie; `returnTo` in login body. After login: **200 + Set-Cookie + HTML meta-refresh redirect** (not 302) so the cookie is sent on the next request; see CONTEXT § Pricing sign-in fix.
 
 ---
 
@@ -370,6 +371,15 @@ railway status | logs | variable list | redeploy | up | open
 
 ---
 
+## Last Session Summary (2026-02-08) — Pricing sign-in and login redirect fix
+
+- **Problem:** After login with `returnTo=/pricing`, user landed on the pricing page but nav still showed "Sign In" (session not recognized). Root cause: server responded with **302 redirect + Set-Cookie**; in some environments the cookie is not sent on the request that follows the redirect, so `auth.me` on the pricing page got no session.
+- **Pricing page (client):** [client/src/pages/Pricing.tsx](client/src/pages/Pricing.tsx) — (1) Use `authLoading` from `auth.me` so we don’t treat loading as signed-out: nav shows "Checking sign-in…" until resolved, then "Dashboard" or "Sign In". (2) Pro button disabled and shows "Checking sign-in…" while auth loading. (3) `refetchOnMount: "always"` so landing on /pricing after redirect refetches auth. (4) Checkout error handler checks `error.data?.code === "UNAUTHORIZED"` for redirect to login. Commit ebc1548.
+- **Login redirect (server):** [server/\_core/oauth.ts](server/_core/oauth.ts) — After setting session cookie, **no longer use 302**. Now respond **200** with `Content-Type: text/html` and a minimal HTML page that does an immediate client redirect via `<meta http-equiv="refresh" content="0;url=...">` (and fallback link). Browser sets the cookie from the 200 response, then navigates; the navigation request includes the cookie. `returnTo` validated (same-origin path only) and escaped for HTML. Commit b178a3c.
+- **Verify:** Go to https://careerswarm.com/login?returnTo=/pricing → sign in → should land on /pricing with "Dashboard" in nav and "Start Pro Trial" → Stripe Checkout.
+
+---
+
 ## Last Session Summary (2026-02-08) — Tailor industry formats and page length
 
 - **Tailor agent** ([server/agents/tailor.ts](server/agents/tailor.ts)): Added three personas — **Academic**, **Legal**, **Education/Nonprofit** — and sectoral rules (CV-style for Academic, education-first for Legal, mission/impact for Education/Nonprofit). **Page length by career level:** infer from work history: Entry (0–5 yr) = 1 page max, Mid = 2 pages max, Senior/Exec = 3 pages max. **Industry overrides:** Federal 2-page hard max; Academic 2–4+; Legal 1–2; Education/Nonprofit 1 preferred (2 OK with 10+ years). Replaced global "1-2 pages maximum" with these rules.
@@ -380,7 +390,7 @@ railway status | logs | variable list | redeploy | up | open
 
 ---
 
-_Last updated: 2026-02-08. README: Cursor/OpenClaw do all technical work; user only creates accounts, copies keys when asked, pastes where instructed (no technical expertise). OpenClaw Phase 4 task in OPENCLAW_HANDOFF (run steps 1–4 if credentials provided). Phase 4 tooling: checklist §6 Redis, § Phase 4 complete when, config:check, PHASE_4_CONFIG_WALKTHROUGH, phase4:railway-vars. Phase 4 finished = vars set in Railway + railway redeploy; verification: pnpm run config:check (local .env) or railway variable list. Use this file to restore context._
+_Last updated: 2026-02-08. Pricing sign-in fix: login returns 200 + Set-Cookie + HTML redirect (not 302) so cookie is sent on next request; Pricing page uses auth loading state and refetchOnMount. README: Cursor/OpenClaw do all technical work; user only creates accounts, copies keys when asked, pastes where instructed (no technical expertise). OpenClaw Phase 4 task in OPENCLAW_HANDOFF (run steps 1–4 if credentials provided). Phase 4 tooling: checklist §6 Redis, § Phase 4 complete when, config:check, PHASE_4_CONFIG_WALKTHROUGH, phase4:railway-vars. Phase 4 finished = vars set in Railway + railway redeploy; verification: pnpm run config:check (local .env) or railway variable list. Use this file to restore context._
 
 ---
 

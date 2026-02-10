@@ -55,6 +55,13 @@ const Home = () => {
             >
               Resume Roast
             </button>
+            <button
+              type="button"
+              onClick={() => setLocation("/estimate")}
+              className="hover:text-orange-600 transition-colors"
+            >
+              Estimate Fit
+            </button>
           </div>
           <div className="flex items-center space-x-4">
             <button

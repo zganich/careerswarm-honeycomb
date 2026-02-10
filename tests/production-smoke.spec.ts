@@ -241,6 +241,17 @@ test.describe("Production Smoke Tests - Public Pages (continued)", () => {
     console.log("✅ Pricing page loaded successfully");
   });
 
+  test("Role fit estimate page loads", async ({ page }) => {
+    const response = await page.goto(`${BASE_URL}/estimate`);
+    expect(response?.status()).toBe(200);
+
+    await page.waitForLoadState("networkidle");
+    const body = page.locator("body");
+    await expect(body).toBeVisible();
+
+    console.log("✅ Role fit estimate page loaded successfully");
+  });
+
   test("FAQ page loads", async ({ page }) => {
     await page.goto(`${BASE_URL}/faq`);
     await page.waitForLoadState("networkidle");

@@ -113,6 +113,8 @@ See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md) for full deployment guide
 
 **Full matrix:** See [CONTEXT_FOR_NEW_CHAT.md](./CONTEXT_FOR_NEW_CHAT.md) § Feature Completeness.
 
+**Plan file:** `~/.cursor/plans/feature_gaps_1-5_plan_ce537def.plan.md` — Feature Gaps 1–5 roadmap; all five complete.
+
 ---
 
 ## High Priority Next Steps
@@ -162,6 +164,7 @@ See [docs/SHIP_CHECKLIST.md](./docs/SHIP_CHECKLIST.md) for full deployment guide
 
 ### Low Priority
 
+- [ ] Outplacement form backend/email — form is placeholder (shows success locally); wire to backend or email when needed.
 - [ ] Email automation (SendGrid/AWS SES)
 - [ ] LinkedIn OAuth integration
 - [ ] Interview Prep Agent

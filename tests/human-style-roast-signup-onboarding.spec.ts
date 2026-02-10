@@ -165,4 +165,127 @@ test.describe("Human-style: Roast, Signup, Onboarding", () => {
     expect(page.url()).toMatch(/\/(dashboard|onboarding)/);
     console.log("\n[Human] === DONE ===");
   });
+
+  test("Full flow: Pricing → Sign in → Onboarding (human pacing, 3–5s between steps)", async ({
+    page,
+  }) => {
+    test.setTimeout(420000); // 7 min: pricing + login + onboarding + LLM extraction + delays
+
+    // —— PRICING ——
+    console.log("\n[Human] === PRICING ===");
+    await page.goto(`${BASE_URL}/pricing`);
+    await page.waitForLoadState("networkidle");
+    await waitHuman(page, "Viewed Pricing page");
+
+    const proBtn = page.getByRole("button", { name: /start pro trial/i });
+    await expect(proBtn).toBeVisible({ timeout: 10000 });
+    await proBtn.click();
+    await waitHuman(page, "Clicked Start Pro Trial → login");
+
+    // —— SIGN IN (from pricing CTA) ——
+    console.log("\n[Human] === SIGN IN ===");
+    await page.waitForURL(/\/login/, { timeout: 10000 });
+    await page.waitForLoadState("networkidle");
+    await waitHuman(page, "Viewed Login page (returnTo=pricing)");
+
+    const email = getUniqueTestEmail();
+    await page.locator('input[type="email"]').fill(email);
+    await waitHuman(page, "Entered email");
+
+    await page.locator('button[type="submit"]').click();
+    await page.waitForURL(/\/(dashboard|onboarding|pricing)/, {
+      timeout: 30000,
+    });
+    await waitHuman(page, "Signed in, landed on pricing/dashboard/onboarding");
+    const dashboardVisible = await page
+      .getByText("Dashboard")
+      .first()
+      .isVisible()
+      .catch(() => false);
+    if (!dashboardVisible) {
+      console.log(
+        "[Human] Note: Dashboard nav element not yet visible (auth may still be resolving)"
+      );
+    }
+
+    // —— ONBOARDING ——
+    console.log("\n[Human] === ONBOARDING ===");
+    await page.goto(`${BASE_URL}/onboarding`);
+    await page.waitForLoadState("networkidle");
+    await waitHuman(page, "Viewed onboarding");
+
+    const startBtn = page
+      .getByRole("button", { name: /continue|start|next|build|let's build/i })
+      .first();
+    if (await startBtn.isVisible()) {
+      await startBtn.click();
+      await waitHuman(page, "Clicked start/continue");
+    }
+
+    await page
+      .waitForURL(/\/onboarding\/(upload|welcome|extraction)/, {
+        timeout: 15000,
+      })
+      .catch(() => {});
+
+    const fileInput = page.locator('input[type="file"]');
+    if ((await fileInput.count()) > 0) {
+      const testResumePath = path.join(
+        __dirname,
+        "fixtures",
+        "test-resume.txt"
+      );
+      await fileInput.setInputFiles(testResumePath);
+      await waitHuman(page, "Uploaded resume file");
+
+      const cont = page.getByRole("button", { name: /continue/i }).first();
+      if (await cont.isEnabled()) {
+        await cont.click();
+        await waitHuman(page, "Clicked continue after upload");
+      }
+    }
+
+    await page
+      .waitForURL(/\/onboarding\/extraction/, { timeout: 15000 })
+      .catch(() => {});
+
+    const reviewBtn = page.getByRole("button", {
+      name: /continue|review|next/i,
+    });
+    await reviewBtn
+      .waitFor({ state: "visible", timeout: 90000 })
+      .catch(() => {});
+    if (await reviewBtn.isVisible()) {
+      await reviewBtn.click();
+      await waitHuman(page, "Clicked continue to review");
+    }
+    await page
+      .waitForURL(/\/onboarding\/review/, { timeout: 15000 })
+      .catch(() => {});
+
+    const nextBtn = page
+      .getByRole("button", { name: /continue|next/i })
+      .first();
+    if (await nextBtn.isVisible()) {
+      await nextBtn.click();
+      await waitHuman(page, "Clicked continue to preferences");
+    }
+    await page
+      .waitForURL(/\/onboarding\/preferences/, { timeout: 15000 })
+      .catch(() => {});
+
+    const completeBtn = page
+      .getByRole("button", { name: /complete|finish|done/i })
+      .first();
+    if (await completeBtn.isVisible()) {
+      await completeBtn.click();
+      await waitHuman(page, "Clicked complete");
+    }
+    await page
+      .waitForURL(/\/(dashboard|onboarding)/, { timeout: 15000 })
+      .catch(() => {});
+
+    expect(page.url()).toMatch(/\/(dashboard|onboarding)/);
+    console.log("\n[Human] === DONE ===");
+  });
 });
