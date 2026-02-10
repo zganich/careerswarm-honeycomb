@@ -85,8 +85,18 @@ export function formatTRPCError(error: unknown): FormattedError {
         data: error.data,
       });
 
+      // Pass through single-line server messages (e.g. config errors like STRIPE_PRO_PRICE_ID)
+      // so users see actionable text; hide stack traces and multi-line dumps
+      const msg = error.message?.trim() || "";
+      const isSingleLine =
+        !msg.includes("\n") && msg.length > 0 && msg.length <= 400;
+      const looksLikeStack = /\n\s*at\s+\S/.test(msg);
+
       return {
-        message: "Something went wrong on our end. Please try again later.",
+        message:
+          isSingleLine && !looksLikeStack
+            ? msg
+            : "Something went wrong on our end. Please try again later.",
         code: "INTERNAL_SERVER_ERROR",
         isUserFriendly: true,
       };

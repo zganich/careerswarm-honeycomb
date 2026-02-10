@@ -712,12 +712,22 @@ test.describe("Payment Flow", () => {
       .getByRole("button", { name: /upgrade|start pro|get pro|subscribe/i })
       .first();
     if (!(await upgradeBtn.isVisible())) return;
-    const [popupOrNav] = await Promise.all([
-      page.waitForEvent("popup", { timeout: 10000 }).catch(() => null),
-      upgradeBtn.click(),
-    ]);
-    await page.waitForTimeout(3000);
-    const url = popupOrNav ? popupOrNav.url() : page.url();
+    await upgradeBtn.click();
+    // Checkout redirects in same tab; wait for navigation to Stripe or elsewhere
+    try {
+      await page.waitForURL(
+        url =>
+          url.href.includes("stripe.com") ||
+          url.href.includes("checkout") ||
+          url.href.includes("subscription=success") ||
+          url.href.includes("/onboarding"),
+        { timeout: 10000 }
+      );
+    } catch {
+      // Timeout: may still be on pricing if redirect did not occur
+    }
+    await page.waitForTimeout(1000);
+    const url = page.url();
     const isStripe = url.includes("stripe.com") || url.includes("checkout");
     const isSuccess = url.includes("dashboard") && url.includes("success");
     const isOnboarding =

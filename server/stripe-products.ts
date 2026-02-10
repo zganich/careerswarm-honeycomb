@@ -26,7 +26,10 @@ export const SUBSCRIPTION_TIERS = {
     name: "Pro",
     tier: "pro" as const,
     price: 19,
-    priceId: process.env.STRIPE_PRO_PRICE_ID || "price_pro_monthly", // Set in Stripe dashboard
+    priceId: (() => {
+      const id = process.env.STRIPE_PRO_PRICE_ID?.trim();
+      return id && id !== "price_pro_monthly" ? id : null;
+    })(),
     features: [
       "Unlimited achievements",
       "Unlimited resumes",

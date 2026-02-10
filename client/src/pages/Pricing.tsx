@@ -10,7 +10,9 @@ import {
 } from "@/components/ui/card";
 import { Check, Hexagon, Loader2 } from "lucide-react";
 import { useLocation } from "wouter";
+import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
+import { formatTRPCError } from "@/lib/error-formatting";
 
 export default function Pricing() {
   const [, setLocation] = useLocation();
@@ -22,11 +24,18 @@ export default function Pricing() {
     { retry: 1, refetchOnMount: "always" }
   );
 
+  const loginReturnTo = encodeURIComponent("/pricing?upgrade=pro");
+
   // Stripe checkout mutation
   const checkoutMutation = trpc.stripe.createCheckoutSession.useMutation({
     onSuccess: data => {
       if (data.checkoutUrl) {
         window.location.href = data.checkoutUrl;
+      } else {
+        setIsLoading(false);
+        toast.error(
+          "Checkout link unavailable—please try again or contact support"
+        );
       }
     },
     onError: error => {
@@ -34,7 +43,10 @@ export default function Pricing() {
       setIsLoading(false);
       const code = (error as { data?: { code?: string } })?.data?.code;
       if (code === "UNAUTHORIZED" || error.message?.includes("UNAUTHORIZED")) {
-        setLocation("/login?returnTo=/pricing?upgrade=pro");
+        setLocation(`/login?returnTo=${loginReturnTo}`);
+      } else {
+        const formatted = formatTRPCError(error);
+        toast.error(formatted.message);
       }
     },
   });
@@ -42,7 +54,7 @@ export default function Pricing() {
   const handleProClick = () => {
     if (authLoading) return; // wait for auth to resolve
     if (!user) {
-      setLocation("/login?returnTo=/pricing?upgrade=pro");
+      setLocation(`/login?returnTo=${loginReturnTo}`);
       return;
     }
     setIsLoading(true);

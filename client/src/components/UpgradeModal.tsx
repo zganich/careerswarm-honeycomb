@@ -9,7 +9,10 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Loader2, Zap, Check } from "lucide-react";
+import { useLocation } from "wouter";
+import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
+import { formatTRPCError } from "@/lib/error-formatting";
 
 interface UpgradeModalProps {
   open: boolean;
@@ -26,17 +29,38 @@ export function UpgradeModal({
   limit = 5,
   reason,
 }: UpgradeModalProps) {
+  const [, setLocation] = useLocation();
   const [isLoading, setIsLoading] = useState(false);
 
   const checkoutMutation = trpc.stripe.createCheckoutSession.useMutation({
     onSuccess: data => {
       if (data.checkoutUrl) {
         window.location.href = data.checkoutUrl;
+      } else {
+        setIsLoading(false);
+        toast.error(
+          "Checkout link unavailable—please try again or contact support"
+        );
       }
     },
     onError: error => {
       console.error("Checkout error:", error);
       setIsLoading(false);
+      const code = (error as { data?: { code?: string } })?.data?.code;
+      if (code === "UNAUTHORIZED" || error.message?.includes("UNAUTHORIZED")) {
+        const currentPath =
+          typeof window !== "undefined"
+            ? window.location.pathname + (window.location.search || "")
+            : "/dashboard";
+        const returnTo =
+          currentPath && currentPath !== "/login"
+            ? currentPath
+            : "/pricing?upgrade=pro";
+        setLocation(`/login?returnTo=${encodeURIComponent(returnTo)}`);
+      } else {
+        const formatted = formatTRPCError(error);
+        toast.error(formatted.message);
+      }
     },
   });
 

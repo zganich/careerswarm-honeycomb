@@ -156,7 +156,7 @@ If missing, `storagePut` throws: "Storage not configured: set S3_BUCKET, S3_ACCE
 
 ## 5. Stripe Pro (Optional — for paid upgrades)
 
-**Impact:** Pro checkout and UpgradeModal are wired in code. Without `STRIPE_SECRET_KEY` and `STRIPE_PRO_PRICE_ID`, "Upgrade to Pro" fails or does not redirect to Stripe Checkout correctly.
+**Impact:** Pro checkout and UpgradeModal are wired in code. Without `STRIPE_SECRET_KEY` and `STRIPE_PRO_PRICE_ID`, "Upgrade to Pro" fails or does not redirect to Stripe Checkout correctly. If `STRIPE_PRO_PRICE_ID` is not set (but Stripe key is), the app returns a clear error asking you to set `STRIPE_PRO_PRICE_ID` in Railway.
 
 ### Manual steps (no code changes):
 

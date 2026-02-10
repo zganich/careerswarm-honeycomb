@@ -39,7 +39,7 @@ export const PRODUCTS = {
   PRO: {
     name: "Pro",
     price: 29,
-    priceId: process.env.STRIPE_PRICE_ID_PRO || "price_pro_monthly",
+    priceId: process.env.STRIPE_PRO_PRICE_ID || "price_pro_monthly",
     limits: {
       achievements: Infinity,
       resumeGenerations: Infinity,

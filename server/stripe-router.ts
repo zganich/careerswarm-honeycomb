@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 import { protectedProcedure, router } from "./_core/trpc";
 import Stripe from "stripe";
 import * as db from "./db";
@@ -27,9 +28,15 @@ export const stripeRouter = router({
         throw new Error("Stripe is not configured (STRIPE_SECRET_KEY missing)");
       const origin = ctx.req.headers.origin || "http://localhost:3000";
 
-      // Use default Pro price if not provided
       const priceId =
-        input.priceId || process.env.STRIPE_PRO_PRICE_ID || "price_pro_monthly";
+        input.priceId?.trim() || process.env.STRIPE_PRO_PRICE_ID?.trim() || "";
+      if (!priceId || priceId === "price_pro_monthly") {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message:
+            "Pro checkout is not configured. Set STRIPE_PRO_PRICE_ID in Railway to your Stripe Price ID (e.g. price_xxx).",
+        });
+      }
 
       const session = await stripe.checkout.sessions.create({
         mode: "subscription",
@@ -56,6 +63,14 @@ export const stripeRouter = router({
           },
         },
       });
+
+      if (!session.url) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message:
+            "Stripe checkout URL not returned—verify price ID and Stripe config",
+        });
+      }
 
       return {
         checkoutUrl: session.url,

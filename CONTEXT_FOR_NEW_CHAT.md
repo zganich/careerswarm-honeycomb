@@ -119,7 +119,7 @@ AI-powered career evidence platform: Master Profile, achievements (STAR), 7-stag
 
 **Production:** Live at careerswarm.com; CI passing; E2E 47 passed (5 skipped); smoke 22. Stripe Pro config pending (manual: create product, set STRIPE_PRO_PRICE_ID). Storage S3-compatible; referral flywheel implemented.
 
-**Last session:** Auth redirect on onboarding routes; storage S3; referral idempotency; Tailor 9 personas + page length by career level and industry. ship:check:full 47 passed.
+**Last session:** Login and Stripe checkout fix (Pricing + UpgradeModal: null checkoutUrl handling, error toasts, returnTo encoding; stripe-router validates session.url; E2E waits for same-tab navigation instead of popup).
 
 **Verification commands:**
 
@@ -390,7 +390,7 @@ railway status | logs | variable list | redeploy | up | open
 
 ---
 
-_Last updated: 2026-02-08. Pricing sign-in fix: login returns 200 + Set-Cookie + HTML redirect (not 302) so cookie is sent on next request; Pricing page uses auth loading state and refetchOnMount. README: Cursor/OpenClaw do all technical work; user only creates accounts, copies keys when asked, pastes where instructed (no technical expertise). OpenClaw Phase 4 task in OPENCLAW_HANDOFF (run steps 1–4 if credentials provided). Phase 4 tooling: checklist §6 Redis, § Phase 4 complete when, config:check, PHASE_4_CONFIG_WALKTHROUGH, phase4:railway-vars. Phase 4 finished = vars set in Railway + railway redeploy; verification: pnpm run config:check (local .env) or railway variable list. Use this file to restore context._
+_Last updated: 2026-02-09. Login and Stripe checkout fix: Pricing + UpgradeModal handle null checkoutUrl, toast errors, encode returnTo; stripe-router validates session.url; E2E Pro CTA test waits for same-tab navigation. Use this file to restore context._
 
 ---
 
@@ -454,3 +454,13 @@ _Last updated: 2026-02-08. Pricing sign-in fix: login returns 200 + Set-Cookie +
 - **README — who does what:** [README.md](README.md) now states that **Cursor and OpenClaw do all technical work**; the user never runs terminal commands, edits code, or configures servers. New section **“What you need to do (no technical skill required)”**: (1) Have accounts (OpenAI, Stripe, Cloudflare, Sentry, Railway, GitHub). (2) When the assistant asks for a key/ID, open the link given, copy the value named, paste where instructed (chat or file). (3) If a browser opens for a one-time token (e.g. Stripe/Sentry), sign in, copy the token, paste back when prompted. (4) GitHub secrets only if asked: repo Settings → Secrets → New secret, add the name/value the assistant gives. Env vars, deployment, testing, and contributing sections updated to say the assistant runs them; user only provides keys when asked.
 - **OpenClaw Phase 4:** [OPENCLAW_HANDOFF.md](OPENCLAW_HANDOFF.md) has a **“Phase 4 config — Assigned to OpenClaw”** block. OpenClaw can run Steps 1–4 in order **if** the user has provided credentials (Stripe login or keys, S3/R2 token, Sentry DSN, Railway API token + project/env/service IDs in .env or env). Prerequisites and paste-in prompt for OpenClaw are in the handoff; OpenClaw appends one handoff block with what ran and what still needs the user.
 - **Takeaway:** Human does only non-automatable steps: create accounts, copy keys from dashboards when asked, paste where the assistant says. No technical expertise required.
+
+---
+
+## Last Session Summary (2026-02-09) — Login and Stripe checkout fix
+
+- **Pricing page** ([client/src/pages/Pricing.tsx](client/src/pages/Pricing.tsx)): (1) If `checkoutUrl` is null/empty on success, show toast error and reset loading. (2) On non-UNAUTHORIZED errors, toast user-friendly message via `formatTRPCError`. (3) Use `encodeURIComponent("/pricing?upgrade=pro")` for login `returnTo` so query params are preserved.
+- **UpgradeModal** ([client/src/components/UpgradeModal.tsx](client/src/components/UpgradeModal.tsx)): Same null-checkoutUrl and error-toast handling; UNAUTHORIZED redirect with encoded returnTo.
+- **Stripe router** ([server/stripe-router.ts](server/stripe-router.ts)): After `checkout.sessions.create()`, if `session.url` is null, throw TRPCError with "Stripe checkout URL not returned—verify price ID and Stripe config".
+- **E2E** ([tests/production-e2e.spec.ts](tests/production-e2e.spec.ts)): Pro/Upgrade CTA test now uses `page.waitForURL()` for same-tab checkout redirect instead of `waitForEvent("popup")` (checkout does not open a popup).
+- **Note:** E2E still lands on "pricing" in production; Stripe config (STRIPE_PRO_PRICE_ID, key mode) may need verification. New error handling surfaces failures instead of silent no-op.
